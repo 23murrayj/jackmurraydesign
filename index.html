@@ -234,13 +234,8 @@
        (left heading, far-right stats, back to the middle for the copy, left
        again for the button) and the brightest thing on screen was four
        numbers that lead nowhere. Now there is one column to read, top to
-       bottom, with the photo as a fixed anchor beside it. -->
+       bottom, with the photo panel as a fixed anchor beside it. -->
   <div class="about-grid">
-    <!-- The strongest pull towards a page about a person is that person's
-         face, so the photo is itself a link to the about page rather than
-         decoration sitting next to one. aria-label (not the alt) names the
-         destination: the alt describes the picture, which is not what a
-         screen reader needs to hear about where a link goes. -->
     <div class="about-intro">
       <p class="about-statement reveal" data-i18n="about.statement">
         I'm a UX designer studying at Bradley University. The job is making things
@@ -284,23 +279,28 @@
         <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">HOW I GOT HERE</button>
       </div>
     </div>
-    <div class="photo-stack reveal">
-      <a class="about-portrait" href="#about" id="aboutPortrait"
-         data-i18n-aria="about.portraitLink" aria-label="More about Jack">
-        <img src="assets/about/jack-home.jpg" width="640" height="800"
-             loading="lazy" decoding="async"
-             data-i18n-alt="about.portraitAlt"
-             alt="Jack with a camera in a Milan courtyard, red threads strung between the arches behind him.">
-      </a>
-      <!-- second place, second door. Both photos open the about page. -->
-      <a class="about-portrait" href="#about"
-         data-i18n-aria="about.portraitLink" aria-label="More about Jack">
-        <img src="assets/about/jack-dolomites.jpg" width="676" height="1200"
-             loading="lazy" decoding="async"
-             data-i18n-alt="about.portrait2Alt"
-             alt="Jack smiling on a ridge in the Dolomites, bare peaks behind him.">
-      </a>
-    </div>
+  </div>
+  <!-- A full-height panel rather than a box inside the text grid. Two photos
+       squeezed into the reading column's height gave them a 2.09:1 slot cut
+       from a 0.56:1 source - a 3.7x ratio mismatch, which is exactly what
+       "weirdly cropped" looks like. One photo in a slot the height of the
+       whole section is ~0.58:1, which is the file's own shape, so nothing is
+       cropped at all. It sits after the button in the DOM so the primary
+       action is reached first by keyboard, and it is absolutely positioned
+       against .about, so it costs the section no height.
+       The photo is itself the link to the about page rather than decoration
+       sitting next to one - a face is the strongest pull towards a page about
+       a person. aria-label (not the alt) names the destination: the alt
+       describes the picture, which is not what a screen reader needs to hear
+       about where a link goes. -->
+  <div class="about-panel reveal">
+    <a class="about-portrait" href="#about" id="aboutPortrait"
+       data-i18n-aria="about.portraitLink" aria-label="More about Jack">
+      <img src="assets/about/jack-dolomites.jpg" width="676" height="1200"
+           loading="lazy" decoding="async"
+           data-i18n-alt="about.portraitAlt"
+           alt="Jack smiling on a ridge in the Dolomites, bare peaks behind him.">
+    </a>
   </div>
   <div class="skills-marquee reveal">
     <div class="skills-track" id="skillsTrack">

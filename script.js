@@ -735,7 +735,7 @@ document.getElementById('aboutTitle')?.addEventListener('keydown', (e) => {
 });
 document.getElementById('aboutReadMore')?.addEventListener('click', openAboutPage);
 // the portrait is a second door to the same page, not decoration
-document.querySelectorAll('.photo-stack .about-portrait')
+document.querySelectorAll('.about-panel .about-portrait')
   .forEach((el) => el.addEventListener('click', openAboutPage));
 aboutBack?.addEventListener('click', closeAboutPage);
 

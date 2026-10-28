@@ -1138,8 +1138,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   /* tighter than the shared 70/30: this section has to read in one screen,
      and it's the only one carrying a photo, stats, a CTA pair and a band.
      Scoped so #work and #contact keep the roomier default, and so the 70px
-     heading offset that scroll-padding-top is tuned to stays put for them. */
-  padding: 38px 5vw 20px;
+     heading offset that scroll-padding-top is tuned to stays put for them.
+     The right inset clears the photo panel, which spans the full section. */
+  padding: 30px var(--about-inset) 16px 5vw;
 }
 #aboutTitle { cursor: pointer; transition: color .25s ease; }
 #aboutTitle:hover { color: var(--yellow); }
@@ -1169,16 +1170,19 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 /* Both grow so the pair still aligns, but the primary gets the extra
    horizontal room and the larger type: it should be the biggest thing you
    can click in this section, because it's the only one we want clicked. */
-/* Full column width, so its edges land on the same two lines as the
-   statement above it and the rules around the stats. On its own it was an
-   arbitrary 301px floating inside an 790px column; squared off to the grid
-   it closes the block instead of sitting in it. Label left, arrow hard
-   right, which uses the width rather than stranding it in the middle. */
+/* Sized to its own label, not to the column. Stretched to the full 849px
+   with space-between, the arrow ended up ~700px from the words it belongs
+   to, so it read as a separate mark rather than part of the control - and a
+   68px-tall bar that wide is out of proportion to a three-word label. It
+   keeps the larger type and padding; it just stops at the end of the
+   sentence. */
 .about-cta-row { display: block; }
 .about-cta-row .about-readmore-btn {
-  width: 100%;
-  justify-content: space-between;
-  padding: 22px 28px; font-size: 1.08rem; letter-spacing: 2px;
+  width: auto;
+  display: inline-flex;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 20px 30px; font-size: 1rem; letter-spacing: 2px;
 }
 /* The arrow was part of the translated string, which made it a single text
    node that space-between had nothing to push apart. As a pseudo-element
@@ -1187,6 +1191,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-cta-row .about-readmore-btn::after {
   content: '\2192';
   font-size: 1.15em; line-height: 1;
+  transition: transform .25s ease;
+}
+.about-cta-row .about-readmore-btn:hover::after { transform: translateX(5px); }
+@media (prefers-reduced-motion: reduce) {
+  .about-cta-row .about-readmore-btn::after { transition: none; }
+  .about-cta-row .about-readmore-btn:hover::after { transform: none; }
 }
 
 /* The only action in this section. The resume used to sit beside it as a
@@ -1231,46 +1241,62 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   );
   mix-blend-mode: overlay;
 }
-/* Copy first, photos second. The heading sits at the page gutter, so putting
-   the reading column there too gives the whole section one left edge instead
-   of starting the text 400px inboard of its own title. */
-.about-grid {
-  display: grid; grid-template-columns: 2fr 0.92fr; gap: 56px;
-  padding: 26px 5vw 16px;
-  align-items: stretch;
+/* The photo is a full-height panel pinned to the right of the whole
+   section, not a box inside the reading grid. Sizing it off the text column
+   gave the two photos a 2.09:1 and a 1.38:1 slot cut from sources that are
+   0.56:1 and 0.8:1, so both were cropped to a letterbox. The panel is as tall
+   as the section (~0.58:1 at desktop), which is jack-dolomites.jpg's own
+   shape - the crop is now effectively nothing. Being absolutely positioned,
+   it also costs the section no height: 726px here against 762px before. */
+.about { position: relative; --about-panel: 420px; }
+/* panel + the gap between it and the copy, so the text never runs under it */
+.about { --about-inset: calc(var(--about-panel) + 56px); }
+.about-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: var(--about-panel);
+  overflow: hidden;
 }
-/* Two photos, two places, no extra height: the stack is positioned rather
-   than flowed, so it takes its height from the reading column beside it
-   instead of from the images. Percentage rows on an auto-height grid row
-   resolve to auto and blow the section to 2000px+; absolute children
-   measure against the stack's resolved box, which the text defines. */
-.photo-stack { position: relative; min-height: 0; }
-.photo-stack > .about-portrait { position: absolute; left: 0; right: 0; }
-.photo-stack > .about-portrait:first-child { top: 0; height: calc(60% - 6px); }
-.photo-stack > .about-portrait:last-child { bottom: 0; height: calc(40% - 6px); }
-.photo-stack img { width: 100%; height: 100%; object-fit: cover; }
-.photo-stack > .about-portrait:last-child img { object-position: 50% 54%; }
+.about-panel .about-portrait {
+  position: absolute; inset: 0;
+  /* the 4px rule that runs under the section heading, continued down the
+     seam: the panel reads as part of the same frame rather than a pasted-on
+     picture */
+  border: 0; border-left: 4px solid var(--paper);
+}
+.about-panel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+/* one reading column; the panel is out of flow beside it */
+.about-grid {
+  display: block;
+  padding: 22px var(--about-inset) 14px 5vw;
+}
 /* the photo is the link, so it gets the same lift-and-shadow the buttons
-   use - it has to read as pressable, not as an illustration */
+   use - it has to read as pressable, not as an illustration. Inset rather
+   than translated, because a panel flush to the viewport edge would slide
+   off it. */
 .about-portrait {
   display: block;
-  border: 4px solid var(--paper);
-  transition: transform .3s, box-shadow .3s;
+  transition: transform .3s, box-shadow .3s, filter .3s;
 }
-/* stretched to whatever the reading column needs rather than set to its own
-   aspect ratio: the two columns then always end on the same line, and the
-   copy is free to grow without leaving a ragged step at the bottom.
-   object-position holds his face in frame as that height changes. */
-.about-portrait img {
-  display: block; width: 100%; height: 100%;
-  object-fit: cover; object-position: 50% 32%;
+/* The ring has to be its own layer: an inset box-shadow paints on the
+   link's background, which the image then covers completely. */
+.about-panel .about-portrait::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 0 var(--yellow);
+  transition: box-shadow .3s ease;
 }
-.about-portrait { overflow: hidden; }
-.about-portrait:hover,
-.about-portrait:focus-visible {
-  transform: translate(-4px, -4px);
-  box-shadow: 8px 8px 0 var(--yellow);
+.about-panel .about-portrait:hover::after,
+.about-panel .about-portrait:focus-visible::after {
+  box-shadow: inset 0 0 0 6px var(--yellow);
 }
+.about-panel .about-portrait:hover,
+.about-panel .about-portrait:focus-visible {
+  filter: brightness(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-panel .about-portrait::after { transition: none; }
+}
+.about-portrait img { display: block; }
+
 /* one column, read straight down: statement, stats, hook, button. Every
    step is smaller and quieter than the last until the button, which jumps
    back up - the funnel shape is what makes the CTA feel like an arrival. */
@@ -1317,7 +1343,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .stat-label { font-size: 0.72rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 .skills-marquee {
   overflow: hidden;
-  padding: 0 0 26px;
+  /* ends at the panel's edge. Full-bleed, it painted straight over the
+     photo - the panel is out of flow, so the marquee has to be told. */
+  margin-right: var(--about-panel);
+  padding: 0 0 20px;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
@@ -1337,25 +1366,39 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transition: background .25s, color .25s;
 }
 .skills-group span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+/* Between a laptop and a desktop a fixed 420px panel takes too big a bite
+   out of the reading column, so it scales with the viewport until it is
+   worth keeping at all. */
+@media (max-width: 1100px) {
+  .about { --about-panel: 34vw; }
+}
 @media (max-width: 800px) {
-  .about-grid { grid-template-columns: 1fr; gap: 32px; }
-  /* Stacked on a phone there is no column to match, so the stack goes back
-     to normal flow and the two photos sit side by side: full-bleed portraits
-     would be most of a screen each before any words. */
-  .photo-stack {
-    position: static;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  /* A phone has no second column to pin anything to, so the panel rejoins
+     the flow under the copy. Held at its native 676/1200 it filled only
+     210px of a 338px column and read as a mistake, so here it takes the full
+     width at 4:5 - the one place a crop is the better trade, because it is
+     the only way the photo lines up with everything above it. 4:5 is 52vh,
+     which still leaves the copy on screen first. */
+  .about { --about-panel: 0px; --about-inset: 5vw; }
+  .about-panel {
+    position: static; width: auto;
+    margin: 0 5vw 28px;
   }
-  .photo-stack > .about-portrait,
-  .photo-stack > .about-portrait:first-child,
-  .photo-stack > .about-portrait:last-child {
-    position: static; height: auto; aspect-ratio: 4 / 5;
+  .about-panel .about-portrait {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border: 4px solid var(--paper);
   }
-  .about-portrait img { height: 100%; }
+  /* he is just right of centre in the frame, and the crop takes it from the
+     bottom, so hold the subject rather than the midpoint */
+  .about-panel img { object-position: 54% 34%; }
+  .about-panel img { height: 100%; }
   .about-hook { max-width: none; }
   /* four across is ~80px a column on a phone, which breaks every label */
   .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; }
-  .about-cta-row .about-readmore-btn { flex: 1 1 100%; justify-content: center; }
+  /* full width here: it is the only action on the screen and a thumb should
+     not have to find a 260px target */
+  .about-cta-row .about-readmore-btn { width: 100%; justify-content: center; }
 }
 
 /* MAGNETIC TYPOGRAPHY — extremely tall condensed type, edge to edge */
