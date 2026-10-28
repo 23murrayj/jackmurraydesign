@@ -1231,11 +1231,25 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   );
   mix-blend-mode: overlay;
 }
+/* Copy first, photos second. The heading sits at the page gutter, so putting
+   the reading column there too gives the whole section one left edge instead
+   of starting the text 400px inboard of its own title. */
 .about-grid {
-  display: grid; grid-template-columns: 0.82fr 2fr; gap: 56px;
+  display: grid; grid-template-columns: 2fr 0.92fr; gap: 56px;
   padding: 26px 5vw 16px;
   align-items: stretch;
 }
+/* Two photos, two places, no extra height: the stack is positioned rather
+   than flowed, so it takes its height from the reading column beside it
+   instead of from the images. Percentage rows on an auto-height grid row
+   resolve to auto and blow the section to 2000px+; absolute children
+   measure against the stack's resolved box, which the text defines. */
+.photo-stack { position: relative; min-height: 0; }
+.photo-stack > .about-portrait { position: absolute; left: 0; right: 0; }
+.photo-stack > .about-portrait:first-child { top: 0; height: calc(60% - 6px); }
+.photo-stack > .about-portrait:last-child { bottom: 0; height: calc(40% - 6px); }
+.photo-stack img { width: 100%; height: 100%; object-fit: cover; }
+.photo-stack > .about-portrait:last-child img { object-position: 50% 54%; }
 /* the photo is the link, so it gets the same lift-and-shadow the buttons
    use - it has to read as pressable, not as an illustration */
 .about-portrait {
@@ -1251,6 +1265,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   display: block; width: 100%; height: 100%;
   object-fit: cover; object-position: 50% 32%;
 }
+.about-portrait { overflow: hidden; }
 .about-portrait:hover,
 .about-portrait:focus-visible {
   transform: translate(-4px, -4px);
@@ -1324,11 +1339,19 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .skills-group span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
 @media (max-width: 800px) {
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
-  /* full-bleed it would be most of a phone screen before any words. Height
-     goes back to the image's own ratio here, since there is no second
-     column left to match. */
-  .about-portrait { max-width: 240px; }
-  .about-portrait img { height: auto; }
+  /* Stacked on a phone there is no column to match, so the stack goes back
+     to normal flow and the two photos sit side by side: full-bleed portraits
+     would be most of a screen each before any words. */
+  .photo-stack {
+    position: static;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .photo-stack > .about-portrait,
+  .photo-stack > .about-portrait:first-child,
+  .photo-stack > .about-portrait:last-child {
+    position: static; height: auto; aspect-ratio: 4 / 5;
+  }
+  .about-portrait img { height: 100%; }
   .about-hook { max-width: none; }
   /* four across is ~80px a column on a phone, which breaks every label */
   .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; }

@@ -241,13 +241,6 @@
          decoration sitting next to one. aria-label (not the alt) names the
          destination: the alt describes the picture, which is not what a
          screen reader needs to hear about where a link goes. -->
-    <a class="about-portrait reveal" href="#about" id="aboutPortrait"
-       data-i18n-aria="about.portraitLink" aria-label="More about Jack">
-      <img src="assets/about/jack-home.jpg" width="640" height="800"
-           loading="lazy" decoding="async"
-           data-i18n-alt="about.portraitAlt"
-           alt="Jack with a camera in a Milan courtyard, red threads strung between the arches behind him.">
-    </a>
     <div class="about-intro">
       <p class="about-statement reveal" data-i18n="about.statement">
         I'm a UX designer studying at Bradley University. The job is making things
@@ -290,6 +283,23 @@
       <div class="about-cta-row reveal">
         <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">HOW I GOT HERE</button>
       </div>
+    </div>
+    <div class="photo-stack reveal">
+      <a class="about-portrait" href="#about" id="aboutPortrait"
+         data-i18n-aria="about.portraitLink" aria-label="More about Jack">
+        <img src="assets/about/jack-home.jpg" width="640" height="800"
+             loading="lazy" decoding="async"
+             data-i18n-alt="about.portraitAlt"
+             alt="Jack with a camera in a Milan courtyard, red threads strung between the arches behind him.">
+      </a>
+      <!-- second place, second door. Both photos open the about page. -->
+      <a class="about-portrait" href="#about"
+         data-i18n-aria="about.portraitLink" aria-label="More about Jack">
+        <img src="assets/about/jack-dolomites.jpg" width="676" height="1200"
+             loading="lazy" decoding="async"
+             data-i18n-alt="about.portrait2Alt"
+             alt="Jack smiling on a ridge in the Dolomites, bare peaks behind him.">
+      </a>
     </div>
   </div>
   <div class="skills-marquee reveal">

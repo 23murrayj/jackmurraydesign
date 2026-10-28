@@ -735,7 +735,8 @@ document.getElementById('aboutTitle')?.addEventListener('keydown', (e) => {
 });
 document.getElementById('aboutReadMore')?.addEventListener('click', openAboutPage);
 // the portrait is a second door to the same page, not decoration
-document.getElementById('aboutPortrait')?.addEventListener('click', openAboutPage);
+document.querySelectorAll('.photo-stack .about-portrait')
+  .forEach((el) => el.addEventListener('click', openAboutPage));
 aboutBack?.addEventListener('click', closeAboutPage);
 
 // Escape closes whichever overlay is currently open, restoring the
