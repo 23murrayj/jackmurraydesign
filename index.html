@@ -229,6 +229,12 @@
     <h2 id="aboutTitle" tabindex="0" role="button" data-i18n="about.title">ABOUT</h2>
     <span class="section-num" data-i18n="about.num">02 / ABOUT</span>
   </div>
+  <!-- Two columns, not three. Three put the statement and the stats side by
+       side at the same height, so the eye crossed the full width three times
+       (left heading, far-right stats, back to the middle for the copy, left
+       again for the button) and the brightest thing on screen was four
+       numbers that lead nowhere. Now there is one column to read, top to
+       bottom, with the photo as a fixed anchor beside it. -->
   <div class="about-grid">
     <!-- The strongest pull towards a page about a person is that person's
          face, so the photo is itself a link to the about page rather than
@@ -247,42 +253,40 @@
         I'm a UX designer studying at Bradley University. I work between interface
         and identity: research and prototypes on one side, type and imagery on the other.
       </p>
-      <!-- deliberately the last thing read before the CTA: it opens a loop the
-           about page closes, instead of summarising and closing it here -->
+      <!-- The stats sit between the statement and the hook on purpose: "3
+           countries" and "Milan" are the setup, and the hook sentence is the
+           payoff. Read in the other order they were just trivia. -->
+      <div class="about-stats reveal">
+        <div class="stat">
+          <span class="stat-num" data-count="4" data-suffix="">0</span>
+          <span class="stat-label" data-i18n="about.stat.years">Years designing</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="10" data-suffix="+">0</span>
+          <span class="stat-label" data-i18n="about.stat.projects">Projects &amp; experiments</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="3" data-suffix="">0</span>
+          <span class="stat-label" data-i18n="about.stat.countries">Countries lived in</span>
+        </div>
+        <!-- the one stat that is about now rather than about the past, and the
+             only one that keeps the accent. See .stat.is-now in styles.css -->
+        <div class="stat is-now">
+          <span class="stat-num" data-i18n="about.stat.nowValue">Milan</span>
+          <span class="stat-label" data-i18n="about.stat.now">Where I am right now</span>
+        </div>
+      </div>
+      <!-- the turn: it opens a loop the about page closes, and it runs
+           straight into the button with nothing in between -->
       <p class="about-hook reveal" data-i18n="about.hook">
         I've also lived in three countries. That changed what I think good design has to do.
       </p>
-    </div>
-    <div class="about-stats reveal">
-      <div class="stat">
-        <span class="stat-num" data-count="4" data-suffix="">0</span>
-        <span class="stat-label" data-i18n="about.stat.years">Years designing</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" data-count="10" data-suffix="+">0</span>
-        <span class="stat-label" data-i18n="about.stat.projects">Projects &amp; experiments</span>
-      </div>
-      <!-- these two replaced "UX / Main focus" (the hero already says it) and
-           an infinity sign over "Ideas in progress" (which said nothing).
-           Both of these make someone want the rest of the story. -->
-      <div class="stat">
-        <span class="stat-num" data-count="3" data-suffix="">0</span>
-        <span class="stat-label" data-i18n="about.stat.countries">Countries lived in</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" data-i18n="about.stat.nowValue">Milan</span>
-        <span class="stat-label" data-i18n="about.stat.now">Where I am right now</span>
-      </div>
-    </div>
-  </div>
-  <!-- The CTA sits above the skills marquee, not after it. Below the marquee
-       it was the last thing in the section and read as a footer; above it,
-       it's the destination the copy and the stats have been building to, and
-       the marquee becomes the closing flourish it was always meant to be. -->
-  <div class="about-cta-row reveal">
-    <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">READ MORE ABOUT ME →</button>
-    <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
+      <div class="about-cta-row reveal">
+        <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">READ MORE ABOUT ME →</button>
+        <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
            data-i18n="about.resume">DOWNLOAD RESUME ↓</a>
+      </div>
+    </div>
   </div>
   <div class="skills-marquee reveal">
     <div class="skills-track" id="skillsTrack">
