@@ -158,7 +158,7 @@
 
       'about.title': 'ABOUT',
       'about.num': '02 / ABOUT',
-      'about.statement': "User experience design is for other people, not for show. Research is what lets me call a design successful instead of just saying I like it.",
+      'about.statement': "I'm a UX designer studying at Bradley University. The job is making things for other people. It's not about being ostentatious, it's about using research to create verifiably successful designs.",
       'about.hook': "I've lived on three continents. When designing for others, perspective and culture are crucial.",
       'about.stat.nowValue': "Milan",
       'about.portraitLink': "More about Jack",
@@ -375,7 +375,7 @@
 
       'about.title': 'SOBRE MÍ',
       'about.num': '02 / SOBRE MÍ',
-      'about.statement': "El diseño de experiencia de usuario es para otras personas, no para lucirse. La investigación es lo que me permite llamar exitoso a un diseño en lugar de decir simplemente que me gusta.",
+      'about.statement': "Soy diseñador UX y estudio en Bradley University. El trabajo consiste en hacer cosas para otras personas. No se trata de ser ostentoso, sino de usar la investigación para crear diseños verificablemente exitosos.",
       'about.hook': "He vivido en tres continentes. Al diseñar para otras personas, la perspectiva y la cultura son cruciales.",
       'about.stat.nowValue': "Milán",
       'about.portraitLink': "Más sobre Jack",
@@ -592,7 +592,7 @@
 
       'about.title': 'プロフィール',
       'about.num': '02 / プロフィール',
-      'about.statement': "UXデザインは、見せるためではなく、他者のためにあります。リサーチがあるからこそ、ただ好きだと言うのではなく、そのデザインは成功したと言えます。",
+      'about.statement': "ブラッドリー大学で学ぶUXデザイナーです。この仕事は、他者のためにものをつくることです。誇示するためではなく、リサーチによって成功を検証できるデザインをつくるためのものです。",
       'about.hook': "3つの大陸で暮らしてきました。他者のためにデザインするとき、視点と文化は欠かせません。",
       'about.stat.nowValue': "ミラノ",
       'about.portraitLink': "ジャックについてもっと見る",
@@ -809,7 +809,7 @@
 
       'about.title': 'CHI SONO',
       'about.num': '02 / CHI SONO',
-      'about.statement': "Il design dell'esperienza utente è per le altre persone, non per mettersi in mostra. È la ricerca che mi permette di definire riuscito un progetto invece di dire soltanto che mi piace.",
+      'about.statement': "Sono un UX designer e studio alla Bradley University. Il lavoro consiste nel fare cose per altre persone. Non si tratta di essere ostentati, ma di usare la ricerca per creare progetti verificabilmente riusciti.",
       'about.hook': "Ho vissuto in tre continenti. Quando si progetta per gli altri, la prospettiva e la cultura sono cruciali.",
       'about.stat.nowValue': "Milano",
       'about.portraitLink': "Altro su Jack",
