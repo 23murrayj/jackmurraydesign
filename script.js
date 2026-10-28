@@ -88,6 +88,33 @@ const projectData = {
     ]
   },
 
+  'easter-riverside': {
+    bg: '#8fc0e0',
+    // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
+    // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
+    // 2x the 717px it renders at — it read soft on a retina screen.
+    thumb: { src: 'assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050 },
+    category: 'GRAPHICS',
+    title: 'EASTER AT RIVERSIDE',
+    desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
+    type: 'Event Identity',
+    // the artwork itself reads 4.20.25 — this was 2024 before
+    year: '2025',
+    role: 'Graphic Designer',
+    // hero + supporting shots: the design, then the design in the wild
+    layout: 'mixed',
+    // `full` is the click-to-zoom source; `src` stays the smaller in-page one
+    hero: { src: 'assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
+            full: 'assets/projects/easter-riverside/01-hero-full.jpg' },
+    detailImages: [
+      { src: 'assets/projects/easter-riverside/03-banner.jpg', w: 1200, h: 900,
+        full: 'assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
+      { src: 'assets/projects/easter-riverside/02-photo-wall.jpg', w: 800, h: 1200,
+        full: 'assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
+      { src: 'assets/projects/easter-riverside/04-invite-cards.jpg', w: 900, h: 1200,
+        full: 'assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
+    ]
+  },
   'fuse-partners-in-crime': {
     bg: '#1aa64b',
     video: {
@@ -124,31 +151,34 @@ const projectData = {
     ]
   },
 
-  'easter-riverside': {
-    bg: '#8fc0e0',
-    // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
-    // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
-    // 2x the 717px it renders at — it read soft on a retina screen.
-    thumb: { src: 'assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050 },
+  sandcastles: {
+    // bg is sampled from the artwork's own paper texture (#4ea7ae), not picked
+    bg: '#4ea7ae',
+    // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
+    // wordmark runs nearly edge to edge, so letting the card frame crop the
+    // 16:9 version would cut the ends off the word the project is named after.
+    thumb: { src: 'assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050 },
     category: 'GRAPHICS',
-    title: 'EASTER AT RIVERSIDE',
-    desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
-    type: 'Event Identity',
-    // the artwork itself reads 4.20.25 — this was 2024 before
+    title: 'SANDCASTLES',
+    desc: "Sermon series identity applied across stage screens, social, and print.",
+    type: 'Sermon Series Identity',
+    // the church's livestream of the opening service is dated 06.29.25
     year: '2025',
     role: 'Graphic Designer',
-    // hero + supporting shots: the design, then the design in the wild
+    // same shape as easter-riverside: the design, then the design in use
     layout: 'mixed',
-    // `full` is the click-to-zoom source; `src` stays the smaller in-page one
-    hero: { src: 'assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
-            full: 'assets/projects/easter-riverside/01-hero-full.jpg' },
+    hero: { src: 'assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
+            full: 'assets/projects/sandcastles/01-hero-full.jpg' },
+    // Two applications, both of them the finished thing in use. 02-photoshop.jpg
+    // and 04-instagram.jpg are still on disk but unused: the Photoshop shot was
+    // a photo of a screen rather than a screenshot, and it showed one near-final
+    // state while the copy claims iteration, so it was promising something it
+    // didn't deliver.
     detailImages: [
-      { src: 'assets/projects/easter-riverside/03-banner.jpg', w: 1200, h: 900,
-        full: 'assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
-      { src: 'assets/projects/easter-riverside/02-photo-wall.jpg', w: 800, h: 1200,
-        full: 'assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
-      { src: 'assets/projects/easter-riverside/04-invite-cards.jpg', w: 900, h: 1200,
-        full: 'assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
+      { src: 'assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
+        full: 'assets/projects/sandcastles/05-reading-plan-full.jpg' },
+      { src: 'assets/projects/sandcastles/03-stage.jpg', w: 1200, h: 671,
+        full: 'assets/projects/sandcastles/03-stage-full.jpg' }
     ]
   },
   'monmouth-retreat': {
@@ -211,36 +241,33 @@ const projectData = {
         exif: '85mm · f/2 · 1/160 s · ISO 500' }
     ]
   },
-  sandcastles: {
-    // bg is sampled from the artwork's own paper texture (#4ea7ae), not picked
-    bg: '#4ea7ae',
-    // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
-    // wordmark runs nearly edge to edge, so letting the card frame crop the
-    // 16:9 version would cut the ends off the word the project is named after.
-    thumb: { src: 'assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050 },
-    category: 'GRAPHICS',
-    title: 'SANDCASTLES',
-    desc: "Sermon series identity applied across stage screens, social, and print.",
-    type: 'Sermon Series Identity',
-    // the church's livestream of the opening service is dated 06.29.25
-    year: '2025',
-    role: 'Graphic Designer',
-    // same shape as easter-riverside: the design, then the design in use
-    layout: 'mixed',
-    hero: { src: 'assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
-            full: 'assets/projects/sandcastles/01-hero-full.jpg' },
-    // Two applications, both of them the finished thing in use. 02-photoshop.jpg
-    // and 04-instagram.jpg are still on disk but unused: the Photoshop shot was
-    // a photo of a screen rather than a screenshot, and it showed one near-final
-    // state while the copy claims iteration, so it was promising something it
-    // didn't deliver.
-    detailImages: [
-      { src: 'assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
-        full: 'assets/projects/sandcastles/05-reading-plan-full.jpg' },
-      { src: 'assets/projects/sandcastles/03-stage.jpg', w: 1200, h: 671,
-        full: 'assets/projects/sandcastles/03-stage-full.jpg' }
-    ]
-  },
+  /* ----------------------------------------------------------------------
+     ADDING A PROJECT
+     Copy this shape in above, keyed by a url-safe id. Order in this object is
+     the order on the page, and it matters: don't let the first two tiles share
+     a category, or switching to that filter changes nothing visible on the
+     first row and the filter looks broken.
+
+       'my-project': {
+         bg: '#4ea7ae',                       // tile colour behind the card
+         thumb: { src: '...', w: 1400, h: 1050 },   // or an inline <svg> string
+         category: 'UX/UI',                   // must match a filter button
+         title: 'MY PROJECT',                 // not translated
+         desc:  "...",                        // fallback; i18n.js wins
+         type: 'Case Study', year: '2026', role: 'UX Designer',
+         layout: 'mixed',                     // 'single' | 'mixed'
+         hero: { src: '...', w: 1900, h: 1069, full: '...' },
+         detailImages: [ { src: '...', w: 1200, h: 671, full: '...' } ]
+       }
+
+     Then add to ALL FOUR language blocks in i18n.js:
+       proj.my-project.desc / .type / .role / .body / .alt.1 .alt.2 ...
+     alt.N is positional: alt.1 is the hero, alt.2 the first detail image.
+     Reordering detailImages means reordering the alt strings to match.
+
+     docs/project-placeholders.js has dummy entries to paste in if you want to
+     see the grid at a higher count. Their i18n keys are still in i18n.js.
+     ---------------------------------------------------------------------- */
   'oasis-journey': {
     bg: '#0a5cff',
     // The frame at t=8s, pulled at full 1920x1080 with AVAssetImageGenerator
@@ -284,137 +311,6 @@ const projectData = {
       <text x="40" y="410" font-family="Archivo Black" font-size="30" fill="#fff">JOURNEY TO THE OASIS</text>
     </svg>`
   },
-  'portfolio-website': {
-    // card artwork + tile colour, distinct from the detail-view art below.
-    // Replace `thumb` with a path to swap in a real photo:
-    //   thumb: { src: 'assets/projects/portfolio-website/01.jpg', w: 800, h: 600 }
-    bg: '#111',
-    thumb: `
-    <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-    <rect width="600" height="450" fill="#111"/>
-    <rect x="40" y="40" width="520" height="60" fill="#fff"/>
-    <rect x="40" y="130" width="240" height="280" fill="#ff3b30"/>
-    <rect x="300" y="130" width="260" height="130" fill="#fffb00"/>
-    <rect x="300" y="280" width="260" height="130" fill="#0a5cff"/>
-    <text x="60" y="80" font-family="Archivo Black" font-size="26" fill="#111">JACKMURRAY.DESIGN</text>
-    </svg>
-    `,
-    category: 'WEB',
-    title: 'PORTFOLIO WEBSITE',
-    desc: "Personal website built to explore UX, front-end design, and visual identity.",
-    type: 'Personal Project',
-    year: '2026',
-    role: 'Designer & Developer',
-    layout: 'single',
-    svg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="450" fill="#111"/>
-      <rect x="40" y="40" width="520" height="60" fill="#fff"/>
-      <rect x="40" y="130" width="240" height="280" fill="#ff3b30"/>
-      <rect x="300" y="130" width="260" height="130" fill="#fffb00"/>
-      <rect x="300" y="280" width="260" height="130" fill="#0a5cff"/>
-      <text x="60" y="80" font-family="Archivo Black" font-size="26" fill="#111">JACKMURRAY.DESIGN</text>
-    </svg>`
-  },
-  /* ----------------------------------------------------------------------
-     PLACEHOLDERS - not real projects yet. Same shape as a finished entry so
-     the grid, filters and detail view can be judged at full count. Replace
-     `thumb`/`svg` with image paths and fill in the i18n copy, or delete the
-     entry. Do not ship these live: a portfolio with invented work on it is
-     worse than a short one.
-     ---------------------------------------------------------------------- */
-  'university-redesign': {
-    bg: '#0a5cff',
-    thumb: `
-    <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-    <rect width="600" height="450" fill="#0a5cff"/>
-    <rect x="40" y="40" width="340" height="44" fill="#f5f5f0"/>
-    <rect x="40" y="110" width="160" height="300" fill="#f5f5f0"/>
-    <rect x="224" y="110" width="336" height="140" fill="#fffb00"/>
-    <rect x="224" y="270" width="156" height="140" fill="#f5f5f0"/>
-    <rect x="404" y="270" width="156" height="140" fill="#ff3b30"/>
-    <text x="54" y="72" font-family="Archivo Black" font-size="24" fill="#111">WIREFRAME</text>
-    </svg>
-    `,
-    category: 'UX/UI',
-    title: 'UNIVERSITY SITE REDESIGN',
-    desc: "Research, flows, and prototypes for rebuilding a university website.",
-    type: 'Case Study',
-    year: '2026',
-    role: 'UX Designer',
-    layout: 'single',
-    svg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="450" fill="#0a5cff"/>
-      <rect x="40" y="40" width="340" height="44" fill="#f5f5f0"/>
-      <rect x="40" y="110" width="160" height="300" fill="#f5f5f0"/>
-      <rect x="224" y="110" width="336" height="140" fill="#fffb00"/>
-      <rect x="224" y="270" width="156" height="140" fill="#f5f5f0"/>
-      <rect x="404" y="270" width="156" height="140" fill="#ff3b30"/>
-      <text x="54" y="72" font-family="Archivo Black" font-size="24" fill="#111">WIREFRAME</text>
-    </svg>`
-  },
-  'editorial-system': {
-    bg: '#f5f5f0',
-    thumb: `
-    <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-    <rect width="600" height="450" fill="#f5f5f0"/>
-    <rect x="46" y="46" width="508" height="10" fill="#111"/>
-    <text x="46" y="150" font-family="Archivo Black" font-size="76" fill="#111">Aa</text>
-    <rect x="46" y="186" width="230" height="8" fill="#111"/>
-    <rect x="46" y="210" width="230" height="8" fill="#111"/>
-    <rect x="46" y="234" width="160" height="8" fill="#111"/>
-    <circle cx="452" cy="150" r="86" fill="#ff3b30"/>
-    <rect x="46" y="300" width="508" height="104" fill="#111"/>
-    <text x="70" y="370" font-family="Archivo Black" font-size="42" fill="#f5f5f0">GRID</text>
-    </svg>
-    `,
-    category: 'GRAPHICS',
-    title: 'EDITORIAL SYSTEM',
-    desc: "A type and grid system carried across a publication in print and on screen.",
-    type: 'Concept Project',
-    year: '2026',
-    role: 'Designer',
-    layout: 'single',
-    svg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="450" fill="#f5f5f0"/>
-      <rect x="46" y="46" width="508" height="10" fill="#111"/>
-      <text x="46" y="150" font-family="Archivo Black" font-size="76" fill="#111">Aa</text>
-      <rect x="46" y="186" width="230" height="8" fill="#111"/>
-      <rect x="46" y="210" width="230" height="8" fill="#111"/>
-      <rect x="46" y="234" width="160" height="8" fill="#111"/>
-      <circle cx="452" cy="150" r="86" fill="#ff3b30"/>
-      <rect x="46" y="300" width="508" height="104" fill="#111"/>
-      <text x="70" y="370" font-family="Archivo Black" font-size="42" fill="#f5f5f0">GRID</text>
-    </svg>`
-  },
-  'brand-concept': {
-    // card artwork + tile colour, distinct from the detail-view art below.
-    // Replace `thumb` with a path to swap in a real photo:
-    //   thumb: { src: 'assets/projects/brand-concept/01.jpg', w: 800, h: 600 }
-    bg: '#ff7a00',
-    thumb: `
-    <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-    <rect width="600" height="450" fill="#ff7a00"/>
-    <rect x="60" y="60" width="160" height="160" fill="#111"/>
-    <circle cx="430" cy="140" r="80" fill="#f5f5f0"/>
-    <polygon points="120,260 240,400 0,400" fill="#0a5cff"/>
-    <text x="280" y="400" font-family="Archivo Black" font-size="30" fill="#111">CONCEPT</text>
-    </svg>
-    `,
-    category: 'BRANDING',
-    title: 'BRAND / CONCEPT STUDY',
-    desc: "Conceptual identity work exploring brand systems, typography, and visual direction.",
-    type: 'Concept Project',
-    year: '2025',
-    role: 'Brand Designer',
-    layout: 'single',
-    svg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
-      <rect width="600" height="450" fill="#ff7a00"/>
-      <rect x="60" y="60" width="160" height="160" fill="#111"/>
-      <circle cx="430" cy="140" r="80" fill="#f5f5f0"/>
-      <polygon points="120,260 240,400 0,400" fill="#0a5cff"/>
-      <text x="260" y="400" font-family="Archivo Black" font-size="34" fill="#111">CONCEPT</text>
-    </svg>`
-  }
 };
 
 /* ==========================================================================
@@ -838,6 +734,8 @@ document.getElementById('aboutTitle')?.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') openAboutPage(e);
 });
 document.getElementById('aboutReadMore')?.addEventListener('click', openAboutPage);
+// the portrait is a second door to the same page, not decoration
+document.getElementById('aboutPortrait')?.addEventListener('click', openAboutPage);
 aboutBack?.addEventListener('click', closeAboutPage);
 
 // Escape closes whichever overlay is currently open, restoring the
@@ -891,7 +789,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
   // mouseenter/mouseleave don't bubble, so delegation uses mouseover/mouseout
   // and ignores moves that stay inside the same target (entering a child fires
   // mouseout on the parent, which would otherwise flicker the dot).
-  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-download-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, .cvd-toggle, .cvd-option, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
+  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-download-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, .cvd-toggle, .cvd-option, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
   const cursorEdge = (e, add) => {
     const hit = e.target.closest && e.target.closest(CURSOR_TARGETS);
     if (!hit) return;

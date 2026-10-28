@@ -1154,6 +1154,27 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 5vw 0; }
 .about-cta-row .about-readmore-btn { margin: 0; }
 
+/* The job of this section is to get someone onto the about page. The resume
+   is a terminal action - it opens a PDF and the visit is effectively over -
+   and it was the filled accent button while the about link was a plain
+   outline, so the weaker-looking control was the one we wanted clicked.
+   Swapped. Scoped to .about-cta-row because on the about page itself the
+   resume IS the next step, and keeps its filled treatment there. */
+.about-cta-row .about-readmore-btn {
+  background: var(--accent-ink); color: var(--accent-on);
+  border-color: var(--accent-ink);
+}
+.about-cta-row .about-readmore-btn:hover {
+  background: transparent; color: var(--accent-ink);
+}
+.about-cta-row .cv-download-btn {
+  background: transparent; color: var(--paper);
+  border-color: var(--paper);
+}
+.about-cta-row .cv-download-btn:hover {
+  background: var(--paper); color: var(--ink);
+}
+
 .cv-download-btn {
   display: inline-flex; align-items: center; gap: 8px;
   text-decoration: none;
@@ -1184,12 +1205,35 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   mix-blend-mode: overlay;
 }
 .about-grid {
-  display: grid; grid-template-columns: 1.3fr 1fr; gap: 60px;
+  display: grid; grid-template-columns: 0.75fr 1.35fr 1fr; gap: 60px;
   padding: 60px 5vw 50px;
+  align-items: start;
 }
+/* the photo is the link, so it gets the same lift-and-shadow the buttons
+   use - it has to read as pressable, not as an illustration */
+.about-portrait {
+  display: block;
+  border: 4px solid var(--paper);
+  transition: transform .3s, box-shadow .3s;
+}
+.about-portrait img { display: block; width: 100%; height: auto; }
+.about-portrait:hover,
+.about-portrait:focus-visible {
+  transform: translate(-4px, -4px);
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+.about-intro { display: flex; flex-direction: column; gap: 24px; }
 .about-statement {
   font-size: clamp(1.4rem, 2.6vw, 2.1rem);
   font-weight: 500; line-height: 1.35;
+}
+/* smaller than the statement but set in the accent: the eye lands here last
+   on the way to the button, which is the whole point of the line */
+.about-hook {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 600; line-height: 1.45;
+  color: var(--yellow);
+  max-width: 34ch;
 }
 .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 .stat { display: flex; flex-direction: column; gap: 6px; }
@@ -1218,7 +1262,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 .skills-group span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
 @media (max-width: 800px) {
-  .about-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 36px; }
+  /* full-bleed it would be most of a phone screen before any words */
+  .about-portrait { max-width: 240px; }
+  .about-hook { max-width: none; }
 }
 
 /* MAGNETIC TYPOGRAPHY — extremely tall condensed type, edge to edge */
