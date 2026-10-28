@@ -1169,9 +1169,24 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 /* Both grow so the pair still aligns, but the primary gets the extra
    horizontal room and the larger type: it should be the biggest thing you
    can click in this section, because it's the only one we want clicked. */
-/* nothing beside it to align to any more, so it can take the room */
+/* Full column width, so its edges land on the same two lines as the
+   statement above it and the rules around the stats. On its own it was an
+   arbitrary 301px floating inside an 790px column; squared off to the grid
+   it closes the block instead of sitting in it. Label left, arrow hard
+   right, which uses the width rather than stranding it in the middle. */
+.about-cta-row { display: block; }
 .about-cta-row .about-readmore-btn {
-  padding: 21px 48px; font-size: 1.08rem; letter-spacing: 2px;
+  width: 100%;
+  justify-content: space-between;
+  padding: 22px 28px; font-size: 1.08rem; letter-spacing: 2px;
+}
+/* The arrow was part of the translated string, which made it a single text
+   node that space-between had nothing to push apart. As a pseudo-element
+   it's a second flex item, and it stays out of the four translations and
+   out of what a screen reader reads. */
+.about-cta-row .about-readmore-btn::after {
+  content: '\2192';
+  font-size: 1.15em; line-height: 1;
 }
 
 /* The only action in this section. The resume used to sit beside it as a
@@ -1218,7 +1233,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 .about-grid {
   display: grid; grid-template-columns: 0.82fr 2fr; gap: 56px;
-  padding: 28px 5vw 20px;
+  padding: 26px 5vw 16px;
   align-items: stretch;
 }
 /* the photo is the link, so it gets the same lift-and-shadow the buttons
@@ -1278,7 +1293,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    sentence they support. Dropped to paper and below the statement's size so
    they read as evidence, not headline. */
 .stat-num {
-  font-family: var(--ff-display); font-size: clamp(1.35rem, 1.8vw, 1.68rem);
+  font-family: var(--ff-display); font-size: clamp(1.5rem, 2.05vw, 1.9rem);
   letter-spacing: -0.02em; color: var(--paper); line-height: 1;
 }
 /* the accent now marks one thread and one only: the fact that he is
@@ -1287,7 +1302,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .stat-label { font-size: 0.72rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 .skills-marquee {
   overflow: hidden;
-  padding: 0 0 30px;
+  padding: 0 0 26px;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
