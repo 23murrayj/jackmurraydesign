@@ -158,7 +158,7 @@
 
       'about.title': 'ABOUT',
       'about.num': '02 / ABOUT',
-      'about.statement': "I'm a UX designer studying at Bradley University. Successful design, to me, is research based and intentional the whole way down, from the first interview to the last pixel.",
+      'about.statement': "User experience design is for other people, not for show. Research is what lets me call a design successful instead of just saying I like it.",
       'about.hook': "I've lived on three continents. When designing for others, perspective and culture are crucial.",
       'about.stat.nowValue': "Milan",
       'about.portraitLink': "More about Jack",
@@ -375,7 +375,7 @@
 
       'about.title': 'SOBRE MÍ',
       'about.num': '02 / SOBRE MÍ',
-      'about.statement': "Soy diseñador UX y estudio en Bradley University. Para mí, un diseño exitoso se basa en la investigación y es intencional de principio a fin, desde la primera entrevista hasta el último píxel.",
+      'about.statement': "El diseño de experiencia de usuario es para otras personas, no para lucirse. La investigación es lo que me permite llamar exitoso a un diseño en lugar de decir simplemente que me gusta.",
       'about.hook': "He vivido en tres continentes. Al diseñar para otras personas, la perspectiva y la cultura son cruciales.",
       'about.stat.nowValue': "Milán",
       'about.portraitLink': "Más sobre Jack",
@@ -592,7 +592,7 @@
 
       'about.title': 'プロフィール',
       'about.num': '02 / プロフィール',
-      'about.statement': "ブラッドリー大学で学ぶUXデザイナーです。成功したデザインとは、リサーチに裏づけられ、最初のインタビューから最後の1ピクセルまで意図を持って決められたものだと考えています。",
+      'about.statement': "UXデザインは、見せるためではなく、他者のためにあります。リサーチがあるからこそ、ただ好きだと言うのではなく、そのデザインは成功したと言えます。",
       'about.hook': "3つの大陸で暮らしてきました。他者のためにデザインするとき、視点と文化は欠かせません。",
       'about.stat.nowValue': "ミラノ",
       'about.portraitLink': "ジャックについてもっと見る",
@@ -809,7 +809,7 @@
 
       'about.title': 'CHI SONO',
       'about.num': '02 / CHI SONO',
-      'about.statement': "Sono un UX designer e studio alla Bradley University. Per me un progetto riuscito nasce dalla ricerca ed è intenzionale fino in fondo, dalla prima intervista all'ultimo pixel.",
+      'about.statement': "Il design dell'esperienza utente è per le altre persone, non per mettersi in mostra. È la ricerca che mi permette di definire riuscito un progetto invece di dire soltanto che mi piace.",
       'about.hook': "Ho vissuto in tre continenti. Quando si progetta per gli altri, la prospettiva e la cultura sono cruciali.",
       'about.stat.nowValue': "Milano",
       'about.portraitLink': "Altro su Jack",
