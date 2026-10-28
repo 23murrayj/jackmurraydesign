@@ -1132,8 +1132,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-skill-tags span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
 
 /* ABOUT */
-.about { background: var(--ink); color: var(--paper); padding-bottom: 60px; position: relative; }
-.about .section-head { border-bottom: 4px solid var(--paper); }
+.about { background: var(--ink); color: var(--paper); padding-bottom: 30px; position: relative; }
+.about .section-head {
+  border-bottom: 4px solid var(--paper);
+  /* tighter than the shared 70/30: this section has to read in one screen,
+     and it's the only one carrying a photo, stats, a CTA pair and a band.
+     Scoped so #work and #contact keep the roomier default, and so the 70px
+     heading offset that scroll-padding-top is tuned to stays put for them. */
+  padding: 38px 5vw 20px;
+}
 #aboutTitle { cursor: pointer; transition: color .25s ease; }
 #aboutTitle:hover { color: var(--yellow); }
 
@@ -1151,8 +1158,24 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transform: translate(-3px, -3px);
   box-shadow: 5px 5px 0 var(--yellow);
 }
-.about-cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 5vw 0; }
+.about-cta-row {
+  display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px;
+  /* the marquee now follows this row, so the bottom margin is the gap
+     between the call to action and the band, not trailing section padding */
+  margin: 0 5vw 32px;
+}
 .about-cta-row .about-readmore-btn { margin: 0; }
+
+/* Both grow so the pair still aligns, but the primary gets the extra
+   horizontal room and the larger type: it should be the biggest thing you
+   can click in this section, because it's the only one we want clicked. */
+.about-cta-row .about-readmore-btn,
+.about-cta-row .cv-download-btn {
+  padding: 19px 32px; font-size: 0.9rem;
+}
+.about-cta-row .about-readmore-btn {
+  padding: 19px 42px; font-size: 1.02rem; letter-spacing: 2px;
+}
 
 /* The job of this section is to get someone onto the about page. The resume
    is a terminal action - it opens a PDF and the visit is effectively over -
@@ -1206,7 +1229,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 .about-grid {
   display: grid; grid-template-columns: 0.75fr 1.35fr 1fr; gap: 60px;
-  padding: 60px 5vw 50px;
+  /* trimmed from 60/50: the whole section has to clear a 900px laptop
+     viewport in one screen, and the photo already sets a 354px floor */
+  padding: 30px 5vw 26px;
   align-items: start;
 }
 /* the photo is the link, so it gets the same lift-and-shadow the buttons
@@ -1241,7 +1266,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .stat-label { font-size: 0.75rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 .skills-marquee {
   overflow: hidden;
-  padding: 0 0 70px;
+  padding: 0 0 34px;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
