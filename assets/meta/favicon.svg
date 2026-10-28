@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JM">
+  <rect width="64" height="64" fill="#1e1c17"/>
+  <text x="3.8" y="42.9" font-family="Archivo Black, Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="28.8" letter-spacing="-1.4" fill="#e6e3db">JM</text>
+  <circle cx="52.2" cy="34.9" r="8.2" fill="#ff3b30"/>
+</svg>

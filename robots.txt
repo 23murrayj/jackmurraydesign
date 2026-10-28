@@ -1,0 +1,6 @@
+# Jack Murray — portfolio
+User-agent: *
+Allow: /
+
+# Replace SITE_URL with the real domain once this is hosted.
+Sitemap: https://SITE_URL/sitemap.xml

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jack Murray — UX Designer</title>
+
+<!-- SEARCH + SHARING
+     og:* build the preview card that LinkedIn, iMessage, Slack and WhatsApp
+     render when this link is pasted; without og:image they fall back to a grey
+     box. name="description" is the separate one Google reads for its snippet.
+     SITE_URL below is a placeholder: og:url and the canonical have to be
+     absolute, so they need the real domain before this goes live. -->
+<meta name="description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
+<meta name="author" content="Jack Murray">
+<meta name="theme-color" content="#e6e3db" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171512" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://SITE_URL/">
+
+<meta property="og:title" content="Jack Murray — UX Designer">
+<meta property="og:description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://SITE_URL/">
+<meta property="og:site_name" content="Jack Murray">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://SITE_URL/assets/meta/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Sandcastles series artwork: a sandcastle collage under an orange sun on teal.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jack Murray — UX Designer">
+<meta name="twitter:description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
+<meta name="twitter:image" content="https://SITE_URL/assets/meta/og-card.jpg">
+
+<link rel="icon" href="assets/meta/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/meta/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Noto Sans JP carries the Japanese glyphs none of the three display
+     faces above contain; without it JA text falls back to whatever the OS
+     picks and the type system silently breaks. 900 matches Archivo Black. -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="is-loading">
+
+<!-- Skip link: first tab stop on the page. Visually hidden until focused
+     (see .skip-link in styles.css) so it costs sighted users nothing, but
+     lets keyboard and screen-reader users jump the nav + filter row. -->
+<a href="#main" class="skip-link" data-i18n="a11y.skip">Skip to main content</a>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-name">
+    <span>JACK</span><span>MURRAY</span>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="noise"></div>
+<div class="scanlines" aria-hidden="true"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-logo">JM<span class="dot">●</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="#work" data-i18n="nav.projects">PROJECTS</a>
+    <a href="#about" id="navAboutLink" data-i18n="nav.about">ABOUT</a>
+    <a href="#contact" data-i18n="nav.contact">CONTACT</a>
+  </div>
+  <div class="nav-right">
+    <div class="lang-control">
+      <button class="lang-toggle" id="langToggle" data-i18n-aria="nav.aria.language" aria-label="choose language" aria-haspopup="true" aria-expanded="false">
+        <span class="lang-code" id="langCode">EN</span>
+      </button>
+      <div class="lang-menu" id="langMenu">
+        <button class="lang-option" data-lang="en" type="button" lang="en">ENGLISH</button>
+        <button class="lang-option" data-lang="es" type="button" lang="es">ESPAÑOL</button>
+        <button class="lang-option" data-lang="ja" type="button" lang="ja">日本語</button>
+        <button class="lang-option" data-lang="it" type="button" lang="it">ITALIANO</button>
+      </div>
+    </div>
+    <div class="cvd-control">
+      <button class="cvd-toggle" id="cvdToggle" data-i18n-aria="nav.aria.colorVision" aria-label="color vision mode" aria-haspopup="true">
+        <span class="cvd-icon">◐</span>
+      </button>
+      <div class="cvd-menu" id="cvdMenu">
+        <button class="cvd-option active" data-mode="normal" type="button" data-i18n="cvd.normal">NORMAL</button>
+        <button class="cvd-option" data-mode="deuteranopia" type="button" data-i18n="cvd.deuteranopia">DEUTERANOPIA</button>
+        <button class="cvd-option" data-mode="protanopia" type="button" data-i18n="cvd.protanopia">PROTANOPIA</button>
+        <button class="cvd-option" data-mode="highcontrast" type="button" data-i18n="cvd.highcontrast">HIGH CONTRAST</button>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="toggle theme">
+      <span class="theme-icon">☾</span>
+    </button>
+    <button class="nav-toggle" id="navToggle" data-i18n-aria="nav.aria.menu" aria-label="menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- color vision deficiency simulation filters, applied via CSS filter: url(#...) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="cvd-deuteranopia">
+      <feColorMatrix type="matrix" values="
+        0.625 0.375 0     0 0
+        0.7   0.3   0     0 0
+        0     0.3   0.7   0 0
+        0     0     0     1 0" />
+    </filter>
+    <filter id="cvd-protanopia">
+      <feColorMatrix type="matrix" values="
+        0.567 0.433 0     0 0
+        0.558 0.442 0     0 0
+        0     0.242 0.758 0 0
+        0     0     0     1 0" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- MAIN LANDMARK — also the skip-link target. tabindex="-1" lets it
+     receive programmatic focus from the skip link without becoming a
+     tab stop of its own. -->
+<main id="main" tabindex="-1">
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-shapes" id="heroShapes" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <h1 class="hero-name">
+      <span class="line">JACK</span>
+      <span class="line">MURRAY<span class="accent">.</span></span>
+    </h1>
+    <div class="hero-side">
+      <a href="#contact" class="badge-available">
+        <span class="badge-dot"></span>
+        <span data-i18n="hero.badge">OPEN TO PROJECTS &amp; DESIGN WORK</span>
+      </a>
+      <p class="hero-tag" id="heroTag">UX designer building websites, visual systems, and digital experiences with personality.</p>
+      <!-- the role line that sat here ("UX DESIGN — WEBSITES — BRAND SYSTEMS")
+           was the same three items, in the same order, as the marquee directly
+           below it — the marquee already carries that list with more presence -->
+      <a href="#work" class="btn-block" data-i18n="hero.cta">VIEW PROJECTS ↓</a>
+    </div>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <div class="marquee-group">
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+      </div>
+      <div class="marquee-group" aria-hidden="true">
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <!-- chaos mode takes over the gallery area with a big PLAY button,
+       since the user isn't browsing the portfolio mid-chaos anyway -->
+  <div class="chaos-work-cover" id="chaosWorkCover">
+    <button class="chaos-play-btn-large" id="chaosPlayBtn" type="button" data-i18n="egg.playpong">▶ PLAY PONG</button>
+  </div>
+  <div class="section-head reveal">
+    <h2 data-i18n="work.title">SELECTED PROJECTS</h2>
+    <span class="section-num" data-i18n="work.num">01 / PROJECTS</span>
+  </div>
+
+  <div class="filters reveal" id="filters">
+    <!-- Order is deliberate, not alphabetical or by count: the two categories
+         with the most finished work lead, then the rest of the design-system
+         side (branding, web), then the two media disciplines. -->
+    <button class="filter-btn active" data-filter="ALL" data-i18n="filter.ALL">ALL</button>
+    <button class="filter-btn" data-filter="GRAPHICS" data-i18n="filter.GRAPHICS">GRAPHICS</button>
+    <button class="filter-btn" data-filter="UX/UI" data-i18n="filter.UX/UI">UX/UI</button>
+    <button class="filter-btn" data-filter="BRANDING" data-i18n="filter.BRANDING">BRANDING</button>
+    <button class="filter-btn" data-filter="WEB" data-i18n="filter.WEB">WEB</button>
+    <button class="filter-btn" data-filter="MOTION" data-i18n="filter.MOTION">MOTION</button>
+    <button class="filter-btn" data-filter="PHOTOGRAPHY" data-i18n="filter.PHOTOGRAPHY">PHOTOGRAPHY</button>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <!-- Cards are generated from projectData in script.js (see renderGallery).
+         Adding a project means adding one object there — there is no card
+         markup to write here. -->
+  </div>
+
+  </section>
+
+<!-- PROJECT DETAIL OVERLAY -->
+<div class="project-overlay" id="projectOverlay" role="dialog" aria-modal="true" aria-labelledby="projectTitle">
+  <div class="project-detail">
+    <button class="project-back" id="projectBack" data-i18n="project.back">← BACK TO WORK</button>
+    <div class="project-media" id="projectMedia"></div>
+    <div class="project-body">
+      <span class="project-cat" id="projectCat"></span>
+      <h2 id="projectTitle"></h2>
+      <p class="project-desc" id="projectDesc"></p>
+      <!-- long-form write-up. Hidden entirely when a project has no
+           proj.<id>.body key, so shorter entries don't leave a gap. -->
+      <div class="project-body-copy" id="projectBody" hidden></div>
+      <div class="project-meta">
+        <div><span class="meta-label" data-i18n="project.type">TYPE</span><span id="projectType"></span></div>
+        <div><span class="meta-label" data-i18n="project.year">YEAR</span><span id="projectYear"></span></div>
+        <div><span class="meta-label" data-i18n="project.role">ROLE</span><span id="projectRole"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE LIGHTBOX — click-to-zoom for project media -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" data-i18n-aria="a11y.lightbox" aria-label="Enlarged image">
+  <button class="lightbox-close" id="lightboxClose" type="button" data-i18n-aria="a11y.close" aria-label="Close">✕</button>
+  <img class="lightbox-img" id="lightboxImg" alt="">
+  <p class="lightbox-caption" id="lightboxCaption"></p>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-head reveal">
+    <h2 id="aboutTitle" tabindex="0" role="button" data-i18n="about.title">ABOUT</h2>
+    <span class="section-num" data-i18n="about.num">02 / ABOUT</span>
+  </div>
+  <div class="about-grid">
+    <p class="about-statement reveal" data-i18n="about.statement">
+      I'm Jack Murray — a UX designer and Bradley University student with a love
+      for websites, visual systems, branding, photography, and the internet. I
+      started by making logos as a kid, and that grew into a bigger interest in
+      how design, technology, and people connect.
+    </p>
+    <div class="about-stats reveal">
+      <div class="stat">
+        <span class="stat-num" data-count="4" data-suffix="">0</span>
+        <span class="stat-label" data-i18n="about.stat.years">Years designing</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="10" data-suffix="+">0</span>
+        <span class="stat-label" data-i18n="about.stat.projects">Projects &amp; experiments</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">UX</span>
+        <span class="stat-label" data-i18n="about.stat.focus">Main focus</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">∞</span>
+        <span class="stat-label" data-i18n="about.stat.ideas">Ideas in progress</span>
+      </div>
+    </div>
+  </div>
+  <div class="skills-marquee reveal">
+    <div class="skills-track" id="skillsTrack">
+      <div class="skills-group">
+        <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+        <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+        <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+      </div>
+      <div class="skills-group" aria-hidden="true">
+        <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+        <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+        <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+      </div>
+    </div>
+  </div>
+  <div class="about-cta-row reveal">
+    <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">READ MORE ABOUT ME →</button>
+    <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
+           data-i18n="about.resume">DOWNLOAD RESUME ↓</a>
+  </div>
+</section>
+
+<!-- FULL ABOUT PAGE OVERLAY -->
+<div class="about-overlay" id="aboutOverlay" role="dialog" aria-modal="true" aria-labelledby="aboutPageHeading">
+  <div class="about-page">
+    <button class="about-back" id="aboutBack" data-i18n="aboutpage.back">← BACK</button>
+
+    <div class="about-page-top">
+      <img class="about-photo" src="assets/about/jack-portrait.jpg"
+           width="900" height="1871" loading="lazy" decoding="async"
+           data-i18n-alt="aboutpage.photoAlt"
+           alt="Jack with a camera in a Milan palazzo courtyard, red threads strung between the arches behind him.">
+      <div class="about-page-intro">
+        <span class="project-cat" data-i18n="aboutpage.eyebrow">ABOUT JACK</span>
+        <h2 id="aboutPageHeading" data-i18n="aboutpage.heading">HI, I'M JACK.</h2>
+        <p data-i18n="aboutpage.p1">
+          I'm a UX designer studying at Bradley University, but my work reaches into a lot
+          of different places: websites, brand systems, graphics, photography, motion,
+          coding, and automation. I like being able to move between ideas and figure out
+          what a project actually needs, whether that is a cleaner interface, a stronger
+          visual identity, or a better way for people to move through something.
+        </p>
+        <p data-i18n="aboutpage.p2">
+          I grew up making logos, using computers, and getting pulled into the internet
+          through games, websites, and creative tools. That mix still shapes how I design
+          now. I care about work that feels intentional, useful, and human — design that
+          looks strong, but also makes sense.
+        </p>
+        <p data-i18n="aboutpage.p3">
+          My faith is also part of who I am, and some of my favorite work has come from
+          church graphics and creative projects that connect design with meaning. I'm still
+          learning, still experimenting, and still building a portfolio that reflects the
+          full range of what I'm interested in.
+        </p>
+        <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
+           data-i18n="about.resume">DOWNLOAD RESUME ↓</a>
+      </div>
+    </div>
+
+    <!-- Paired at matched height: flex-grow is each image's own aspect ratio
+         with a zero basis, so the widths divide in that proportion and
+         width/ratio lands on the same height for both. Change either photo and
+         they still line up. -->
+    <div class="about-photos">
+      <img class="wide" src="assets/about/jack-hiking.jpg" width="1600" height="900"
+           loading="lazy" decoding="async"
+           data-i18n-alt="aboutpage.bandAlt"
+           alt="Jack on a grassy ridge in the Dolomites with jagged peaks behind him.">
+      <img class="square" src="assets/about/jack-easter-team.jpg" width="1400" height="1365"
+           loading="lazy" decoding="async"
+           data-i18n-alt="aboutpage.teamAlt"
+           alt="Jack and the Riverside creative team in front of the printed Easter at Riverside photo wall.">
+    </div>
+
+
+
+    <div class="about-timeline-section">
+      <h3 class="about-page-subhead" data-i18n="aboutpage.timeline">TIMELINE</h3>
+      <ul class="about-timeline">
+        <!-- NEXT leads: a newest-first timeline puts the future above the most
+             recent past. The tl.N keys are explicit per row, so display order is
+             free and nothing needs renumbering. is-next hollows the dot. -->
+        <li class="is-next">
+          <span class="tl-ping" aria-hidden="true"></span>
+          <span class="timeline-year" data-i18n="tl.6.year">NEXT</span>
+          <span class="timeline-role" data-i18n="tl.6.role">Final year at Bradley!</span>
+          <span class="timeline-desc" data-i18n="tl.6.desc">Back from Milan in December, finishing the degree in May 2027, then grad school. Open to freelance now, and to internships or full-time work along the way.</span>
+        </li>
+        <li>
+          <span class="timeline-year" data-i18n="tl.1.year">AUG – DEC 2026</span>
+          <span class="timeline-role" data-i18n="tl.1.role">Study abroad at NABA, Milan</span>
+          <span class="timeline-desc" data-i18n="tl.1.desc">UX and product design at Nuova Accademia di Belle Arti.</span>
+        </li>
+        <li>
+          <span class="timeline-year" data-i18n="tl.2.year">2025 – NOW</span>
+          <span class="timeline-role" data-i18n="tl.2.role">Real estate photographer at Jubilee Media</span>
+          <span class="timeline-desc" data-i18n="tl.2.desc">Shooting residential listings on location, handling lighting, composition, and framing for each property.</span>
+        </li>
+        <li>
+          <span class="timeline-year" data-i18n="tl.3.year">2024 – 2026</span>
+          <span class="timeline-role" data-i18n="tl.3.role">Tech and Creative Team at Riverside Community Church</span>
+          <span class="timeline-desc" data-i18n="tl.3.desc">Live production for weekly services: sound, lighting, cameras, livestream, and slides. Plus design, branding, and photography for events.</span>
+        </li>
+        <li>
+          <span class="timeline-year" data-i18n="tl.4.year">2023 – 2027</span>
+          <span class="timeline-role" data-i18n="tl.4.role">UX Design at Bradley University</span>
+          <span class="timeline-desc" data-i18n="tl.4.desc">BS in User Experience Design, GPA 3.6. Dean's List.</span>
+        </li>
+        <li>
+          <span class="timeline-year" data-i18n="tl.5.year">2022</span>
+          <span class="timeline-role" data-i18n="tl.5.role">Summer program at Otis College</span>
+          <span class="timeline-desc" data-i18n="tl.5.desc">3D design and animation, which is where Journey to the Oasis came from.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="about-skills-section">
+      <h3 class="about-page-subhead" data-i18n="aboutpage.skills">SKILLS</h3>
+      <div class="skill-group">
+        <h4 class="skill-group-label" data-i18n="skills.design">DESIGN</h4>
+        <div class="about-skill-tags">
+          <span class="lead">UX DESIGN</span><span>UI DESIGN</span><span>INTERACTION DESIGN</span>
+          <span>WEB DESIGN</span><span>BRAND IDENTITY</span><span>TYPOGRAPHY</span>
+          <span>MOTION DESIGN</span><span>PHOTOGRAPHY</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4 class="skill-group-label" data-i18n="skills.research">RESEARCH</h4>
+        <div class="about-skill-tags">
+          <span class="lead">USER RESEARCH</span><span>USABILITY TESTING</span><span>USER FLOWS</span>
+          <span>WIREFRAMING</span><span>PROTOTYPING</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4 class="skill-group-label" data-i18n="skills.build">BUILD</h4>
+        <div class="about-skill-tags">
+          <span class="lead">HTML</span><span>CSS</span><span>JAVA</span>
+          <span>WORDPRESS</span><span>GITHUB</span><span>VERCEL</span>
+          <span>AUTOMATION</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h4 class="skill-group-label" data-i18n="skills.tools">TOOLS</h4>
+        <div class="about-skill-tags">
+          <span class="lead">FIGMA</span><span>PHOTOSHOP</span><span>ILLUSTRATOR</span>
+          <span>PREMIERE</span><span>BLENDER</span><span>UNITY</span>
+          <span>AUTODESK MAYA</span><span>CLAUDE CODE</span><span>CODEX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAGNETIC TYPOGRAPHY -->
+<section class="magnetic-section reveal" id="magneticSection">
+  <div class="magnetic-text" id="magneticText" data-i18n-aria="magnetic.aria" aria-label="Let's make something."></div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-head reveal">
+    <h2 data-i18n="contact.title">CONTACT</h2>
+    <span class="section-num" data-i18n="contact.num">03 / LET'S TALK</span>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-right reveal">
+      <h3 class="contact-statement" data-i18n-html="contact.statement">GOT AN IDEA?<br>LET'S TALK.</h3>
+      <div class="contact-email-row">
+        <span class="contact-email-text" id="contactEmailText">23jmurr@gmail.com</span>
+        <button class="copy-email-btn" id="copyEmailBtn" type="button" data-i18n="contact.copy">COPY</button>
+      </div>
+      <div class="contact-socials-big">
+        <a href="https://www.instagram.com/jack.e.murray/" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">INSTAGRAM</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.374-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.374-.899.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.439.645 1.439 1.439z"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+        <a href="https://github.com/23murrayj" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">GITHUB</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+        <a href="https://www.linkedin.com/in/jack-murray-6048962a4" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">LINKEDIN</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-left">
+      <!--
+        TODO: this form currently falls back to a mailto: link (built in
+        script.js) since there's no real Formspree ID yet. To switch to
+        real form delivery: sign up free at https://formspree.io, create
+        a form, add action="https://formspree.io/f/YOUR_REAL_ID"
+        method="POST" to the <form> below, and swap the mailto logic in
+        script.js for the fetch-based Formspree submit (see git history
+        for the previous implementation, or Formspree's own docs).
+      -->
+      <!-- Netlify Forms: the host parses this markup on deploy and provisions
+           an endpoint from name="contact". data-netlify-honeypot points it at
+           the trap field already below, so Netlify drops those server-side too
+           instead of relying on the client-side check alone. The hidden
+           form-name field is what identifies the form when script.js posts it
+           with fetch rather than letting the browser navigate. -->
+      <form class="contact-form reveal" id="contactForm"
+            name="contact" method="POST"
+            data-netlify="true" data-netlify-honeypot="_honeypot">
+        <input type="hidden" name="form-name" value="contact">
+        <!-- honeypot: invisible to real visitors, but bots that auto-fill
+             every field will fill this one too — if it's non-empty on
+             submit we silently drop the request client-side -->
+        <input type="text" name="_honeypot" id="cf-honeypot" class="honeypot-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="form-row">
+          <label for="cf-name" data-i18n="form.name">NAME</label>
+          <input id="cf-name" type="text" name="name" autocomplete="name" placeholder="Your name" data-i18n-placeholder="form.name.ph" required>
+        </div>
+        <div class="form-row">
+          <label for="cf-email" data-i18n="form.email">EMAIL</label>
+          <input id="cf-email" type="email" name="email" autocomplete="email" placeholder="you@email.com" data-i18n-placeholder="form.email.ph" required>
+        </div>
+        <div class="form-row">
+          <label for="cf-message" data-i18n="form.message">MESSAGE</label>
+          <textarea id="cf-message" name="message" rows="5" placeholder="Tell me what you're working on..." data-i18n-placeholder="form.message.ph" required></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="formSubmit" data-i18n="form.submit">SEND MESSAGE →</button>
+        <!-- role="status" + aria-live: the submit result is otherwise
+             announced to nobody, since nothing about the page changes
+             focus or navigates on submit -->
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+  <div class="contact-bottom reveal">
+    <p class="contact-loc" data-i18n="contact.location">BASED IN ILLINOIS — AVAILABLE ANYWHERE</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <span>© 2026 JACK MURRAY <button class="egg-trigger" id="eggTrigger" aria-label="???">✦</button></span>
+  <span class="live-clock" id="liveClock">00:00:00</span>
+  <a href="#top" class="back-top" data-i18n="footer.backtotop">BACK TO TOP ↑</a>
+</footer>
+
+<!-- HIDDEN EASTER EGG MENU -->
+<div class="egg-menu" id="eggMenu">
+  <button id="eggMenuStickers" type="button" data-i18n="egg.stickers">STICKERS</button>
+  <!-- the warning is inside the button, so it is part of the accessible name
+       and gets read out before anyone can activate it. Both strings live in
+       their own spans because I18N.apply() overwrites textContent — putting
+       data-i18n on the button itself would wipe the warning. -->
+  <button id="eggMenuChaos" type="button">
+    <span data-i18n="egg.chaos">CHAOS MODE</span>
+    <span class="egg-warn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3 2 20h20L12 3Z"/><path d="M12 9.6v4.4"/><path d="M12 17.3h.01"/>
+      </svg>
+      <span data-i18n="egg.chaosWarn">EPILEPSY WARNING</span>
+    </span>
+  </button>
+</div>
+
+<!-- HIDDEN STICKER PACK EASTER EGG -->
+<div class="sticker-tray" id="stickerTray">
+  <span class="sticker-tray-label" data-i18n="egg.dragsticker">DRAG A STICKER ANYWHERE →</span>
+  <div class="sticker-pack" id="stickerPack">
+    <div class="sticker">🎨</div>
+    <div class="sticker">✂️</div>
+    <div class="sticker">📐</div>
+    <div class="sticker">⭐</div>
+    <div class="sticker">✏️</div>
+    <div class="sticker">🖌️</div>
+  </div>
+  <button class="sticker-tray-close" id="stickerTrayClose" data-i18n="egg.close">CLOSE ✕</button>
+</div>
+<div class="sticker-trash" id="stickerTrash" aria-hidden="true">🗑</div>
+
+<!-- CHAOS MODE: stop button + mini Pong game (play trigger now lives over the gallery) -->
+<button class="chaos-stop-btn" id="chaosStopBtn" type="button"><span data-i18n="egg.stopchaos">STOP CHAOS ✕</span> <span id="chaosCountdown">30</span>s</button>
+<div class="pong-window" id="pongWindow">
+  <div class="pong-header">
+    <span data-i18n="pong.title">PONG.EXE — GLITCH EDITION</span>
+    <button id="pongClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="pong-canvas-wrap">
+    <canvas id="pongCanvas" width="480" height="320"></canvas>
+    <div class="pong-end" id="pongEnd">
+      <span class="pong-end-msg" id="pongEndMsg">YOU WIN</span>
+      <button id="pongRematch" type="button" data-i18n="pong.rematch">REMATCH ▶</button>
+    </div>
+  </div>
+  <div class="pong-footer" data-i18n="pong.controls">↑/↓ OR W/S TO MOVE — FIRST TO 5</div>
+</div>
+
+<!-- i18n.js must load first: script.js reads window.I18N when it builds
+     the marquee, the typewriter and the magnetic headline -->
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

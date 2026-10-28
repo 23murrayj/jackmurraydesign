@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Page not found — Jack Murray</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/meta/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/meta/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<!-- Deliberately standalone rather than loading styles.css: this page has to
+     render even when the thing that failed was an asset path. It borrows the
+     palette tokens by value and nothing else, so there is no dependency to
+     break. Hosts that serve a custom 404 (Netlify, Vercel, GitHub Pages,
+     Cloudflare) pick this file up by filename automatically. -->
+<style>
+  :root { --paper:#e6e3db; --ink:#1e1c17; --accent:#ff3b30; --muted:#62615a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#171512; --ink:#e8e5dc; --accent:#ff2d55; --muted:#9c9b92; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 32px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--paper); color: var(--ink);
+    font-family: 'Space Grotesk', system-ui, sans-serif; text-align: center;
+  }
+  .code {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-size: clamp(5rem, 22vw, 11rem); line-height: 0.85;
+    letter-spacing: -0.04em; margin: 0;
+  }
+  .code span { color: var(--accent); }
+  h1 { font-family: 'Archivo Black', system-ui, sans-serif;
+       font-size: clamp(1.3rem, 4vw, 2rem); letter-spacing: -0.01em; margin: 24px 0 0; }
+  p { color: var(--muted); max-width: 46ch; line-height: 1.6; margin: 14px 0 0; }
+  .home {
+    display: inline-flex; align-items: center; min-height: 48px;
+    margin-top: 34px; padding: 14px 26px;
+    background: var(--ink); color: var(--paper); text-decoration: none;
+    font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
+    border: 2px solid var(--ink);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .home:hover, .home:focus-visible {
+    transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--accent);
+  }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: .001ms !important; } }
+</style>
+</head>
+<body>
+  <p class="code">4<span>0</span>4</p>
+  <h1>This page doesn't exist.</h1>
+  <p>The link may be out of date, or the address might have a typo in it. Everything lives on the one page anyway.</p>
+  <a class="home" href="/">← BACK TO THE PORTFOLIO</a>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jack Murray — UX Designer</title>
+<meta property="og:title" content="Jack Murray — UX Designer">
+<meta property="og:description" content="UX design portfolio by Jack Murray — websites, visual systems, branding, photography, motion, and digital experiments.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="is-loading">
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-name">
+    <span>JACK</span><span>MURRAY</span>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="noise"></div>
+<div class="scanlines" aria-hidden="true"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-logo">JM<span class="dot">●</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="#work">PROJECTS</a>
+    <a href="#about" id="navAboutLink">ABOUT</a>
+    <a href="#contact">CONTACT</a>
+  </div>
+  <div class="nav-right">
+    <div class="cvd-control">
+      <button class="cvd-toggle" id="cvdToggle" aria-label="color vision mode" aria-haspopup="true">
+        <span class="cvd-icon">◐</span>
+      </button>
+      <div class="cvd-menu" id="cvdMenu">
+        <button class="cvd-option active" data-mode="normal" type="button">NORMAL</button>
+        <button class="cvd-option" data-mode="deuteranopia" type="button">DEUTERANOPIA</button>
+        <button class="cvd-option" data-mode="protanopia" type="button">PROTANOPIA</button>
+        <button class="cvd-option" data-mode="highcontrast" type="button">HIGH CONTRAST</button>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="toggle theme">
+      <span class="theme-icon">☾</span>
+    </button>
+    <button class="nav-toggle" id="navToggle" aria-label="menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- color vision deficiency simulation filters, applied via CSS filter: url(#...) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="cvd-deuteranopia">
+      <feColorMatrix type="matrix" values="
+        0.625 0.375 0     0 0
+        0.7   0.3   0     0 0
+        0     0.3   0.7   0 0
+        0     0     0     1 0" />
+    </filter>
+    <filter id="cvd-protanopia">
+      <feColorMatrix type="matrix" values="
+        0.567 0.433 0     0 0
+        0.558 0.442 0     0 0
+        0     0.242 0.758 0 0
+        0     0     0     1 0" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-shapes" id="heroShapes" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <h1 class="hero-name">
+      <span class="line">JACK</span>
+      <span class="line">MURRAY<span class="accent">.</span></span>
+    </h1>
+    <div class="hero-side">
+      <a href="#contact" class="badge-available">
+        <span class="badge-dot"></span>
+        OPEN TO PROJECTS & DESIGN WORK
+      </a>
+      <p class="hero-tag" id="heroTag">UX designer building websites, visual systems, and digital experiences with personality.</p>
+      <p class="hero-role">UX DESIGN — WEBSITES — BRAND SYSTEMS</p>
+      <a href="#work" class="btn-block">VIEW PROJECTS ↓</a>
+    </div>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <div class="marquee-group">
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+      </div>
+      <div class="marquee-group" aria-hidden="true">
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <!-- chaos mode takes over the gallery area with a big PLAY button,
+       since the user isn't browsing the portfolio mid-chaos anyway -->
+  <div class="chaos-work-cover" id="chaosWorkCover">
+    <button class="chaos-play-btn-large" id="chaosPlayBtn" type="button">▶ PLAY PONG</button>
+  </div>
+  <div class="section-head reveal">
+    <h2>SELECTED PROJECTS</h2>
+    <span class="section-num">01 / PROJECTS</span>
+  </div>
+
+  <div class="filters reveal" id="filters">
+    <button class="filter-btn active" data-filter="ALL">ALL</button>
+    <button class="filter-btn" data-filter="UX/UI">UX/UI</button>
+    <button class="filter-btn" data-filter="BRANDING">BRANDING</button>
+    <button class="filter-btn" data-filter="GRAPHICS">GRAPHICS</button>
+    <button class="filter-btn" data-filter="PHOTOGRAPHY">PHOTOGRAPHY</button>
+    <button class="filter-btn" data-filter="WEB">WEB</button>
+    <button class="filter-btn" data-filter="MOTION">MOTION</button>
+  </div>
+
+  <div class="gallery" id="gallery">
+
+    <article class="card reveal" data-tilt data-project="easter-riverside" data-category="GRAPHICS" style="--bg:#ff3b30;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#ff3b30"/>
+          <circle cx="300" cy="160" r="100" fill="#fffb00"/>
+          <polygon points="280,90 320,90 320,160 350,160 300,230 250,160 280,160" fill="#111"/>
+          <text x="40" y="410" font-family="Archivo Black" font-size="36" fill="#fff">EASTER</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>EASTER AT RIVERSIDE</h3>
+        <p>Promotional graphic and visual direction for a church Easter event.</p>
+        <span class="tag">GRAPHICS</span>
+      </div>
+    </article>
+
+    <article class="card reveal" data-tilt data-project="monmouth-retreat" data-category="PHOTOGRAPHY" style="--bg:#111;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#111"/>
+          <rect x="40" y="40" width="230" height="370" fill="#ff7a00"/>
+          <rect x="290" y="40" width="270" height="170" fill="#f5f5f0"/>
+          <rect x="290" y="230" width="270" height="180" fill="#0a5cff"/>
+          <text x="40" y="430" font-family="Archivo Black" font-size="30" fill="#fff">MONMOUTH</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>MONMOUTH RETREAT</h3>
+        <p>Photography collection capturing atmosphere, people, and place.</p>
+        <span class="tag">PHOTOGRAPHY</span>
+      </div>
+    </article>
+
+    <article class="card reveal" data-tilt data-project="sandcastles" data-category="GRAPHICS" style="--bg:#fffb00;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#fffb00"/>
+          <polygon points="60,400 180,260 300,400" fill="#111"/>
+          <polygon points="220,400 340,220 460,400" fill="#ff3b30"/>
+          <text x="40" y="80" font-family="Archivo Black" font-size="40" fill="#111">SANDCASTLES</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>SANDCASTLES</h3>
+        <p>Sermon graphic exploring faith, structure, and visual storytelling.</p>
+        <span class="tag">GRAPHICS</span>
+      </div>
+    </article>
+
+    <article class="card reveal" data-tilt data-project="oasis-journey" data-category="MOTION" style="--bg:#0a5cff;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#0a5cff"/>
+          <rect y="320" width="600" height="130" fill="#ff7a00"/>
+          <circle cx="470" cy="110" r="60" fill="#fffb00"/>
+          <polygon points="0,320 150,230 300,320" fill="#111"/>
+          <text x="40" y="410" font-family="Archivo Black" font-size="26" fill="#fff">JOURNEY TO THE OASIS</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>JOURNEY TO THE OASIS</h3>
+        <p>3D animated short created as an early motion and storytelling project.</p>
+        <span class="tag">MOTION</span>
+      </div>
+    </article>
+
+    <article class="card reveal" data-tilt data-project="portfolio-website" data-category="WEB" style="--bg:#111;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#111"/>
+          <rect x="40" y="40" width="520" height="60" fill="#fff"/>
+          <rect x="40" y="130" width="240" height="280" fill="#ff3b30"/>
+          <rect x="300" y="130" width="260" height="130" fill="#fffb00"/>
+          <rect x="300" y="280" width="260" height="130" fill="#0a5cff"/>
+          <text x="60" y="80" font-family="Archivo Black" font-size="26" fill="#111">JACKMURRAY.DESIGN</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>PORTFOLIO WEBSITE</h3>
+        <p>Personal website built to explore UX, front-end design, and visual identity.</p>
+        <span class="tag">WEB</span>
+      </div>
+    </article>
+
+    <article class="card reveal" data-tilt data-project="brand-concept" data-category="BRANDING" style="--bg:#ff7a00;">
+      <div class="card-media">
+        <svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+          <rect width="600" height="450" fill="#ff7a00"/>
+          <rect x="60" y="60" width="160" height="160" fill="#111"/>
+          <circle cx="430" cy="140" r="80" fill="#f5f5f0"/>
+          <polygon points="120,260 240,400 0,400" fill="#0a5cff"/>
+          <text x="280" y="400" font-family="Archivo Black" font-size="30" fill="#111">CONCEPT</text>
+        </svg>
+      </div>
+      <div class="card-info">
+        <h3>BRAND / CONCEPT STUDY</h3>
+        <p>Conceptual identity work exploring brand systems, typography, and visual direction.</p>
+        <span class="tag">BRANDING</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- PROJECT DETAIL OVERLAY -->
+<div class="project-overlay" id="projectOverlay">
+  <div class="project-detail">
+    <button class="project-back" id="projectBack">← BACK TO WORK</button>
+    <div class="project-media" id="projectMedia"></div>
+    <div class="project-body">
+      <span class="project-cat" id="projectCat"></span>
+      <h2 id="projectTitle"></h2>
+      <p class="project-desc" id="projectDesc"></p>
+      <div class="project-meta">
+        <div><span class="meta-label">TYPE</span><span id="projectType"></span></div>
+        <div><span class="meta-label">YEAR</span><span id="projectYear"></span></div>
+        <div><span class="meta-label">ROLE</span><span id="projectRole"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-head reveal">
+    <h2 id="aboutTitle" tabindex="0" role="button">ABOUT</h2>
+    <span class="section-num">02 / ABOUT</span>
+  </div>
+  <div class="about-grid">
+    <p class="about-statement reveal">
+      I'm Jack Murray — a UX designer and Bradley University student with a love
+      for websites, visual systems, branding, photography, and the internet. I
+      started by making logos as a kid, and that grew into a bigger interest in
+      how design, technology, and people connect.
+    </p>
+    <div class="about-stats reveal">
+      <div class="stat">
+        <span class="stat-num" data-count="4" data-suffix="">0</span>
+        <span class="stat-label">Years designing</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="10" data-suffix="+">0</span>
+        <span class="stat-label">Projects &amp; experiments</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">UX</span>
+        <span class="stat-label">Main focus</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">∞</span>
+        <span class="stat-label">Ideas in progress</span>
+      </div>
+    </div>
+  </div>
+  <div class="skills-marquee reveal">
+    <div class="skills-track" id="skillsTrack">
+      <div class="skills-group">
+        <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+        <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+        <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+      </div>
+      <div class="skills-group" aria-hidden="true">
+        <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+        <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+        <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+      </div>
+    </div>
+  </div>
+  <div class="about-cta-row reveal">
+    <button class="about-readmore-btn" id="aboutReadMore">READ MORE ABOUT ME →</button>
+    <!-- TODO: no resume PDF exists in assets/ yet — once Jack has a real
+         resume file, replace this button with a download link (see the
+         pattern used elsewhere on this page for .cv-download-btn) -->
+    <button class="cv-download-btn" type="button" disabled>RESUME COMING SOON</button>
+  </div>
+</section>
+
+<!-- FULL ABOUT PAGE OVERLAY -->
+<div class="about-overlay" id="aboutOverlay">
+  <div class="about-page">
+    <button class="about-back" id="aboutBack">← BACK</button>
+
+    <div class="about-page-top">
+      <div class="about-photo-placeholder">
+        <span>JM</span>
+        <span class="about-photo-caption">PHOTO COMING SOON</span>
+      </div>
+      <div class="about-page-intro">
+        <span class="project-cat">ABOUT JACK</span>
+        <h2>HI, I'M JACK.</h2>
+        <p>
+          I'm a UX designer studying at Bradley University, but my work reaches into a lot
+          of different places: websites, brand systems, graphics, photography, motion,
+          coding, and automation. I like being able to move between ideas and figure out
+          what a project actually needs, whether that is a cleaner interface, a stronger
+          visual identity, or a better way for people to move through something.
+        </p>
+        <p>
+          I grew up making logos, using computers, and getting pulled into the internet
+          through games, websites, and creative tools. That mix still shapes how I design
+          now. I care about work that feels intentional, useful, and human — design that
+          looks strong, but also makes sense.
+        </p>
+        <p>
+          My faith is also part of who I am, and some of my favorite work has come from
+          church graphics and creative projects that connect design with meaning. I'm still
+          learning, still experimenting, and still building a portfolio that reflects the
+          full range of what I'm interested in.
+        </p>
+        <!-- TODO: no resume PDF exists in assets/ yet — once Jack has a
+             real resume file, swap this for a download link like the
+             pattern used elsewhere on this page (.cv-download-btn) -->
+        <button class="cv-download-btn" type="button" disabled>RESUME COMING SOON</button>
+      </div>
+    </div>
+
+    <div class="about-timeline-section">
+      <h3 class="about-page-subhead">TIMELINE</h3>
+      <ul class="about-timeline">
+        <li>
+          <span class="timeline-year">2026 — NOW</span>
+          <span class="timeline-role">Building a broader design portfolio</span>
+          <span class="timeline-desc">Creating work across UX, websites, branding, graphics, photography, motion, and automation.</span>
+        </li>
+        <li>
+          <span class="timeline-year">2024 — 2026</span>
+          <span class="timeline-role">UX Design at Bradley University</span>
+          <span class="timeline-desc">Studying user experience, visual design, interaction, and digital product thinking.</span>
+        </li>
+        <li>
+          <span class="timeline-year">2023 — 2025</span>
+          <span class="timeline-role">Church graphics, photography, and motion work</span>
+          <span class="timeline-desc">Creating event graphics, sermon visuals, photo collections, and 3D/motion experiments.</span>
+        </li>
+        <li>
+          <span class="timeline-year">NEXT</span>
+          <span class="timeline-role">Open to design work and creative projects</span>
+          <span class="timeline-desc">Looking for projects where I can help make websites, brands, and digital experiences feel clearer, stronger, and more intentional.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="about-skills-section">
+      <h3 class="about-page-subhead">SKILLS</h3>
+      <div class="about-skill-tags">
+        <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+        <span>BRAND IDENTITY</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+        <span>MOTION DESIGN</span><span>HTML</span><span>CSS</span>
+        <span>JAVA</span><span>WORDPRESS</span><span>FIGMA</span>
+        <span>ILLUSTRATOR</span><span>PREMIERE</span><span>BLENDER</span>
+        <span>CANVA</span><span>GITHUB</span><span>VERCEL</span>
+        <span>CLAUDE CODE</span><span>CODEX</span><span>AUTOMATION</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAGNETIC TYPOGRAPHY -->
+<section class="magnetic-section reveal" id="magneticSection">
+  <div class="magnetic-text" id="magneticText" aria-label="Let's make something."></div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-head reveal">
+    <h2>CONTACT</h2>
+    <span class="section-num">03 / LET'S TALK</span>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-right reveal">
+      <h3 class="contact-statement">GOT AN IDEA?<br>LET'S TALK.</h3>
+      <div class="contact-email-row">
+        <span class="contact-email-text" id="contactEmailText">23jmurr@gmail.com</span>
+        <button class="copy-email-btn" id="copyEmailBtn" type="button">COPY</button>
+      </div>
+      <div class="contact-socials-big">
+        <a href="https://www.instagram.com/jack.e.murray/" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">INSTAGRAM</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.4" fill="currentColor"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+        <a href="https://github.com/23murrayj" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">GITHUB</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+        <a href="https://www.linkedin.com/in/jack-murray-6048962a4" target="_blank" rel="noopener" class="social-link">
+          <span class="social-link-left">
+            <span class="social-link-text">LINKEDIN</span>
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="8" r="1.6" fill="currentColor"/><path d="M7 11.5v7" stroke="currentColor" stroke-width="2"/><path d="M12 18.5v-4.5c0-2 3-2.3 3 0v4.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 14v4.5" stroke="currentColor" stroke-width="2"/></svg>
+          </span>
+          <span class="social-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-left">
+      <!--
+        TODO: this form currently falls back to a mailto: link (built in
+        script.js) since there's no real Formspree ID yet. To switch to
+        real form delivery: sign up free at https://formspree.io, create
+        a form, add action="https://formspree.io/f/YOUR_REAL_ID"
+        method="POST" to the <form> below, and swap the mailto logic in
+        script.js for the fetch-based Formspree submit (see git history
+        for the previous implementation, or Formspree's own docs).
+      -->
+      <form class="contact-form reveal" id="contactForm">
+        <!-- honeypot: invisible to real visitors, but bots that auto-fill
+             every field will fill this one too — if it's non-empty on
+             submit we silently drop the request client-side -->
+        <input type="text" name="_honeypot" id="cf-honeypot" class="honeypot-field" tabindex="-1" autocomplete="off">
+        <div class="form-row">
+          <label for="cf-name">NAME</label>
+          <input id="cf-name" type="text" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-row">
+          <label for="cf-email">EMAIL</label>
+          <input id="cf-email" type="email" name="email" placeholder="you@email.com" required>
+        </div>
+        <div class="form-row">
+          <label for="cf-message">MESSAGE</label>
+          <textarea id="cf-message" name="message" rows="5" placeholder="Tell me what you're working on..." required></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="formSubmit">SEND MESSAGE →</button>
+        <p class="form-status" id="formStatus"></p>
+      </form>
+    </div>
+  </div>
+  <div class="contact-bottom reveal">
+    <p class="contact-loc">BASED IN ILLINOIS — AVAILABLE ANYWHERE</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>© 2026 JACK MURRAY <button class="egg-trigger" id="eggTrigger" aria-label="???">✦</button></span>
+  <span class="live-clock" id="liveClock">00:00:00</span>
+  <a href="#top" class="back-top">BACK TO TOP ↑</a>
+</footer>
+
+<!-- HIDDEN EASTER EGG MENU -->
+<div class="egg-menu" id="eggMenu">
+  <button id="eggMenuStickers" type="button">STICKERS</button>
+  <button id="eggMenuChaos" type="button">CHAOS MODE</button>
+</div>
+
+<!-- HIDDEN STICKER PACK EASTER EGG -->
+<div class="sticker-tray" id="stickerTray">
+  <span class="sticker-tray-label">DRAG A STICKER ANYWHERE →</span>
+  <div class="sticker-pack" id="stickerPack">
+    <div class="sticker">🎨</div>
+    <div class="sticker">✂️</div>
+    <div class="sticker">📐</div>
+    <div class="sticker">⭐</div>
+    <div class="sticker">✏️</div>
+    <div class="sticker">🖌️</div>
+  </div>
+  <button class="sticker-tray-close" id="stickerTrayClose">CLOSE ✕</button>
+</div>
+<div class="sticker-trash" id="stickerTrash" aria-hidden="true">🗑</div>
+
+<!-- CHAOS MODE: stop button + mini Pong game (play trigger now lives over the gallery) -->
+<button class="chaos-stop-btn" id="chaosStopBtn" type="button">STOP CHAOS ✕ <span id="chaosCountdown">30</span>s</button>
+<div class="pong-window" id="pongWindow">
+  <div class="pong-header">
+    <span>PONG.EXE — GLITCH EDITION</span>
+    <button id="pongClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="pong-canvas-wrap">
+    <canvas id="pongCanvas" width="480" height="320"></canvas>
+    <div class="pong-end" id="pongEnd">
+      <span class="pong-end-msg" id="pongEndMsg">YOU WIN</span>
+      <button id="pongRematch" type="button">REMATCH ▶</button>
+    </div>
+  </div>
+  <div class="pong-footer">↑/↓ OR W/S TO MOVE — FIRST TO 5</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

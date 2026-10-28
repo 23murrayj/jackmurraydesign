@@ -1,0 +1,24 @@
+# Static site: nothing to compile, so there is no build command and the
+# repository root is what gets served.
+[build]
+  publish = "."
+  command = ""
+
+# 404.html is picked up by filename automatically; these headers are the part
+# a static host can't infer.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # clickjacking: nothing here is meant to be framed by another site
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # don't hand any page permission to hardware it never uses
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+# Hashed-forever assets would get a long max-age; these aren't hashed, so
+# revalidation keeps a redeploy from serving stale images.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
