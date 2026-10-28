@@ -1169,33 +1169,22 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 /* Both grow so the pair still aligns, but the primary gets the extra
    horizontal room and the larger type: it should be the biggest thing you
    can click in this section, because it's the only one we want clicked. */
-.about-cta-row .about-readmore-btn,
-.about-cta-row .cv-download-btn {
-  padding: 19px 32px; font-size: 0.9rem;
-}
+/* nothing beside it to align to any more, so it can take the room */
 .about-cta-row .about-readmore-btn {
-  padding: 19px 42px; font-size: 1.02rem; letter-spacing: 2px;
+  padding: 21px 48px; font-size: 1.08rem; letter-spacing: 2px;
 }
 
-/* The job of this section is to get someone onto the about page. The resume
-   is a terminal action - it opens a PDF and the visit is effectively over -
-   and it was the filled accent button while the about link was a plain
-   outline, so the weaker-looking control was the one we wanted clicked.
-   Swapped. Scoped to .about-cta-row because on the about page itself the
-   resume IS the next step, and keeps its filled treatment there. */
+/* The only action in this section. The resume used to sit beside it as a
+   filled accent button while this was a plain outline, so the weaker-looking
+   control was the one we wanted clicked - and the resume was a terminal
+   click that ended the visit anyway. It now lives only on the about page,
+   where it IS the next step and keeps its filled treatment. */
 .about-cta-row .about-readmore-btn {
   background: var(--accent-ink); color: var(--accent-on);
   border-color: var(--accent-ink);
 }
 .about-cta-row .about-readmore-btn:hover {
   background: transparent; color: var(--accent-ink);
-}
-.about-cta-row .cv-download-btn {
-  background: transparent; color: var(--paper);
-  border-color: var(--paper);
-}
-.about-cta-row .cv-download-btn:hover {
-  background: var(--paper); color: var(--ink);
 }
 
 .cv-download-btn {
@@ -1229,7 +1218,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 .about-grid {
   display: grid; grid-template-columns: 0.82fr 2fr; gap: 56px;
-  padding: 30px 5vw 26px;
+  padding: 28px 5vw 20px;
   align-items: stretch;
 }
 /* the photo is the link, so it gets the same lift-and-shadow the buttons
@@ -1298,7 +1287,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .stat-label { font-size: 0.72rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 .skills-marquee {
   overflow: hidden;
-  padding: 0 0 34px;
+  padding: 0 0 30px;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
@@ -1328,8 +1317,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-hook { max-width: none; }
   /* four across is ~80px a column on a phone, which breaks every label */
   .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; }
-  .about-cta-row .about-readmore-btn,
-  .about-cta-row .cv-download-btn { flex: 1 1 100%; justify-content: center; }
+  .about-cta-row .about-readmore-btn { flex: 1 1 100%; justify-content: center; }
 }
 
 /* MAGNETIC TYPOGRAPHY — extremely tall condensed type, edge to edge */
