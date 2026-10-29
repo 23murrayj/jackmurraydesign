@@ -863,7 +863,11 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   gap: 50px;
   align-items: start;
 }
-.project-detail.has-sidebar .project-back { grid-column: 1 / -1; }
+/* 1 / -1 so the button owns its own row above both columns, but justify-self
+   so it stays its own width in it. Without this it stretched the full grid -
+   a 922px bar in the two sidebar projects (Caterpillar, Monmouth) against a
+   178px button everywhere else. Same control, same size, every layout. */
+.project-detail.has-sidebar .project-back { grid-column: 1 / -1; justify-self: start; }
 .project-detail.has-sidebar .project-media { margin-bottom: 0; }
 /* the sidebar is ~360px wide; the full-size project title is set for a
    1100px column and simply doesn't belong at that scale here */
@@ -1223,10 +1227,20 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   background: var(--chip-lead);
   font-weight: 700;
 }
-/* CLAUDE CODE and CODEX travel together so CODEX cannot be left hanging on
-   a line of its own. A div, not a span, so the chip rule above does not
-   style the wrapper as a chip as well. */
+/* The last two chips of every group travel together so neither can be left
+   hanging on a line of its own at an in-between window width. A div, not a
+   span, so the chip rule above does not style the wrapper as a chip too. */
 .about-skill-tags .tag-pair { display: flex; gap: 10px; }
+/* flex-wrap, and no media query. A pair is one flex item, so without this it
+   cannot break and spills out of a column narrower than the widest pair
+   (MOTION DESIGN + PHOTOGRAPHY, 277px) - measured 23px past the edge at a
+   200px column. Wrapping makes its automatic minimum its own min-content,
+   i.e. its widest chip, so the pair holds one line wherever there is room
+   and stacks internally where there isn't. The same 10px gap applies on both
+   axes, so a stacked pair is indistinguishable from ordinary wrapping.
+   Container-driven rather than a viewport breakpoint, which also means it
+   survives text zoom - the chips grow, the column doesn't. */
+.about-skill-tags .tag-pair { flex-wrap: wrap; }
 
 /* ABOUT */
 .about { background: var(--ink); color: var(--paper); padding-bottom: 34px; position: relative; }
@@ -1445,7 +1459,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 .about-statement {
   font-size: clamp(1.4rem, 2.6vw, 2.1rem);
-  font-weight: 500; line-height: 1.35;
+  /* 400, not 500. Space Grotesk tops out at 700, so the bold clauses cannot
+     get heavier - the only way to make them read heavier is to lighten what
+     they sit against. Measured in ink coverage: 500 vs 700 was 4570 vs 5367
+     (+17%), 400 vs 700 is 3775 vs 5367 (+42%). At 1.4-2.1rem the regular
+     face still has plenty of body; 500 was buying almost nothing here. */
+  font-weight: 400; line-height: 1.35;
   /* the wide column left "other." alone on a fourth line; pretty pulls a
      word down to keep the last line from being a single orphan. Ignored by
      browsers that don't support it, which just get the old ragged break. */
