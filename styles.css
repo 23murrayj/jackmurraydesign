@@ -1116,20 +1116,29 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   color: var(--muted); margin: 0 0 12px;
 }
 .about-skill-tags {
-  display: flex; flex-wrap: wrap; gap: 14px;
+  display: flex; flex-wrap: wrap; gap: 10px;
 }
+/* Labels, not controls. These read as a filter toolbar you can click, and
+   three things were doing it: a 2px border, which is the border every button
+   on this site has; a :hover that filled them yellow, when nothing that does
+   not respond to a click should respond to a pointer; and .lead, which was
+   background black + white text - the exact treatment of .btn-block.
+   Flat tint, no border, no hover, no transition. The cursor already treated
+   them correctly (they are not in CURSOR_TARGETS and are not focusable), so
+   the appearance was the whole of the lie. */
 .about-skill-tags span {
-  border: 2px solid var(--black);
-  padding: 10px 18px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px;
-  transition: background .25s, color .25s;
+  border: 0;
+  background: rgba(30, 28, 23, 0.07);
+  color: var(--black);
+  padding: 9px 15px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1.2px;
 }
-/* the lead skill in each band is filled rather than outlined, so a reader
-   scanning four groups picks up the headline of each without reading all 29 */
+/* the lead skill in each band still reads first so a reader scanning four
+   groups picks up the headline of each without reading all 29 - now by
+   weight and a deeper tint rather than by looking pressable */
 .about-skill-tags span.lead {
-  background: var(--black); color: var(--white);
-  font-size: 0.86rem; padding: 11px 20px;
+  background: rgba(30, 28, 23, 0.24);
+  font-weight: 800;
 }
-.about-skill-tags span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
 
 /* ABOUT */
 .about { background: var(--ink); color: var(--paper); padding-bottom: 34px; position: relative; }
@@ -1385,13 +1394,24 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    of the column with nothing holding them. 2px solid is the border weight
    this whole site uses, and it makes the band read as one object you can
    scan across in a single pass. */
+/* Ruled and filled like a spec panel. Paper-on-ink the whole way down left
+   the section reading as one undivided grey block, and four numbers floating
+   loose in the middle of it. A faint fill plus hard rules between the cells
+   makes the band its own object, so the column now reads as three distinct
+   things - statement, data, the ask - rather than one column of text.
+   No horizontal padding on the band itself: the fill spans the column and
+   the first number still starts on the same left edge as everything else. */
 .about-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  background: rgba(245,245,240,0.055);
   border-top: 2px solid rgba(245,245,240,0.3);
   border-bottom: 2px solid rgba(245,245,240,0.3);
-  padding: 24px 0;
+  padding: 22px 0;
 }
+.stat { padding: 0 22px; border-left: 2px solid rgba(245,245,240,0.45); }
+.stat:first-child { padding-left: 0; border-left: 0; }
 .stat { display: flex; flex-direction: column; gap: 7px; }
+
 /* These were 3.1rem in full yellow, which made four supporting numbers the
    loudest thing in the section - brighter and half again larger than the
    sentence they support. Dropped to paper and below the statement's size so
@@ -1400,17 +1420,20 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    numbers stay loud while yellow still means one thing in this column.
    ~36px at 1440, set in the display face against the statement's body face -
    different enough to read as data, not as another sentence. */
+/* Yellow, at 17.13:1 against the section - the same luminance contrast as
+   paper, so nothing is lost in legibility and the hue is pure gain. Red was
+   the other candidate and measures 5.32:1: more brand, but dimmer than the
+   paper it would replace, which is the opposite of the brief.
+   This does mean yellow appears twice in the column. It reads fine because
+   the two are different kinds of object - 36px of type against a filled
+   block carrying a 40px slab - and the CTA still wins on mass. */
 .stat-num {
   font-family: var(--ff-display); font-size: clamp(1.75rem, 2.5vw, 2.3rem);
-  letter-spacing: -0.02em; color: var(--paper); line-height: 1;
+  letter-spacing: -0.02em; color: var(--yellow); line-height: 1;
 }
-/* This was the last accent left in the reading column, sitting far right at
-   the midpoint, which put a bright detour between the stats and the button.
-   It does not need colour to stand out - it is the only stat that is a word
-   instead of a number. The column now runs monochrome top to bottom and
-   breaks into colour once, at the thing we want clicked.
-   To put the accent back: color: var(--yellow). */
-.stat.is-now .stat-num { color: var(--paper); }
+/* Every number carries the accent now, so is-now needs no colour of its
+   own - it is already the only stat that is a word rather than a number,
+   and it sits in its own ruled cell. */
 .stat-label { font-size: 0.74rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 /* Between a laptop and a desktop a fixed 420px panel takes too big a bite
    out of the reading column, so it scales with the viewport until it is
@@ -1430,18 +1453,24 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     position: static; width: auto;
     margin: 0 5vw 28px;
   }
+  /* 3:4 rather than 4:5. The platform photo is a full-length figure in a
+     0.574 frame; a 4:5 window shows 71.75% of its height, which is not quite
+     the 72% between the top of his head and his feet, so 4:5 clipped his
+     shoes. 3:4 shows 76.5% and holds the whole figure. Costs 28px. */
   .about-panel .about-portrait {
     position: relative;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 3 / 4;
     border: 4px solid var(--paper);
   }
-  /* he is just right of centre in the frame, and the crop takes it from the
-     bottom, so hold the subject rather than the midpoint */
-  .about-panel img { object-position: 54% 34%; }
+  .about-panel img { object-position: 50% 50%; }
   .about-panel img { height: 100%; }
   .about-hook { max-width: none; }
-  /* four across is ~80px a column on a phone, which breaks every label */
-  .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+  /* four across is ~80px a column on a phone, which breaks every label. In a
+     2x2 the vertical rules would cut between rows as well as columns, so the
+     cells go back to plain gaps and the band keeps only its fill and the two
+     horizontal rules. */
+  .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; padding: 22px 0; }
+  .stat, .stat:first-child { padding: 0; border-left: 0; }
   /* full width here: it is the only action on the screen and a thumb should
      not have to find a 260px target */
   .about-cta-row .about-readmore-btn { width: 100%; justify-content: center; }
