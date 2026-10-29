@@ -1,0 +1,71 @@
+<!--
+  REMOVED FROM THE HOMEPAGE ABOUT SECTION - kept here so it is one paste to
+  restore. Nothing else was deleted: the i18n key 'skills.marquee' is still
+  in i18n.js in all four languages, and script.js still wires 'skillsTrack'
+  (setupSeamlessMarquee + renderTickers), both guarded so they no-op while
+  the markup is absent. Put the HTML back as the last child of
+  <section class="about">, put the CSS back in styles.css, and it works again.
+
+  WHY IT WAS REMOVED
+  1. All nine of its tags are already on the about page, which lists 29
+     skills in four labelled groups (DESIGN / RESEARCH / BUILD / TOOLS) -
+     and the about page is exactly where this section's button sends you.
+     Six matched a tag there word for word; the other three were synonyms
+     (BRAND SYSTEMS/BRAND IDENTITY, MOTION/MOTION DESIGN, HTML / CSS/HTML+CSS).
+  2. Six of the nine also appear in the hero marquee, so the homepage was
+     running two scrolling strips of the same design words.
+  3. It was costing the CTA its distinctiveness. The tags are the same visual
+     object as the button - 2px border, uppercase, letterspaced, boxed - and
+     sat 14px below it, which was the tightest gap in the whole section. The
+     one thing the section exists to get clicked read as the first of ten
+     identical buttons, and the tags had the motion.
+
+  IF YOU RESTORE IT, give it real separation from the button (60px+) and
+  consider dropping the border on the tags so they stop imitating it.
+-->
+
+<!-- HTML: last child of <section class="about">, after .about-panel -->
+<div class="skills-marquee reveal">
+  <div class="skills-track" id="skillsTrack">
+    <div class="skills-group">
+      <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+      <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+      <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+    </div>
+    <div class="skills-group" aria-hidden="true">
+      <span>UX DESIGN</span><span>UI DESIGN</span><span>WEB DESIGN</span>
+      <span>BRAND SYSTEMS</span><span>TYPOGRAPHY</span><span>PHOTOGRAPHY</span>
+      <span>MOTION</span><span>HTML / CSS</span><span>AUTOMATION</span>
+    </div>
+  </div>
+</div>
+
+<style>
+/* CSS: paste back into styles.css where .skills-marquee used to be,
+   just after the .about-panel / .about-grid block. */
+.skills-marquee {
+  overflow: hidden;
+  /* ends at the panel's edge. Full-bleed, it painted straight over the
+     photo - the panel is out of flow, so the marquee has to be told. */
+  margin-right: var(--about-panel);
+  padding: 0 0 20px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.skills-track {
+  display: flex; width: max-content; gap: 14px;
+  animation: scroll-left 30s linear infinite;
+}
+.skills-track:hover { animation-play-state: paused; }
+.skills-group {
+  display: flex; flex-shrink: 0; gap: 14px;
+  white-space: nowrap;
+}
+.skills-group span {
+  display: inline-block;
+  border: 2px solid var(--paper);
+  padding: 10px 18px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px;
+  transition: background .25s, color .25s;
+}
+.skills-group span:hover { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+</style>
