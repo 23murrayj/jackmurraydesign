@@ -1399,14 +1399,23 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    loose in the middle of it. A faint fill plus hard rules between the cells
    makes the band its own object, so the column now reads as three distinct
    things - statement, data, the ask - rather than one column of text.
-   No horizontal padding on the band itself: the fill spans the column and
-   the first number still starts on the same left edge as everything else. */
+   It bleeds: left to the page edge, right to the photo panel, the same span
+   as the rule under the ABOUT heading. Held to the text column the fill
+   ended in a hard vertical edge just left of the first number, and a filled
+   block that stops mid-air reads as cropped rather than as a panel. The
+   negative margins cancel .about-grid's padding; padding-left puts the
+   content back on the 5vw gutter, so the first number still starts on the
+   same left edge as the statement, the hook and the button. */
 .about-stats {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
   background: rgba(245,245,240,0.055);
   border-top: 2px solid rgba(245,245,240,0.3);
   border-bottom: 2px solid rgba(245,245,240,0.3);
-  padding: 22px 0;
+  margin-left: -5vw;
+  /* 56px is the gap baked into --about-inset, so this lands the right edge
+     exactly on the panel rather than under it */
+  margin-right: -56px;
+  padding: 22px 0 22px 5vw;
 }
 .stat { padding: 0 22px; border-left: 2px solid rgba(245,245,240,0.45); }
 .stat:first-child { padding-left: 0; border-left: 0; }
@@ -1469,7 +1478,13 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      2x2 the vertical rules would cut between rows as well as columns, so the
      cells go back to plain gaps and the band keeps only its fill and the two
      horizontal rules. */
-  .about-stats { grid-template-columns: 1fr 1fr; gap: 20px 24px; padding: 22px 0; }
+  /* bleeds both sides here - there is no photo panel to stop at, and the
+     -56px right margin would otherwise push it past the gutter */
+  .about-stats {
+    grid-template-columns: 1fr 1fr; gap: 20px 24px;
+    margin-left: -5vw; margin-right: -5vw;
+    padding: 22px 5vw;
+  }
   .stat, .stat:first-child { padding: 0; border-left: 0; }
   /* full width here: it is the only action on the screen and a thumb should
      not have to find a 260px target */
