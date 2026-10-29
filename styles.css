@@ -1177,12 +1177,20 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    keeps the larger type and padding; it just stops at the end of the
    sentence. */
 .about-cta-row { display: block; }
+/* The yellow slab is what does the shouting. The red fill alone is only
+   2.93:1 against this section - a dark block on a dark field, so no amount
+   of size made it read as emphatic. Offsetting a 9px yellow shadow behind it
+   puts a 17:1 edge on the object while the fill stays brand red, and it is
+   the same raised-block language every other button on the site uses on
+   hover. This one just wears it at rest, because it is the only control in
+   the section. */
 .about-cta-row .about-readmore-btn {
   width: auto;
   display: inline-flex;
   justify-content: flex-start;
   gap: 14px;
-  padding: 20px 30px; font-size: 1rem; letter-spacing: 2px;
+  padding: 24px 40px; font-size: 1.15rem; letter-spacing: 2.5px;
+  box-shadow: 9px 9px 0 var(--yellow);
 }
 /* The arrow was part of the translated string, which made it a single text
    node that space-between had nothing to push apart. As a pseudo-element
@@ -1208,8 +1216,21 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   background: var(--accent-ink); color: var(--accent-on);
   border-color: var(--accent-ink);
 }
-.about-cta-row .about-readmore-btn:hover {
-  background: transparent; color: var(--accent-ink);
+/* Lifts further off the slab rather than inverting. The old hover dropped
+   the fill and set the label in accent-ink, which on this near-black section
+   is 2.01:1 - the label became close to unreadable at exactly the moment
+   someone was pointing at it. Holding the fill keeps it at 6.45:1 throughout
+   and matches .btn-block and .form-submit, which also lift into a hard
+   offset shadow. */
+.about-cta-row .about-readmore-btn:hover,
+.about-cta-row .about-readmore-btn:focus-visible {
+  background: var(--accent-ink); color: var(--accent-on);
+  transform: translate(-4px, -4px);
+  box-shadow: 14px 14px 0 var(--yellow);
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-cta-row .about-readmore-btn:hover,
+  .about-cta-row .about-readmore-btn:focus-visible { transform: none; }
 }
 
 .cv-download-btn {
@@ -1318,12 +1339,18 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      browsers that don't support it, which just get the old ragged break. */
   text-wrap: pretty;
 }
-/* smaller than the statement but set in the accent: the eye lands here last
-   on the way to the button, which is the whole point of the line */
+/* Paper, not yellow. This is a hue change, not a contrast one: paper is
+   17.27:1 against the section and yellow was 17.13:1, so the line is just as
+   legible. What it gives up is the accent. In the accent it was competing
+   chromatically with the one control it exists to hand you to - and winning,
+   since the button's fill was 2.93:1, a dark block on a dark field, against
+   24,730px2 of saturated type. Yellow now appears exactly once in this
+   column, on the CTA. Weight stays at 600 so the line is still its own beat
+   rather than more statement; the size already separates them. */
 .about-hook {
   font-size: clamp(1.1rem, 1.6vw, 1.38rem);
   font-weight: 600; line-height: 1.4;
-  color: var(--yellow);
+  color: var(--paper);
   max-width: 44ch;
   margin-bottom: 24px;
   text-wrap: pretty;
@@ -1346,9 +1373,13 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   font-family: var(--ff-display); font-size: clamp(1.5rem, 2.05vw, 1.9rem);
   letter-spacing: -0.02em; color: var(--paper); line-height: 1;
 }
-/* the accent now marks one thread and one only: the fact that he is
-   somewhere else right now, and the sentence underneath that explains it */
-.stat.is-now .stat-num { color: var(--yellow); }
+/* This was the last accent left in the reading column, sitting far right at
+   the midpoint, which put a bright detour between the stats and the button.
+   It does not need colour to stand out - it is the only stat that is a word
+   instead of a number. The column now runs monochrome top to bottom and
+   breaks into colour once, at the thing we want clicked.
+   To put the accent back: color: var(--yellow). */
+.stat.is-now .stat-num { color: var(--paper); }
 .stat-label { font-size: 0.72rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 /* Between a laptop and a desktop a fixed 420px panel takes too big a bite
    out of the reading column, so it scales with the viewport until it is
