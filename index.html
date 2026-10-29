@@ -456,7 +456,7 @@
   </div>
   <div class="contact-grid">
     <div class="contact-right reveal">
-      <h3 class="contact-statement" data-i18n-html="contact.statement">GOT AN IDEA?<br>LET'S TALK.</h3>
+      <h3 class="contact-statement" data-i18n-html="contact.statement">GOT AN IDEA?<br>LET'S TALK!</h3>
       <div class="contact-email-row">
         <span class="contact-email-text" id="contactEmailText">23jmurr@gmail.com</span>
         <button class="copy-email-btn" id="copyEmailBtn" type="button" data-i18n="contact.copy">COPY</button>
@@ -486,14 +486,17 @@
         <!-- Sits in the social list rather than beside the email, because this
              list already means "where to find out more about me" and the resume's
              natural neighbour is LinkedIn, two rows up. Same row pattern, so it
-             costs the section no new furniture; the arrow points down, not out,
-             because this one downloads rather than leaving the site. -->
-        <a href="assets/docs/jack-murray-resume.pdf" download class="social-link">
+             costs the section no new furniture. It opens the PDF in a new tab
+             rather than downloading it: someone can read it without committing
+             a file to their machine, and still save it from the viewer. That
+             also makes it an outward link like the other three, so the whole
+             list shares one arrow. -->
+        <a href="assets/docs/jack-murray-resume.pdf" target="_blank" rel="noopener" class="social-link">
           <span class="social-link-left">
             <span class="social-link-text" data-i18n="contact.resume">RESUME</span>
             <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2.5L17.5 8H14V4.5zM8 13h8v1.5H8V13zm0 3.5h8V18H8v-1.5zM8 9.5h3V11H8V9.5z"/></svg>
           </span>
-          <span class="social-link-arrow">↓</span>
+          <span class="social-link-arrow">↗</span>
         </a>
       </div>
     </div>

@@ -85,7 +85,7 @@ const projectData = {
     // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
     // untouched.
     detailImages: [
-      { src: 'assets/projects/cat-coaching/03-team.jpg', w: 1600, h: 1000,
+      { src: 'assets/projects/cat-coaching/03-team.jpg', w: 700, h: 700,
         full: 'assets/projects/cat-coaching/03-team-full.jpg' }
     ]
   },
@@ -1785,8 +1785,12 @@ if (pongCanvas) {
   let p2Y = H / 2 - PADDLE_H / 2;
   let aiTargetY = H / 2, aiLookTimer = 0;
   // still ramps up, but starts slower and caps out lower than before so
-  // long rallies don't accelerate the ball past reactable speed
-  const BALL_MAX_VX = 5;
+  // long rallies don't accelerate the ball past reactable speed. Now a cap
+  // on TOTAL speed rather than on the horizontal component, because the
+  // bounce below splits one speed between the two axes.
+  const BALL_MAX_SPEED = 6;
+  // angle off the horizontal at the very tip of a paddle, ~54 degrees
+  const MAX_BOUNCE_RAD = 0.95;
   let ballX = W / 2, ballY = H / 2, ballVX = 2.1, ballVY = 1.4;
   let score1 = 0, score2 = 0;
   let pongRunning = false;
@@ -1798,6 +1802,24 @@ if (pongCanvas) {
     ballX = W / 2; ballY = H / 2;
     ballVX = (dir || (Math.random() < 0.5 ? -1 : 1)) * 2.1;
     ballVY = (Math.random() < 0.5 ? -1 : 1) * 1.4;
+  }
+
+  // Where on the paddle you hit decides the angle, which is the part of real
+  // Pong that was missing: the old code only ever flipped and scaled ballVX
+  // and left ballVY alone, so the ball kept whatever vertical angle it was
+  // served with for the whole point. Neither side could aim, so rallies
+  // settled into one groove the CPU could sit in forever - the "stalls out
+  // and goes on for ever" problem was this, not only the CPU's speed.
+  // Centre of the paddle returns it flat; the tips return it at up to
+  // MAX_BOUNCE_RAD. Speed is shared between the axes so a steep return is
+  // not also a faster one.
+  function paddleBounce(paddleY, paddleH, dir) {
+    let rel = (ballY - (paddleY + paddleH / 2)) / (paddleH / 2);
+    rel = Math.max(-1, Math.min(1, rel));
+    const angle = rel * MAX_BOUNCE_RAD;
+    const speed = Math.min(Math.hypot(ballVX, ballVY) * 1.03, BALL_MAX_SPEED);
+    ballVX = dir * speed * Math.cos(angle);
+    ballVY = speed * Math.sin(angle);
   }
 
   function drawPong() {
@@ -1845,17 +1867,25 @@ if (pongCanvas) {
     if (ballVX > 0) {
       aiLookTimer--;
       if (aiLookTimer <= 0) {
-        aiLookTimer = 16;
-        aiTargetY = ballY + (Math.random() - 0.5) * 46;
+        // Re-aims every 20 frames at a point up to ~33px either side of the
+        // ball. Both numbers went up (16 / 46): with two paddles that both
+        // return everything, a rally only ends when someone is genuinely out
+        // of position, and speed alone never produced that - the CPU simply
+        // arrived early every time. The misjudgement is what makes it
+        // beatable, and it is also what a person actually does.
+        aiLookTimer = 20;
+        aiTargetY = ballY + (Math.random() - 0.5) * 66;
       }
     } else {
       aiTargetY = H / 2;
       aiLookTimer = 0;
     }
-    // capped well below the player's 6.5, so a paddle that has to travel
-    // far (e.g. a return angled to the opposite side of where it just
-    // was) can genuinely fail to arrive in time
-    const CPU_MAX_SPEED = 3.3;
+    // Capped well below the player's 6.5, so a paddle that has to travel far
+    // (e.g. a return angled to the opposite side of where it just was) can
+    // genuinely fail to arrive in time. Dropped from 3.3: with the bounce
+    // angle above now letting a player aim at the far corner, 3.3 was still
+    // fast enough to cover almost any return.
+    const CPU_MAX_SPEED = 2.55;
     let p2Delta = (aiTargetY - PADDLE_H / 2 - p2Y) * 0.18;
     p2Delta = Math.max(-CPU_MAX_SPEED, Math.min(CPU_MAX_SPEED, p2Delta));
     p2Y += p2Delta;
@@ -1863,14 +1893,22 @@ if (pongCanvas) {
 
     ballX += ballVX;
     ballY += ballVY;
-    if (ballY <= 0 || ballY >= H - 8) ballVY *= -1;
-    // gentler acceleration per hit (was 1.04) plus a hard cap so long
-    // rallies never spiral past a speed the player can actually react to.
-    // player's catch buffer is more forgiving than the CPU's (16 vs 8) —
-    // near-miss timing still counts, since a slightly-late human return
-    // shouldn't feel as punishing as it did before
-    if (ballX <= 24 && ballY > p1Y - 16 && ballY < p1Y + PLAYER_PADDLE_H + 16) ballVX = Math.min(Math.abs(ballVX) * 1.025, BALL_MAX_VX);
-    if (ballX >= W - 24 && ballY > p2Y - 8 && ballY < p2Y + PADDLE_H + 8) ballVX = -Math.min(Math.abs(ballVX) * 1.025, BALL_MAX_VX);
+    // clamped as well as flipped: at the steeper angles the bounce can now
+    // produce, a ball that overshoots the wall in one frame would otherwise
+    // flip again next frame and buzz along the edge
+    if (ballY <= 0) { ballY = 0; ballVY = Math.abs(ballVY); }
+    if (ballY >= H - 8) { ballY = H - 8; ballVY = -Math.abs(ballVY); }
+    // The direction guard is new. Without it a ball that arrived steeply
+    // enough to still be inside the paddle's x-band next frame got hit a
+    // second time and flew back out the way it came.
+    // Player's catch buffer stays more forgiving than the CPU's (16 vs 8) —
+    // a slightly-late human return shouldn't feel as punishing.
+    if (ballVX < 0 && ballX <= 24 && ballY > p1Y - 16 && ballY < p1Y + PLAYER_PADDLE_H + 16) {
+      paddleBounce(p1Y, PLAYER_PADDLE_H, 1); ballX = 24;
+    }
+    if (ballVX > 0 && ballX >= W - 24 && ballY > p2Y - 8 && ballY < p2Y + PADDLE_H + 8) {
+      paddleBounce(p2Y, PADDLE_H, -1); ballX = W - 24;
+    }
     if (ballX < 0) { score2++; resetBall(1); }
     if (ballX > W) { score1++; resetBall(-1); }
 

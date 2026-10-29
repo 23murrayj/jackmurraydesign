@@ -1,4 +1,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
+/* Form controls do not inherit font-family - the UA stylesheet gives them a
+   system default - so every button and input that was not handed one
+   explicitly had been rendering in Arial. That was 15 of them, including the
+   about CTA, SEND MESSAGE and COPY. It is also the whole reason the about
+   button's arrow looked lighter and shorter than the hero's: a different
+   typeface, not a different size. */
+button, input, textarea, select { font-family: inherit; }
 
 :root {
   --black: #1e1c17;
@@ -475,12 +482,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   display: inline-block;
   animation: cta-drift 3s ease-in-out infinite;
 }
+/* scaleY lengthens the shaft without touching the shape he liked. It has to
+   live inside the keyframes: the animation drives `transform`, so a static
+   transform on the element would simply be overridden every frame. */
 @keyframes cta-drift {
-  0%, 100% { transform: translateY(-2px); }
-  50%      { transform: translateY(2px); }
+  0%, 100% { transform: translateY(-2px) scaleY(1.22); }
+  50%      { transform: translateY(2px) scaleY(1.22); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn-block::after { animation: none; transform: none; }
+  .btn-block::after { animation: none; transform: scaleY(1.22); }
 }
 
 /* HERO — narrow viewports.
@@ -927,14 +937,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 /* A lone supporting photo runs the full width under the hero, so the two
    read as one stacked pair rather than a big image and an orphaned tile.
    The width nudges above exist to even out two tiles side by side and have
-   nothing to balance here; at full width their ratios would also make the
-   photo taller than the hero, which is backwards for a supporting shot.
-   16:10 against the hero's 16:9 - same width, near enough the same shape. */
+   nothing to balance here.
+   It keeps the photo's own square shape rather than being cut to the hero's
+   proportions - which means it stands taller than the hero, deliberately:
+   the hero is a wide room shot and this is three people standing up. */
 .project-mixed-details > div:only-child,
 .project-mixed-details > div.is-landscape:only-child,
 .project-mixed-details > div.is-portrait:only-child {
   flex: 1 1 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 1;
 }
 .project-mixed-details svg { width: 100%; height: 100%; display: block; }
 @media (max-width: 700px) {
@@ -959,7 +970,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .project-mixed-details > div.is-landscape:only-child,
   .project-mixed-details > div.is-portrait:only-child {
     flex: 1 1 100%;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1;
   }
 }
 
@@ -1257,9 +1268,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    node that space-between had nothing to push apart. As a pseudo-element
    it's a second flex item, and it stays out of the four translations and
    out of what a screen reader reads. */
+/* The display face draws this one lighter and shorter than the hero's, so
+   at 1.15em it read as a different weight class from its own label. Bumped
+   and set bold to match the type it sits next to. */
 .about-cta-row .about-readmore-btn::after {
   content: '\2192';
-  font-size: 1.15em; line-height: 1;
+  font-size: 1.5em; line-height: 1; font-weight: 700;
   transition: transform .25s ease;
 }
 .about-cta-row .about-readmore-btn:hover::after { transform: translateX(5px); }
@@ -1672,10 +1686,11 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .social-link:hover { color: var(--paper); padding-left: 18px; }
 .social-link:hover::before { width: 100%; }
 .social-link:hover .social-link-arrow { color: var(--yellow); transform: translate(5px, -5px) rotate(8deg); }
-/* the resume row downloads rather than leaving the site, so its arrow points
-   down and the hover nudge goes with it - the shared up-and-right move
-   contradicted the glyph */
-.social-link[download]:hover .social-link-arrow { transform: translate(0, 5px) rotate(0); }
+/* The list ends on a 3px rule and the strip under it starts with another,
+   which stacked two bars into one thick band right above BASED IN ILLINOIS.
+   The last row drops its own rule and the gap does the separating. */
+.contact-socials-big .social-link:last-child { border-bottom: 0; }
+.contact-socials-big { margin-bottom: 26px; }
 
 @media (max-width: 900px) {
   .contact-grid { grid-template-columns: 1fr; gap: 16px; }

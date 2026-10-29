@@ -210,7 +210,7 @@
 
       'contact.title': 'CONTACT',
       'contact.num': "03 / LET'S TALK",
-      'contact.statement': "GOT AN IDEA?<br>LET'S TALK.",
+      'contact.statement': "GOT AN IDEA?<br>LET'S TALK!",
       'contact.copy': 'COPY',
       'contact.resume': 'RESUME',
       'contact.copied': 'COPIED ✓',
@@ -427,7 +427,7 @@
 
       'contact.title': 'CONTACTO',
       'contact.num': '03 / HABLEMOS',
-      'contact.statement': '¿TIENES UNA IDEA?<br>HABLEMOS.',
+      'contact.statement': '¿TIENES UNA IDEA?<br>¡HABLEMOS!',
       'contact.copy': 'COPIAR',
       'contact.resume': 'CV',
       'contact.copied': 'COPIADO ✓',
@@ -644,7 +644,7 @@
 
       'contact.title': 'お問い合わせ',
       'contact.num': '03 / 話しましょう',
-      'contact.statement': 'アイデアがありますか？<br>話しましょう。',
+      'contact.statement': 'アイデアがありますか？<br>話しましょう！',
       'contact.copy': 'コピー',
       'contact.resume': '履歴書',
       'contact.copied': 'コピーしました ✓',
@@ -861,7 +861,7 @@
 
       'contact.title': 'CONTATTI',
       'contact.num': '03 / PARLIAMONE',
-      'contact.statement': 'HAI UN’IDEA?<br>PARLIAMONE.',
+      'contact.statement': 'HAI UN’IDEA?<br>PARLIAMONE!',
       'contact.copy': 'COPIA',
       'contact.resume': 'CV',
       'contact.copied': 'COPIATO ✓',
