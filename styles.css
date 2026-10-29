@@ -13,6 +13,11 @@
   --yellow: #fffb00;
   --blue: #0a5cff;
   --green: #16d160;
+  /* Chip fills for the about-page skill tags. These have to be tokens: the
+     overlay's background is var(--white), which flips with the theme, so a
+     hardcoded dark tint vanished completely in dark mode. */
+  --chip: rgba(30, 28, 23, 0.07);
+  --chip-lead: rgba(30, 28, 23, 0.24);
   /* fixed ink/paper: do NOT flip with theme — used by graphic "chip"
      elements (marquee, loader, about slab, footer) that pair with the
      literal --yellow accent and must stay guaranteed-readable in both modes */
@@ -71,6 +76,10 @@
   /* ~6.7:1 contrast on the dark --white bg */
   --muted: #9c9b92;
   --line: #38372f;
+  /* light tint on the dark ground, and a touch stronger: a 7% wash that
+     reads fine as dark-on-light disappears as light-on-dark */
+  --chip: rgba(232, 229, 220, 0.10);
+  --chip-lead: rgba(232, 229, 220, 0.22);
 }
 
 /* The nav is fixed and 94px tall (86 on phones), so an un-padded anchor jump
@@ -454,6 +463,25 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transition: background .25s, color .25s, transform .25s;
 }
 .btn-block:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--accent); }
+/* The arrow drifts, to say there is more below without shouting it. Pulled
+   out of the translated string and into a pseudo-element for the same reason
+   the about CTA's was: I18N.apply() assigns textContent, so any span inside
+   the label is wiped on the first language switch - and an animation needs
+   its own element to move. 4px of travel over 3s reads as a drift rather
+   than a bounce; the button itself never moves, so the hover lift is
+   unaffected. */
+.btn-block::after {
+  content: '\2193';
+  display: inline-block;
+  animation: cta-drift 3s ease-in-out infinite;
+}
+@keyframes cta-drift {
+  0%, 100% { transform: translateY(-2px); }
+  50%      { transform: translateY(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-block::after { animation: none; transform: none; }
+}
 
 /* HERO — narrow viewports.
    The 1.4fr/1fr split has no min-width floor, so below ~900px the two
@@ -896,6 +924,18 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    the row from 311px to 408px. */
 .project-mixed-details > div.is-landscape { flex-grow: 1.24; aspect-ratio: 1.24; }
 .project-mixed-details > div.is-portrait  { flex-grow: 0.88; aspect-ratio: 0.88; }
+/* A lone supporting photo runs the full width under the hero, so the two
+   read as one stacked pair rather than a big image and an orphaned tile.
+   The width nudges above exist to even out two tiles side by side and have
+   nothing to balance here; at full width their ratios would also make the
+   photo taller than the hero, which is backwards for a supporting shot.
+   16:10 against the hero's 16:9 - same width, near enough the same shape. */
+.project-mixed-details > div:only-child,
+.project-mixed-details > div.is-landscape:only-child,
+.project-mixed-details > div.is-portrait:only-child {
+  flex: 1 1 100%;
+  aspect-ratio: 16 / 10;
+}
 .project-mixed-details svg { width: 100%; height: 100%; display: block; }
 @media (max-width: 700px) {
   /* Two-up and wrapping: the width nudge is pointless once tiles are half a
@@ -912,6 +952,14 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .project-mixed-details > div.is-portrait {
     flex: 0 1 calc(50% - 6px);
     aspect-ratio: 1;
+  }
+  /* a solo photo stays full width on a phone too - half a phone wide is not
+     a supporting photo, it is a thumbnail */
+  .project-mixed-details > div:only-child,
+  .project-mixed-details > div.is-landscape:only-child,
+  .project-mixed-details > div.is-portrait:only-child {
+    flex: 1 1 100%;
+    aspect-ratio: 16 / 10;
   }
 }
 
@@ -1128,7 +1176,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    the appearance was the whole of the lie. */
 .about-skill-tags span {
   border: 0;
-  background: rgba(30, 28, 23, 0.07);
+  background: var(--chip);
   color: var(--black);
   padding: 9px 15px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1.2px;
 }
@@ -1136,9 +1184,13 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    groups picks up the headline of each without reading all 29 - now by
    weight and a deeper tint rather than by looking pressable */
 .about-skill-tags span.lead {
-  background: rgba(30, 28, 23, 0.24);
+  background: var(--chip-lead);
   font-weight: 800;
 }
+/* CLAUDE CODE and CODEX travel together so CODEX cannot be left hanging on
+   a line of its own. A div, not a span, so the chip rule above does not
+   style the wrapper as a chip as well. */
+.about-skill-tags .tag-pair { display: flex; gap: 10px; }
 
 /* ABOUT */
 .about { background: var(--ink); color: var(--paper); padding-bottom: 34px; position: relative; }
@@ -1620,6 +1672,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .social-link:hover { color: var(--paper); padding-left: 18px; }
 .social-link:hover::before { width: 100%; }
 .social-link:hover .social-link-arrow { color: var(--yellow); transform: translate(5px, -5px) rotate(8deg); }
+/* the resume row downloads rather than leaving the site, so its arrow points
+   down and the hover nudge goes with it - the shared up-and-right move
+   contradicted the glyph */
+.social-link[download]:hover .social-link-arrow { transform: translate(0, 5px) rotate(0); }
 
 @media (max-width: 900px) {
   .contact-grid { grid-template-columns: 1fr; gap: 16px; }

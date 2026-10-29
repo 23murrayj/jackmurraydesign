@@ -77,13 +77,15 @@ const projectData = {
     sidebar: true,
     hero: { src: 'assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
             full: 'assets/projects/cat-coaching/hero-full.jpg' },
+    // One supporting photo, not two. The whiteboard shot came out and the
+    // team shot takes the full width under the hero - see the :only-child
+    // rule in styles.css. Alt strings are resolved BY POSITION and the hero
+    // is index 0, so detail images start at alt.2, not alt.1: dropping the
+    // whiteboard here meant deleting the old alt.2 and moving the team
+    // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
+    // untouched.
     detailImages: [
-      // 02 is cropped from a photo stored landscape with EXIF orientation 6 —
-      // the crop offsets below are in STORED coordinates, not the portrait
-      // ones the image displays at. See assets/README.md.
-      { src: 'assets/projects/cat-coaching/02-whiteboard.jpg', w: 700, h: 700,
-        full: 'assets/projects/cat-coaching/02-whiteboard-full.jpg' },
-      { src: 'assets/projects/cat-coaching/03-team.jpg', w: 700, h: 700,
+      { src: 'assets/projects/cat-coaching/03-team.jpg', w: 1600, h: 1000,
         full: 'assets/projects/cat-coaching/03-team-full.jpg' }
     ]
   },

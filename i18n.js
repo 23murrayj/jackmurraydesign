@@ -55,7 +55,7 @@
       'cvd.highcontrast': 'HIGH CONTRAST',
 
       'hero.badge': 'OPEN TO PROJECTS & DESIGN WORK',
-      'hero.cta': 'VIEW PROJECTS ↓',
+      'hero.cta': 'VIEW PROJECTS',
       'hero.taglines': [
         'UX designer building websites with personality.',
         'Websites, visual systems, and digital experiments.',
@@ -85,8 +85,7 @@
       'proj.cat-coaching.role': 'UX Research & Design',
       'proj.cat-coaching.body': "Best Research Award winner. In my Advanced Interaction Design course at Bradley, I worked in a three-person team partnered with Caterpillar to design an adaptive coaching interface for heavy equipment operators.\n\nI got my hands on every part of the process: research, user flows, wireframes, Figma prototypes, and usability testing with 5 participants. We met with Caterpillar's UX team for 7 weeks, went through 2 rounds of iteration based on their feedback and our testing, and wrapped up with an on-site visit to Caterpillar in Peoria.",
       'proj.cat-coaching.alt.1': "Three students working at a conference table at Caterpillar, laptops open to design files, with project notes filling the whiteboard behind them.",
-      'proj.cat-coaching.alt.2': "A team working session, with feature priorities and screen names written across a whiteboard.",
-      'proj.cat-coaching.alt.3': "The three-person project team in front of a Caterpillar wall graphic reading 'One Team, with a Common Goal'.",
+      'proj.cat-coaching.alt.2': "The three-person project team in front of a Caterpillar wall graphic reading 'One Team, with a Common Goal'.",
       'proj.fuse-partners-in-crime.desc': "Asymmetric VR and PC co-op heist, shown at the Peoria Riverfront Museum.",
       'proj.fuse-partners-in-crime.type': 'Bradley FUSE · VR Game',
       'proj.fuse-partners-in-crime.role': 'VR Interface & VFX',
@@ -213,6 +212,7 @@
       'contact.num': "03 / LET'S TALK",
       'contact.statement': "GOT AN IDEA?<br>LET'S TALK.",
       'contact.copy': 'COPY',
+      'contact.resume': 'RESUME',
       'contact.copied': 'COPIED ✓',
       'contact.location': 'BASED IN ILLINOIS. AVAILABLE ANYWHERE.',
 
@@ -272,7 +272,7 @@
       'cvd.highcontrast': 'ALTO CONTRASTE',
 
       'hero.badge': 'DISPONIBLE PARA PROYECTOS Y DISEÑO',
-      'hero.cta': 'VER PROYECTOS ↓',
+      'hero.cta': 'VER PROYECTOS',
       'hero.taglines': [
         'Diseñador UX que crea sitios web con personalidad.',
         'Sitios web, sistemas visuales y experimentos digitales.',
@@ -302,8 +302,7 @@
       'proj.cat-coaching.role': 'Investigación y diseño UX',
       'proj.cat-coaching.body': "Premio a la Mejor Investigación. En mi curso de Diseño de Interacción Avanzado en Bradley trabajé en un equipo de tres personas junto a Caterpillar para diseñar una interfaz de coaching adaptativo para operadores de maquinaria pesada.\n\nParticipé en todas las partes del proceso: investigación, flujos de usuario, wireframes, prototipos en Figma y pruebas de usabilidad con 5 participantes. Nos reunimos con el equipo de UX de Caterpillar durante 7 semanas, pasamos por 2 rondas de iteración a partir de sus comentarios y de nuestras pruebas, y terminamos con una visita presencial a Caterpillar en Peoria.",
       'proj.cat-coaching.alt.1': "Tres estudiantes trabajando en una mesa de reuniones en Caterpillar, con portátiles abiertos en archivos de diseño y notas del proyecto cubriendo la pizarra detrás.",
-      'proj.cat-coaching.alt.2': "Una sesión de trabajo en equipo, con prioridades de funciones y nombres de pantallas escritos en una pizarra.",
-      'proj.cat-coaching.alt.3': "El equipo de tres personas frente a un gráfico mural de Caterpillar que dice 'One Team, with a Common Goal'.",
+      'proj.cat-coaching.alt.2': "El equipo de tres personas frente a un gráfico mural de Caterpillar que dice 'One Team, with a Common Goal'.",
       'proj.fuse-partners-in-crime.desc': "Atraco cooperativo asimétrico entre VR y PC, expuesto en el Peoria Riverfront Museum.",
       'proj.fuse-partners-in-crime.type': 'Bradley FUSE · Videojuego VR',
       'proj.fuse-partners-in-crime.role': 'Interfaz VR y efectos visuales',
@@ -430,6 +429,7 @@
       'contact.num': '03 / HABLEMOS',
       'contact.statement': '¿TIENES UNA IDEA?<br>HABLEMOS.',
       'contact.copy': 'COPIAR',
+      'contact.resume': 'CV',
       'contact.copied': 'COPIADO ✓',
       'contact.location': 'CON BASE EN ILLINOIS. DISPONIBLE EN TODAS PARTES.',
 
@@ -489,7 +489,7 @@
       'cvd.highcontrast': 'ハイコントラスト',
 
       'hero.badge': 'プロジェクト・デザインのご依頼受付中',
-      'hero.cta': 'プロジェクトを見る ↓',
+      'hero.cta': 'プロジェクトを見る',
       'hero.taglines': [
         '個性のあるウェブサイトをつくるUXデザイナー。',
         'ウェブサイト、ビジュアルシステム、デジタルの実験。',
@@ -519,8 +519,7 @@
       'proj.cat-coaching.role': 'UXリサーチ / デザイン',
       'proj.cat-coaching.body': "ベストリサーチ賞受賞。ブラッドリー大学の上級インタラクションデザインの講座で、3人チームとしてキャタピラーと組み、建設機械オペレーター向けのアダプティブなコーチングUIを設計しました。\n\nリサーチ、ユーザーフロー、ワイヤーフレーム、Figmaプロトタイプ、5名を対象としたユーザビリティテストまで、プロセスのすべてに関わりました。キャタピラーのUXチームとは7週間にわたって打ち合わせを重ね、そのフィードバックと自分たちのテスト結果をもとに2回のイテレーションを行い、最後はピオリアのキャタピラーを訪問して締めくくりました。",
       'proj.cat-coaching.alt.1': "キャタピラーの会議室で作業する3人の学生。ノートパソコンにはデザインファイルが開かれ、背後のホワイトボードはプロジェクトのメモで埋まっている。",
-      'proj.cat-coaching.alt.2': "チームの作業風景。ホワイトボードに機能の優先順位と画面名が書き出されている。",
-      'proj.cat-coaching.alt.3': "「One Team, with a Common Goal」と書かれたキャタピラーの壁面グラフィックの前に立つ3人のチーム。",
+      'proj.cat-coaching.alt.2': "「One Team, with a Common Goal」と書かれたキャタピラーの壁面グラフィックの前に立つ3人のチーム。",
       'proj.fuse-partners-in-crime.desc': 'VRとPCの非対称協力型強盗ゲーム。ピオリア・リバーフロント美術館で公開。',
       'proj.fuse-partners-in-crime.type': 'Bradley FUSE · VRゲーム',
       'proj.fuse-partners-in-crime.role': 'VRインターフェース / VFX',
@@ -647,6 +646,7 @@
       'contact.num': '03 / 話しましょう',
       'contact.statement': 'アイデアがありますか？<br>話しましょう。',
       'contact.copy': 'コピー',
+      'contact.resume': '履歴書',
       'contact.copied': 'コピーしました ✓',
       'contact.location': 'イリノイ拠点。どこでも対応可能。',
 
@@ -706,7 +706,7 @@
       'cvd.highcontrast': 'ALTO CONTRASTO',
 
       'hero.badge': 'DISPONIBILE PER PROGETTI E DESIGN',
-      'hero.cta': 'GUARDA I PROGETTI ↓',
+      'hero.cta': 'GUARDA I PROGETTI',
       'hero.taglines': [
         'Designer UX che crea siti web con personalità.',
         'Siti web, sistemi visivi ed esperimenti digitali.',
@@ -736,8 +736,7 @@
       'proj.cat-coaching.role': 'Ricerca e design UX',
       'proj.cat-coaching.body': "Premio per la Miglior Ricerca. Nel corso di Advanced Interaction Design alla Bradley ho lavorato in un team di tre persone insieme a Caterpillar per progettare un'interfaccia di coaching adattivo per operatori di mezzi pesanti.\n\nHo messo mano a ogni fase del processo: ricerca, user flow, wireframe, prototipi in Figma e test di usabilità con 5 partecipanti. Abbiamo incontrato il team UX di Caterpillar per 7 settimane, siamo passati per 2 round di iterazione sulla base dei loro feedback e dei nostri test, e abbiamo chiuso con una visita in sede da Caterpillar a Peoria.",
       'proj.cat-coaching.alt.1': "Tre studenti al lavoro attorno a un tavolo riunioni da Caterpillar, con i portatili aperti sui file di design e la lavagna alle spalle coperta di appunti di progetto.",
-      'proj.cat-coaching.alt.2': "Una sessione di lavoro del team, con priorità delle funzioni e nomi delle schermate scritti sulla lavagna.",
-      'proj.cat-coaching.alt.3': "Il team di tre persone davanti a una grafica murale Caterpillar con la scritta 'One Team, with a Common Goal'.",
+      'proj.cat-coaching.alt.2': "Il team di tre persone davanti a una grafica murale Caterpillar con la scritta 'One Team, with a Common Goal'.",
       'proj.fuse-partners-in-crime.desc': "Colpo cooperativo asimmetrico tra VR e PC, esposto al Peoria Riverfront Museum.",
       'proj.fuse-partners-in-crime.type': 'Bradley FUSE · Videogioco VR',
       'proj.fuse-partners-in-crime.role': 'Interfaccia VR e VFX',
@@ -864,6 +863,7 @@
       'contact.num': '03 / PARLIAMONE',
       'contact.statement': 'HAI UN’IDEA?<br>PARLIAMONE.',
       'contact.copy': 'COPIA',
+      'contact.resume': 'CV',
       'contact.copied': 'COPIATO ✓',
       'contact.location': 'CON BASE IN ILLINOIS. DISPONIBILE OVUNQUE.',
 
