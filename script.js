@@ -1956,8 +1956,13 @@ if (pongCanvas) {
   pongRematch?.addEventListener('click', startPongGame);
 }
 
-// subtle tilt on portfolio cards
-document.querySelectorAll('[data-tilt]').forEach((card) => {
+// Cursor-following 3D tilt. The project cards use it, and so does the about
+// photo - it is the thing that makes them feel like the same object, and a
+// fixed CSS rotation is not a substitute: it does not track the pointer.
+// Note this sets an inline transform, which beats any :hover transform in the
+// stylesheet - so a tilted element's hover styling has to live in the parts
+// this does not touch (box-shadow on the cards, the ring on the photo).
+if (!prefersReducedMotion) document.querySelectorAll('[data-tilt]').forEach((card) => {
   card.addEventListener('mousemove', (e) => {
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;

@@ -1415,8 +1415,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    off it. */
 .about-portrait {
   display: block;
-  /* the card's curve, so the two gestures feel like the same site */
+  /* the card's own curve on transform, which is what makes the tilt settle
+     back rather than snap when the pointer leaves */
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .3s, filter .3s;
+  /* the tilt is a 3D rotation, so the photo inside has to be part of the
+     same 3D space rather than flattened into the link's plane */
+  transform-style: preserve-3d;
 }
 /* The ring has to be its own layer: an inset box-shadow paints on the
    link's background, which the image then covers completely. */
@@ -1429,19 +1433,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-panel .about-portrait:focus-visible::after {
   box-shadow: inset 0 0 0 6px var(--yellow);
 }
-/* The card wobble, for real this time. A card tilts a bordered tile against
-   the page, which is legible because its edge is a hard line you can see go
-   off-axis. The first attempt here rotated only the photo inside a fixed
-   frame, at the 0.5deg the card uses on its inner art - and on a photograph
-   with no visible edge of its own that is invisible. You just saw it zoom.
-   So the tile rotates now, taking the yellow hover ring with it, and the
-   ring is the hard line that makes the rotation readable. 0.9deg rather than
-   the card's 0.4: the card tilts against a 3px black border on flat paper,
-   this tilts against the panel's own cropped edge, which needs more to
-   register. The photo still zooms underneath, as .card-media does. */
+/* No transform here. The tilt is the cards' own [data-tilt] handler, which
+   tracks the pointer and writes an inline transform - a rule in this file
+   would either be overridden by it or fight it. What is left for CSS is the
+   part the handler does not touch: the ring, and the brightness lift. */
 .about-panel .about-portrait:hover,
 .about-panel .about-portrait:focus-visible {
-  transform: translate(-3px, -3px) rotate(-0.9deg);
   filter: brightness(1.06);
 }
 .about-panel .about-portrait:hover img,
@@ -1451,8 +1448,6 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 @media (prefers-reduced-motion: reduce) {
   .about-panel .about-portrait::after { transition: none; }
   .about-portrait, .about-portrait img { transition: none; }
-  .about-panel .about-portrait:hover,
-  .about-panel .about-portrait:focus-visible,
   .about-panel .about-portrait:hover img,
   .about-panel .about-portrait:focus-visible img { transform: none; }
 }
@@ -1839,7 +1834,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   position: relative;
   background: none; border: none; cursor: pointer;
   color: inherit; font-size: 0.8rem;
-  opacity: 0.3; margin-left: 6px;
+  opacity: 0.45; margin-left: 6px;
   transition: opacity .25s ease, transform .25s ease, color .25s ease;
 }
 /* It breathes because nobody was finding it. At 0.3 opacity in the footer it
@@ -1848,17 +1843,23 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    enough (5s) to read as a pulse rather than a blink, and the opacity rides
    along with the scale so it brightens as it grows. */
 .egg-trigger { animation: egg-breathe 5s ease-in-out infinite; }
+/* The floor of the pulse matters more than the ceiling: at scale 1 / 0.3 it
+   spent half of every cycle back at invisible, which is where it was before
+   it breathed at all. Both ends come up - 1.15 to 1.38 rather than 1 to 1.22,
+   and 0.45 to 0.8 rather than 0.3 to 0.6 - so the average is 1.27 and 0.63
+   instead of 1.11 and 0.45, and the trough is still bright enough to see. */
 @keyframes egg-breathe {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50%      { opacity: 0.6; transform: scale(1.22); }
+  0%, 100% { opacity: 0.45; transform: scale(1.15); }
+  50%      { opacity: 0.8;  transform: scale(1.38); }
 }
 /* the animation drives transform and opacity, so it would win over the hover
    state's values - it has to stop for the hover to be visible at all */
 .egg-trigger:hover, .egg-trigger:focus-visible { animation: none; }
-.egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.3); color: var(--yellow); }
+.egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.55); color: var(--yellow); }
 @media (prefers-reduced-motion: reduce) {
-  /* no pulse, but it keeps the brighter end of it so it is still findable */
-  .egg-trigger { animation: none; opacity: 0.5; }
+  /* no pulse, but it keeps the brighter, bigger end of it so it is still
+     findable without moving */
+  .egg-trigger { animation: none; opacity: 0.7; transform: scale(1.25); }
 }
 
 .egg-particle {
