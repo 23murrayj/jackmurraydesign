@@ -1331,6 +1331,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-intro { display: flex; flex-direction: column; gap: 0; }
 .about-statement { margin-bottom: 30px; }
 .about-stats { margin-bottom: 44px; }
+/* One clause is set heavy so the paragraph has something to catch on. Four
+   lines at an even weight is a wall you either read or skip; a weight jump
+   gives the eye a landing point and the gist survives a two-second scan.
+   Weight, not colour - yellow belongs to the CTA, and this keeps the whole
+   paragraph at the same contrast. */
+.about-statement b {
+  font-weight: 800;
+  /* the display face is tighter at this size; -0.01em stops the bold clause
+     from running visibly wider than the text around it */
+  letter-spacing: -0.01em;
+}
 .about-statement {
   font-size: clamp(1.4rem, 2.6vw, 2.1rem);
   font-weight: 500; line-height: 1.35;
@@ -1354,23 +1365,43 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   max-width: 44ch;
   margin-bottom: 24px;
   text-wrap: pretty;
+  /* A rule down the side so it is structurally a pull-quote rather than a
+     second paragraph. Without it the section read as two blocks of prose in
+     two sizes, which is the thing that makes a visitor decide not to read
+     either. Now one is a statement and one is an aside, and you can tell
+     which is which before reading a word. */
+  position: relative;
+  padding-left: 22px;
+}
+.about-hook::before {
+  content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+  width: 4px; background: var(--paper);
 }
 /* a row, not a 2x2 block: four short columns read as one horizontal sweep
    that carries the eye across and down to the hook, where a block made a
    second thing to read. */
+/* Ruled like a table, not floated in the dark. The hairlines were
+   rgba(...,0.16) - barely visible, so four numbers sat loose in the middle
+   of the column with nothing holding them. 2px solid is the border weight
+   this whole site uses, and it makes the band read as one object you can
+   scan across in a single pass. */
 .about-stats {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-  border-top: 1px solid rgba(245,245,240,0.16);
-  border-bottom: 1px solid rgba(245,245,240,0.16);
-  padding: 20px 0;
+  border-top: 2px solid rgba(245,245,240,0.3);
+  border-bottom: 2px solid rgba(245,245,240,0.3);
+  padding: 24px 0;
 }
-.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat { display: flex; flex-direction: column; gap: 7px; }
 /* These were 3.1rem in full yellow, which made four supporting numbers the
    loudest thing in the section - brighter and half again larger than the
    sentence they support. Dropped to paper and below the statement's size so
    they read as evidence, not headline. */
+/* Emphasis carried by size and weight rather than by the accent, so the
+   numbers stay loud while yellow still means one thing in this column.
+   ~36px at 1440, set in the display face against the statement's body face -
+   different enough to read as data, not as another sentence. */
 .stat-num {
-  font-family: var(--ff-display); font-size: clamp(1.5rem, 2.05vw, 1.9rem);
+  font-family: var(--ff-display); font-size: clamp(1.75rem, 2.5vw, 2.3rem);
   letter-spacing: -0.02em; color: var(--paper); line-height: 1;
 }
 /* This was the last accent left in the reading column, sitting far right at
@@ -1380,7 +1411,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    breaks into colour once, at the thing we want clicked.
    To put the accent back: color: var(--yellow). */
 .stat.is-now .stat-num { color: var(--paper); }
-.stat-label { font-size: 0.72rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
+.stat-label { font-size: 0.74rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 /* Between a laptop and a desktop a fixed 420px panel takes too big a bite
    out of the reading column, so it scales with the viewport until it is
    worth keeping at all. */
