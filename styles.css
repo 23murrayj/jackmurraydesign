@@ -1406,14 +1406,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   background: rgba(245,245,240,0.055);
   border-top: 2px solid rgba(245,245,240,0.3);
   border-bottom: 2px solid rgba(245,245,240,0.3);
-  /* No padding on the band: the cells carry it. With it here the grid items
-     sat 22px inside the band, so each divider - being a border on the cell -
-     stopped 22px short of the rules at both ends and read as a floating stub
-     rather than a cell edge. On the cells, the dividers run the full height
-     between the two rules. */
-  padding: 0;
+  padding: 22px 0;
 }
-.stat { padding: 22px; border-left: 2px solid rgba(245,245,240,0.45); }
+.stat { padding: 0 22px; border-left: 2px solid rgba(245,245,240,0.45); }
 .stat:first-child { padding-left: 0; border-left: 0; }
 .stat { display: flex; flex-direction: column; gap: 7px; }
 
