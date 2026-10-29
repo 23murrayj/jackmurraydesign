@@ -1392,7 +1392,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   overflow: hidden;
 }
 .about-panel .about-portrait {
-  position: absolute; inset: 0;
+  /* -5%, not 0. The tilt is a 3D rotation, so the far edge of the photo
+     swings back and lands inside the panel - up to 13px of bare ink in the
+     top corners at full tilt, which is the artefact that showed. Oversizing
+     the photo past that worst case keeps its edges outside the panel's clip,
+     so the panel stays completely filled at every cursor position.
+     A percentage rather than a pixel figure because the gap grows with the
+     panel's own height: 16px held at the 732px panel this viewport renders
+     (1.7px to spare) but went 11px negative at 1100px, which would have put
+     the artefact straight back on a taller section. -5% keeps at least 6px
+     of cover at every panel size measured, from 300x650 to 490x760. */
+  position: absolute; inset: -5%;
   border: 0;
 }
 /* the 4px rule that runs under the section heading, continued down the seam:
@@ -1418,42 +1428,46 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   /* the card's own curve on transform, which is what makes the tilt settle
      back rather than snap when the pointer leaves */
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .3s, filter .3s;
-  /* the tilt is a 3D rotation, so the photo inside has to be part of the
-     same 3D space rather than flattened into the link's plane */
-  transform-style: preserve-3d;
 }
-/* The ring has to be its own layer: an inset box-shadow paints on the
-   link's background, which the image then covers completely. */
-.about-panel .about-portrait::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
+/* The ring sits on the panel, not on the photo. On the photo it rode along
+   with the tilt, which put a yellow frame in the middle of the picture with
+   more picture visible outside it - the thing that read as broken corners.
+   On the panel it is a fixed window the photo moves behind, so the frame
+   stays square to the page however far the photo leans. z-index because the
+   photo's 3D transform gives it a stacking context of its own. */
+.about-panel::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   box-shadow: inset 0 0 0 0 var(--yellow);
   transition: box-shadow .3s ease;
 }
-.about-panel .about-portrait:hover::after,
-.about-panel .about-portrait:focus-visible::after {
+/* hover:hover, because a tap on a touch screen leaves :hover matching until
+   something else is tapped - measured stuck on at 375px wide, ring and all,
+   with no way for a finger to dismiss it. Keyboard focus is outside the
+   query so it still works everywhere. */
+@media (hover: hover) {
+  .about-panel:hover::after { box-shadow: inset 0 0 0 6px var(--yellow); }
+}
+.about-panel:has(.about-portrait:focus-visible)::after {
   box-shadow: inset 0 0 0 6px var(--yellow);
 }
 /* No transform here. The tilt is the cards' own [data-tilt] handler, which
    tracks the pointer and writes an inline transform - a rule in this file
    would either be overridden by it or fight it. What is left for CSS is the
    part the handler does not touch: the ring, and the brightness lift. */
-.about-panel .about-portrait:hover,
-.about-panel .about-portrait:focus-visible {
-  filter: brightness(1.06);
+@media (hover: hover) {
+  .about-panel .about-portrait:hover { filter: brightness(1.06); }
 }
-.about-panel .about-portrait:hover img,
-.about-panel .about-portrait:focus-visible img {
-  transform: scale(1.1);
-}
+.about-panel .about-portrait:focus-visible { filter: brightness(1.06); }
+
 @media (prefers-reduced-motion: reduce) {
-  .about-panel .about-portrait::after { transition: none; }
-  .about-portrait, .about-portrait img { transition: none; }
-  .about-panel .about-portrait:hover img,
-  .about-panel .about-portrait:focus-visible img { transform: none; }
+  .about-panel::after { transition: none; }
+  .about-portrait { transition: none; }
 }
 .about-portrait img { display: block; }
-/* same .5s ease the project cards give .card-media */
-.about-portrait img { transition: transform .5s ease; }
+/* No zoom on hover. The project cards look like they zoom their art, but
+   .card:hover .card-media svg has matched nothing since the placeholders
+   became photographs - every .card-media holds an <img> now. So the cards
+   tilt and nothing else, and this does the same. */
 
 /* one column, read straight down: statement, stats, hook, button. Every
    step is smaller and quieter than the last until the button, which jumps
@@ -1597,7 +1611,8 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      which still leaves the copy on screen first. */
   .about { --about-panel: 0px; --about-inset: 5vw; }
   .about-panel {
-    position: static; width: auto;
+    /* relative, not static: the ring is a ::after pinned to this box */
+    position: relative; width: auto;
     margin: 0 5vw 28px;
     /* the photo carries a full 4px border of its own down here, so the
        panel's seam would draw a second line on top of it */
@@ -1609,6 +1624,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      shoes. 3:4 shows 76.5% and holds the whole figure. Costs 28px. */
   .about-panel .about-portrait {
     position: relative;
+    /* the desktop rule's -16px would offset a relatively-positioned box
+       rather than oversize it, dragging the photo up and left */
+    inset: auto;
     aspect-ratio: 3 / 4;
     border: 4px solid var(--paper);
   }
@@ -1833,8 +1851,8 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .egg-trigger {
   position: relative;
   background: none; border: none; cursor: pointer;
-  color: inherit; font-size: 0.8rem;
-  opacity: 0.45; margin-left: 6px;
+  color: inherit; font-size: 1.05rem;
+  opacity: 0.55; margin-left: 8px;
   transition: opacity .25s ease, transform .25s ease, color .25s ease;
 }
 /* It breathes because nobody was finding it. At 0.3 opacity in the footer it
@@ -1843,23 +1861,23 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    enough (5s) to read as a pulse rather than a blink, and the opacity rides
    along with the scale so it brightens as it grows. */
 .egg-trigger { animation: egg-breathe 5s ease-in-out infinite; }
-/* The floor of the pulse matters more than the ceiling: at scale 1 / 0.3 it
-   spent half of every cycle back at invisible, which is where it was before
-   it breathed at all. Both ends come up - 1.15 to 1.38 rather than 1 to 1.22,
-   and 0.45 to 0.8 rather than 0.3 to 0.6 - so the average is 1.27 and 0.63
-   instead of 1.11 and 0.45, and the trough is still bright enough to see. */
+/* Size comes from font-size first (0.8rem -> 1.05rem, so 12.8px -> 16.8px of
+   actual glyph) and only then from the pulse, because scaling a small
+   character up just blurs it. On top of that the floor matters more than the
+   ceiling: the first version sat back at scale 1 / opacity 0.3 for half of
+   every cycle, which is exactly where it was before it breathed at all. */
 @keyframes egg-breathe {
-  0%, 100% { opacity: 0.45; transform: scale(1.15); }
-  50%      { opacity: 0.8;  transform: scale(1.38); }
+  0%, 100% { opacity: 0.55; transform: scale(1.2); }
+  50%      { opacity: 0.9;  transform: scale(1.45); }
 }
 /* the animation drives transform and opacity, so it would win over the hover
    state's values - it has to stop for the hover to be visible at all */
 .egg-trigger:hover, .egg-trigger:focus-visible { animation: none; }
-.egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.55); color: var(--yellow); }
+.egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.7); color: var(--yellow); }
 @media (prefers-reduced-motion: reduce) {
   /* no pulse, but it keeps the brighter, bigger end of it so it is still
      findable without moving */
-  .egg-trigger { animation: none; opacity: 0.7; transform: scale(1.25); }
+  .egg-trigger { animation: none; opacity: 0.8; transform: scale(1.3); }
 }
 
 .egg-particle {
