@@ -1776,11 +1776,12 @@ const pongRematch = document.getElementById('pongRematch');
 if (pongCanvas) {
   const pctx = pongCanvas.getContext('2d');
   const W = pongCanvas.width, H = pongCanvas.height;
-  const PADDLE_H = 60, PADDLE_W = 10;
-  // player's paddle is a bit taller than the CPU's — a common, barely-
-  // noticeable "easy mode" trick that gives the player more forgiving
-  // hitboxes without changing the visible challenge
-  const PLAYER_PADDLE_H = 78;
+  // Both paddles are the same size now: the player's used to be 78 against
+  // the CPU's 60, which is a standard "easy mode" trick but reads as unfair
+  // once you notice it. The player keeps a forgiveness edge, just an
+  // invisible one - the catch buffers further down are 16px against 8px.
+  const PADDLE_H = 69, PADDLE_W = 10;
+  const PLAYER_PADDLE_H = PADDLE_H;
   let p1Y = H / 2 - PLAYER_PADDLE_H / 2;
   let p2Y = H / 2 - PADDLE_H / 2;
   let aiTargetY = H / 2, aiLookTimer = 0;

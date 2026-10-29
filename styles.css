@@ -486,11 +486,11 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    live inside the keyframes: the animation drives `transform`, so a static
    transform on the element would simply be overridden every frame. */
 @keyframes cta-drift {
-  0%, 100% { transform: translateY(-2px) scaleY(1.22); }
-  50%      { transform: translateY(2px) scaleY(1.22); }
+  0%, 100% { transform: translateY(-2px) scaleY(1.55); }
+  50%      { transform: translateY(2px) scaleY(1.55); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn-block::after { animation: none; transform: scaleY(1.22); }
+  .btn-block::after { animation: none; transform: scaleY(1.55); }
 }
 
 /* HERO — narrow viewports.
@@ -660,6 +660,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   border: 2px solid var(--black); padding: 12px 20px; cursor: pointer;
   margin-bottom: 36px;
   transition: background .25s, color .25s, transform .2s;
+  /* Sticks to the top of its overlay instead of scrolling away. These pages
+     run several screens long and the only way back was to scroll all of it
+     again - Escape works but nobody discovers it. Sticky rather than a
+     second button at the foot: one control, in one place, available the
+     whole way down instead of only at the two ends. It is its own scrolling
+     ancestor (.project-overlay / .about-overlay are the overflow-y: auto
+     elements), so this needs no JS. */
+  position: sticky; top: 14px; z-index: 5;
+  /* the content scrolls underneath, so it needs an edge of its own to sit
+     on rather than blending into whatever happens to pass behind it */
+  box-shadow: 4px 4px 0 var(--accent);
 }
 .project-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
 
@@ -1012,6 +1023,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   border: 2px solid var(--black); padding: 12px 20px; cursor: pointer;
   margin-bottom: 46px;
   transition: background .25s, color .25s, transform .2s;
+  /* Sticks to the top of its overlay instead of scrolling away. These pages
+     run several screens long and the only way back was to scroll all of it
+     again - Escape works but nobody discovers it. Sticky rather than a
+     second button at the foot: one control, in one place, available the
+     whole way down instead of only at the two ends. It is its own scrolling
+     ancestor (.project-overlay / .about-overlay are the overflow-y: auto
+     elements), so this needs no JS. */
+  position: sticky; top: 14px; z-index: 5;
+  /* the content scrolls underneath, so it needs an edge of its own to sit
+     on rather than blending into whatever happens to pass behind it */
+  box-shadow: 4px 4px 0 var(--accent);
 }
 .about-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
 
@@ -1189,14 +1211,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   border: 0;
   background: var(--chip);
   color: var(--black);
-  padding: 9px 15px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1.2px;
+  /* 500, not 600: Space Grotesk is loaded at 400/500/700 only, so 600 fell
+     through to the 700 file and these rendered identically to .lead below -
+     the weight half of that distinction did nothing. */
+  padding: 9px 15px; font-size: 0.78rem; font-weight: 500; letter-spacing: 1.2px;
 }
 /* the lead skill in each band still reads first so a reader scanning four
    groups picks up the headline of each without reading all 29 - now by
    weight and a deeper tint rather than by looking pressable */
 .about-skill-tags span.lead {
   background: var(--chip-lead);
-  font-weight: 800;
+  font-weight: 700;
 }
 /* CLAUDE CODE and CODEX travel together so CODEX cannot be left hanging on
    a line of its own. A div, not a span, so the chip rule above does not
@@ -1412,7 +1437,8 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    Weight, not colour - yellow belongs to the CTA, and this keeps the whole
    paragraph at the same contrast. */
 .about-statement b {
-  font-weight: 800;
+  /* 700 is the heaviest face loaded; 800 was silently resolving to it */
+  font-weight: 700;
   /* the display face is tighter at this size; -0.01em stops the bold clause
      from running visibly wider than the text around it */
   letter-spacing: -0.01em;
@@ -1435,7 +1461,8 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    rather than more statement; the size already separates them. */
 .about-hook {
   font-size: clamp(1.1rem, 1.6vw, 1.38rem);
-  font-weight: 600; line-height: 1.4;
+  /* 700 is what 600 was already rendering as - only 400/500/700 are loaded */
+  font-weight: 700; line-height: 1.4;
   color: var(--paper);
   max-width: 44ch;
   margin-bottom: 24px;
@@ -1686,10 +1713,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .social-link:hover { color: var(--paper); padding-left: 18px; }
 .social-link:hover::before { width: 100%; }
 .social-link:hover .social-link-arrow { color: var(--yellow); transform: translate(5px, -5px) rotate(8deg); }
-/* The list ends on a 3px rule and the strip under it starts with another,
-   which stacked two bars into one thick band right above BASED IN ILLINOIS.
-   The last row drops its own rule and the gap does the separating. */
-.contact-socials-big .social-link:last-child { border-bottom: 0; }
+/* The last row keeps its rule, like every other row - what made the bottom
+   look like one thick band was that rule sitting directly on top of the
+   strip below it with nothing in between. The gap is what fixes it, not
+   removing the line. */
 .contact-socials-big { margin-bottom: 26px; }
 
 @media (max-width: 900px) {
