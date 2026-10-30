@@ -324,24 +324,32 @@
       <div class="about-page-intro">
         <span class="project-cat" data-i18n="aboutpage.eyebrow">ABOUT JACK</span>
         <h2 id="aboutPageHeading" data-i18n="aboutpage.heading">HI, I'M JACK.</h2>
-        <p data-i18n="aboutpage.p1">
-          I'm a UX designer studying at Bradley University. What I care about is
-          whether a design actually works: that it's research based, that every
-          choice was intentional, and that it still holds up once real people are
-          using it. I move across interfaces, brand systems, graphics, photography
-          and motion, and the projects I like best need several of those at once.
+        <!-- p1 carries data-i18n-html, not data-i18n: apply() assigns textContent for
+             data-i18n, so the <b> would print as literal angle brackets in every
+             language the moment the switcher ran. -->
+        <p data-i18n-html="aboutpage.p1">
+          I’ve been the outsider trying to figure out how things work many times.
+          Five years at an international school in Yokohama, where I picked up
+          Japanese, and now I’m in Milan for a semester. It taught me that if
+          something only makes sense to me, it’s not done yet. So I do the
+          research, make every choice on purpose, and <b>test with real people</b>
+          before I call anything finished.
         </p>
         <p data-i18n="aboutpage.p2">
-          I grew up making logos, using computers, and getting pulled into the internet
-          through games, websites, and creative tools. That mix still shapes how I design
-          now. I care about work that feels intentional, useful, and human — design that
-          looks strong, but also makes sense.
+          I started with Cool Math Games, making logos on whatever free site let me
+          export, and building Wix websites for school projects even when nobody
+          asked. Now, I’m doing user research, brand systems, and prototyping.
+          Same instincts, just with better tools.
         </p>
         <p data-i18n="aboutpage.p3">
-          My faith is also part of who I am, and some of my favorite work has come from
-          church graphics and creative projects that connect design with meaning. I'm still
-          learning, still experimenting, and still building a portfolio that reflects the
-          full range of what I'm interested in.
+          Away from the screen, you’ll find me on a hiking trail, basketball
+          court, or playing a card game with my friends.
+        </p>
+        <p data-i18n="aboutpage.p4">
+          Faith is also a big part of who I am. Easter at Riverside is one of my
+          favorite projects, mostly because of the team: kind, incredibly
+          knowledgeable people who let me soak up everything they knew about their
+          field when they absolutely didn’t have to.
         </p>
         <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
            data-i18n="about.resume">DOWNLOAD RESUME ↓</a>
