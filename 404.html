@@ -9,15 +9,24 @@
 <link rel="apple-touch-icon" href="/assets/meta/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-<!-- Deliberately standalone rather than loading styles.css: this page has to
-     render even when the thing that failed was an asset path. It borrows the
-     palette tokens by value and nothing else, so there is no dependency to
-     break. Hosts that serve a custom 404 (Netlify, Vercel, GitHub Pages,
+<!-- Deliberately standalone rather than loading styles.css or script.js: this
+     page has to render even when the thing that failed was an asset path. It
+     borrows the palette tokens by value and nothing else, so there is no
+     dependency to break - which is also why the floating shapes at the bottom
+     are inlined instead of shared with the hero's copy. Hosts that serve a custom 404 (Netlify, Vercel, GitHub Pages,
      Cloudflare) pick this file up by filename automatically. -->
 <style>
-  :root { --paper:#e6e3db; --ink:#1e1c17; --accent:#ff3b30; --muted:#62615a; }
+  /* Copied by value from styles.css, same as the rest of this file. --ink is
+     already what --black is there, so the shapes reuse it. */
+  :root {
+    --paper:#e6e3db; --ink:#1e1c17; --accent:#ff3b30; --muted:#62615a;
+    --blue:#0a5cff; --yellow:#fffb00; --green:#16d160;
+  }
   @media (prefers-color-scheme: dark) {
-    :root { --paper:#171512; --ink:#e8e5dc; --accent:#ff2d55; --muted:#9c9b92; }
+    :root {
+      --paper:#171512; --ink:#e8e5dc; --accent:#ff2d55; --muted:#9c9b92;
+      --blue:#00d4ff; --yellow:#f9ff2e; --green:#00ff95;
+    }
   }
   * { box-sizing: border-box; }
   body {
@@ -47,13 +56,205 @@
     transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--accent);
   }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  /* The hero's floating shapes. Fixed rather than absolute so they fill the
+     window without joining body's flex flow, and everything else is lifted
+     above them - the shapes are decoration and the copy has to stay legible
+     across them. */
+  .shapes { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  body > :not(.shapes) { position: relative; z-index: 1; }
+  .shape {
+    position: absolute; top: 0; left: 0;
+    pointer-events: none; will-change: transform;
+    opacity: 0.42;
+    transition: color .35s ease;
+  }
+  .shape-circle.outline, .shape-square.outline { border: 3px solid currentColor; background: transparent; }
+  .shape-circle.filled, .shape-square.filled { background: currentColor; border: none; }
+  .shape-circle { border-radius: 50%; }
+  .shape-triangle, .shape-star { overflow: visible; transform-box: fill-box; transform-origin: center; }
+
   @media (prefers-reduced-motion: reduce) { * { transition-duration: .001ms !important; } }
 </style>
 </head>
 <body>
+  <div class="shapes" id="shapes" aria-hidden="true"></div>
   <p class="code">4<span>0</span>4</p>
   <h1>This page doesn't exist.</h1>
   <p>The link may be out of date, or the address might have a typo in it. Everything lives on the one page anyway.</p>
   <a class="home" href="/">← BACK TO THE PORTFOLIO</a>
+
+<!-- The hero's floating shapes, inlined. Same behaviour - drift, repel from
+     the cursor, flash green while pushed, smooth geometry in light mode and
+     jagged stars in dark - but self-contained, because the whole point of
+     this file is that it renders when script.js is the thing that 404'd.
+     It is pure decoration in an aria-hidden container, so if this script
+     never runs the page is exactly what it was before. -->
+<script>
+(function () {
+  var box = document.getElementById('shapes');
+  if (!box) return;
+
+  var SVG = 'http://www.w3.org/2000/svg';
+  var FLASH = 'var(--green)';
+  var darkQ = window.matchMedia('(prefers-color-scheme: dark)');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(pointer: fine)').matches;
+  var shapes = [];
+
+  function starPoints(spikes, outerR, innerR, cx, cy) {
+    var pts = [], step = Math.PI / spikes;
+    for (var i = 0; i < spikes * 2; i++) {
+      var r = i % 2 === 0 ? outerR : innerR;
+      var a = i * step - Math.PI / 2;
+      pts.push((cx + r * Math.cos(a)) + ',' + (cy + r * Math.sin(a)));
+    }
+    return pts.join(' ');
+  }
+
+  function svgShape(def, points) {
+    var svg = document.createElementNS(SVG, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.style.width = def.size + 'px';
+    svg.style.height = def.size + 'px';
+    svg.setAttribute('class', 'shape shape-' + def.type);
+    svg.style.color = def.color;
+    var poly = document.createElementNS(SVG, 'polygon');
+    poly.setAttribute('points', points);
+    poly.style.fill = def.filled ? 'currentColor' : 'none';
+    poly.style.stroke = 'currentColor';
+    poly.style.strokeWidth = def.type === 'star' ? '3' : '5';
+    svg.appendChild(poly);
+    return svg;
+  }
+
+  function makeEl(def) {
+    if (def.type === 'triangle') return svgShape(def, '50,6 94,94 6,94');
+    if (def.type === 'star') return svgShape(def, starPoints(def.spikes, 48, 14, 50, 50));
+    var el = document.createElement('div');
+    el.className = 'shape shape-' + def.type + ' ' + (def.filled ? 'filled' : 'outline');
+    el.style.width = def.size + 'px';
+    el.style.height = def.size + 'px';
+    el.style.color = def.color;
+    return el;
+  }
+
+  // Smaller and fewer than the hero's twelve: that section is a full-bleed
+  // layout and this one is a short column of centred text.
+  var smooth = [
+    { type: 'circle',   size: 72, color: 'var(--accent)', filled: false },
+    { type: 'square',   size: 54, color: 'var(--blue)',   filled: true  },
+    { type: 'triangle', size: 48, color: 'var(--yellow)', filled: false },
+    { type: 'circle',   size: 38, color: 'var(--ink)',    filled: true  },
+    { type: 'square',   size: 80, color: 'var(--accent)', filled: false },
+    { type: 'triangle', size: 60, color: 'var(--blue)',   filled: true  },
+    { type: 'circle',   size: 50, color: 'var(--yellow)', filled: false },
+    { type: 'square',   size: 30, color: 'var(--ink)',    filled: false },
+    { type: 'circle',   size: 26, color: 'var(--accent)', filled: true  }
+  ];
+  var jagged = [
+    { type: 'star', size: 76, color: 'var(--accent)', filled: false, spikes: 7 },
+    { type: 'star', size: 56, color: 'var(--blue)',   filled: true,  spikes: 5 },
+    { type: 'star', size: 46, color: 'var(--yellow)', filled: false, spikes: 8 },
+    { type: 'star', size: 40, color: 'var(--green)',  filled: true,  spikes: 6 },
+    { type: 'star', size: 84, color: 'var(--accent)', filled: false, spikes: 6 },
+    { type: 'star', size: 62, color: 'var(--blue)',   filled: false, spikes: 9 },
+    { type: 'star', size: 48, color: 'var(--yellow)', filled: true,  spikes: 5 },
+    { type: 'star', size: 32, color: 'var(--ink)',    filled: false, spikes: 7 },
+    { type: 'star', size: 26, color: 'var(--accent)', filled: true,  spikes: 5 }
+  ];
+
+  // The hero scatters freely because its own layout fills the middle. Here
+  // the copy sits dead centre of an otherwise empty page, so each shape is
+  // pinned to an outer band on one axis and left free on the other - still
+  // scattered, but it never parks itself behind the text.
+  function edgeBase() {
+    function band() {
+      return Math.random() < 0.5 ? Math.random() * 0.26 : 0.74 + Math.random() * 0.26;
+    }
+    return Math.random() < 0.5
+      ? { x: band(), y: Math.random() }
+      : { x: Math.random(), y: band() };
+  }
+
+  function build() {
+    var defs = darkQ.matches ? jagged : smooth;
+    box.innerHTML = '';
+    shapes = defs.map(function (def) {
+      var el = makeEl(def);
+      box.appendChild(el);
+      var base = edgeBase();
+      return {
+        el: el, size: def.size, baseColor: def.color,
+        baseX: base.x, baseY: base.y,
+        ampX: 30 + Math.random() * 45,
+        ampY: 24 + Math.random() * 36,
+        speed: 0.15 + Math.random() * 0.2,
+        phase: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * (darkQ.matches ? 30 : 18),
+        rotation: Math.random() * 360,
+        offsetX: 0, offsetY: 0, flashed: false
+      };
+    });
+    if (reduced) place();
+  }
+
+  function place() {
+    var w = box.clientWidth, h = box.clientHeight;
+    shapes.forEach(function (s) {
+      s.el.style.transform = 'translate(' + (s.baseX * w - s.size / 2) + 'px,'
+                                          + (s.baseY * h - s.size / 2) + 'px)';
+    });
+  }
+
+  var mx = -9999, my = -9999;
+  if (finePointer && !reduced) {
+    window.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
+    window.addEventListener('mouseleave', function () { mx = -9999; my = -9999; });
+  }
+
+  var RADIUS = 150, STRENGTH = 70, lastT = 0;
+
+  function frame(t) {
+    var w = box.clientWidth, h = box.clientHeight;
+    var time = t / 1000;
+    var dt = lastT ? (t - lastT) / 1000 : 0;
+    lastT = t;
+
+    shapes.forEach(function (s) {
+      var driftX = s.baseX * w + Math.sin(time * s.speed + s.phase) * s.ampX;
+      var driftY = s.baseY * h + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY;
+
+      var dx = driftX - mx, dy = driftY - my;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var near = dist < RADIUS && dist > 0.01;
+
+      var pushX = 0, pushY = 0;
+      if (near) {
+        var force = (1 - dist / RADIUS) * STRENGTH;
+        pushX = (dx / dist) * force;
+        pushY = (dy / dist) * force;
+      }
+      s.offsetX += (pushX - s.offsetX) * 0.08;
+      s.offsetY += (pushY - s.offsetY) * 0.08;
+
+      if (near && !s.flashed) { s.flashed = true; s.el.style.color = FLASH; }
+      else if (!near && s.flashed) { s.flashed = false; s.el.style.color = s.baseColor; }
+
+      s.rotation += s.rotSpeed * (near ? 2.4 : 1) * dt;
+
+      s.el.style.transform = 'translate(' + (driftX + s.offsetX - s.size / 2) + 'px,'
+                                          + (driftY + s.offsetY - s.size / 2) + 'px) '
+                           + 'rotate(' + s.rotation + 'deg)';
+    });
+    requestAnimationFrame(frame);
+  }
+
+  build();
+  if (darkQ.addEventListener) darkQ.addEventListener('change', build);
+  if (reduced) window.addEventListener('resize', place);
+  else requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>
