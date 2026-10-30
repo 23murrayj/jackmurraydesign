@@ -935,7 +935,7 @@
     });
 
     document.documentElement.lang = current;
-    ensureJapaneseFont();
+    syncJapaneseFont();
     document.title = t('html.title');
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var ogDesc = document.querySelector('meta[property="og:description"]');
@@ -950,12 +950,24 @@
      already current, which is exactly the case on first load for someone
      whose saved preference is ja. */
   var jpFontLink = null;
-  function ensureJapaneseFont() {
-    if (current !== 'ja' || jpFontLink) return;
-    jpFontLink = document.createElement('link');
-    jpFontLink.rel = 'stylesheet';
-    jpFontLink.href = 'assets/fonts/noto-sans-jp.css';
-    document.head.appendChild(jpFontLink);
+  function syncJapaneseFont() {
+    if (current === 'ja') {
+      if (jpFontLink) return;
+      jpFontLink = document.createElement('link');
+      jpFontLink.rel = 'stylesheet';
+      jpFontLink.href = 'assets/fonts/noto-sans-jp.css';
+      document.head.appendChild(jpFontLink);
+      return;
+    }
+    // Detach it again on the way out. Leaving it attached was not free:
+    // Noto Sans JP is the last fallback in every stack, and it covers the
+    // arrows the Latin subsets do not - U+2190/2192/2197. So after one visit
+    // to Japanese, every back arrow and CTA arrow on the English page
+    // switched from the system font to Noto and stayed there. Same page,
+    // two different renderings depending on where you had been.
+    if (!jpFontLink) return;
+    jpFontLink.remove();
+    jpFontLink = null;
   }
 
   function set(lang, opts) {
