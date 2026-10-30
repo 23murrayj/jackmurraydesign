@@ -1461,11 +1461,10 @@ if (magneticTextEl && window.matchMedia('(pointer: fine)').matches && !prefersRe
   requestAnimationFrame(animateMagnetic);
 }
 
-// contact form — TODO: there's no real Formspree ID yet (see the HTML
-// comment above the <form>), so this opens a pre-filled mailto: to
-// 23jmurr@gmail.com instead of posting anywhere. Swap in a real
-// Formspree fetch() call (or other backend) once one exists. The
-// honeypot check still applies — it costs nothing to keep.
+// Contact form. Posts to Netlify Forms, which provisions the endpoint from
+// the form's own markup at deploy time - see the comment above the <form>.
+// Anywhere that endpoint does not exist (localhost, or a host without
+// Netlify Forms) the catch below falls back to a pre-filled mailto.
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 const formSubmit = document.getElementById('formSubmit');

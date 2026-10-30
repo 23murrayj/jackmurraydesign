@@ -9,21 +9,21 @@
      og:* build the preview card that LinkedIn, iMessage, Slack and WhatsApp
      render when this link is pasted; without og:image they fall back to a grey
      box. name="description" is the separate one Google reads for its snippet.
-     SITE_URL below is a placeholder: og:url and the canonical have to be
-     absolute, so they need the real domain before this goes live. -->
+     og:url and the canonical have to be absolute, so they carry the real
+     domain rather than a relative path. -->
 <meta name="description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
 <meta name="author" content="Jack Murray">
 <meta name="theme-color" content="#e6e3db" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#171512" media="(prefers-color-scheme: dark)">
-<link rel="canonical" href="https://SITE_URL/">
+<link rel="canonical" href="https://jackmurraydesign.com/">
 
 <meta property="og:title" content="Jack Murray · UX Designer">
 <meta property="og:description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://SITE_URL/">
+<meta property="og:url" content="https://jackmurraydesign.com/">
 <meta property="og:site_name" content="Jack Murray">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://SITE_URL/assets/meta/og-card.jpg">
+<meta property="og:image" content="https://jackmurraydesign.com/assets/meta/og-card.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The Sandcastles series artwork: a sandcastle collage under an orange sun on teal.">
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Jack Murray · UX Designer">
 <meta name="twitter:description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
-<meta name="twitter:image" content="https://SITE_URL/assets/meta/og-card.jpg">
+<meta name="twitter:image" content="https://jackmurraydesign.com/assets/meta/og-card.jpg">
 
 <link rel="icon" href="assets/meta/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/meta/apple-touch-icon.png">
@@ -524,15 +524,6 @@
       </div>
     </div>
     <div class="contact-left">
-      <!--
-        TODO: this form currently falls back to a mailto: link (built in
-        script.js) since there's no real Formspree ID yet. To switch to
-        real form delivery: sign up free at https://formspree.io, create
-        a form, add action="https://formspree.io/f/YOUR_REAL_ID"
-        method="POST" to the <form> below, and swap the mailto logic in
-        script.js for the fetch-based Formspree submit (see git history
-        for the previous implementation, or Formspree's own docs).
-      -->
       <!-- Netlify Forms: the host parses this markup on deploy and provisions
            an endpoint from name="contact". data-netlify-honeypot points it at
            the trap field already below, so Netlify drops those server-side too

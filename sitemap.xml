@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Single-page site: projects and the about page are overlays on "/", not
-     separate URLs, so there is one entry. Swap SITE_URL for the real domain. -->
+     separate URLs, so there is one entry. Points at the live domain. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://SITE_URL/</loc>
+    <loc>https://jackmurraydesign.com/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>

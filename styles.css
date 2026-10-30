@@ -672,8 +672,6 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   z-index: 5;
 }
 .card-media { overflow: hidden; aspect-ratio: 4/3; }
-.card-media svg { width: 100%; height: 100%; display: block; transition: transform .5s ease; }
-.card:hover .card-media svg { transform: scale(1.08) rotate(0.5deg); }
 .card-info {
   padding: 22px 24px 28px;
   display: flex; flex-direction: column; gap: 6px;
@@ -1492,7 +1490,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    section, not a box inside the reading grid. Sizing it off the text column
    gave the two photos a 2.09:1 and a 1.38:1 slot cut from sources that are
    0.56:1 and 0.8:1, so both were cropped to a letterbox. The panel is as tall
-   as the section (~0.58:1 at desktop), which is jack-dolomites.jpg's own
+   as the section (~0.58:1 at desktop), which is jack-centrale.jpg's own
    shape - the crop is now effectively nothing. Being absolutely positioned,
    it also costs the section no height: 726px here against 762px before. */
 .about { position: relative; --about-panel: 420px; }
@@ -1580,10 +1578,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-portrait { transition: none; }
 }
 .about-portrait img { display: block; }
-/* No zoom on hover. The project cards look like they zoom their art, but
-   .card:hover .card-media svg has matched nothing since the placeholders
-   became photographs - every .card-media holds an <img> now. So the cards
-   tilt and nothing else, and this does the same. */
+/* No zoom on hover, because the project cards do not zoom either. They used
+   to look like they might: a .card-media svg rule scaled the placeholder art,
+   and it kept matching nothing once every .card-media held an <img>. The rule
+   is gone now. The cards tilt and nothing else, and this does the same. */
 
 /* one column, read straight down: statement, stats, hook, button. Every
    step is smaller and quieter than the last until the button, which jumps

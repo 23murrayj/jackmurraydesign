@@ -283,7 +283,7 @@
 
       'work.title': 'PROYECTOS SELECCIONADOS',
       'work.num': '01 / PROYECTOS',
-      'filter.ALL': 'TODO',
+      'filter.ALL': 'TODOS',
       'filter.UX/UI': 'UX/UI',
       'filter.BRANDING': 'BRANDING',
       'filter.GRAPHICS': 'GRÁFICOS',
