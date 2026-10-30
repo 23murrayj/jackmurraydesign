@@ -3,7 +3,16 @@
 // (floating shapes, magnetic letters, lagged cursor, cycling tagline) —
 // CSS handles keyframe/transition-based effects (see styles.css), this
 // flag gates the continuous JS rAF loops that CSS alone can't reach
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+let prefersReducedMotion = reducedMotionQuery.matches;
+// Turning the OS setting on mid-visit used to do nothing here until a
+// reload, because this was read once into a const. It is a `let` now, so
+// every check that runs at CALL time follows the setting live: the counters,
+// the shapes loop, the cursor loop, the tagline. The three that run at INIT
+// time to decide whether to attach a listener at all - the magnetic text,
+// the cursor loop's start, the [data-tilt] handlers - still need a reload,
+// which is the usual behaviour and not worth restructuring the file for.
+reducedMotionQuery.addEventListener('change', (e) => { prefersReducedMotion = e.matches; });
 
 // i18n bridge. Everything user-facing that this file generates at runtime
 // (the tagline rotation, the ticker strips, the magnetic headline, project
@@ -844,6 +853,13 @@ revealEls.forEach((el) => observer.observe(el));
 function animateCounter(el) {
   const target = parseInt(el.dataset.count, 10);
   const suffix = el.dataset.suffix || '';
+  // Numbers ticking up is motion, and the global CSS block in styles.css
+  // cannot reach it - this is a rAF loop writing textContent, not an
+  // animation or a transition. Show the figure and skip the count.
+  if (prefersReducedMotion) {
+    el.textContent = target + suffix;
+    return;
+  }
   const duration = 1400;
   const start = performance.now();
   function frame(now) {
@@ -1058,15 +1074,30 @@ function applyCvdMode(mode) {
   cvdToggle?.classList.toggle('active-mode', mode !== 'normal');
   localStorage.setItem('jm-cvd', mode);
 }
-cvdToggle?.addEventListener('click', () => cvdMenu.classList.toggle('open'));
+// aria-expanded goes through one helper rather than being set at each call
+// site: the menu has four ways to close (pick an option, click outside,
+// Escape, toggle again) and the attribute has to stay true to all of them.
+// The language menu next door sets it on every path by hand, which works
+// but is four chances to miss one.
+function setCvdMenu(open) {
+  cvdMenu?.classList.toggle('open', open);
+  cvdToggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+cvdToggle?.addEventListener('click', () => setCvdMenu(!cvdMenu.classList.contains('open')));
 cvdOptions.forEach((btn) => {
   btn.addEventListener('click', () => {
     applyCvdMode(btn.dataset.mode);
-    cvdMenu.classList.remove('open');
+    setCvdMenu(false);
   });
 });
 document.addEventListener('click', (e) => {
-  if (cvdMenu && !e.target.closest('.cvd-control')) cvdMenu.classList.remove('open');
+  if (cvdMenu && !e.target.closest('.cvd-control')) setCvdMenu(false);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && cvdMenu?.classList.contains('open')) {
+    setCvdMenu(false);
+    cvdToggle.focus();
+  }
 });
 applyCvdMode(localStorage.getItem('jm-cvd') || 'normal');
 
@@ -1553,21 +1584,31 @@ const stickerTray = document.getElementById('stickerTray');
 const stickerTrayClose = document.getElementById('stickerTrayClose');
 const stickerTrash = document.getElementById('stickerTrash');
 
-eggTrigger?.addEventListener('click', () => eggMenu.classList.toggle('open'));
+function setEggMenu(open) {
+  eggMenu?.classList.toggle('open', open);
+  eggTrigger?.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+eggTrigger?.addEventListener('click', () => setEggMenu(!eggMenu.classList.contains('open')));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && eggMenu?.classList.contains('open')) {
+    setEggMenu(false);
+    eggTrigger.focus();
+  }
+});
 // the third dropdown in the same cluster; without this it stayed open until
 // you picked one of its options, while the other two closed on an outside click
 document.addEventListener('click', (e) => {
   if (eggMenu && !eggMenu.contains(e.target) && !eggTrigger.contains(e.target)) {
-    eggMenu.classList.remove('open');
+    setEggMenu(false);
   }
 });
 document.getElementById('eggMenuStickers')?.addEventListener('click', () => {
-  eggMenu.classList.remove('open');
+  setEggMenu(false);
   stickerTray.classList.add('open');
   setInert(stickerTray, false);
 });
 document.getElementById('eggMenuChaos')?.addEventListener('click', () => {
-  eggMenu.classList.remove('open');
+  setEggMenu(false);
   startChaosMode();
 });
 stickerTrayClose?.addEventListener('click', () => {
@@ -1966,7 +2007,11 @@ if (pongCanvas) {
     // belt-and-suspenders: the window is fixed-position so it's already
     // always in the viewport, but scroll it into view explicitly in
     // case that ever changes, so the player never misses the start
-    pongWindow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // 'smooth' is a JS scroll, so the stylesheet's scroll-behavior: auto
+    // override under prefers-reduced-motion does not apply to it.
+    pongWindow.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center'
+    });
   }
   function closePong() {
     pongWindow.classList.remove('open');

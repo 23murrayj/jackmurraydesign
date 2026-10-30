@@ -319,18 +319,26 @@ body.is-loading { overflow: hidden; }
 }
 .cvd-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 .cvd-toggle.active-mode { background: var(--black); color: var(--white); }
+/* visibility, not just opacity. opacity:0 + pointer-events:none hides a menu
+   from the eye and the mouse but NOT from the keyboard or a screen reader:
+   its buttons stayed in the tab order while it was closed, so tabbing from
+   the nav walked through invisible controls with no visible focus ring on
+   them. Audited across the page: 10 such stops, 4 here, 4 in the colour-
+   vision menu, 2 in the easter-egg menu. visibility:hidden removes them from
+   both, and transitioning it keeps the fade-out - visibility holds `visible`
+   for the duration and flips at the end. */
 .cvd-menu {
   position: absolute; top: calc(100% + 12px); right: 0;
   min-width: 200px;
   background: var(--paper); border: 3px solid var(--ink);
   box-shadow: 6px 6px 0 var(--ink);
   display: flex; flex-direction: column;
-  opacity: 0; pointer-events: none;
+  opacity: 0; visibility: hidden; pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
   z-index: 300;
 }
-.cvd-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.cvd-menu.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 .cvd-option {
   background: none; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: space-between;
@@ -2011,10 +2019,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   box-shadow: 6px 6px 0 var(--ink);
   display: flex; flex-direction: column;
   transform: translateY(10px) scale(0.92);
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s ease, transform .2s ease;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
 }
-.egg-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.egg-menu.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; }
 .egg-menu button {
   background: none; border: none; cursor: pointer;
   text-align: left; padding: 14px 24px;
@@ -2380,12 +2388,12 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   background: var(--paper); border: 3px solid var(--ink);
   box-shadow: 6px 6px 0 var(--ink);
   display: flex; flex-direction: column;
-  opacity: 0; pointer-events: none;
+  opacity: 0; visibility: hidden; pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
   z-index: 300;
 }
-.lang-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.lang-menu.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 .lang-option {
   background: none; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: space-between;
