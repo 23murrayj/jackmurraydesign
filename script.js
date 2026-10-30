@@ -741,6 +741,28 @@ document.querySelectorAll('.about-panel .about-portrait')
   .forEach((el) => el.addEventListener('click', openAboutPage));
 aboutBack?.addEventListener('click', closeAboutPage);
 
+// A link in the about copy can hand off to a project. Delegated on document
+// rather than bound to the anchor: apply() rewrites that paragraph's
+// innerHTML on every language switch, so a listener attached to the link
+// itself would be thrown away the first time someone changed language.
+//
+// Close the about page BEFORE opening the project. Only one overlay is meant
+// to be open at a time, and closing first means deactivateDialog restores
+// focus to the control that opened the about page, which openProject then
+// records as the project's own return target - so the project's back button
+// lands you on the page behind, not on a link inside an overlay that is no
+// longer open. The href is a real fallback: without JS, or on a
+// middle-click, it goes to the work section.
+document.addEventListener('click', (e) => {
+  const link = e.target.closest?.('[data-open-project]');
+  if (!link) return;
+  const id = link.dataset.openProject;
+  if (!projectData[id]) return;
+  e.preventDefault();
+  if (aboutOverlay.classList.contains('open')) closeAboutPage();
+  openProject(id);
+});
+
 // Escape closes whichever overlay is currently open, restoring the
 // exact scroll position the user was at before it opened
 document.addEventListener('keydown', (e) => {

@@ -324,15 +324,18 @@
       <div class="about-page-intro">
         <span class="project-cat" data-i18n="aboutpage.eyebrow">ABOUT JACK</span>
         <h2 id="aboutPageHeading" data-i18n="aboutpage.heading">HI, I'M JACK.</h2>
-        <!-- p1 carries data-i18n-html, not data-i18n: apply() assigns textContent for
-             data-i18n, so the <b> would print as literal angle brackets in every
-             language the moment the switcher ran. -->
+        <!-- p1 carries data-i18n-html, not data-i18n: apply() assigns textContent
+             for data-i18n, so the anchor would print as literal angle brackets in
+             every language the moment the switcher ran. The link lives in all four
+             translations for the same reason - apply() replaces this whole
+             paragraph, so markup that exists only here would not survive a
+             language switch. -->
         <p data-i18n-html="aboutpage.p1">
           I’ve been the outsider trying to figure out how things work many times.
           Five years at an international school in Yokohama, where I picked up
           Japanese, and now I’m in Milan for a semester. It taught me that if
           something only makes sense to me, it’s not done yet. So I do the
-          research, make every choice on purpose, and <b>test with real people</b>
+          research, make every choice on purpose, and <a class="prose-link" href="#work" data-open-project="cat-coaching">test with real people</a>
           before I call anything finished.
         </p>
         <p data-i18n="aboutpage.p2">

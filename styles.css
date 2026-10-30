@@ -1086,6 +1086,53 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   font-size: 1.05rem; line-height: 1.65; max-width: 620px; margin-bottom: 18px;
 }
 
+/* Inline link in running prose. The global reset is `a { color: inherit;
+   text-decoration: none }`, so a link inside a paragraph has to re-declare
+   everything or it reads as plain text - and this one sits inside a bolded
+   phrase, which would otherwise look like emphasis and nothing more. The
+   underline is the signal; the weight is the emphasis. Red rather than
+   yellow because this is text: --accent-ink measures 5.03:1 on paper where
+   the display red only reaches 2.77:1.
+   The highlight is the hover, not the resting state - a yellow block sitting
+   permanently in the middle of a paragraph fights the sentence. */
+.prose-link {
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-ink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  /* box-decoration-break so the highlight wraps onto a second line as two
+     filled boxes instead of one that stops at the first line's end. */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0 2px; margin: 0 -2px;
+  cursor: pointer;
+  transition: background-color .2s ease, text-decoration-color .2s ease;
+}
+/* --ink, not --black, on the yellow. --black INVERTS with the theme - it is
+   #e8e5dc in dark mode - so inheriting it would have laid near-white text on
+   a near-white yellow the moment anyone switched themes. --ink is #111111 in
+   both themes, and the yellow is bright in both, so one declaration covers
+   them: ~17:1 either way. */
+@media (hover: hover) {
+  .prose-link:hover {
+    background: var(--yellow);
+    color: var(--ink);
+    text-decoration-color: var(--ink);
+  }
+}
+.prose-link:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 2px;
+  background: var(--yellow);
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .prose-link { transition: none; }
+}
+
 .about-page-subhead {
   font-family: var(--ff-display);
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
