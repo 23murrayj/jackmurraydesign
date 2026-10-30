@@ -935,11 +935,27 @@
     });
 
     document.documentElement.lang = current;
+    ensureJapaneseFont();
     document.title = t('html.title');
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogTitle) ogTitle.setAttribute('content', t('html.title'));
     if (ogDesc) ogDesc.setAttribute('content', t('html.description'));
+  }
+
+  /* Noto Sans JP is ~1 MB across 48 subset files and nothing outside
+     Japanese needs it, so its stylesheet is attached the first time Japanese
+     is actually chosen rather than shipped to every visitor. Called from
+     apply() rather than set(): set() returns early when the language is
+     already current, which is exactly the case on first load for someone
+     whose saved preference is ja. */
+  var jpFontLink = null;
+  function ensureJapaneseFont() {
+    if (current !== 'ja' || jpFontLink) return;
+    jpFontLink = document.createElement('link');
+    jpFontLink.rel = 'stylesheet';
+    jpFontLink.href = 'assets/fonts/noto-sans-jp.css';
+    document.head.appendChild(jpFontLink);
   }
 
   function set(lang, opts) {

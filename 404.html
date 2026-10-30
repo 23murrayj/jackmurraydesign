@@ -7,8 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/assets/meta/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/meta/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
 <!-- Deliberately standalone rather than loading styles.css or script.js: this
      page has to render even when the thing that failed was an asset path. It
      borrows the palette tokens by value and nothing else, so there is no
@@ -16,6 +15,22 @@
      are inlined instead of shared with the hero's copy. Hosts that serve a custom 404 (Netlify, Vercel, GitHub Pages,
      Cloudflare) pick this file up by filename automatically. -->
 <style>
+  /* Absolute paths, not relative: the host serves this one file for any URL
+     that missed, so a relative src would resolve against /whatever/ and 404
+     in its own right. If the fonts are the thing that failed, the stacks
+     below already fall through to system-ui. */
+  @font-face {
+    font-family: 'Space Grotesk';
+    font-style: normal; font-weight: 400 700; font-display: swap;
+    src: url(/assets/fonts/space-grotesk-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Archivo Black';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url(/assets/fonts/archivo-black-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
   /* Copied by value from styles.css, same as the rest of this file. --ink is
      already what --black is there, so the shapes reuse it. */
   :root {

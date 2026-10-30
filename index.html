@@ -37,11 +37,14 @@
 <link rel="apple-touch-icon" href="assets/meta/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<!-- Noto Sans JP carries the Japanese glyphs none of the three display
-     faces above contain; without it JA text falls back to whatever the OS
-     picks and the type system silently breaks. 900 matches Archivo Black. -->
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Fonts are self-hosted from assets/fonts; the @font-face rules are at the
+     top of styles.css. No preconnect because there is no third party left to
+     connect to. Noto Sans JP still carries the Japanese glyphs none of the
+     three display faces contain, but i18n.js now attaches its stylesheet only
+     when Japanese is chosen - it was 119 KB of render-blocking CSS on every
+     visit otherwise. -->
+<link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="is-loading">
