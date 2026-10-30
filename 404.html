@@ -44,16 +44,47 @@
   h1 { font-family: 'Archivo Black', system-ui, sans-serif;
        font-size: clamp(1.3rem, 4vw, 2rem); letter-spacing: -0.01em; margin: 24px 0 0; }
   p { color: var(--muted); max-width: 46ch; line-height: 1.6; margin: 14px 0 0; }
+  /* The only action on the page, so it wears the raised block at rest rather
+     than only on hover - the same reasoning as the about CTA in styles.css,
+     which is the only control in its section. A flat slab that reacts only
+     once you are already pointing at it does no work on a dead-end page. */
   .home {
-    display: inline-flex; align-items: center; min-height: 48px;
-    margin-top: 34px; padding: 14px 26px;
+    display: inline-flex; align-items: center; gap: 12px;
+    min-height: 48px;
+    margin-top: 40px; padding: 18px 32px;
     background: var(--ink); color: var(--paper); text-decoration: none;
-    font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
+    font-weight: 700; font-size: 0.95rem; letter-spacing: 2px;
     border: 2px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--accent);
     transition: transform .2s ease, box-shadow .2s ease;
   }
+  /* Lifts further instead of inverting. Holding the fill keeps the label at
+     13:1 throughout; dropping it would put ink-on-paper text at the moment
+     someone is actually pointing at the thing. */
   .home:hover, .home:focus-visible {
-    transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--accent);
+    transform: translate(-4px, -4px);
+    box-shadow: 13px 13px 0 var(--accent);
+  }
+  /* Presses flat under the pointer. The slab travels back down onto its own
+     shadow, so the click has somewhere to land. */
+  .home:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--accent);
+    transition-duration: .06s;
+  }
+  /* The arrow is a pseudo-element, not part of the label: it needs its own
+     box to move in, and this keeps it out of the link's accessible name.
+     It drifts left on its own - the page is a dead end, and the one way out
+     should be the thing moving on it. */
+  .home::before {
+    content: '\2190';
+    display: inline-block;
+    font-size: 1.2em; line-height: 1;
+    animation: home-drift 2.6s ease-in-out infinite;
+  }
+  @keyframes home-drift {
+    0%, 100% { transform: translateX(2px); }
+    50%      { transform: translateX(-3px); }
   }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
@@ -74,7 +105,10 @@
   .shape-circle { border-radius: 50%; }
   .shape-triangle, .shape-star { overflow: visible; transform-box: fill-box; transform-origin: center; }
 
-  @media (prefers-reduced-motion: reduce) { * { transition-duration: .001ms !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .001ms !important; }
+    .home::before { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -82,7 +116,7 @@
   <p class="code">4<span>0</span>4</p>
   <h1>This page doesn't exist.</h1>
   <p>The link may be out of date, or the address might have a typo in it. Everything lives on the one page anyway.</p>
-  <a class="home" href="/">← BACK TO THE PORTFOLIO</a>
+  <a class="home" href="/">BACK TO THE PORTFOLIO</a>
 
 <!-- The hero's floating shapes, inlined. Same behaviour - drift, repel from
      the cursor, flash green while pushed, smooth geometry in light mode and
