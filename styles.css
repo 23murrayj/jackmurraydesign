@@ -1051,13 +1051,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    ~298px instead), squeezing the bio text into a too-narrow column and
    making it wrap tightly enough to look like it was overlapping itself */
 .about-page-top > * { min-width: 0; }
-/* No aspect-ratio and no object-fit: the file is already cropped to the shape
-   it should be (full frame top to bottom, trimmed at the sides), so its own
-   ratio governs and nothing gets cover-cropped a second time. At the column
-   width this lands within a few px of the intro text's height. */
+/* The frame is the grid item and the photo is absolute inside it. height:100%
+   on the <img> alone did NOT hold: a replaced element contributes its own
+   intrinsic height to an auto-sized grid row, so once the column was wide
+   enough the photo set the row height rather than the text column. Measured
+   overhang past the resume button: 0px at a 900px page, 62px at 1100px, 256px
+   at 1300px, 422px at 1500px. An empty frame contributes nothing, so the row
+   is the text's height and the photo fills it - bottom edge level with the
+   button at every width. */
+.about-photo-frame { position: relative; }
 .about-photo {
-  /* stretches to the row height set by the text column, so the left side
-     doesn't trail off into dead space above the band below */
+  position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover; display: block;
   border: 4px solid var(--black);
 }
@@ -1073,7 +1077,13 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 @media (max-width: 760px) {
   /* the portrait's native ratio is ~1:2, which on a 375px screen runs over
      700px tall before the reader reaches a word of the bio */
-  .about-photo { aspect-ratio: 4/5; object-fit: cover; object-position: 50% 28%; }
+  /* One column here, so there is no row for the photo to inflate and the
+     frame has no job - both go back into normal flow and the ratio governs. */
+  .about-photo-frame { position: static; }
+  .about-photo {
+    position: static; height: auto;
+    aspect-ratio: 4/5; object-fit: cover; object-position: 50% 28%;
+  }
   .about-photos { flex-direction: column; margin-bottom: 48px; }
   .about-photos .wide, .about-photos .square { flex: none; width: 100%; }
 }
@@ -1394,7 +1404,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-cta-row .about-readmore-btn:focus-visible { transform: none; }
 }
 
-.cv-download-btn {
+.cv-btn {
   display: inline-flex; align-items: center; gap: 8px;
   text-decoration: none;
   background: var(--accent-ink); color: var(--accent-on);
@@ -1403,12 +1413,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
-.cv-download-btn:hover {
+.cv-btn:hover {
   background: transparent; color: var(--accent-ink);
   transform: translate(-3px, -3px);
   box-shadow: 5px 5px 0 var(--yellow);
 }
-.about-page-intro .cv-download-btn { margin-top: 8px; }
+.about-page-intro .cv-btn { margin-top: 8px; }
 
 /* dark-mode-only static texture inside the about slab */
 :root[data-theme="dark"] .about::before {
@@ -1501,10 +1511,14 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    tracks the pointer and writes an inline transform - a rule in this file
    would either be overridden by it or fight it. What is left for CSS is the
    part the handler does not touch: the ring, and the brightness lift. */
+/* Black and white. The filter sits on the anchor, which is also what the
+   brightness lift uses - so the hover has to restate grayscale(1) or hovering
+   would drop it and flash the photo back into colour. */
+.about-panel .about-portrait { filter: grayscale(1); }
 @media (hover: hover) {
-  .about-panel .about-portrait:hover { filter: brightness(1.06); }
+  .about-panel .about-portrait:hover { filter: grayscale(1) brightness(1.06); }
 }
-.about-panel .about-portrait:focus-visible { filter: brightness(1.06); }
+.about-panel .about-portrait:focus-visible { filter: grayscale(1) brightness(1.06); }
 
 @media (prefers-reduced-motion: reduce) {
   .about-panel::after { transition: none; }

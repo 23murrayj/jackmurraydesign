@@ -814,7 +814,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
   // mouseenter/mouseleave don't bubble, so delegation uses mouseover/mouseout
   // and ignores moves that stay inside the same target (entering a child fires
   // mouseout on the parent, which would otherwise flicker the dot).
-  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-download-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, .cvd-toggle, .cvd-option, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
+  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, .cvd-toggle, .cvd-option, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
   const cursorEdge = (e, add) => {
     const hit = e.target.closest && e.target.closest(CURSOR_TARGETS);
     if (!hit) return;

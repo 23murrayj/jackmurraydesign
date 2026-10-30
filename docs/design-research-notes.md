@@ -24,7 +24,7 @@ offset shadows**, and flat saturated fills with no gradients. Headings at
 *opposite* of ours: on click the button translates by exactly the shadow
 offset while the shadow collapses to zero, so it reads as physically pressed
 into the page. Ours lifts away instead (`translate(-3px,-3px)` + a longer
-shadow) on `.btn-block`, `.form-submit`, `.cv-download-btn` and the About CTA.
+shadow) on `.btn-block`, `.form-submit`, `.cv-btn` and the About CTA.
 
 Not a defect — lifting is consistent across the whole site, and consistency
 beats canon. But a *press on `:active`* would be a nice extra layer and costs

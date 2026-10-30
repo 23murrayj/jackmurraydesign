@@ -167,7 +167,7 @@
       'about.stat.countries': "Countries visited",
       'about.stat.now': "Where I am right now",
       'about.readmore': "HOW I GOT HERE",
-      'about.resume': 'DOWNLOAD RESUME ↓',
+      'about.resume': 'VIEW MY OFFICIAL RESUME ↗',
       'skills.marquee': ['UX DESIGN', 'UI DESIGN', 'WEB DESIGN', 'BRAND SYSTEMS', 'TYPOGRAPHY', 'PHOTOGRAPHY', 'MOTION', 'HTML / CSS', 'AUTOMATION'],
 
       'aboutpage.back': '← BACK',
@@ -385,7 +385,7 @@
       'about.stat.countries': "Países visitados",
       'about.stat.now': "Dónde estoy ahora mismo",
       'about.readmore': "CÓMO LLEGUÉ AQUÍ",
-      'about.resume': 'DESCARGAR CV ↓',
+      'about.resume': 'VER MI CV OFICIAL ↗',
       'skills.marquee': ['DISEÑO UX', 'DISEÑO UI', 'DISEÑO WEB', 'SISTEMAS DE MARCA', 'TIPOGRAFÍA', 'FOTOGRAFÍA', 'MOTION', 'HTML / CSS', 'AUTOMATIZACIÓN'],
 
       'aboutpage.back': '← VOLVER',
@@ -603,7 +603,7 @@
       'about.stat.countries': "訪れた国",
       'about.stat.now': "いま居る場所",
       'about.readmore': "ここに至るまで",
-      'about.resume': '履歴書をダウンロード ↓',
+      'about.resume': '正式な履歴書を見る ↗',
       'skills.marquee': ['UXデザイン', 'UIデザイン', 'ウェブデザイン', 'ブランドシステム', 'タイポグラフィ', '写真', 'モーション', 'HTML / CSS', '自動化'],
 
       'aboutpage.back': '← 戻る',
@@ -821,7 +821,7 @@
       'about.stat.countries': "Paesi visitati",
       'about.stat.now': "Dove sono adesso",
       'about.readmore': "COME CI SONO ARRIVATO",
-      'about.resume': 'SCARICA IL CV ↓',
+      'about.resume': 'GUARDA IL MIO CV UFFICIALE ↗',
       'skills.marquee': ['DESIGN UX', 'DESIGN UI', 'WEB DESIGN', 'SISTEMI DI MARCA', 'TIPOGRAFIA', 'FOTOGRAFIA', 'MOTION', 'HTML / CSS', 'AUTOMAZIONE'],
 
       'aboutpage.back': '← INDIETRO',

@@ -317,10 +317,15 @@
     <button class="about-back" id="aboutBack" data-i18n="aboutpage.back">← BACK</button>
 
     <div class="about-page-top">
-      <img class="about-photo" src="assets/about/jack-portrait.jpg"
-           width="900" height="1871" loading="lazy" decoding="async"
-           data-i18n-alt="aboutpage.photoAlt"
-           alt="Jack with a camera in a Milan palazzo courtyard, red threads strung between the arches behind him.">
+      <!-- The frame is the grid item, not the photo. An <img> contributes its
+           own intrinsic height to the row, so on a wide screen the picture set
+           the row height instead of the text and hung below the button. -->
+      <div class="about-photo-frame">
+        <img class="about-photo" src="assets/about/jack-portrait.jpg"
+             width="900" height="1871" loading="lazy" decoding="async"
+             data-i18n-alt="aboutpage.photoAlt"
+             alt="Jack with a camera in a Milan palazzo courtyard, red threads strung between the arches behind him.">
+      </div>
       <div class="about-page-intro">
         <span class="project-cat" data-i18n="aboutpage.eyebrow">ABOUT JACK</span>
         <h2 id="aboutPageHeading" data-i18n="aboutpage.heading">HI, I'M JACK.</h2>
@@ -354,8 +359,13 @@
           knowledgeable people who let me soak up everything they knew about their
           field when they absolutely didn’t have to.
         </p>
-        <a class="cv-download-btn" href="assets/docs/jack-murray-resume.pdf" download
-           data-i18n="about.resume">DOWNLOAD RESUME ↓</a>
+        <!-- Opens the PDF in a tab rather than downloading it, same as the
+             resume row in the contact list: someone can read it without
+             committing a file to their machine, and still save it from the
+             viewer. The arrow matches that list's outward-link convention. -->
+        <a class="cv-btn" href="assets/docs/jack-murray-resume.pdf"
+           target="_blank" rel="noopener"
+           data-i18n="about.resume">VIEW MY OFFICIAL RESUME ↗</a>
       </div>
     </div>
 
