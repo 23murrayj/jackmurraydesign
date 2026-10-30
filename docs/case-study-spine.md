@@ -48,27 +48,33 @@ strong response" is an adjective. *"Best Research Award"* is evidence.
 ## Per project
 
 ### Caterpillar UX Challenge
-Has the most evidence and uses it worst. Best Research Award, 5 usability
-participants, 7 weeks with Caterpillar's UX team, 2 rounds of iteration, an
-on-site visit — all present, all in a list.
+**Left exactly as it is, at Jack's request.** Nothing below has been applied.
 
-- **Missing: beat 2.** What did the research actually find about heavy
-  equipment operators that you didn't know going in? That finding is why
-  there was an award.
-- **Missing: beat 4.** What did round 2 change, and why? "2 rounds of
-  iteration" is a process fact; "testing killed X so we did Y" is a design fact.
-- Still blocked on the confidentiality email, so this stays words-only for now.
+Has the most evidence of the six and presents it as a list of nouns — Best
+Research Award, 5 usability participants, 7 weeks with Caterpillar's UX
+team, 2 rounds of iteration, an on-site visit.
+
+- **Missing: beats 2 and 4, and I can't write them.** What did the research
+  find about heavy equipment operators that you didn't know going in? What
+  did round 2 change, and why? That finding is why there was an award, and
+  it is the single highest-value sentence missing from this site.
+- Still blocked on the confidentiality email, so this stays words-only
+  regardless.
 
 ### FUSE — Partners in Crime
-The strongest *premise* on the site and it's described rather than argued.
-"The two players never see the same thing" is a genuinely hard interface
-problem — asymmetric information, two input models, one shared state.
+**Left exactly as it is, at Jack's request.** Nothing below has been applied.
 
-- **Missing: beat 2 and 4, entirely.** What breaks when one player is in a
-  headset and the other is reading a floor plan? What did you build to fix it?
-- **Beat 5 exists and is underplayed:** it was shown publicly at the Peoria
-  Riverfront Museum. Did you watch people play it? What did they get stuck
-  on? That's user research whether or not it was called that.
+The strongest premise on the site. Beat 2 is already there and I had it
+wrong in my first pass — *"The two players never see the same thing"* is the
+problem, stated cleanly.
+
+- **Beat 4 is present but unframed.** The VFX exist "to help players
+  understand what was happening"; that is a reason, sitting in a sentence
+  shaped like a duty. It would land harder tied to the asymmetry the
+  paragraph above sets up.
+- **Missing: beat 5.** It was shown publicly at the Peoria Riverfront
+  Museum. Did you watch people play it? What did they get stuck on? That is
+  user research whether or not anyone called it that.
 
 ### Sandcastles
 Closest to the spine already. Beats 1, 2, 3 and 4 are all there — the hinge
@@ -80,31 +86,34 @@ better systems thinking than most junior portfolios contain.
   Anything you can say about how it held up over that run.
 
 ### Easter at Riverside
-Beat 1 and 3 are there. The blue matched to the church's worship room wall
-is a hinge hiding in a subordinate clause — promote it.
+**I was wrong about this one.** I wrote the note below from a truncated
+preview and called beat 2 missing. It isn't — *"Two services with opposite
+feelings, one construction"* is beat 2, stated better than I would have
+stated it, and the photo wall paragraph is a hinge with a rejected
+alternative built in: *"A graphic designed to be half covered."* Beats 1, 2,
+3 and 4 are all present. Left alone.
 
-- **Missing: beat 2.** One weekend, two services, two different moods
-  (Good Friday and Easter Sunday). One identity across both. *That* is the
-  problem, and it's a real one.
-- **Missing: beat 5.** Attendance, reach, or simply that it ran at the
-  building scale it was designed for.
+- **Missing: beat 5 only**, same as Sandcastles.
 
 ### Monmouth Retreat
-A photography collection, and the spine should flex hardest here — forcing
-"problem/solution" onto candid photography would read as fake.
+Beats 1 and 2 were there; the third paragraph was hope rather than outcome
+(*"I hope viewers can experience..."*), which reads weaker than stopping.
 
-- Keep beats 1, 2 and 4. Beat 2 is already there in one line: the changing
-  light. Beat 4 is the editing decision you made because of it.
-- **Beat 5 is the honest gap:** what were the photos *for*? Who used them?
+- **Changed:** cut that paragraph, and turned the lighting line into a stated
+  decision with the alternative it rejected — grading the gallery to one feel
+  rather than letting each image be its own best version.
+- **Still missing: beat 5.** What were the photos for, and who used them?
 
 ### Journey to the Oasis
-Currently the tools list — Maya, Blender, ZBrush, Cycles over Eevee, three
-days to render. That Cycles-over-Eevee call is a real beat 4 with a stated
-tradeoff; it's just stranded among software names.
+The weakest of the six, and the one that changed most.
 
-- **Missing: beat 1 and 2.** Why this story? A course brief is still an ask.
-- **Beat 5 is an adjective** — "drew a strong response." Either make it
-  evidence or cut it; an unsupported claim reads weaker than no claim.
+- **Changed:** the Cycles-over-Eevee call is a real decision with a stated
+  cost — three full days on the final pass — and it was stranded in a list of
+  software names. It now reads as the call that set the schedule.
+- **Changed:** cut *"drew a strong response at the end-of-term showing."* An
+  unsupported claim reads weaker than no claim. *"It closed out the course as
+  my final project"* is a fact and stays.
+- **Still missing: beats 1 and 2.** Why this story?
 
 ## What to write down before you write any of it
 
@@ -114,15 +123,18 @@ research task, not a writing task.
 | | the ask | the real problem | the hinge | the evidence |
 |---|---|---|---|---|
 | Caterpillar | ✅ | **?** | **?** | ✅ |
-| FUSE | ✅ | **?** | **?** | partial |
+| FUSE | ✅ | ✅ | buried | **?** |
 | Sandcastles | ✅ | ✅ | ✅ | **?** |
-| Easter | ✅ | **?** | ✅ buried | **?** |
+| Easter | ✅ | ✅ | ✅ | **?** |
 | Monmouth | ✅ | ✅ | ✅ | **?** |
-| Oasis | **?** | **?** | ✅ buried | **?** |
+| Oasis | **?** | **?** | ✅ | **?** |
 
-Eleven blanks. Most are things you know and haven't written; a few —
-Caterpillar's research finding, what you saw at the museum — are things to
-go and remember properly before writing.
+Blanks left: eight. Two I closed in Monmouth and Oasis, where the fact was
+already in the copy and just badly placed. Caterpillar and FUSE are
+untouched by request, so their blanks stand. Every remaining one needs
+something only you know, and two are worth more than the rest put together:
+**what Caterpillar's research actually found**, and **what you saw people do
+with FUSE at the museum**.
 
 ## One structural note
 
