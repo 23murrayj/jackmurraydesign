@@ -1,0 +1,11 @@
+# Working documents, not site content. These were publicly reachable on the
+# previous host because it served the repository root verbatim - including the
+# case-study notes, which are candid internal critique and not for visitors.
+docs/
+backup_20260702_140026/
+option-04-neo-brutalist/
+scratchpad/
+
+# Previous host's config; kept in the repo during the migration so the old
+# deploy stays reproducible, but there is nothing for Vercel to read in it.
+netlify.toml

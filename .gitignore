@@ -16,3 +16,11 @@ scratchpad/
 
 # Claude Code session files
 .claude/settings.local.json
+
+# Working notes and superseded design iterations. These live on disk but are
+# deliberately out of the repository: it is public, and the case-study notes
+# in particular are candid internal critique written for Jack, not for
+# visitors or for anyone browsing the source.
+/docs/
+/backup_*/
+/option-*/
