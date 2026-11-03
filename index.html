@@ -524,16 +524,14 @@
       </div>
     </div>
     <div class="contact-left">
-      <!-- Netlify Forms: the host parses this markup on deploy and provisions
-           an endpoint from name="contact". data-netlify-honeypot points it at
-           the trap field already below, so Netlify drops those server-side too
-           instead of relying on the client-side check alone. The hidden
-           form-name field is what identifies the form when script.js posts it
-           with fetch rather than letting the browser navigate. -->
+      <!-- script.js intercepts the submit and posts these fields to
+           /api/contact (see api/contact.js), so method and action are only
+           here as the no-JavaScript path. The honeypot below is checked in
+           both places: on the client to save a round trip, and again in the
+           function, because a bot posting straight to the endpoint never runs
+           the client check at all. -->
       <form class="contact-form reveal" id="contactForm"
-            name="contact" method="POST"
-            data-netlify="true" data-netlify-honeypot="_honeypot">
-        <input type="hidden" name="form-name" value="contact">
+            name="contact" method="POST" action="/api/contact">
         <!-- honeypot: invisible to real visitors, but bots that auto-fill
              every field will fill this one too — if it's non-empty on
              submit we silently drop the request client-side -->

@@ -1492,10 +1492,10 @@ if (magneticTextEl && window.matchMedia('(pointer: fine)').matches && !prefersRe
   requestAnimationFrame(animateMagnetic);
 }
 
-// Contact form. Posts to Netlify Forms, which provisions the endpoint from
-// the form's own markup at deploy time - see the comment above the <form>.
-// Anywhere that endpoint does not exist (localhost, or a host without
-// Netlify Forms) the catch below falls back to a pre-filled mailto.
+// Contact form. Posts to /api/contact, a function in this repository - see
+// api/contact.js for what it does with the fields. Anywhere that endpoint does
+// not exist (localhost, or a static host with no functions) the catch below
+// falls back to a pre-filled mailto, so the form degrades instead of failing.
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 const formSubmit = document.getElementById('formSubmit');
@@ -1516,17 +1516,16 @@ contactForm?.addEventListener('submit', (e) => {
   const message = contactForm.message.value.trim();
   if (!name || !email || !message) return;
 
-  // Netlify provisions the endpoint at the site root from the form's own
-  // markup, so posting the encoded fields back to "/" is the whole integration.
   // Done with fetch rather than a normal submit so the inline status line and
-  // the chosen language survive instead of the visitor being thrown to a
-  // generic success page. Anywhere that endpoint doesn't exist (localhost, or
-  // a host without Netlify Forms) the catch falls back to the old mailto.
+  // the chosen language survive, instead of the visitor being thrown to a
+  // generic success page and losing the language they picked. Anywhere the
+  // endpoint doesn't exist (localhost, or a static host with no functions)
+  // the catch falls back to the old mailto.
   const body = new URLSearchParams(new FormData(contactForm)).toString();
   formStatus.textContent = T.t('form.status.sending');
   formSubmit.disabled = true;
 
-  fetch('/', {
+  fetch('/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body
