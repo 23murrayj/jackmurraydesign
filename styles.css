@@ -382,7 +382,9 @@ body.is-loading { overflow: hidden; }
   content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: 0;
   background: var(--black); transition: width .3s ease;
 }
-.nav-links a:hover::after { width: 100%; }
+@media (hover: hover) {
+  .nav-links a:hover::after { width: 100%; }
+}
 
 .nav-right { display: flex; align-items: center; gap: 18px; }
 
@@ -393,7 +395,9 @@ body.is-loading { overflow: hidden; }
   cursor: pointer; font-size: 1rem;
   transition: background .25s, color .25s, transform .2s;
 }
-.theme-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+@media (hover: hover) {
+  .theme-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+}
 
 /* color vision mode control */
 .cvd-control { position: relative; }
@@ -404,7 +408,9 @@ body.is-loading { overflow: hidden; }
   cursor: pointer; font-size: 1.1rem;
   transition: background .25s, color .25s, transform .2s;
 }
-.cvd-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+@media (hover: hover) {
+  .cvd-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+}
 .cvd-toggle.active-mode { background: var(--black); color: var(--white); }
 /* visibility, not just opacity. opacity:0 + pointer-events:none hides a menu
    from the eye and the mouse but NOT from the keyboard or a screen reader:
@@ -435,7 +441,9 @@ body.is-loading { overflow: hidden; }
   border-bottom: 2px solid var(--ink);
 }
 .cvd-option:last-child { border-bottom: none; }
-.cvd-option:hover { background: var(--yellow); }
+@media (hover: hover) {
+  .cvd-option:hover { background: var(--yellow); }
+}
 .cvd-option.active { background: var(--ink); color: var(--paper); }
 .cvd-option.active::after { content: '●'; color: var(--accent); margin-left: 10px; }
 
@@ -581,10 +589,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
 }
-.badge-available:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 5px 5px 0 var(--accent);
-  background: var(--black); color: var(--white);
+@media (hover: hover) {
+  .badge-available:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 5px 5px 0 var(--accent);
+    background: var(--black); color: var(--white);
+  }
 }
 .badge-dot {
   width: 9px; height: 9px; border-radius: 50%;
@@ -639,7 +649,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   width: fit-content; border: 2px solid var(--black);
   transition: background .25s, color .25s, transform .25s;
 }
-.btn-block:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--accent); }
+@media (hover: hover) {
+  .btn-block:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--accent); }
+}
 /* The arrow drifts, to say there is more below without shouting it. Pulled
    out of the translated string and into a pseudo-element for the same reason
    the about CTA's was: I18N.apply() assigns textContent, so any span inside
@@ -762,7 +774,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   padding: 10px 18px; cursor: pointer;
   transition: background .25s, color .25s, transform .2s;
 }
-.filter-btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+@media (hover: hover) {
+  .filter-btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+}
 .filter-btn.active { background: var(--black); color: var(--white); }
 
 .card.hidden-card { display: none; }
@@ -781,10 +795,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   background: var(--white);
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
 }
-.card:hover {
-  transform: translate(-6px, -6px) rotate(-0.4deg);
-  box-shadow: 10px 10px 0 var(--black);
-  z-index: 5;
+@media (hover: hover) {
+  .card:hover {
+    transform: translate(-6px, -6px) rotate(-0.4deg);
+    box-shadow: 10px 10px 0 var(--black);
+    z-index: 5;
+  }
 }
 .card-media { overflow: hidden; aspect-ratio: 4/3; }
 .card-info {
@@ -840,7 +856,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      on rather than blending into whatever happens to pass behind it */
   box-shadow: 4px 4px 0 var(--accent);
 }
-.project-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+@media (hover: hover) {
+  .project-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+}
 
 .project-media { margin-bottom: 40px; }
 
@@ -922,7 +940,34 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   display: block;
 }
 @media (max-width: 700px) {
-  .project-video-details > div { height: 260px; }
+  /* The fixed-height row is tuned for the 956px desktop column, where three
+     stills sum to 918px and sit on one line. At 338px they wrap, and
+     whatever lands last is left as a sliver - the FUSE banner was rendering
+     82px wide beside its two neighbours. Sizing by width instead gives each
+     still the full column and its own height, so a tall standup banner stays
+     a tall standup banner. It is the same treatment a lone still already
+     gets, for the same reason. */
+  .project-video-details { flex-direction: column; align-items: stretch; }
+  .project-video-details > div { height: auto; width: 100%; }
+  /* .project-media-qualified, to outrank the height: 100% / width: auto rule
+     above it - that one is (0,2,1) and a plainer selector here loses to it
+     whatever order it is written in. Against a now-auto-height parent its
+     height: 100% resolved to zero and the stills vanished. Same shape as the
+     :only-child rule above, for the same reason. */
+  .project-media .project-video-details > div img {
+    /* width stays definite. With width AND height auto, an image that has not
+       loaded yet has no intrinsic size at all, and the whole strip collapsed
+       to its borders until the files arrived - the attributes only give a
+       ratio, which needs one axis to resolve against.
+       max-height then catches the tall one: the FUSE standup banner is
+       210x700, so at full column width it rendered 1105px tall, a screen and
+       a half of a single photograph. Clamped, object-fit: contain shows the
+       whole banner centred in its frame rather than cropping it. */
+    width: 100%;
+    height: auto; max-height: 56vh;
+    object-fit: contain;
+    display: block;
+  }
 }
 .project-media.layout-video .video-bg { width: 100%; height: 100%; display: block; filter: grayscale(0.25) brightness(0.75); }
 .project-video-overlay {
@@ -939,7 +984,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transition: transform .3s ease, background .3s ease;
 }
 .play-btn svg { width: 28px; height: 28px; fill: var(--black); }
-.project-media.layout-video:hover .play-btn { transform: scale(1.12); }
+@media (hover: hover) {
+  .project-media.layout-video:hover .play-btn { transform: scale(1.12); }
+}
 
 /* play button over the real player, shown only before the first play */
 .video-play {
@@ -951,8 +998,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transition: background .3s ease;
 }
 .project-video-frame:not(.is-idle) .video-play { display: none; }
-.video-play:hover { background: rgba(0, 0, 0, 0.10); }
-.video-play:hover .play-btn { transform: scale(1.12); }
+@media (hover: hover) {
+  .video-play:hover { background: rgba(0, 0, 0, 0.10); }
+}
+@media (hover: hover) {
+  .video-play:hover .play-btn { transform: scale(1.12); }
+}
 .video-play:focus-visible { outline: 4px solid var(--accent); outline-offset: -8px; }
 .video-caption {
   font-family: var(--ff-display); color: #fff;
@@ -1004,17 +1055,23 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .masonry-item.size-large { grid-row: span 5; grid-column: span 2; }
 @media (max-width: 700px) {
   .project-media.layout-masonry { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 60px; }
-  /* two columns only: a feature spans the full width, a landscape takes both
-     columns, and portraits stay single-column so two sit side by side */
-  /* On a phone every cell spans the full width, so the wall becomes a simple
-     vertical stack. Leaving portraits at one column would strand a gap beside
-     each of them, since the row packing above is built for three columns.
-     Landscapes take 3 rows (ratio 1.66) and portraits 7 (0.69) — both within
-     a few percent of native, and every row fills completely. */
+  /* Landscapes run the full width; portraits pair up two to a row.
+     Everything used to span both columns, which made the wall a single
+     stack - 18 photographs at Monmouth, 4898px, six phone screens of
+     scrolling before the write-up underneath. Pairing the five portraits
+     takes roughly 1500px out of that without shrinking anything a reader
+     would want bigger: a half-width portrait is still 155x258, while a
+     half-width landscape would be 155x93, which is a contact sheet.
+     The note this replaces worried that single-column portraits would
+     strand a gap beside each one. They do not: grid-auto-flow: dense is
+     set on the base rule and backfills an odd portrait's neighbour with
+     whatever comes next.
+     span 4 is 258px against a native 225px at this width, so a portrait
+     loses about 15% off its sides - the closest the 60px row unit gets. */
   .masonry-item.size-large,
   .masonry-item.size-feature,
   .masonry-item.size-wide { grid-column: span 2; grid-row: span 3; }
-  .masonry-item.size-tall { grid-column: span 2; grid-row: span 7; }
+  .masonry-item.size-tall { grid-column: span 1; grid-row: span 4; }
 }
 
 /* Full-page sticky scroll: media runs down the left at natural page scroll
@@ -1207,7 +1264,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      on rather than blending into whatever happens to pass behind it */
   box-shadow: 4px 4px 0 var(--accent);
 }
-.about-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+@media (hover: hover) {
+  .about-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+}
 
 .about-page-top {
   display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 60px;
@@ -1243,41 +1302,43 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .about-photos .wide { flex: 1.778 1 0; aspect-ratio: 16/9; }
 .about-photos .square { flex: 1.026 1 0; aspect-ratio: 1400/1365; }
 @media (max-width: 760px) {
-  /* the portrait's native ratio is ~1:2, which on a 375px screen runs over
-     700px tall before the reader reaches a word of the bio */
-  /* One column here, so there is no row for the photo to inflate and the
-     frame has no job - both go back into normal flow and the ratio governs. */
-  .about-photo-frame { position: static; }
+  /* The courtyard photo and the team photo sit side by side as a pair, with
+     the bio above them and the Dolomites shot full width below.
+
+     .about-page-top and .about-photos are siblings but each wraps one of the
+     two photos, so neither can reach the other. display: contents dissolves
+     both wrappers and drops their children straight into this grid, which is
+     what lets two pictures from different containers share a row without
+     moving either one in the markup (and so without disturbing the desktop
+     layout, which still wants the wrappers). order: then puts them in reading
+     order - bio, pair, wide shot - and because the two halves of the pair are
+     adjacent and claim opposite columns, they land on the same row. */
+  .about-page { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .about-page-top, .about-photos { display: contents; }
+  /* everything that is not part of the pair runs the full width */
+  .about-page > * { order: 5; grid-column: 1 / -1; }
+  .about-back { order: 0; }
+  .about-page-intro { order: 1; grid-column: 1 / -1; margin-bottom: 20px; }
+  .about-photo-frame { order: 2; grid-column: 1; position: static; }
+  .about-photos .square { order: 3; grid-column: 2; }
+  .about-photos .wide { order: 4; grid-column: 1 / -1; margin-top: 20px; margin-bottom: 48px; }
+
+  /* 4:5 for both, so the pair is one object rather than two photographs that
+     happen to be adjacent. It is the shallowest ratio that still reads as
+     portrait, which matters most for the team photo: that one is square
+     (1.026) and twelve people span nearly its full width, so every degree of
+     portrait crop takes someone off the ends. 4:5 keeps 78% of its width.
+     The courtyard photo is 0.481, far narrower than 4:5, so it crops top and
+     bottom instead; 45% holds the window over his head and torso. */
   .about-photo {
     position: static; height: auto;
-    /* 4:5 was 424px, 52% of the viewport, and it sat above the copy: opening
-       About showed a photograph and nothing else, on a page whose whole job
-       is the words. 3:2 is 226px. Combined with the reorder below, the page
-       now opens on "HI, I'M JACK." and the bio, with the photo as a break
-       between the intro and the timeline instead of a gate in front of it.
-
-       The window is 32% of a 1871px-tall frame. At 22% it sat over y280-880,
-       and he stands from about y650 (head) to y1700 (shoes) - so it held his
-       head and the arches above it and cut off at his shoulders. 45% moves it
-       to roughly y570-1170: above his head down to his hips, which is a
-       portrait rather than a passport photo. */
-    aspect-ratio: 3/2; object-fit: cover; object-position: 50% 45%;
+    aspect-ratio: 4/5; object-fit: cover; object-position: 50% 45%;
   }
-  /* Source order puts the photo first because the desktop grid wants it in
-     the left column. On one column that order is wrong, and order: on the
-     grid items fixes it without moving the markup (which would cost the
-     desktop layout its column assignment). */
-  .about-page-top {
-    grid-template-columns: 1fr; gap: 28px;
-    /* matches the 20px gap between the two photos directly below, so the
-       three pictures read as one evenly-spaced stack. 38px here against 20px
-       there looked like the first one had drifted. */
-    margin-bottom: 20px;
+  .about-photos .square {
+    flex: none; width: 100%;
+    aspect-ratio: 4/5; object-position: 50% 50%;
   }
-  .about-page-intro { order: 1; }
-  .about-photo-frame { order: 2; }
-  .about-photos { flex-direction: column; margin-bottom: 48px; }
-  .about-photos .wide, .about-photos .square { flex: none; width: 100%; }
+  .about-photos .wide { flex: none; width: 100%; }
 }
 .about-page-intro h2 {
   font-family: var(--ff-display);
@@ -1562,7 +1623,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   padding: 30px var(--about-inset) 16px 5vw;
 }
 #aboutTitle { cursor: pointer; transition: color .25s ease; }
-#aboutTitle:hover { color: var(--yellow); }
+@media (hover: hover) {
+  #aboutTitle:hover { color: var(--yellow); }
+}
 
 .about-readmore-btn {
   display: flex; align-items: center; gap: 10px;
@@ -1573,10 +1636,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
-.about-readmore-btn:hover {
-  background: var(--paper); color: var(--ink);
-  transform: translate(-3px, -3px);
-  box-shadow: 5px 5px 0 var(--yellow);
+@media (hover: hover) {
+  .about-readmore-btn:hover {
+    background: var(--paper); color: var(--ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 5px 5px 0 var(--yellow);
+  }
 }
 .about-cta-row {
   display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px;
@@ -1623,10 +1688,14 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   font-size: 1.5em; line-height: 1; font-weight: 700;
   transition: transform .25s ease;
 }
-.about-cta-row .about-readmore-btn:hover::after { transform: translateX(5px); }
+@media (hover: hover) {
+  .about-cta-row .about-readmore-btn:hover::after { transform: translateX(5px); }
+}
 @media (prefers-reduced-motion: reduce) {
   .about-cta-row .about-readmore-btn::after { transition: none; }
-  .about-cta-row .about-readmore-btn:hover::after { transform: none; }
+  @media (hover: hover) {
+    .about-cta-row .about-readmore-btn:hover::after { transform: none; }
+  }
 }
 
 /* The only action in this section. The resume used to sit beside it as a
@@ -1664,10 +1733,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
-.cv-btn:hover {
-  background: transparent; color: var(--accent-ink);
-  transform: translate(-3px, -3px);
-  box-shadow: 5px 5px 0 var(--yellow);
+@media (hover: hover) {
+  .cv-btn:hover {
+    background: transparent; color: var(--accent-ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 5px 5px 0 var(--yellow);
+  }
 }
 .about-page-intro .cv-btn { margin-top: 8px; }
 
@@ -2080,7 +2151,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: background .2s, color .2s, transform .2s;
 }
-.copy-email-btn:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
+@media (hover: hover) {
+  .copy-email-btn:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
+}
 .copy-email-btn.copied { background: var(--ink); color: var(--paper); }
 /* 29px tall was well under the 44px touch-target guideline — pad it out
    on touch-sized viewports only, so the desktop proportions are kept */
@@ -2127,9 +2200,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   transition: width .35s cubic-bezier(.2,.8,.2,1);
   z-index: 0;
 }
-.social-link:hover { color: var(--paper); padding-left: 18px; }
-.social-link:hover::before { width: 100%; }
-.social-link:hover .social-link-arrow { color: var(--yellow); transform: translate(5px, -5px) rotate(8deg); }
+@media (hover: hover) {
+  .social-link:hover { color: var(--paper); padding-left: 18px; }
+}
+@media (hover: hover) {
+  .social-link:hover::before { width: 100%; }
+}
+@media (hover: hover) {
+  .social-link:hover .social-link-arrow { color: var(--yellow); transform: translate(5px, -5px) rotate(8deg); }
+}
 /* The last row keeps its rule, like every other row - what made the bottom
    look like one thick band was that rule sitting directly on top of the
    strip below it with nothing in between. The gap is what fixes it, not
@@ -2171,7 +2250,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   cursor: pointer;
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
-.form-submit:hover { background: var(--paper); color: var(--ink); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--paper); }
+@media (hover: hover) {
+  .form-submit:hover { background: var(--paper); color: var(--ink); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--paper); }
+}
 .form-submit:disabled { cursor: default; opacity: 0.7; }
 .form-status {
   font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;
@@ -2188,7 +2269,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   padding: 22px 5vw; background: var(--ink); color: var(--paper);
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
 }
-.back-top:hover { color: var(--yellow); }
+@media (hover: hover) {
+  .back-top:hover { color: var(--yellow); }
+}
 
 .live-clock {
   font-family: 'Courier New', monospace;
@@ -2223,8 +2306,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 /* the animation drives transform and opacity, so it would win over the hover
    state's values - it has to stop for the hover to be visible at all */
-.egg-trigger:hover, .egg-trigger:focus-visible { animation: none; }
-.egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.7); color: var(--yellow); }
+/* focus-visible stays outside the hover guard below: a keyboard user on a
+   touch device still needs the focus treatment */
+.egg-trigger:focus-visible { animation: none; }
+@media (hover: hover) {
+  .egg-trigger:hover { animation: none; }
+}
+@media (hover: hover) {
+  .egg-trigger:hover { opacity: 1; transform: rotate(25deg) scale(1.7); color: var(--yellow); }
+}
 @media (prefers-reduced-motion: reduce) {
   /* no pulse, but it keeps the brighter, bigger end of it so it is still
      findable without moving */
@@ -2261,7 +2351,9 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   white-space: nowrap;
 }
 .egg-menu button:last-child { border-bottom: none; }
-.egg-menu button:hover { background: var(--yellow); }
+@media (hover: hover) {
+  .egg-menu button:hover { background: var(--yellow); }
+}
 
 /* Chaos mode flashes faster than WCAG 2.3.1 allows (scanlines ~23Hz, hero
    shake ~9Hz, whole-page saturation swing ~12Hz), so the menu item carries
@@ -2445,20 +2537,35 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   font-family: var(--ff-display); font-size: 0.8rem; letter-spacing: 1.5px;
   cursor: pointer;
 }
-#pongRematch:hover { background: #f9ff2e; }
+@media (hover: hover) {
+  #pongRematch:hover { background: #f9ff2e; }
+}
 
 /* STICKER PACK EASTER EGG */
 .sticker-tray {
   position: fixed; bottom: 22px; left: 50%;
-  transform: translateX(-50%) translateY(140%);
+  /* calc, not a percentage: 140% is 140% of the tray's OWN height, and this
+     tray wraps - four stickers, a label and a close button reflow to two rows
+     on a narrow screen, so the distance it travelled changed with its
+     content. 100% always clears its own height and the 60px covers the
+     bottom offset with room to spare. */
+  transform: translateX(-50%) translateY(calc(100% + 60px));
   z-index: 1500;
   background: var(--paper); border: 3px solid var(--ink);
   padding: 16px 22px; display: flex; align-items: center; gap: 18px;
   box-shadow: 8px 8px 0 var(--ink);
-  transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  /* A transform alone leaves the tray painted and merely moved, so anything
+     that changes the viewport - a phone's URL bar collapsing, the keyboard
+     closing, a rotation - could slide it back into view on its own. That is
+     the "drag a sticker anywhere" bar appearing at the bottom of the screen
+     unasked. visibility takes it out of rendering entirely when closed, and
+     transitioning visibility (rather than setting it instantly) keeps the
+     slide-out animation intact. */
+  visibility: hidden; pointer-events: none;
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility .4s ease;
   flex-wrap: wrap; justify-content: center;
 }
-.sticker-tray.open { transform: translateX(-50%) translateY(0); }
+.sticker-tray.open { transform: translateX(-50%) translateY(0); visibility: visible; pointer-events: auto; }
 .sticker-tray-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
   color: var(--ink); white-space: nowrap;
@@ -2469,13 +2576,17 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
   transition: transform .2s ease;
 }
-.sticker:hover { transform: scale(1.18) rotate(-6deg); }
+@media (hover: hover) {
+  .sticker:hover { transform: scale(1.18) rotate(-6deg); }
+}
 .sticker-tray-close {
   background: none; border: none; cursor: pointer;
   font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
   color: var(--ink); opacity: 0.55;
 }
-.sticker-tray-close:hover { opacity: 1; }
+@media (hover: hover) {
+  .sticker-tray-close:hover { opacity: 1; }
+}
 
 .placed-sticker {
   position: fixed; z-index: 1400;
@@ -2509,7 +2620,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 .sticker-trash.armed { background: var(--accent); border-color: var(--accent); transform: scale(1.15) translateY(0); }
 
 @media (max-width: 600px) {
-  .sticker-tray { left: 12px; right: 12px; transform: translateY(140%); width: auto; }
+  .sticker-tray { left: 12px; right: 12px; transform: translateY(calc(100% + 60px)); width: auto; }
   .sticker-tray.open { transform: translateY(0); }
 }
 
@@ -2546,11 +2657,15 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 :root[data-theme="dark"] .badge-dot {
   box-shadow: 0 0 10px 2px var(--green);
 }
-:root[data-theme="dark"] .card:hover {
-  box-shadow: 10px 10px 0 var(--black), 0 0 32px color-mix(in srgb, var(--accent) 45%, transparent);
+@media (hover: hover) {
+  :root[data-theme="dark"] .card:hover {
+    box-shadow: 10px 10px 0 var(--black), 0 0 32px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
 }
-:root[data-theme="dark"] .btn-block:hover {
-  box-shadow: 6px 6px 0 var(--accent), 0 0 26px color-mix(in srgb, var(--accent) 50%, transparent);
+@media (hover: hover) {
+  :root[data-theme="dark"] .btn-block:hover {
+    box-shadow: 6px 6px 0 var(--accent), 0 0 26px color-mix(in srgb, var(--accent) 50%, transparent);
+  }
 }
 :root[data-theme="dark"] .hero-name .accent {
   text-shadow: 0 0 18px var(--accent);
@@ -2610,7 +2725,9 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   font-family: var(--ff-body);
   transition: background .25s, color .25s, transform .2s;
 }
-.lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+@media (hover: hover) {
+  .lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+}
 /* The nav chrome goes to the 44px touch minimum on phones. This has to live
    here rather than with the matching rule for .nav-toggle/.theme-toggle/
    .cvd-toggle much higher up: those three are declared above that media
@@ -2652,7 +2769,9 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   min-height: 44px;
 }
 .lang-option:last-child { border-bottom: none; }
-.lang-option:hover { background: var(--yellow); }
+@media (hover: hover) {
+  .lang-option:hover { background: var(--yellow); }
+}
 .lang-option.active { background: var(--ink); color: var(--paper); }
 .lang-option.active::after { content: '●'; color: var(--accent); margin-left: 10px; }
 /* each option is labelled in its OWN language and carries a matching lang=""
@@ -2841,10 +2960,12 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   cursor: pointer;
   transition: background .2s ease, color .2s ease, transform .2s ease;
 }
-.lightbox-close:hover {
-  background: var(--paper); color: var(--ink);
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--accent);
+@media (hover: hover) {
+  .lightbox-close:hover {
+    background: var(--paper); color: var(--ink);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
 }
 #projectMedia img[data-full]:focus-visible {
   outline: 3px solid var(--accent);
