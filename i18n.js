@@ -1067,6 +1067,22 @@
           toggle.setAttribute('aria-expanded', 'false');
         }
       });
+      // Scrolling away dismisses it, matching the two dropdowns beside it
+      // (MENU_SCROLL_DISMISS in script.js). Same 40px threshold, same reason
+      // for having one rather than closing on any scroll at all: opening the
+      // menu can shift the page a pixel, and a menu that closes during the
+      // gesture that opened it is worse than one that stays.
+      var langScrollAnchor = null;
+      toggle.addEventListener('click', function () {
+        langScrollAnchor = menu.classList.contains('open') ? window.scrollY : null;
+      });
+      window.addEventListener('scroll', function () {
+        if (langScrollAnchor === null) return;
+        if (Math.abs(window.scrollY - langScrollAnchor) < 40) return;
+        langScrollAnchor = null;
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }, { passive: true });
     }
     syncMenu();
   }

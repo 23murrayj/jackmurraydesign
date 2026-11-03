@@ -30,6 +30,25 @@ const T = {
   onChange: (fn) => { if (window.I18N) window.I18N.onChange(fn); }
 };
 
+// Reloads were coming back part-way down the page. The browser restores the
+// previous scroll offset by default, and it resolves that offset against a
+// document whose height is still moving: the skeleton holds the body at
+// overflow hidden while it is up, images below the fold are lazy, and the
+// hero's type reflows once the self-hosted fonts land. Restoring "900px down"
+// against three different document heights in the first second lands in three
+// different places.
+//
+// Manual, and we put it at the top ourselves. For a page whose first screen is
+// the thing it most wants seen, the top is the only correct answer - with one
+// exception, a URL carrying a #hash, which is someone asking for a specific
+// section and should still get it.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (!location.hash) {
+  // 'instant' because html has scroll-behavior: smooth, and the default would
+  // animate the correction - visible as the page gliding up on every reload
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+}
+
 // Loading skeleton. The fake progress bar that used to live here advanced by
 // Math.random() every 120ms and reached 100% whenever it felt like it, which
 // is a progress indicator unconnected to any progress. The skeleton makes no
@@ -44,9 +63,28 @@ window.addEventListener('load', () => {
     dismissed = true;
     loader.classList.add('loaded');
     document.body.classList.remove('is-loading');
+
+    // Re-run the deep link ourselves. The browser jumps to a #hash during
+    // load, but the skeleton holds the body at overflow: hidden while it is
+    // up, so the jump is swallowed and never retried - every
+    // jackmurraydesign.com/#contact opened at the top of the page instead.
+    // Now that the lock is off, do it again.
+    if (location.hash.length > 1) {
+      const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      // instant, not smooth: this is where the page should already have been,
+      // not a journey the reader asked to watch
+      if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+
     // after the fade, not during it
     setTimeout(() => loader.remove(), 600);
   };
+  // Pin it again here. Between DOMContentLoaded and load the document grows as
+  // images arrive, and some browsers take a second run at restoring a position
+  // once the height changes; without this a reload could still drift down the
+  // page after the skeleton had gone.
+  if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
   // A frame first, so the real content has painted underneath before the
   // skeleton fades and the two cross rather than flashing white between them.
   requestAnimationFrame(dismiss);
@@ -1086,9 +1124,43 @@ function applyCvdMode(mode) {
 // Escape, toggle again) and the attribute has to stay true to all of them.
 // The language menu next door sets it on every path by hand, which works
 // but is four chances to miss one.
+// A menu whose trigger the reader has scrolled past is orphaned. The egg menu
+// is the clear case: it is position: fixed at the bottom-left while its
+// trigger sits in the footer, so opening it and scrolling up left a floating
+// panel attached to nothing on screen. The two nav dropdowns ride along with
+// the fixed nav and never orphan, but they dismiss on the same gesture,
+// because scrolling away from a menu you just opened is a plain "done here"
+// and having one of the three behave differently is worse than the rule.
+//
+// A distance threshold rather than any scroll at all: opening a menu can
+// itself shift the page by a pixel or two, and a menu that closes during the
+// gesture that opened it is more annoying than one that stays.
+const MENU_SCROLL_DISMISS = 40;
+let menuScrollAnchor = null;
+// Reads the menus rather than trusting the caller's own open/closed flag.
+// Taking the flag looked right and was not: clicking the egg trigger bubbles
+// to document, where the colour-vision menu's outside-click handler calls
+// setCvdMenu(false) - so opening one menu disarmed the watcher that had just
+// been armed for it, and it then survived any amount of scrolling. The state
+// that matters is whether ANY of them is open, which is on the elements.
+function armMenuScrollDismiss() {
+  const anyOpen =
+    !!cvdMenu?.classList.contains('open') ||
+    !!eggMenu?.classList.contains('open');
+  menuScrollAnchor = anyOpen ? window.scrollY : null;
+}
+window.addEventListener('scroll', () => {
+  if (menuScrollAnchor === null) return;
+  if (Math.abs(window.scrollY - menuScrollAnchor) < MENU_SCROLL_DISMISS) return;
+  menuScrollAnchor = null;
+  setCvdMenu(false);
+  setEggMenu(false);
+}, { passive: true });
+
 function setCvdMenu(open) {
   cvdMenu?.classList.toggle('open', open);
   cvdToggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
+  armMenuScrollDismiss();
 }
 cvdToggle?.addEventListener('click', () => setCvdMenu(!cvdMenu.classList.contains('open')));
 cvdOptions.forEach((btn) => {
@@ -1675,6 +1747,7 @@ const stickerTrash = document.getElementById('stickerTrash');
 function setEggMenu(open) {
   eggMenu?.classList.toggle('open', open);
   eggTrigger?.setAttribute('aria-expanded', open ? 'true' : 'false');
+  armMenuScrollDismiss();
 }
 eggTrigger?.addEventListener('click', () => setEggMenu(!eggMenu.classList.contains('open')));
 document.addEventListener('keydown', (e) => {

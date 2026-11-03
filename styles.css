@@ -202,7 +202,6 @@ a { color: inherit; text-decoration: none; }
 .loader {
   position: fixed; inset: 0; z-index: 2000;
   background: var(--white);
-  padding: 0 5vw;
   display: flex; flex-direction: column;
   overflow: hidden;
   transition: opacity .5s ease, visibility .5s ease;
@@ -230,34 +229,69 @@ a { color: inherit; text-decoration: none; }
 }
 @keyframes sk-shimmer { to { transform: translateX(100%); } }
 
+/* Every block below is derived from the rule it stands in for, not eyeballed:
+   the nav row repeats .nav's padding so it is the same height, and each title
+   bar is one line of .hero-name - its own clamp() multiplied by its 0.84
+   line-height. Guessing produced a 60px nav against a real 86px one and 42px
+   title bars against real 50px ones, which is what "a little off" looks like:
+   every landmark in roughly the right order and none of them in the right
+   place. */
+/* Absolute, because .nav is fixed and sits OVER the hero rather than above
+   it. In flow it pushed the whole skeleton hero down by its own height, and
+   every landmark inherited the error. */
 .sk-nav {
-  height: 60px; flex: none;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 1;
+  padding: 26px 5vw;
+  /* .nav carries a transparent 2px bottom border that becomes visible once
+     the page is scrolled; without it the skeleton row is 2px short */
+  border-bottom: 2px solid transparent;
   display: flex; align-items: center; justify-content: space-between;
 }
-.sk-logo { width: 58px; height: 20px; }
-.sk-nav-right { display: flex; gap: 10px; }
-.sk-sq { width: 40px; height: 40px; }
+.sk-logo { width: 53px; height: 26px; }
+.sk-nav-right { display: flex; align-items: center; gap: 18px; }
+.sk-sq { width: 40px; height: 40px; flex: none; }
+/* the three nav links, which collapse into the drawer on a phone */
+.sk-links { width: 210px; height: 14px; }
+/* the hamburger, which only exists on a phone */
+.sk-burger { display: none; }
 
-.sk-hero { flex: none; padding-top: clamp(28px, 7vh, 70px); }
-/* tracks the real headline: clamp(3rem, 11vw, 9rem) over two lines */
-.sk-title { height: clamp(2.6rem, 9.5vw, 7.6rem); width: min(62%, 560px); margin-bottom: 10px; }
-.sk-title-2 { width: min(82%, 720px); margin-bottom: 26px; }
-.sk-badge { height: 38px; width: min(76%, 330px); margin-bottom: 26px; }
-.sk-line { height: 15px; width: min(58%, 290px); margin-bottom: 34px; }
-.sk-cta { height: 54px; width: 190px; }
-
-.sk-strip { height: 46px; margin: clamp(26px, 5vh, 54px) -5vw 0; flex: none; }
-
-.sk-cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-  margin-top: 22px; flex: 1 1 auto; min-height: 0;
+/* .hero's own padding and centring. The marquee strip is a child here for the
+   same reason it is there: the hero centres its whole group, strip included,
+   so leaving the strip outside put every landmark ~79px too high. */
+.sk-hero {
+  flex: 1 1 auto; min-height: 0;
+  /* .hero's own padding: the 110px clears the fixed nav */
+  padding: 110px 5vw 0;
+  display: flex; flex-direction: column; justify-content: center;
 }
-.sk-card { min-height: 150px; }
+/* One line of .hero-name: its clamp() x its 0.84 line-height, less a 6px gap
+   so the two bars read as two lines rather than fusing into one L-shaped
+   block. Real type has air between the lines even at 0.84; a solid bar does
+   not unless it is given some. The gap comes out of the bar's own height, so
+   the pair still measures what two lines of the headline measure. */
+.sk-title {
+  height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84 - 6px);
+  width: min(62%, 560px);
+  margin-bottom: 6px;
+}
+.sk-title-2 { width: min(94%, 860px); margin-bottom: 37px; }
+.sk-badge { height: 36px; width: min(88%, 330px); margin-bottom: 40px; }
+.sk-line { height: 15px; width: min(55%, 290px); margin-bottom: 39px; }
+.sk-cta { height: 54px; width: 195px; }
+
+.sk-strip { flex: none; height: 80px; margin-top: 45px; }
 
 @media (max-width: 760px) {
-  .sk-cards { grid-template-columns: 1fr; }
-  .sk-card:nth-child(2) { display: none; }
-  .sk-cta { width: 160px; height: 48px; }
+  /* .hero-name's own mobile clamp */
+  .sk-title { height: calc(clamp(3.4rem, 16vw, 8rem) * 0.84 - 6px); }
+  .sk-links { display: none; }
+  .sk-burger { display: block; margin-left: 14px; }
+  .sk-sq { width: 44px; height: 44px; }
+    .sk-card:nth-child(2) { display: none; }
+}
+@media (max-width: 480px) {
+  .sk-nav { padding: 20px 4vw; }
+  .sk-nav-right { gap: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -465,7 +499,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .nav-links a { color: var(--white); font-size: 1.1rem; padding: 10px 0; min-height: 44px;
                  display: flex; align-items: center; }
   .nav-links a::after { background: var(--white); }
-  .nav-toggle { display: flex; }
+  .nav-toggle {
+    display: flex;
+    /* The hamburger is a different kind of control from the three beside it:
+       those change a setting in place, this one opens a drawer over the page.
+       At the shared gap it read as a fourth toggle in the same group and sat
+       uncomfortably close to the theme button. The extra inset separates the
+       two groups without needing a rule or a divider between them. */
+    margin-left: 14px;
+  }
   /* nav chrome sat at 40px, just under the 44px touch-target guideline */
   .nav-toggle, .theme-toggle, .cvd-toggle { width: 44px; height: 44px; }
   /* .lang-toggle gets the same treatment, but its base rule is defined far
@@ -1410,15 +1452,29 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     align-items: start;
   }
   .about-timeline li > * { grid-column: 2; }
-  /* Absolute, not a stretched grid item. grid-row: 1 / -1 does not work here:
-     -1 counts lines of the EXPLICIT grid, and only columns are declared, so
-     it resolved back to line 1 and drew a 54px stub in a 196px row. An
-     absolutely-positioned rail measures against the li's padding box instead,
-     so it spans the whole entry and meets the next one with no seam. */
+  /* Each rail is the connector between its own dot and the next one, rather
+     than a line filling the row. That is what the line actually means, and it
+     makes the two ends right for free: nothing hangs above the first dot, and
+     the last entry has no rail at all because there is nothing below it to
+     reach. The previous version ran top-to-bottom of the row and needed the
+     last one trimmed by hand - which is what broke when the dots moved from
+     row 1 to row 2 and the hand-set 26px stopped reaching the dot.
+
+     --tl-dot: the distance from the top of an entry to the centre of its dot.
+     Measured: 18px row padding + a 24px year line + the dot's own 6px offset
+     + half of its 11px. Every entry is the same, because the year above the
+     dot is always one line. top pins the rail to this entry's dot and bottom
+     reaches exactly the same point in the next entry.
+
+     Absolute, not a stretched grid item: grid-row: 1 / -1 does not work here,
+     since -1 counts lines of the EXPLICIT grid and only columns are declared,
+     so it resolved back to line 1 and drew a stub. */
+  .about-timeline li { --tl-dot: 53px; }
   .about-timeline li::before {
     position: absolute;
     left: 5px;            /* centres the 2px rail in the 12px column */
-    top: 0; bottom: 0;
+    top: var(--tl-dot);
+    bottom: calc(var(--tl-dot) * -1);
     width: 2px; height: auto;
     margin: 0;
     grid-column: auto; grid-row: auto;
@@ -1441,9 +1497,8 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   }
   /* the rail should begin at the first dot and stop at the last, not dangle
      past either end of the list */
-  /* the rail stops at the last dot rather than running on to the end of the
-     final entry, which would read as a line going nowhere */
-  .about-timeline li:last-child::before { bottom: auto; height: 26px; }
+  /* nothing below the last dot to connect to */
+  .about-timeline li:last-child::before { display: none; }
 }
 
 .about-skills-section .skill-group { margin-bottom: 28px; }
@@ -1890,13 +1945,19 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      into four lines, one word each. Tighter tracking and padding put it back
      on one or two, and it fills the column so it still reads as the section's
      one action rather than a link that happens to be boxed. */
+  /* It is the section's one action and it was reading as a footnote: 11.5px
+     type beside 17.6px body copy, in a column narrow enough that the first
+     attempt broke it into four lines. Bigger type and a deeper offset bring
+     the weight back; the tracking and padding stay tight because that is what
+     buys the single line. The red fill and the yellow offset it already had
+     do the rest - nothing else in the section is either of those colours. */
   .about-cta-row .about-readmore-btn {
     width: 100%;
     justify-content: center;
-    padding: 13px 12px;
-    font-size: 0.72rem;
+    padding: 16px 10px;
+    font-size: 0.82rem;
     letter-spacing: 0.6px;
-    gap: 8px;
+    gap: 7px;
   }
 
   .about-panel {
@@ -2452,19 +2513,12 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   .sticker-tray.open { transform: translateY(0); }
 }
 
-/* No stickers without a pointer. The whole interaction is drag-and-drop onto
-   an arbitrary spot on the page, which on a touch screen competes with the
-   gesture for scrolling the page - you cannot drag a sticker down the screen
-   without the page trying to come with it. Gated on hover rather than width
-   because this is about the input device, not the viewport: a tablet has the
-   room and still has the same problem.
-
-   The tray's trigger goes with it, so the menu does not offer a button that
-   opens a panel which is not there. Chaos mode next to it is a toggle and
-   works fine by touch, so it stays. */
-@media (hover: none) {
-  .sticker-tray, .sticker-trash, #eggMenuStickers { display: none; }
-}
+/* Stickers stay on touch. They were hidden here on the assumption that
+   dragging one would fight the page for the scroll gesture - but the drag is
+   built on pointer events with setPointerCapture and touch-action: none on
+   the sticker itself, which is exactly the arrangement that stops the page
+   scrolling while a finger is on one. The assumption was wrong and the
+   feature already worked. */
 
 /* DARK MODE INTENSITY — heavier, more aggressive personality:
    neon glow on accent text, harsher hover shadows. Colors themselves
