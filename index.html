@@ -55,11 +55,37 @@
 <a href="#main" class="skip-link" data-i18n="a11y.skip">Skip to main content</a>
 
 <!-- LOADER -->
-<div class="loader" id="loader">
-  <div class="loader-name">
-    <span>JACK</span><span>MURRAY</span>
+<!-- A skeleton of the page rather than a splash over it. The name-and-bar
+     version was a thing to look at WHILE waiting; this is the shape of what is
+     arriving - nav, headline, badge, tagline, button, cards - so the first
+     paint already has the page's structure and nothing lurches when the real
+     content takes its place. There is also no fake progress bar any more: it
+     was filling at a random rate unconnected to anything loading, which is a
+     progress indicator that lies.
+
+     aria-hidden and inert: it is scaffolding. A screen reader announcing a
+     stack of empty boxes is noise, and nothing in here is reachable. -->
+<div class="loader" id="loader" aria-hidden="true" inert>
+  <div class="sk-nav">
+    <div class="sk sk-logo"></div>
+    <div class="sk-nav-right">
+      <div class="sk sk-sq"></div>
+      <div class="sk sk-sq"></div>
+      <div class="sk sk-sq"></div>
+    </div>
   </div>
-  <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+  <div class="sk-hero">
+    <div class="sk sk-title"></div>
+    <div class="sk sk-title sk-title-2"></div>
+    <div class="sk sk-badge"></div>
+    <div class="sk sk-line"></div>
+    <div class="sk sk-cta"></div>
+  </div>
+  <div class="sk sk-strip"></div>
+  <div class="sk-cards">
+    <div class="sk sk-card"></div>
+    <div class="sk sk-card"></div>
+  </div>
 </div>
 
 <!-- SCROLL PROGRESS -->
@@ -103,7 +129,7 @@
     <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="toggle theme">
       <span class="theme-icon">☾︎</span>
     </button>
-    <button class="nav-toggle" id="navToggle" data-i18n-aria="nav.aria.menu" aria-label="menu"><span></span><span></span><span></span></button>
+    <button class="nav-toggle" id="navToggle" data-i18n-aria="nav.aria.menu" aria-label="menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-overlay" id="navOverlay"></div>
@@ -268,6 +294,33 @@
           <span class="stat-label" data-i18n="about.stat.now">Where I am right now</span>
         </div>
       </div>
+      <!-- A full-height panel rather than a box inside the text grid. Two
+           photos squeezed into the reading column's height gave them a 2.09:1
+           slot cut from a 0.56:1 source - a 3.7x ratio mismatch, which is
+           exactly what "weirdly cropped" looks like. One photo in a slot the
+           height of the whole section is ~0.58:1, the file's own shape, so
+           nothing is cropped at all. It is absolutely positioned against
+           .about, so it costs the section no height - and because neither
+           .about-grid nor .about-intro is positioned, living inside them
+           changes nothing about where it lands on a desktop.
+           It sits here, immediately before the hook, for the phone layout:
+           there the two become a two-column row, photo beside the sentence
+           about three continents, which is the one place in the section where
+           picture and text are saying the same thing.
+           The photo is itself the link to the about page rather than
+           decoration sitting next to one - a face is the strongest pull
+           towards a page about a person. aria-label (not the alt) names the
+           destination: the alt describes the picture, which is not what a
+           screen reader needs to hear about where a link goes. -->
+      <div class="about-panel reveal">
+        <a class="about-portrait" href="#about" id="aboutPortrait" data-tilt
+           data-i18n-aria="about.portraitLink" aria-label="More about Jack">
+          <img src="assets/about/jack-centrale.jpg" width="918" height="1600"
+               loading="lazy" decoding="async"
+               data-i18n-alt="about.portraitAlt"
+               alt="Jack on a platform at Milano Centrale, a red high-speed train beside him and the station's arched hall behind.">
+        </a>
+      </div>
       <!-- the turn: it opens a loop the about page closes, and it runs
            straight into the button with nothing in between -->
       <p class="about-hook reveal" data-i18n-html="about.hook">
@@ -282,28 +335,6 @@
         <button class="about-readmore-btn" id="aboutReadMore" data-i18n="about.readmore">HOW I GOT HERE</button>
       </div>
     </div>
-  </div>
-  <!-- A full-height panel rather than a box inside the text grid. Two photos
-       squeezed into the reading column's height gave them a 2.09:1 slot cut
-       from a 0.56:1 source - a 3.7x ratio mismatch, which is exactly what
-       "weirdly cropped" looks like. One photo in a slot the height of the
-       whole section is ~0.58:1, which is the file's own shape, so nothing is
-       cropped at all. It sits after the button in the DOM so the primary
-       action is reached first by keyboard, and it is absolutely positioned
-       against .about, so it costs the section no height.
-       The photo is itself the link to the about page rather than decoration
-       sitting next to one - a face is the strongest pull towards a page about
-       a person. aria-label (not the alt) names the destination: the alt
-       describes the picture, which is not what a screen reader needs to hear
-       about where a link goes. -->
-  <div class="about-panel reveal">
-    <a class="about-portrait" href="#about" id="aboutPortrait" data-tilt
-       data-i18n-aria="about.portraitLink" aria-label="More about Jack">
-      <img src="assets/about/jack-centrale.jpg" width="918" height="1600"
-           loading="lazy" decoding="async"
-           data-i18n-alt="about.portraitAlt"
-           alt="Jack on a platform at Milano Centrale, a red high-speed train beside him and the station's arched hall behind.">
-    </a>
   </div>
   <!-- The skills marquee used to sit here. All nine of its tags are already
        on the about page (29 skills in four labelled groups), six were also in

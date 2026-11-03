@@ -1,7 +1,13 @@
+# Root-anchored (/docs/, not docs/). .vercelignore takes gitignore-style
+# patterns, so an unanchored docs/ matches ANY directory of that name at any
+# depth - including assets/docs/, which holds the resume the contact section
+# links to. That shipped, and the resume 404'd on the live site while being
+# present in the repository the whole time.
+#
 # Working documents, not site content. These were publicly reachable on the
 # previous host because it served the repository root verbatim - including the
 # case-study notes, which are candid internal critique and not for visitors.
-docs/
-backup_20260702_140026/
-option-04-neo-brutalist/
-scratchpad/
+/docs/
+/backup_20260702_140026/
+/option-04-neo-brutalist/
+/scratchpad/

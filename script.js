@@ -30,28 +30,31 @@ const T = {
   onChange: (fn) => { if (window.I18N) window.I18N.onChange(fn); }
 };
 
-// loading screen
+// Loading skeleton. The fake progress bar that used to live here advanced by
+// Math.random() every 120ms and reached 100% whenever it felt like it, which
+// is a progress indicator unconnected to any progress. The skeleton makes no
+// claim about how far along anything is - it just holds the page's shape
+// until there is a page - so there is nothing left to drive.
 const loader = document.getElementById('loader');
-const loaderFill = document.getElementById('loaderFill');
-let loadProgress = 0;
-const loadInterval = setInterval(() => {
-  loadProgress += Math.random() * 18;
-  if (loadProgress >= 100) {
-    loadProgress = 100;
-    clearInterval(loadInterval);
-  }
-  loaderFill.style.width = loadProgress + '%';
-}, 120);
 
 window.addEventListener('load', () => {
-  setTimeout(() => {
-    loaderFill.style.width = '100%';
-    setTimeout(() => {
-      loader.classList.add('loaded');
-      document.body.classList.remove('is-loading');
-      setTimeout(() => loader.remove(), 800);
-    }, 250);
-  }, 400);
+  let dismissed = false;
+  const dismiss = () => {
+    if (dismissed) return;
+    dismissed = true;
+    loader.classList.add('loaded');
+    document.body.classList.remove('is-loading');
+    // after the fade, not during it
+    setTimeout(() => loader.remove(), 600);
+  };
+  // A frame first, so the real content has painted underneath before the
+  // skeleton fades and the two cross rather than flashing white between them.
+  requestAnimationFrame(dismiss);
+  // ...but rAF does not run in a backgrounded tab. A phone that finishes
+  // loading the page while the user is in another app would come back to a
+  // skeleton that never leaves, with the body still locked at
+  // overflow: hidden. The timeout is the floor; whichever fires first wins.
+  setTimeout(dismiss, 250);
 });
 
 // scroll progress bar
@@ -1011,6 +1014,9 @@ const navLinks = document.getElementById('navLinks');
 const navOverlay = document.getElementById('navOverlay');
 
 function openMobileNav() {
+  // the open/closed state was carried entirely by a class, so the control
+  // announced itself as the same thing whether the drawer was open or shut
+  navToggle.setAttribute('aria-expanded', 'true');
   navToggle.classList.add('open');
   navLinks.classList.add('open');
   navOverlay.classList.add('open');
@@ -1021,6 +1027,7 @@ function openMobileNav() {
 }
 function closeMobileNav() {
   const hadFocusInside = navLinks.contains(document.activeElement);
+  navToggle.setAttribute('aria-expanded', 'false');
   navToggle.classList.remove('open');
   navLinks.classList.remove('open');
   navOverlay.classList.remove('open');
@@ -1438,8 +1445,10 @@ if (magneticTextEl && !prefersReducedMotion) {
   let magMouseX = -9999;
   let magMouseY = -9999;
   let magRaf = null;
+  let magTouchMode = false;
 
   window.addEventListener('mousemove', (e) => {
+    magTouchMode = false;
     magMouseX = e.clientX;
     magMouseY = e.clientY;
     startMagnetic();
@@ -1450,26 +1459,31 @@ if (magneticTextEl && !prefersReducedMotion) {
     startMagnetic();
   });
 
-  // Passive, and bound to the headline rather than the window: the page must
-  // keep scrolling normally while a finger crosses the letters. Calling
-  // preventDefault here would trap the scroll on the one section people are
-  // most likely to drag across.
-  const magTouch = (e) => {
+  // A tap is a pulse, not a drag. Tracking the finger meant the letters stayed
+  // blown apart for as long as it was down and followed it around the
+  // headline, which reads as the text coming apart rather than reacting to
+  // being touched. Touching now sets the point once and lets go of it a moment
+  // later, so the letters push away from where you touched and spring back on
+  // their own. touchmove is deliberately not handled - dragging does nothing.
+  //
+  // Passive, and bound to the headline rather than the window, so the page
+  // still scrolls normally; preventDefault here would trap the scroll on the
+  // one section people are most likely to swipe across.
+  let magRelease = null;
+  magneticTextEl.addEventListener('touchstart', (e) => {
     const t = e.touches && e.touches[0];
     if (!t) return;
+    magTouchMode = true;
     magMouseX = t.clientX;
     magMouseY = t.clientY;
     startMagnetic();
-  };
-  const magTouchEnd = () => {
-    magMouseX = -9999;
-    magMouseY = -9999;
-    startMagnetic();
-  };
-  magneticTextEl.addEventListener('touchstart', magTouch, { passive: true });
-  magneticTextEl.addEventListener('touchmove', magTouch, { passive: true });
-  magneticTextEl.addEventListener('touchend', magTouchEnd, { passive: true });
-  magneticTextEl.addEventListener('touchcancel', magTouchEnd, { passive: true });
+    clearTimeout(magRelease);
+    magRelease = setTimeout(() => {
+      magMouseX = -9999;
+      magMouseY = -9999;
+      startMagnetic();
+    }, TOUCH_PULSE_MS);
+  }, { passive: true });
 
   // bigger radius + much stronger push so letters fly further, and a
   // lower damping ratio so the snap-back overshoots more visibly
@@ -1477,6 +1491,18 @@ if (magneticTextEl && !prefersReducedMotion) {
   const MAG_FORCE = 220;
   const STIFFNESS = 230;
   const DAMPING = 11;
+
+  // Touch gets a gentler version of the same physics. A cursor hovers - it
+  // arrives slowly and you watch the letters give way. A finger lands all at
+  // once, so the desktop numbers fire the whole headline apart in one frame
+  // and it reads as broken rather than playful. A third of the push over a
+  // smaller radius, and roughly double the damping so it settles instead of
+  // ringing.
+  const TOUCH_RADIUS = 150;
+  const TOUCH_FORCE = 72;
+  const TOUCH_DAMPING = 21;
+  // how long the tap keeps pushing before the letters are released
+  const TOUCH_PULSE_MS = 160;
   let magLastT = 0;
 
   function animateMagnetic(t) {
@@ -1492,17 +1518,21 @@ if (magneticTextEl && !prefersReducedMotion) {
       const dy = cy - magMouseY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
+      const radius = magTouchMode ? TOUCH_RADIUS : MAG_RADIUS;
+      const push = magTouchMode ? TOUCH_FORCE : MAG_FORCE;
+
       let targetX = 0, targetY = 0;
-      if (dist < MAG_RADIUS && dist > 0.01) {
-        const force = (1 - dist / MAG_RADIUS) * MAG_FORCE;
+      if (dist < radius && dist > 0.01) {
+        const force = (1 - dist / radius) * push;
         targetX = (dx / dist) * force;
         targetY = (dy / dist) * force;
       }
 
       // spring-damper physics: underdamped for a dramatic bounce on
       // both the explosion outward and the snap back into place
-      const ax = (targetX - s.dx) * STIFFNESS - s.vx * DAMPING;
-      const ay = (targetY - s.dy) * STIFFNESS - s.vy * DAMPING;
+      const damp = magTouchMode ? TOUCH_DAMPING : DAMPING;
+      const ax = (targetX - s.dx) * STIFFNESS - s.vx * damp;
+      const ay = (targetY - s.dy) * STIFFNESS - s.vy * damp;
       s.vx += ax * dt;
       s.vy += ay * dt;
       s.dx += s.vx * dt;
