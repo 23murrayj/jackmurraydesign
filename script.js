@@ -1050,7 +1050,7 @@ const themeToggle = document.getElementById('themeToggle');
 const themeIcon = themeToggle.querySelector('.theme-icon');
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.textContent = theme === 'dark' ? '☀' : '☾';
+  themeIcon.textContent = theme === 'dark' ? '☀︎' : '☾︎';
   localStorage.setItem('jm-theme', theme);
   document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
 }
@@ -1429,17 +1429,47 @@ function buildMagneticText() {
   });
 }
 buildMagneticText();
-if (magneticTextEl && window.matchMedia('(pointer: fine)').matches && !prefersReducedMotion) {
+// The (pointer: fine) gate that used to be here meant the headline was inert
+// on a phone: the one element on the page that invites being played with did
+// nothing at all when played with. Touch now drives the same physics, and the
+// loop idles itself (see the bottom of animateMagnetic) so running it on a
+// battery-powered device costs nothing while nobody is touching it.
+if (magneticTextEl && !prefersReducedMotion) {
   let magMouseX = -9999;
   let magMouseY = -9999;
+  let magRaf = null;
+
   window.addEventListener('mousemove', (e) => {
     magMouseX = e.clientX;
     magMouseY = e.clientY;
+    startMagnetic();
   });
   window.addEventListener('mouseleave', () => {
     magMouseX = -9999;
     magMouseY = -9999;
+    startMagnetic();
   });
+
+  // Passive, and bound to the headline rather than the window: the page must
+  // keep scrolling normally while a finger crosses the letters. Calling
+  // preventDefault here would trap the scroll on the one section people are
+  // most likely to drag across.
+  const magTouch = (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    magMouseX = t.clientX;
+    magMouseY = t.clientY;
+    startMagnetic();
+  };
+  const magTouchEnd = () => {
+    magMouseX = -9999;
+    magMouseY = -9999;
+    startMagnetic();
+  };
+  magneticTextEl.addEventListener('touchstart', magTouch, { passive: true });
+  magneticTextEl.addEventListener('touchmove', magTouch, { passive: true });
+  magneticTextEl.addEventListener('touchend', magTouchEnd, { passive: true });
+  magneticTextEl.addEventListener('touchcancel', magTouchEnd, { passive: true });
 
   // bigger radius + much stronger push so letters fly further, and a
   // lower damping ratio so the snap-back overshoots more visibly
@@ -1452,6 +1482,7 @@ if (magneticTextEl && window.matchMedia('(pointer: fine)').matches && !prefersRe
   function animateMagnetic(t) {
     const dt = magLastT ? Math.min((t - magLastT) / 1000, 0.05) : 0;
     magLastT = t;
+    let moving = false;
 
     magneticLetterStates.forEach((s) => {
       const rect = s.el.getBoundingClientRect();
@@ -1486,10 +1517,38 @@ if (magneticTextEl && window.matchMedia('(pointer: fine)').matches && !prefersRe
       }
 
       s.el.style.transform = `translate(${s.dx + scatterX}px, ${s.dy + scatterY}px) rotate(${(s.dx + scatterX) * 0.2}deg)`;
+
+      // still worth another frame?
+      if (Math.abs(s.dx) > 0.08 || Math.abs(s.dy) > 0.08 ||
+          Math.abs(s.vx) > 0.08 || Math.abs(s.vy) > 0.08) moving = true;
     });
-    requestAnimationFrame(animateMagnetic);
+
+    // Idle out rather than looping forever. Each frame reads a bounding rect
+    // per letter, which forces layout - cheap enough on a desktop nobody
+    // notices, but a constant drain on a phone for an effect that is not
+    // currently being touched. Any pointer or touch calls startMagnetic()
+    // again. Chaos mode is excluded because its jitter is reapplied every
+    // frame, so settling is not something it ever does.
+    const pointerAway = magMouseX < -9000;
+    if (pointerAway && !moving && !(window.chaosBoost > 1)) {
+      magneticLetterStates.forEach((st) => {
+        st.dx = 0; st.dy = 0; st.vx = 0; st.vy = 0;
+        st.el.style.transform = '';
+      });
+      magRaf = null;
+      return;
+    }
+    magRaf = requestAnimationFrame(animateMagnetic);
   }
-  requestAnimationFrame(animateMagnetic);
+
+  function startMagnetic() {
+    if (magRaf !== null) return;
+    // reset the clock, or the first frame after an idle gets a dt of however
+    // long the page sat untouched and launches every letter off screen
+    magLastT = 0;
+    magRaf = requestAnimationFrame(animateMagnetic);
+  }
+  startMagnetic();
 }
 
 // Contact form. Posts to /api/contact, a function in this repository - see

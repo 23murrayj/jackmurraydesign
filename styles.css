@@ -152,11 +152,23 @@ button, input, textarea, select { font-family: inherit; }
    scroll-margin-top (per target) so the skip link and #top get it too. */
 html { scroll-behavior: smooth; scroll-padding-top: 60px; }
 
+/* overflow-x on body alone does not hold: the viewport scroller is <html>,
+   so the page could still be dragged sideways on iOS even though body was
+   clipping its own children. Fixed elements (.nav, .noise, .scanlines) are
+   sized against the viewport and escape body's clipping entirely, so a
+   sub-pixel difference there was enough to rubber-band the whole page.
+   clip rather than hidden because hidden makes <html> a scroll container,
+   and three sticky elements (project nav, gallery headers) position against
+   it; clip does the same visual job without creating one. */
+html, body { overflow-x: hidden; }
+@supports (overflow-x: clip) {
+  html, body { overflow-x: clip; }
+}
+
 body {
   background: var(--white);
   color: var(--black);
   font-family: var(--ff-body);
-  overflow-x: hidden;
   cursor: default;
   transition: background .35s ease, color .35s ease;
 }
@@ -408,6 +420,11 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .nav-toggle { display: flex; }
   /* nav chrome sat at 40px, just under the 44px touch-target guideline */
   .nav-toggle, .theme-toggle, .cvd-toggle { width: 44px; height: 44px; }
+  /* .lang-toggle gets the same treatment, but its base rule is defined far
+     below this point and at equal specificity, so an override here would
+     lose the cascade. It lives next to that rule instead - see the note
+     there. This is why the language button sat at 40px while the two
+     controls beside it were 44. */
 }
 
 /* HERO */
@@ -1143,8 +1160,21 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-photo-frame { position: static; }
   .about-photo {
     position: static; height: auto;
-    aspect-ratio: 4/5; object-fit: cover; object-position: 50% 28%;
+    /* 4:5 was 424px, 52% of the viewport, and it sat above the copy: opening
+       About showed a photograph and nothing else, on a page whose whole job
+       is the words. 3:2 is 226px. Combined with the reorder below, the page
+       now opens on "HI, I'M JACK." and the bio, with the photo as a break
+       between the intro and the timeline instead of a gate in front of it.
+       object-position holds the top of the frame, where the face is. */
+    aspect-ratio: 3/2; object-fit: cover; object-position: 50% 22%;
   }
+  /* Source order puts the photo first because the desktop grid wants it in
+     the left column. On one column that order is wrong, and order: on the
+     grid items fixes it without moving the markup (which would cost the
+     desktop layout its column assignment). */
+  .about-page-top { grid-template-columns: 1fr; gap: 28px; }
+  .about-page-intro { order: 1; }
+  .about-photo-frame { order: 2; }
   .about-photos { flex-direction: column; margin-bottom: 48px; }
   .about-photos .wide, .about-photos .square { flex: none; width: 100%; }
 }
@@ -1303,12 +1333,51 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .timeline-desc { font-size: 0.95rem; line-height: 1.5; color: var(--muted); }
 @media (max-width: 760px) {
   .about-page-top { grid-template-columns: 1fr; }
-  .about-timeline li { grid-template-columns: 1fr; gap: 8px; }
-  /* the rail, its dot and the ripple all live in grid column 2. Hiding only
-     the pseudo-elements left .tl-ping behind, and its explicit grid-column
-     conjured an implicit second column that squashed the NEXT row. */
-  .about-timeline li::before, .about-timeline li::after,
-  .about-timeline li .tl-ping { display: none; }
+  /* The rail comes back here, as a narrow left gutter instead of the desktop's
+     middle column. 12px buys a continuous line and a dot per entry, which is
+     what carries the eye down six stacked rows that otherwise read as one
+     undifferentiated block of text.
+
+     It used to be hidden on mobile because .tl-ping carries an explicit
+     grid-column for the desktop layout; pointed at column 2 while the list was
+     one column wide, it conjured an implicit second column and squashed the
+     NEXT row. The fix is to reassign it to the rail rather than remove it, so
+     the pending entry keeps its ripple. */
+  .about-timeline li {
+    grid-template-columns: 12px 1fr;
+    column-gap: 16px;
+    row-gap: 6px;
+    padding: 18px 0;
+    align-items: start;
+  }
+  .about-timeline li > * { grid-column: 2; }
+  /* Absolute, not a stretched grid item. grid-row: 1 / -1 does not work here:
+     -1 counts lines of the EXPLICIT grid, and only columns are declared, so
+     it resolved back to line 1 and drew a 54px stub in a 196px row. An
+     absolutely-positioned rail measures against the li's padding box instead,
+     so it spans the whole entry and meets the next one with no seam. */
+  .about-timeline li::before {
+    position: absolute;
+    left: 5px;            /* centres the 2px rail in the 12px column */
+    top: 0; bottom: 0;
+    width: 2px; height: auto;
+    margin: 0;
+    grid-column: auto; grid-row: auto;
+  }
+  .about-timeline li::after {
+    grid-column: 1; grid-row: 1;
+    align-self: start; justify-self: center;
+    margin-top: 7px;
+  }
+  .about-timeline li.is-next .tl-ping {
+    grid-column: 1; grid-row: 1;
+    margin-top: 7px;
+  }
+  /* the rail should begin at the first dot and stop at the last, not dangle
+     past either end of the list */
+  /* the rail stops at the last dot rather than running on to the end of the
+     final entry, which would read as a line going nowhere */
+  .about-timeline li:last-child::before { bottom: auto; height: 26px; }
 }
 
 .about-skills-section .skill-group { margin-bottom: 28px; }
@@ -1735,7 +1804,15 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-panel {
     /* relative, not static: the ring is a ::after pinned to this box */
     position: relative; width: auto;
-    margin: 0 5vw 28px;
+    /* Full width at 3:4 made this 450px - 55% of a phone viewport - so the
+       panel was most of a screen on its own. Narrowed rather than cropped
+       harder: the 3:4 window below is already the shallowest crop that holds
+       the whole figure (see the note there), so taking height out of the crop
+       would cut his shoes off again. 220px at 3:4 is 293px, about 36% of the
+       viewport, and a centred plate at that size reads as deliberate rather
+       than a full-bleed block that got away. */
+    max-width: 220px;
+    margin: 0 auto 28px;
     /* the photo carries a full 4px border of its own down here, so the
        panel's seam would draw a second line on top of it */
     border-left: 0;
@@ -2284,6 +2361,20 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   .sticker-tray.open { transform: translateY(0); }
 }
 
+/* No stickers without a pointer. The whole interaction is drag-and-drop onto
+   an arbitrary spot on the page, which on a touch screen competes with the
+   gesture for scrolling the page - you cannot drag a sticker down the screen
+   without the page trying to come with it. Gated on hover rather than width
+   because this is about the input device, not the viewport: a tablet has the
+   room and still has the same problem.
+
+   The tray's trigger goes with it, so the menu does not offer a button that
+   opens a panel which is not there. Chaos mode next to it is a toggle and
+   works fine by touch, so it stays. */
+@media (hover: none) {
+  .sticker-tray, .sticker-trash, #eggMenuStickers { display: none; }
+}
+
 /* DARK MODE INTENSITY — heavier, more aggressive personality:
    neon glow on accent text, harsher hover shadows. Colors themselves
    already shift via the --accent/--yellow/--blue/--green overrides above. */
@@ -2375,6 +2466,15 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   transition: background .25s, color .25s, transform .2s;
 }
 .lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+/* The nav chrome goes to the 44px touch minimum on phones. This has to live
+   here rather than with the matching rule for .nav-toggle/.theme-toggle/
+   .cvd-toggle much higher up: those three are declared above that media
+   query, this one below it, and at equal specificity the later declaration
+   wins. Putting it there left the language button at 40px - visibly smaller
+   than its two neighbours, and under the tap target everything else meets. */
+@media (max-width: 760px) {
+  .lang-toggle { width: 44px; height: 44px; }
+}
 .lang-code {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
   /* the code is always a 2-letter Latin abbreviation (EN/ES/JA/IT) even
