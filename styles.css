@@ -467,6 +467,59 @@ body.is-loading { overflow: hidden; }
 /* The hamburger is left out on purpose. It has no border and no background
    of its own, so inverting it would paint a black square where there is
    currently nothing - and it already says it is open by turning into an X. */
+
+/* TOOLTIPS FOR THE NAV CONTROLS
+   The moon reads as dark mode and EN reads as language, but nothing about a
+   half-filled circle says colour vision - that is the one nobody guesses.
+
+   Drawn here rather than left to the native title attribute: that one waits
+   about a second, renders as system chrome on a page that has an opinion
+   about everything else, and - set alongside aria-label - makes some screen
+   readers announce the control twice. The text comes from data-tip, which
+   i18n.js fills from the same keys as the aria labels, so the two cannot
+   disagree and the tooltip is translated for free.
+
+   Shown on focus-visible as well as hover, so a keyboard user gets the same
+   label, and suppressed while the control's own menu is open, where it would
+   only cover the thing it just opened. */
+.lang-toggle, .cvd-toggle, .theme-toggle { position: relative; }
+.lang-toggle::after,
+.cvd-toggle::after,
+.theme-toggle::after {
+  content: attr(data-tip);
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: var(--ink); color: var(--paper);
+  padding: 7px 10px;
+  font-family: var(--ff-body);
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: none;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0; visibility: hidden;
+  /* leaving on the delay, so it does not flash while the pointer crosses the
+     cluster on its way somewhere else */
+  transition: opacity .14s ease, visibility 0s linear .14s;
+  z-index: 300;
+}
+@media (hover: hover) {
+  .lang-toggle:hover::after,
+  .cvd-toggle:hover::after,
+  .theme-toggle:hover::after {
+    opacity: 1; visibility: visible;
+    transition: opacity .14s ease .45s, visibility 0s linear .45s;
+  }
+}
+/* no delay for the keyboard: focus is deliberate, a wait just looks broken */
+.lang-toggle:focus-visible::after,
+.cvd-toggle:focus-visible::after,
+.theme-toggle:focus-visible::after {
+  opacity: 1; visibility: visible; transition: none;
+}
+.lang-toggle[aria-expanded="true"]::after,
+.cvd-toggle[aria-expanded="true"]::after { content: none; }
+@media (prefers-reduced-motion: reduce) {
+  .lang-toggle::after, .cvd-toggle::after, .theme-toggle::after { transition: none; }
+}
 /* the CVD button already inverts while a mode is on; when its menu is also
    open, keep the open state winning so the two do not fight */
 .cvd-toggle.active-mode[aria-expanded="true"] { background: var(--black); color: var(--white); }
@@ -2423,9 +2476,31 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 
 /* FOOTER */
 .footer {
-  display: flex; justify-content: space-between; align-items: center;
+  /* a column now: the credit line sits above the copyright row rather than
+     competing with it for space in a single flex line */
+  display: flex; flex-direction: column; gap: 18px;
   padding: 22px 5vw; background: var(--ink); color: var(--paper);
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
+}
+.footer-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px;
+}
+/* Deliberately quiet - dimmer than the row below it and not a link. It is a
+   credit, so it should be findable by someone looking for it and ignorable
+   by everyone else; at full strength it would read as a sales pitch for
+   features most readers do not need. */
+.footer-built {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 1.2px;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--paper) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
+  padding-bottom: 16px;
+}
+@media (max-width: 700px) {
+  .footer-row { flex-wrap: wrap; row-gap: 10px; }
 }
 @media (hover: hover) {
   .back-top:hover { color: var(--yellow); }

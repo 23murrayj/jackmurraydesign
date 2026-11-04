@@ -109,7 +109,7 @@
   </div>
   <div class="nav-right">
     <div class="lang-control">
-      <button class="lang-toggle" id="langToggle" data-i18n-aria="nav.aria.language" aria-label="choose language" aria-haspopup="true" aria-expanded="false">
+      <button class="lang-toggle" id="langToggle" data-i18n-aria="nav.aria.language" aria-label="Choose language" data-i18n-tip="nav.aria.language" data-tip="Choose language" aria-haspopup="true" aria-expanded="false">
         <span class="lang-code" id="langCode">EN</span>
       </button>
       <div class="lang-menu" id="langMenu">
@@ -120,7 +120,7 @@
       </div>
     </div>
     <div class="cvd-control">
-      <button class="cvd-toggle" id="cvdToggle" data-i18n-aria="nav.aria.colorVision" aria-label="color vision mode" aria-haspopup="true" aria-expanded="false">
+      <button class="cvd-toggle" id="cvdToggle" data-i18n-aria="nav.aria.colorVision" aria-label="Color vision mode" data-i18n-tip="nav.aria.colorVision" data-tip="Color vision mode" aria-haspopup="true" aria-expanded="false">
         <span class="cvd-icon">◐</span>
       </button>
       <div class="cvd-menu" id="cvdMenu">
@@ -130,7 +130,7 @@
         <button class="cvd-option" data-mode="highcontrast" type="button" data-i18n="cvd.highcontrast">HIGH CONTRAST</button>
       </div>
     </div>
-    <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="toggle theme">
+    <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="Toggle theme" data-i18n-tip="nav.aria.theme" data-tip="Toggle theme">
       <span class="theme-icon">☾︎</span>
     </button>
     <button class="nav-toggle" id="navToggle" data-i18n-aria="nav.aria.menu" aria-label="menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -599,9 +599,18 @@
 </main>
 
 <footer class="footer">
-  <span>© 2026 JACK MURRAY <button class="egg-trigger" id="eggTrigger" aria-label="???" aria-haspopup="true" aria-expanded="false">✦</button></span>
-  <span class="live-clock" id="liveClock">00:00:00</span>
-  <a href="#top" class="back-top" data-i18n="footer.backtotop">BACK TO TOP ↑</a>
+  <!-- The four things above are built and nobody knows it: the only way to
+       find the colour-vision mode is to press an unlabelled half-circle on
+       the off chance. This is not here to make anyone click them - most
+       readers need none of them - it is here because on a portfolio the work
+       only counts if someone can see it was done. Set quietly: a credit line,
+       not a boast. -->
+  <p class="footer-built" data-i18n="footer.built">FOUR LANGUAGES · COLOR VISION MODE · KEYBOARD NAVIGATION · REDUCED MOTION</p>
+  <div class="footer-row">
+    <span>© 2026 JACK MURRAY <button class="egg-trigger" id="eggTrigger" aria-label="???" aria-haspopup="true" aria-expanded="false">✦</button></span>
+    <span class="live-clock" id="liveClock">00:00:00</span>
+    <a href="#top" class="back-top" data-i18n="footer.backtotop">BACK TO TOP ↑</a>
+  </div>
 </footer>
 
 <!-- HIDDEN EASTER EGG MENU -->

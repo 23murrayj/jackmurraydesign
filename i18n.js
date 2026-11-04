@@ -44,10 +44,10 @@
       'nav.projects': 'PROJECTS',
       'nav.about': 'ABOUT',
       'nav.contact': 'CONTACT',
-      'nav.aria.colorVision': 'color vision mode',
-      'nav.aria.theme': 'toggle theme',
+      'nav.aria.colorVision': 'Color vision mode',
+      'nav.aria.theme': 'Toggle theme',
       'nav.aria.menu': 'menu',
-      'nav.aria.language': 'choose language',
+      'nav.aria.language': 'Choose language',
 
       'cvd.normal': 'NORMAL',
       'cvd.deuteranopia': 'DEUTERANOPIA',
@@ -66,6 +66,7 @@
       'work.title': 'SELECTED PROJECTS',
       'work.num': '01 / PROJECTS',
       'filter.ALL': 'ALL',
+      'footer.built': 'FOUR LANGUAGES · COLOR VISION MODE · KEYBOARD NAVIGATION · REDUCED MOTION',
       'card.cta': 'VIEW CASE STUDY',
       'filter.UX/UI': 'UX/UI',
       'filter.BRANDING': 'BRANDING',
@@ -263,10 +264,10 @@
       'nav.projects': 'PROYECTOS',
       'nav.about': 'SOBRE MÍ',
       'nav.contact': 'CONTACTO',
-      'nav.aria.colorVision': 'modo de visión del color',
-      'nav.aria.theme': 'cambiar tema',
+      'nav.aria.colorVision': 'Modo de visión del color',
+      'nav.aria.theme': 'Cambiar tema',
       'nav.aria.menu': 'menú',
-      'nav.aria.language': 'elegir idioma',
+      'nav.aria.language': 'Elegir idioma',
 
       'cvd.normal': 'NORMAL',
       'cvd.deuteranopia': 'DEUTERANOPÍA',
@@ -285,6 +286,7 @@
       'work.title': 'PROYECTOS SELECCIONADOS',
       'work.num': '01 / PROYECTOS',
       'filter.ALL': 'TODOS',
+      'footer.built': 'CUATRO IDIOMAS · MODO DE VISIÓN DEL COLOR · NAVEGACIÓN POR TECLADO · MOVIMIENTO REDUCIDO',
       'card.cta': 'VER PROYECTO',
       'filter.UX/UI': 'UX/UI',
       'filter.BRANDING': 'BRANDING',
@@ -504,6 +506,7 @@
       'work.title': '選りすぐりのプロジェクト',
       'work.num': '01 / プロジェクト',
       'filter.ALL': 'すべて',
+      'footer.built': '4言語対応 · 色覚モード · キーボード操作 · モーション軽減',
       'card.cta': 'プロジェクトを見る',
       'filter.UX/UI': 'UX/UI',
       'filter.BRANDING': 'ブランディング',
@@ -701,10 +704,10 @@
       'nav.projects': 'PROGETTI',
       'nav.about': 'CHI SONO',
       'nav.contact': 'CONTATTI',
-      'nav.aria.colorVision': 'modalità visione dei colori',
-      'nav.aria.theme': 'cambia tema',
+      'nav.aria.colorVision': 'Modalità visione dei colori',
+      'nav.aria.theme': 'Cambia tema',
       'nav.aria.menu': 'menu',
-      'nav.aria.language': 'scegli la lingua',
+      'nav.aria.language': 'Scegli la lingua',
 
       'cvd.normal': 'NORMALE',
       'cvd.deuteranopia': 'DEUTERANOPIA',
@@ -723,6 +726,7 @@
       'work.title': 'PROGETTI SELEZIONATI',
       'work.num': '01 / PROGETTI',
       'filter.ALL': 'TUTTI',
+      'footer.built': 'QUATTRO LINGUE · MODALITÀ VISIONE DEI COLORI · NAVIGAZIONE DA TASTIERA · MOVIMENTO RIDOTTO',
       'card.cta': 'VEDI PROGETTO',
       'filter.UX/UI': 'UX/UI',
       'filter.BRANDING': 'BRANDING',
@@ -933,6 +937,19 @@
     });
     document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
       el.alt = t(el.getAttribute('data-i18n-alt'));
+    });
+    // data-tip, not title. The native tooltip waits about a second, cannot be
+    // styled, and renders as system chrome on a page that has an opinion
+    // about everything else - and setting both title and aria-label makes
+    // some screen readers announce the control twice. The CSS tooltip reads
+    // this attribute through content: attr(data-tip).
+    //
+    // Scoped to its own attribute rather than riding on data-i18n-aria: that
+    // one is also on the lightbox, the portrait link and the magnetic
+    // headline, none of which should sprout a tooltip. The keys are shared
+    // with the aria labels, so the two cannot drift apart.
+    document.querySelectorAll('[data-i18n-tip]').forEach(function (el) {
+      el.setAttribute('data-tip', t(el.getAttribute('data-i18n-tip')));
     });
     document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
       el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
