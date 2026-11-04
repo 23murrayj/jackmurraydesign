@@ -472,6 +472,19 @@ function renderGallery() {
         <p data-i18n="proj.${escapeAttr(id)}.desc">${escapeAttr(p.desc)}</p>
         <div class="card-tags">${[p.category].concat(p.alsoIn || []).map((c) =>
           `<span class="tag" data-i18n="cat.${escapeAttr(c)}">${escapeAttr(c)}</span>`).join('')}</div>
+        <!-- The card had no affordance at rest: its only signal that it did
+             anything was a hover lift, which does not exist on a touch screen
+             and which a reader has to already suspect in order to go looking
+             for it. So people clicked the category tags instead - those being
+             the only objects on the card shaped like controls. This names the
+             action and gives it somewhere to land.
+             aria-hidden, because the <article> already carries role="button"
+             and an aria-label with the project's title; announcing this too
+             would read every card out twice. -->
+        <div class="card-cta" aria-hidden="true">
+          <span data-i18n="card.cta">VIEW CASE STUDY</span>
+          <span class="card-cta-arrow">\u2192\ufe0e</span>
+        </div>
       </div>
     </article>`;
   }).join('');

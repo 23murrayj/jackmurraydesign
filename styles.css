@@ -260,34 +260,85 @@ a { color: inherit; text-decoration: none; }
    so leaving the strip outside put every landmark ~79px too high. */
 .sk-hero {
   flex: 1 1 auto; min-height: 0;
-  /* .hero's own padding: the 110px clears the fixed nav */
+  /* .hero's own padding and centring: the 110px clears the fixed nav, and the
+     hero centres its whole group - grid and marquee strip together. */
   padding: 110px 5vw 0;
   display: flex; flex-direction: column; justify-content: center;
 }
-/* One line of .hero-name: its clamp() x its 0.84 line-height, less a 6px gap
-   so the two bars read as two lines rather than fusing into one L-shaped
-   block. Real type has air between the lines even at 0.84; a solid bar does
-   not unless it is given some. The gap comes out of the bar's own height, so
-   the pair still measures what two lines of the headline measure. */
+
+/* .hero-grid is two columns on a desktop - headline left, and a narrow stack
+   of badge, tagline and button on the right - and one column below 900px.
+   The skeleton was built to the phone's stacked version and kept it at every
+   width, so on a laptop it drew the right blocks in the wrong places: the
+   headline 124px too high and the badge 208px too low. It mirrors both now.
+
+   The columns are NOT the real rule's 1.4fr : 1fr, because that rule does not
+   describe the result. The h1's min-content is the word MURRAY. set at the
+   headline's own size, which is wider than its 1.4fr track - so the headline
+   pushes its column out and the right-hand one takes whatever is left.
+
+   That width is a constant multiple of the font-size, because it is one word
+   in one typeface: 720px at a 153.6px font (1024 viewport), 900px at 192px
+   (1440) - 4.69 both times. So the first track is the headline's own clamp()
+   times 4.69, and it tracks the real split at every width, including past
+   ~1280 where the clamp caps at 12rem and the headline stops growing while
+   the grid keeps widening. A fixed fraction could not: it was 123px out at
+   1440 for exactly that reason. */
+.sk-hero-grid {
+  display: grid;
+  grid-template-columns: calc(clamp(4.6rem, 15vw, 12rem) * 4.69) 1fr;
+  align-items: end;
+  gap: 40px;
+  border-bottom: 6px solid var(--ink);
+  padding-bottom: 50px;
+}
+.sk-name { display: flex; flex-direction: column; }
+/* one line of .hero-name: its clamp() x its 0.84 line-height, less a 6px gap
+   so the two bars read as two lines instead of fusing into one L-shape */
 .sk-title {
   height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84 - 6px);
-  width: min(62%, 560px);
+  width: 72%;
   margin-bottom: 6px;
 }
-.sk-title-2 { width: min(94%, 860px); margin-bottom: 37px; }
-.sk-badge { height: 36px; width: min(88%, 330px); margin-bottom: 40px; }
-.sk-line { height: 15px; width: min(55%, 290px); margin-bottom: 39px; }
-.sk-cta { height: 54px; width: 195px; }
+/* full height on the second bar: the 6px gap is taken out of the first one's
+   height and given back as its margin, so the pair still measures exactly two
+   lines of .hero-name rather than two lines minus 6px */
+.sk-title-2 {
+  height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84);
+  width: 100%; margin-bottom: 0;
+}
 
-.sk-strip { flex: none; height: 80px; margin-top: 45px; }
+.sk-side { display: flex; flex-direction: column; gap: 22px; padding-bottom: 1.2rem; }
+/* measured off the real controls, which do not scale with the viewport */
+.sk-badge { height: 67px; width: 100%; }
+.sk-line  { height: 50px; width: 100%; }
+.sk-cta   { height: 71px; width: 100%; }
 
+/* the strip pulls 1px into the grid's border, exactly as the marquee does */
+.sk-strip { flex: none; height: 80px; margin-top: -1px; }
+
+@media (max-width: 900px) {
+  /* .hero-grid's own stacked settings */
+  .sk-hero-grid {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 30px;
+    padding-bottom: 40px;
+  }
+  .sk-side { padding-bottom: 0; }
+  .sk-title { width: min(62%, 560px); }
+  .sk-title-2 { width: min(94%, 860px); }
+  .sk-badge { height: 36px; width: min(88%, 330px); }
+  .sk-line  { height: 15px; width: min(55%, 290px); }
+  .sk-cta   { height: 54px; width: 195px; }
+}
 @media (max-width: 760px) {
   /* .hero-name's own mobile clamp */
   .sk-title { height: calc(clamp(3.4rem, 16vw, 8rem) * 0.84 - 6px); }
+  .sk-title-2 { height: calc(clamp(3.4rem, 16vw, 8rem) * 0.84); }
   .sk-links { display: none; }
   .sk-burger { display: block; margin-left: 14px; }
   .sk-sq { width: 44px; height: 44px; }
-    .sk-card:nth-child(2) { display: none; }
 }
 @media (max-width: 480px) {
   .sk-nav { padding: 20px 4vw; }
@@ -387,6 +438,38 @@ body.is-loading { overflow: hidden; }
 }
 
 .nav-right { display: flex; align-items: center; gap: 18px; }
+
+/* PRESSED AND OPEN STATES FOR THE NAV CONTROLS
+   Hover was the only feedback these had, which meant a touch user got none at
+   all and a mouse user got the same lift whether a menu was open or shut.
+
+   :active is the press itself - it releases on pointer-up, unlike :hover,
+   which is why it is safe to leave unguarded on touch.
+
+   [aria-expanded="true"] is the held state, and it costs nothing to drive
+   from: the JS already sets that attribute on every open and every close
+   path, including the outside-click, Escape and scroll-away handlers. So the
+   button un-presses by itself whenever the menu goes away, which is exactly
+   the behaviour asked for and one less thing to keep in sync.
+
+   Both read as pushed in: the fill inverts and the lift and shadow are
+   removed, the opposite of the hover state's raised look. */
+.lang-toggle:active,
+.cvd-toggle:active,
+.theme-toggle:active,
+.lang-toggle[aria-expanded="true"],
+.cvd-toggle[aria-expanded="true"] {
+  background: var(--black);
+  color: var(--white);
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+/* The hamburger is left out on purpose. It has no border and no background
+   of its own, so inverting it would paint a black square where there is
+   currently nothing - and it already says it is open by turning into an X. */
+/* the CVD button already inverts while a mode is on; when its menu is also
+   open, keep the open state winning so the two do not fight */
+.cvd-toggle.active-mode[aria-expanded="true"] { background: var(--black); color: var(--white); }
 
 .theme-toggle {
   width: 40px; height: 40px;
@@ -812,13 +895,40 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .card-info p { font-size: 0.82rem; font-weight: 400; color: var(--muted); }
 /* .card-info is a flex column, so two bare tags would stack vertically —
    this row keeps them side by side and wrapping only if they must */
-.card-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+.card-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .card-tags .tag { margin-top: 0; align-self: auto; }
+/* Metadata, not a control. These were solid black pills - bold, uppercase,
+   1.5px tracking, padded - which on a card otherwise made of a photograph, a
+   heading and a paragraph made them the single most button-like object in it.
+   Worse, they repeat the filter bar's own vocabulary directly above the grid,
+   so "UX DESIGN" on a card read as a filter you could press. People clicked
+   them instead of the card. Plain muted type says what the project is
+   without claiming to do anything. */
 .tag {
   margin-top: 8px; align-self: flex-start;
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
-  background: var(--black); color: var(--white);
-  padding: 5px 10px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.4px;
+  background: transparent; color: var(--muted);
+  padding: 0;
+}
+/* a thin rule between tags, so they still read as separate categories
+   without each needing a box of its own */
+.card-tags .tag + .tag { border-left: 1px solid var(--line); padding-left: 14px; }
+
+/* The card's action, visible at rest. */
+.card-cta {
+  margin-top: 16px; padding-top: 14px;
+  border-top: 2px solid var(--black);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--ff-body);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 1.5px;
+  color: var(--accent-ink);
+}
+.card-cta-arrow { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+@media (hover: hover) {
+  .card:hover .card-cta-arrow { transform: translateX(7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-cta-arrow { transition: none; }
 }
 @media (max-width: 800px) {
   .gallery { grid-template-columns: 1fr; }
@@ -1829,7 +1939,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    photo tilts against it on hover - the fixed edge is what makes the tilt
    legible at all. */
 .about-panel { border-left: 4px solid var(--paper); }
-.about-panel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+/* 50% across: he stands centred in the Dolomites frame. The 38%/40% these
+   carried before were holding the platform photo, where he stood left of
+   centre and the right of the frame was empty. */
+.about-panel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
 /* one reading column; the panel is out of flow beside it */
 .about-grid {
   display: block;
@@ -2086,11 +2199,10 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
        panel's seam would draw a second line on top of it */
     border-left: 0;
   }
-  /* 1:2, narrower than the file's own 0.574. Narrower means object-fit crops
+  /* 1:2, narrower than the file's own 0.563. Narrower means object-fit crops
      the WIDTH and keeps the full height, so the whole figure survives - head
-     to shoes - which no shallower window managed. What it costs is the right
-     side of the frame, which is empty platform; he stands at about 36% across,
-     so object-position holds that band and trims from the right. */
+     to feet - which no shallower window managed. What it costs is hillside at
+     either edge; he stands centred in this frame, so the trim is symmetric. */
   .about-panel .about-portrait {
     position: relative;
     /* the desktop rule's -16px would offset a relatively-positioned box
@@ -2099,7 +2211,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     aspect-ratio: 1 / 2;
     border: 4px solid var(--paper);
   }
-  .about-panel img { object-position: 38% 50%; height: 100%; }
+  .about-panel img { object-position: 50% 50%; height: 100%; }
   .about-hook { max-width: none; }
   /* four across is ~80px a column on a phone, which breaks every label. In a
      2x2 the vertical rules would cut between rows as well as columns, so the
