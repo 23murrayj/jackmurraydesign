@@ -929,6 +929,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   overflow: hidden;
   cursor: pointer;
   background: var(--white);
+  /* a column, so the action bar can be pinned to the foot of the card.
+     Cards are grid items and stretch to the tallest in their row, so a card
+     with a shorter description used to leave the bar floating above its own
+     bottom edge - and the bars across a row sat at different heights, which
+     reads as sloppy rather than deliberate. */
+  display: flex; flex-direction: column;
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s;
 }
 @media (hover: hover) {
@@ -938,17 +944,20 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     z-index: 5;
   }
 }
-.card-media { overflow: hidden; aspect-ratio: 4/3; }
+.card-media { overflow: hidden; aspect-ratio: 4/3; flex: none; }
 .card-info {
   padding: 22px 24px 28px;
   display: flex; flex-direction: column; gap: 6px;
   border-top: 3px solid var(--black);
+  /* takes the slack when the card is stretched, so the bar below lands on
+     the card's bottom edge rather than wherever the text happened to end */
+  flex: 1 1 auto;
 }
 .card-info h3 { font-family: var(--ff-display); font-size: 1.3rem; letter-spacing: -0.02em; }
 .card-info p { font-size: 0.82rem; font-weight: 400; color: var(--muted); }
 /* .card-info is a flex column, so two bare tags would stack vertically —
    this row keeps them side by side and wrapping only if they must */
-.card-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.card-tags { margin-top: 8px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .card-tags .tag { margin-top: 0; align-self: auto; }
 /* Metadata, not a control. These were solid black pills - bold, uppercase,
    1.5px tracking, padded - which on a card otherwise made of a photograph, a
@@ -967,21 +976,46 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
    without each needing a box of its own */
 .card-tags .tag + .tag { border-left: 1px solid var(--line); padding-left: 14px; }
 
-/* The card's action, visible at rest. */
+/* The card's action: a bar across the foot of the card, not a line of text
+   inside it. The negative margins cancel .card-info's padding so it reaches
+   the card's own edges, which is what makes it read as a thing you press
+   rather than a caption. Quiet at rest, filled on intent. */
 .card-cta {
-  margin-top: 16px; padding-top: 14px;
+  /* auto on top: absorbs whatever height the stretch added. The 16px that
+     used to live here is on .card-tags now, as the minimum gap. */
+  margin: auto -24px -28px;
+  padding: 16px 24px;
   border-top: 2px solid var(--black);
   display: flex; align-items: center; justify-content: space-between;
   font-family: var(--ff-body);
   font-weight: 700; font-size: 0.78rem; letter-spacing: 1.5px;
   color: var(--accent-ink);
+  transition: background-color .2s ease, color .2s ease;
 }
 .card-cta-arrow { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
 @media (hover: hover) {
+  .card:hover .card-cta { background: var(--accent); color: var(--paper); }
   .card:hover .card-cta-arrow { transform: translateX(7px); }
 }
+/* :active and :focus-visible do it too, so the signal is not hover-only -
+   on a phone there is no hover at all, and pressing a card used to give no
+   feedback of any kind until the overlay had finished opening. */
+.card:active .card-cta,
+.card:focus-visible .card-cta { background: var(--accent); color: var(--paper); }
+
+/* The press itself. The card is the primary interactive element on the page
+   and had neither a pressed state nor a focus ring. */
+.card:active {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--black);
+}
+.card:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 3px;
+  z-index: 5;
+}
 @media (prefers-reduced-motion: reduce) {
-  .card-cta-arrow { transition: none; }
+  .card-cta-arrow, .card-cta { transition: none; }
 }
 @media (max-width: 800px) {
   .gallery { grid-template-columns: 1fr; }
