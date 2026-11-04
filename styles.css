@@ -2384,7 +2384,11 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 
 .contact-email-row {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  /* .contact-right's gap is 40px; these pull both sides back to 24px, so the
+     email sits midway between the statement above it and the social rows
+     below rather than hugging the statement - and the rows come up 16px. */
   margin-top: -16px;
+  margin-bottom: -16px;
 }
 .contact-email-text {
   font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;
@@ -2506,7 +2510,6 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .contact-bottom {
   padding: 20px 5vw 0; border-top: 3px solid var(--ink);
 }
-.contact-loc { font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; }
 
 /* FOOTER */
 .footer {
