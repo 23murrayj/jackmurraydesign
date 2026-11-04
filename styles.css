@@ -829,10 +829,20 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   position: fixed; inset: 0; z-index: 500;
   background: var(--white);
   transform: translateY(100%);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1);
+  visibility: hidden; pointer-events: none;
+  /* visibility as a 0s change with a delay, rather than a transitioned
+     property. Transitioning it works only through an interpolation
+     special-case ("visible wins unless both ends are hidden"), which is easy
+     to break and hard to read. Explicit is better: opening flips it with no
+     delay so the panel is there immediately, closing waits out the slide so
+     it does not vanish mid-animation. */
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear .55s;
   overflow-y: auto;
 }
-.project-overlay.open { transform: translateY(0); }
+.project-overlay.open {
+  transform: translateY(0); visibility: visible; pointer-events: auto;
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
+}
 
 .project-detail {
   max-width: 1100px; margin: 0 auto;
@@ -1237,14 +1247,35 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 .project-meta span:last-child { font-weight: 700; font-size: 1rem; }
 
 /* FULL ABOUT PAGE OVERLAY */
+/* Hidden by transform alone, these stayed rendered and composited the whole
+   time - a full-page layer sitting just below the fold, not painted away.
+   On iOS that leaks: drop or create another compositor layer nearby (the
+   sticker tray appearing, a placed sticker being promoted) and the engine
+   re-composites, and the overlay that was supposed to be off-screen shows
+   through at the bottom of the viewport. That is the white band and the
+   fragments of other pages under the Contact section.
+   visibility takes them out of rendering when closed. It is transitioned
+   rather than set instantly so the slide-away still plays: visibility
+   interpolates as a step that holds `visible` until the end, which is
+   exactly what a closing panel needs. */
 .about-overlay {
   position: fixed; inset: 0; z-index: 600;
   background: var(--white);
   transform: translateY(100%);
-  transition: transform .55s cubic-bezier(.2,.8,.2,1);
+  visibility: hidden; pointer-events: none;
+  /* visibility as a 0s change with a delay, rather than a transitioned
+     property. Transitioning it works only through an interpolation
+     special-case ("visible wins unless both ends are hidden"), which is easy
+     to break and hard to read. Explicit is better: opening flips it with no
+     delay so the panel is there immediately, closing waits out the slide so
+     it does not vanish mid-animation. */
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear .55s;
   overflow-y: auto;
 }
-.about-overlay.open { transform: translateY(0); }
+.about-overlay.open {
+  transform: translateY(0); visibility: visible; pointer-events: auto;
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
+}
 .about-page { max-width: 1100px; margin: 0 auto; padding: 68px 5vw 110px; }
 .about-back {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
@@ -1313,7 +1344,17 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
      layout, which still wants the wrappers). order: then puts them in reading
      order - bio, pair, wide shot - and because the two halves of the pair are
      adjacent and claim opposite columns, they land on the same row. */
-  .about-page { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  /* Columns in the ratio of the two photographs, not 1fr 1fr. Equal columns
+     forced both to the same shape, and the only shape that suits both does
+     not exist: the courtyard frame is 0.481 and the team photo is 1.026, so
+     any single ratio crops one of them hard. At 4:5 the team photo lost 22%
+     of its width - and Jack is the leftmost person in it, so a centred crop
+     took him out of his own photograph.
+     Sized 0.8 : 1.026 instead, each picture gets the width its own ratio
+     wants at a shared height: the courtyard stays a 4:5 portrait, the team
+     photo keeps every one of its twelve people, and the two still line up
+     top and bottom. */
+  .about-page { display: grid; grid-template-columns: 0.8fr 1.026fr; column-gap: 20px; }
   .about-page-top, .about-photos { display: contents; }
   /* everything that is not part of the pair runs the full width */
   .about-page > * { order: 5; grid-column: 1 / -1; }
@@ -1323,20 +1364,18 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
   .about-photos .square { order: 3; grid-column: 2; }
   .about-photos .wide { order: 4; grid-column: 1 / -1; margin-top: 20px; margin-bottom: 48px; }
 
-  /* 4:5 for both, so the pair is one object rather than two photographs that
-     happen to be adjacent. It is the shallowest ratio that still reads as
-     portrait, which matters most for the team photo: that one is square
-     (1.026) and twelve people span nearly its full width, so every degree of
-     portrait crop takes someone off the ends. 4:5 keeps 78% of its width.
-     The courtyard photo is 0.481, far narrower than 4:5, so it crops top and
-     bottom instead; 45% holds the window over his head and torso. */
+  /* 4:5 here only. The courtyard frame is 0.481, far narrower than 4:5, so
+     this crops top and bottom rather than the sides; 45% holds the window
+     over his head and torso. The team photo beside it keeps its own ratio -
+     see the column sizing above. */
   .about-photo {
     position: static; height: auto;
     aspect-ratio: 4/5; object-fit: cover; object-position: 50% 45%;
   }
   .about-photos .square {
     flex: none; width: 100%;
-    aspect-ratio: 4/5; object-position: 50% 50%;
+    /* its own ratio - nothing cropped at all */
+    aspect-ratio: 1400/1365; object-position: 50% 50%;
   }
   .about-photos .wide { flex: none; width: 100%; }
 }
@@ -2008,27 +2047,34 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     align-items: start;
   }
   .about-statement, .about-stats { grid-column: 1 / -1; }
-  .about-panel { grid-column: 1; grid-row: span 2; }
-  .about-hook { grid-column: 2; margin-bottom: 20px; }
-  .about-cta-row { grid-column: 2; }
+  /* The photo and the sentence pair up; the button takes the whole width
+     underneath. It was sharing the right-hand column with the hook, which
+     meant the section's one action was also its narrowest element - 178px,
+     and no amount of type size fixes being the smallest thing on screen.
+     Full width it is the widest object in the section and the last one read,
+     which is what a primary action should be. */
+  .about-panel { grid-column: 1; }
+  .about-hook { grid-column: 2; align-self: center; margin-bottom: 0; }
+  .about-cta-row { grid-column: 1 / -1; margin-top: 26px; }
   /* The column is ~182px and the button's desktop metrics want ~133px of text
      inside a 138px content box, with an arrow to fit as well - so it broke
      into four lines, one word each. Tighter tracking and padding put it back
      on one or two, and it fills the column so it still reads as the section's
      one action rather than a link that happens to be boxed. */
-  /* It is the section's one action and it was reading as a footnote: 11.5px
-     type beside 17.6px body copy, in a column narrow enough that the first
-     attempt broke it into four lines. Bigger type and a deeper offset bring
-     the weight back; the tracking and padding stay tight because that is what
-     buys the single line. The red fill and the yellow offset it already had
-     do the rest - nothing else in the section is either of those colours. */
+  /* With the full width to work in, the constraints that were squeezing this
+     are gone: the type goes back up past the body copy's 17.6px, the tracking
+     opens out, and the box gets real height. The red fill and yellow offset
+     were already there - nothing else in the section is either colour - they
+     just had nowhere to be seen at 178px wide. */
+  .about-cta-row { width: 100%; }
   .about-cta-row .about-readmore-btn {
     width: 100%;
     justify-content: center;
-    padding: 16px 10px;
-    font-size: 0.82rem;
-    letter-spacing: 0.6px;
-    gap: 7px;
+    padding: 22px 18px;
+    font-size: 0.95rem;
+    letter-spacing: 1.6px;
+    gap: 12px;
+    box-shadow: 10px 10px 0 var(--yellow);
   }
 
   .about-panel {
@@ -2562,10 +2608,13 @@ body.chaos-mode .chaos-work-cover { display: flex; }
      transitioning visibility (rather than setting it instantly) keeps the
      slide-out animation intact. */
   visibility: hidden; pointer-events: none;
-  transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility .4s ease;
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility 0s linear .4s;
   flex-wrap: wrap; justify-content: center;
 }
-.sticker-tray.open { transform: translateX(-50%) translateY(0); visibility: visible; pointer-events: auto; }
+.sticker-tray.open {
+  transform: translateX(-50%) translateY(0); visibility: visible; pointer-events: auto;
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
+}
 .sticker-tray-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
   color: var(--ink); white-space: nowrap;
@@ -2591,11 +2640,15 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 .placed-sticker {
   position: fixed; z-index: 1400;
   font-size: 2.4rem; cursor: grab;
-  user-select: none; touch-action: none; will-change: transform;
+  user-select: none; touch-action: none;
   filter: drop-shadow(3px 5px 0 rgba(0,0,0,0.3));
   transition: transform .25s ease, opacity .25s ease;
 }
-.placed-sticker.dragging { cursor: grabbing; z-index: 1600; transition: none; }
+/* will-change only while a finger is actually on it. Left on permanently it
+   promoted a compositor layer for every sticker ever dropped, which is the
+   kind of layer count that makes a phone start mis-compositing the fixed
+   elements around it. */
+.placed-sticker.dragging { cursor: grabbing; z-index: 1600; transition: none; will-change: transform; }
 .placed-sticker.deleting { transform: scale(0) rotate(180deg) !important; opacity: 0; }
 
 /* sticker tray also acts as a drop-to-delete zone while dragging */
