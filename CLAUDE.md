@@ -45,7 +45,47 @@ Never conclude something is broken from a screenshot alone — measure it.
 
 ---
 
+## The brief
+
+Jack's own statement of direction. Everything below is in service of it — when
+a rule here and this paragraph disagree, **this wins and the rule is wrong.**
+
+> The website should be a sleek, expressive, editorial UX portfolio with
+> playful neo-brutalist influences. It should feel bold, modern, creative, and
+> memorable while remaining highly professional and user-friendly. The design
+> should feature oversized typography, intentional asymmetry, strong visual
+> hierarchy, clean layouts, and interactive geometric elements. Light mode
+> should feel sophisticated and refined, using warm neutrals with lively but
+> controlled colors, while dark mode should be more experimental with neon
+> pink, electric blue, and vibrant accents. Typography should balance bold
+> statements with lighter supporting text, avoiding unnecessary descriptions.
+> Interactions should feel playful and polished without becoming distracting
+> or gimmicky. Overall, the website should prioritize excellent UX,
+> accessibility, responsiveness, and compelling project presentation while
+> maintaining a distinctive personality that feels neither generic nor overly
+> chaotic.
+
+Load-bearing phrases, because each one has already settled an argument:
+
+- **"editorial"** and **"intentional asymmetry"** — the 1.4fr/1fr hero split
+  and the full-bleed marquee are asymmetric on purpose; don't centre things to
+  make them tidy.
+- **"avoiding unnecessary descriptions"** — this is why the cycling typewriter
+  tagline and the "Research-led interfaces…" line were cut. Prose that
+  restates what the work already shows is the thing to delete. Say it once.
+- **"the two modes differ in kind"** — light is *refined*: muted coral, dusty
+  blue, stone, nothing shouting. Dark is *experimental*: neon, glow, jagged
+  stars. Do not flatten them into one look with swapped values.
+- **"playful… without becoming gimmicky"** — the magnetic headline, drifting
+  shapes, stickers and chaos mode are allowed to be fun because none of them
+  obstruct reading the work. A new interaction has to pass that test.
+- **"neither generic nor overly chaotic"** — both failure modes are real. The
+  tags-as-pills looked generic; an over-bright marquee and over-dense shapes
+  were chaotic. Expect to be corrected in either direction.
+
 ## Visual direction
+
+The concrete implementation of the brief above.
 
 Neo-brutalist: heavy display type, hard 2–3px rules, **hard offset shadows with
 no blur**, flat colour, full-bleed bands. No gradients, no soft drop shadows
