@@ -46,6 +46,34 @@
 <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
+
+<!-- THEME, BEFORE THE FIRST PAINT.
+     script.js is deferred, so applyTheme() ran after the page had already
+     painted in the default light palette. A reader who had chosen dark - or
+     whose OS asks for it - got a light page for one frame, and then every
+     element carrying a colour or background transition spent 250ms fading
+     from the light value to the dark one. The whole page visibly changed
+     its mind on every single load.
+     Setting the attribute here, in a blocking inline script above <body>,
+     means dark IS the initial computed value: nothing transitions, because
+     nothing changes. applyTheme() later sets the same value and is a no-op.
+     Inline and blocking on purpose - an external or deferred file is exactly
+     the thing that caused this. It reads the same key and the same OS
+     preference as script.js, in the same order; keep the two in step.
+     try/catch because localStorage throws outright in some privacy modes,
+     and a theme is never worth taking the page down for. -->
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('jm-theme');
+      var theme = saved
+        || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
 </head>
 <body class="is-loading">
 
@@ -315,10 +343,10 @@
       <div class="about-panel reveal">
         <a class="about-portrait" href="#about" id="aboutPortrait" data-tilt
            data-i18n-aria="about.portraitLink" aria-label="More about Jack">
-          <img src="assets/about/jack-dolomites.jpg" width="676" height="1200"
+          <img src="assets/about/jack-centrale.jpg" width="918" height="1600"
                loading="lazy" decoding="async"
                data-i18n-alt="about.portraitAlt"
-               alt="Jack standing on a grassy slope in the Dolomites, the Seceda ridgeline and a scattering of alpine huts behind him.">
+               alt="Jack on a platform at Milano Centrale, a red high-speed train beside him and a duffel bag held in both hands, the station's arched roof overhead.">
         </a>
       </div>
       <!-- the turn: it opens a loop the about page closes, and it runs

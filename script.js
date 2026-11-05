@@ -1117,7 +1117,13 @@ function applyTheme(theme) {
   localStorage.setItem('jm-theme', theme);
   document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
 }
-const savedTheme = localStorage.getItem('jm-theme')
+// The inline script in <head> already set data-theme before the first paint
+// (see the note there). Read that back rather than deriving the answer a
+// second time, so the two can never drift apart; the localStorage and OS
+// checks stay only as a fallback for the case where that script threw.
+// This call is still what wires up aria-checked and the themechange event.
+const savedTheme = document.documentElement.getAttribute('data-theme')
+  || localStorage.getItem('jm-theme')
   || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 applyTheme(savedTheme);
 themeToggle.addEventListener('click', () => {
@@ -1192,7 +1198,7 @@ function setupSeamlessMarquee(trackId, groupClass, pxPerSecond) {
   return fill;
 }
 const marqueeRefills = [
-  setupSeamlessMarquee('marqueeTrack', 'marquee-group', 80),
+  setupSeamlessMarquee('marqueeTrack', 'marquee-group', 55),
   setupSeamlessMarquee('skillsTrack', 'skills-group', 36)
 ].filter(Boolean);
 
