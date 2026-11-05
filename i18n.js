@@ -51,12 +51,8 @@
 
       'hero.badge': 'OPEN TO PROJECTS & DESIGN WORK',
       'hero.cta': 'VIEW PROJECTS',
-      'hero.taglines': [
-        'UX designer building websites with personality.',
-        'Websites, visual systems, and digital experiments.',
-        "Design that's intentional, not generic."
-      ],
-      'marquee.items': ['UX DESIGN', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
+      'hero.role': 'UX DESIGNER &<br>DIGITAL CREATIVE.',
+      'marquee.items': ['UX/UI', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
 
       'work.title': 'SELECTED PROJECTS',
       'work.num': '01 / PROJECTS',
@@ -265,12 +261,8 @@
 
       'hero.badge': 'DISPONIBLE PARA PROYECTOS Y DISEÑO',
       'hero.cta': 'VER PROYECTOS',
-      'hero.taglines': [
-        'Diseñador UX que crea sitios web con personalidad.',
-        'Sitios web, sistemas visuales y experimentos digitales.',
-        'Diseño intencional, nunca genérico.'
-      ],
-      'marquee.items': ['DISEÑO UX', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
+      'hero.role': 'DISEÑADOR UX &<br>CREATIVO DIGITAL.',
+      'marquee.items': ['UX/UI', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
 
       'work.title': 'PROYECTOS SELECCIONADOS',
       'work.num': '01 / PROYECTOS',
@@ -479,12 +471,8 @@
 
       'hero.badge': 'プロジェクト・デザインのご依頼受付中',
       'hero.cta': 'プロジェクトを見る',
-      'hero.taglines': [
-        '個性のあるウェブサイトをつくるUXデザイナー。',
-        'ウェブサイト、ビジュアルシステム、デジタルの実験。',
-        'ありきたりではなく、意図のあるデザインを。'
-      ],
-      'marquee.items': ['UXデザイン', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
+      'hero.role': 'UXデザイナー &<br>デジタルクリエイティブ。',
+      'marquee.items': ['UX/UI', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
 
       'work.title': '選りすぐりのプロジェクト',
       'work.num': '01 / プロジェクト',
@@ -693,12 +681,8 @@
 
       'hero.badge': 'DISPONIBILE PER PROGETTI E DESIGN',
       'hero.cta': 'GUARDA I PROGETTI',
-      'hero.taglines': [
-        'Designer UX che crea siti web con personalità.',
-        'Siti web, sistemi visivi ed esperimenti digitali.',
-        'Design intenzionale, mai generico.'
-      ],
-      'marquee.items': ['DESIGN UX', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
+      'hero.role': 'DESIGNER UX &<br>CREATIVO DIGITALE.',
+      'marquee.items': ['UX/UI', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
 
       'work.title': 'PROGETTI SELEZIONATI',
       'work.num': '01 / PROGETTI',

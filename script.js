@@ -948,100 +948,10 @@ document.querySelectorAll('.hero-name .line').forEach((line, i) => {
   }, 150 + i * 140);
 });
 
-// typewriter cycling taglines
-const heroTagEl = document.getElementById('heroTag');
-if (heroTagEl) {
-  // the rotation lives in i18n.js now so it can be translated. Each line
-  // still has to earn its slot: the offer, the range, the point of view.
-  // (A fourth English line was cut earlier — it was line 1 reshuffled, so
-  // the typewriter visibly retyped the same sentence and read as a bug.)
-  let TAGLINES = T.list('hero.taglines');
-  let tlIndex = 0;
-  let charIndex = 0;
-  let deleting = false;
-
-  // reserve enough height for the tallest tagline at the current column
-  // width so cycling through shorter/longer strings never reflows the
-  // badge/button below it — the fixed CSS min-height guess didn't match
-  // how narrow the actual hero-side column renders at most viewports
-  function lockHeroTagHeight() {
-    const prevText = heroTagEl.textContent;
-    heroTagEl.style.minHeight = '';
-    let tallest = 0;
-    TAGLINES.forEach(t => {
-      heroTagEl.textContent = t;
-      tallest = Math.max(tallest, heroTagEl.getBoundingClientRect().height);
-    });
-    heroTagEl.textContent = prevText;
-    heroTagEl.style.minHeight = tallest + 'px';
-  }
-  // column width shifts during load (webfont swap, grid settling) in ways
-  // a one-off timed measurement can't reliably catch, so re-lock whenever
-  // the box's actual width changes rather than guessing when it's "ready"
-  if (window.ResizeObserver) {
-    let lastWidth = null;
-    const ro = new ResizeObserver(entries => {
-      const w = Math.round(entries[0].contentRect.width);
-      if (w !== lastWidth) {
-        lastWidth = w;
-        lockHeroTagHeight();
-      }
-    });
-    ro.observe(heroTagEl);
-  } else {
-    lockHeroTagHeight();
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(lockHeroTagHeight, 150);
-    });
-  }
-
-  function typeLoop() {
-    const current = TAGLINES[tlIndex];
-    if (!deleting) {
-      charIndex++;
-      heroTagEl.textContent = current.slice(0, charIndex);
-      if (charIndex >= current.length) {
-        deleting = true;
-        setTimeout(typeLoop, 2000);
-        return;
-      }
-      setTimeout(typeLoop, 32 + Math.random() * 35);
-    } else {
-      charIndex--;
-      heroTagEl.textContent = current.slice(0, charIndex);
-      if (charIndex <= 0) {
-        deleting = false;
-        tlIndex = (tlIndex + 1) % TAGLINES.length;
-        setTimeout(typeLoop, 400);
-        return;
-      }
-      setTimeout(typeLoop, 16);
-    }
-  }
-  if (prefersReducedMotion) {
-    // show the first tagline as plain static text instead of an
-    // endlessly cycling type/delete animation
-    heroTagEl.textContent = TAGLINES[0];
-  } else {
-    heroTagEl.textContent = '';
-    setTimeout(typeLoop, 1000);
-  }
-
-  // Swap the source array and rewind the cursor. Deliberately does NOT
-  // start a second typeLoop chain — the existing one reads TAGLINES and
-  // tlIndex fresh on every tick, so it picks up the new language on its
-  // own; kicking off another would double the typing speed permanently.
-  T.onChange(() => {
-    TAGLINES = T.list('hero.taglines');
-    tlIndex = 0;
-    charIndex = 0;
-    deleting = false;
-    if (prefersReducedMotion) heroTagEl.textContent = TAGLINES[0];
-    lockHeroTagHeight();
-  });
-}
+// The hero's role line is a standing headline now, so the typewriter that
+// used to cycle hero.taglines here is gone - along with the ResizeObserver
+// that reserved the tallest line's height, which only existed because the
+// text kept changing length. See the note in index.html.
 
 const heroEl = document.querySelector('.hero');
 const heroNameEl = document.querySelector('.hero-name');
@@ -1305,30 +1215,30 @@ if (heroShapesContainer) {
   const smoothDefs = [
     { type: 'circle', size: 90, color: 'var(--accent)', filled: false },
     { type: 'square', size: 70, color: 'var(--blue)', filled: true },
-    { type: 'triangle', size: 60, color: 'var(--yellow)', filled: false },
+    { type: 'triangle', size: 60, color: 'var(--highlight)', filled: false },
     { type: 'circle', size: 50, color: 'var(--black)', filled: true },
     { type: 'square', size: 110, color: 'var(--accent)', filled: false },
     { type: 'triangle', size: 80, color: 'var(--blue)', filled: true },
-    { type: 'circle', size: 65, color: 'var(--yellow)', filled: false },
+    { type: 'circle', size: 65, color: 'var(--highlight)', filled: false },
     { type: 'square', size: 45, color: 'var(--black)', filled: false },
     { type: 'circle', size: 36, color: 'var(--accent)', filled: true },
     { type: 'triangle', size: 50, color: 'var(--black)', filled: false },
-    { type: 'square', size: 30, color: 'var(--yellow)', filled: true },
+    { type: 'square', size: 30, color: 'var(--highlight)', filled: true },
     { type: 'circle', size: 110, color: 'var(--blue)', filled: false },
   ];
 
   const jaggedDefs = [
     { type: 'star', size: 95, color: 'var(--accent)', filled: false, spikes: 7, sharp: true },
     { type: 'star', size: 65, color: 'var(--blue)', filled: true, spikes: 5, sharp: true },
-    { type: 'star', size: 55, color: 'var(--yellow)', filled: false, spikes: 8, sharp: true },
+    { type: 'star', size: 55, color: 'var(--highlight)', filled: false, spikes: 8, sharp: true },
     { type: 'star', size: 50, color: 'var(--green)', filled: true, spikes: 6, sharp: true },
     { type: 'star', size: 110, color: 'var(--accent)', filled: false, spikes: 6, sharp: true },
     { type: 'star', size: 80, color: 'var(--blue)', filled: false, spikes: 9, sharp: true },
-    { type: 'star', size: 60, color: 'var(--yellow)', filled: true, spikes: 5, sharp: true },
+    { type: 'star', size: 60, color: 'var(--highlight)', filled: true, spikes: 5, sharp: true },
     { type: 'star', size: 40, color: 'var(--black)', filled: false, spikes: 7, sharp: true },
     { type: 'star', size: 34, color: 'var(--accent)', filled: true, spikes: 5, sharp: true },
     { type: 'star', size: 48, color: 'var(--black)', filled: false, spikes: 8, sharp: true },
-    { type: 'star', size: 28, color: 'var(--yellow)', filled: true, spikes: 5, sharp: true },
+    { type: 'star', size: 28, color: 'var(--highlight)', filled: true, spikes: 5, sharp: true },
     { type: 'star', size: 115, color: 'var(--blue)', filled: false, spikes: 6, sharp: true },
   ];
 
@@ -1338,7 +1248,9 @@ if (heroShapesContainer) {
     heroShapesContainer.innerHTML = '';
     shapes = defs.map((def) => {
       const el = createShapeEl(def);
-      el.style.opacity = '0.5';
+      // opacity lives in CSS (.hero-shapes .shape) so the two themes can
+      // differ - a neon on near-black carries at a lower alpha than a muted
+      // coral on ivory does - and so it is not buried in a JS string
       heroShapesContainer.appendChild(el);
       return {
         el,
@@ -1346,11 +1258,19 @@ if (heroShapesContainer) {
         baseColor: def.color,
         baseX: Math.random(),
         baseY: Math.random(),
-        ampX: 40 + Math.random() * 60,
-        ampY: 30 + Math.random() * 50,
-        speed: 0.15 + Math.random() * 0.2,
+        // Wider travel and more spread in speed than before: every shape
+        // used to drift at much the same rate over much the same distance,
+        // which read as one slow field rather than twelve separate objects.
+        // The range matters more than the average - shapes that clearly
+        // overtake each other are what makes the field look alive.
+        ampX: 55 + Math.random() * 130,
+        ampY: 45 + Math.random() * 105,
+        speed: 0.12 + Math.random() * 0.42,
         phase: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * (isDark ? 30 : 18), // jagged ones spin faster/harder
+        // and a second, faster wobble so the path is not a clean ellipse
+        wobbleAmp: 6 + Math.random() * 16,
+        wobbleSpeed: 0.7 + Math.random() * 1.1,
+        rotSpeed: (Math.random() - 0.5) * (isDark ? 48 : 28), // jagged ones spin faster/harder
         rotation: Math.random() * 360,
         offsetX: 0,
         offsetY: 0,
@@ -1388,8 +1308,15 @@ if (heroShapesContainer) {
     lastT = t;
 
     shapes.forEach((s) => {
-      const driftX = s.baseX * rect.width + Math.sin(time * s.speed + s.phase) * s.ampX;
-      const driftY = s.baseY * rect.height + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY;
+      // Two sine terms per axis, not one. A single sine traces a clean
+      // ellipse and twelve ellipses read as clockwork; the faster, smaller
+      // wobble on top breaks the period so each path wanders instead.
+      const driftX = s.baseX * rect.width
+        + Math.sin(time * s.speed + s.phase) * s.ampX
+        + Math.sin(time * s.wobbleSpeed + s.phase * 1.7) * s.wobbleAmp;
+      const driftY = s.baseY * rect.height
+        + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY
+        + Math.cos(time * s.wobbleSpeed * 0.83 + s.phase) * s.wobbleAmp;
 
       const dx = driftX - heroMouseX;
       const dy = driftY - heroMouseY;
@@ -2039,11 +1966,11 @@ if (pongCanvas) {
     pctx.moveTo(W / 2 + 2, 0);
     pctx.lineTo(W / 2 + 2, H);
     pctx.stroke();
-    pctx.fillStyle = '#00e1ff';
+    pctx.fillStyle = '#8190FF';
     pctx.fillRect(14, p1Y, PADDLE_W, PLAYER_PADDLE_H);
-    pctx.fillStyle = '#ff2d55';
+    pctx.fillStyle = '#FF55AA';
     pctx.fillRect(W - 14 - PADDLE_W, p2Y, PADDLE_W, PADDLE_H);
-    pctx.fillStyle = '#f9ff2e';
+    pctx.fillStyle = '#DDFF67';
     pctx.fillRect(ballX - 5, ballY - 5, 10, 10);
     pctx.fillStyle = '#fff';
     pctx.font = '22px "Courier New", monospace';
