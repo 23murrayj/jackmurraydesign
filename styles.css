@@ -455,7 +455,6 @@ body.is-loading { overflow: hidden; }
    Both read as pushed in: the fill inverts and the lift and shadow are
    removed, the opposite of the hover state's raised look. */
 .lang-toggle:active,
-.theme-toggle:active,
 .lang-toggle[aria-expanded="true"] {
   background: var(--black);
   color: var(--white);
@@ -481,9 +480,9 @@ body.is-loading { overflow: hidden; }
    Shown on focus-visible as well as hover, so a keyboard user gets the same
    label, and suppressed while the control's own menu is open, where it would
    only cover the thing it just opened. */
-.lang-toggle, .theme-toggle { position: relative; }
+.lang-toggle, .theme-switch { position: relative; }
 .lang-toggle::after,
-.theme-toggle::after {
+.theme-switch::after {
   content: attr(data-tip);
   position: absolute; top: calc(100% + 10px); right: 0;
   background: var(--ink); color: var(--paper);
@@ -501,30 +500,70 @@ body.is-loading { overflow: hidden; }
 }
 @media (hover: hover) {
   .lang-toggle:hover::after,
-  .theme-toggle:hover::after {
+  .theme-switch:hover::after {
     opacity: 1; visibility: visible;
     transition: opacity .14s ease .45s, visibility 0s linear .45s;
   }
 }
 /* no delay for the keyboard: focus is deliberate, a wait just looks broken */
 .lang-toggle:focus-visible::after,
-.theme-toggle:focus-visible::after {
+.theme-switch:focus-visible::after {
   opacity: 1; visibility: visible; transition: none;
 }
 .lang-toggle[aria-expanded="true"]::after { content: none; }
 @media (prefers-reduced-motion: reduce) {
-  .lang-toggle::after, .theme-toggle::after { transition: none; }
+  .lang-toggle::after, .theme-switch::after { transition: none; }
 }
-.theme-toggle {
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent; border: 2px solid var(--black); color: var(--black);
-  cursor: pointer; font-size: 1rem;
-  transition: background .25s, color .25s, transform .2s;
+/* DARK / LIGHT SWITCH
+   Drawn as a track with a sliding knob rather than the rounded capsule the
+   convention usually implies: square ends, a 3px rule and a hard offset
+   shadow, so it belongs to the same family as every other control here.
+   Both ends stay visible. The knob sits over the mode that is ON and that
+   icon inverts against it, while the far icon dims - so the control reads
+   as a position, not just a picture, which is what the old lone glyph
+   could never show. */
+.theme-switch {
+  --sw-w: 64px; --sw-h: 34px; --sw-pad: 3px;
+  width: var(--sw-w); height: var(--sw-h);
+  flex: none; padding: 0;
+  background: var(--paper);
+  border: 3px solid var(--black);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background-color .25s;
 }
+.theme-switch-track {
+  position: relative; display: block; width: 100%; height: 100%;
+}
+.theme-switch-ico {
+  position: absolute; top: 50%; translate: 0 -50%;
+  width: 17px; height: 17px;
+  color: var(--ink); opacity: .42;
+  transition: opacity .25s ease, color .25s ease;
+  z-index: 2;
+}
+/* each icon is centred in its own half of the track */
+.theme-switch-ico.is-sun  { left: calc(25% + var(--sw-pad) / 2); translate: -50% -50%; }
+.theme-switch-ico.is-moon { left: calc(75% - var(--sw-pad) / 2); translate: -50% -50%; }
+/* the knob: a solid square covering exactly half the track, less the inset */
+.theme-switch-knob {
+  position: absolute; top: var(--sw-pad); left: var(--sw-pad);
+  width: calc(50% - var(--sw-pad));
+  height: calc(100% - var(--sw-pad) * 2);
+  background: var(--black);
+  transition: transform .34s cubic-bezier(.2,.8,.2,1);
+  z-index: 1;
+}
+/* light: knob left, sun lit and inverted on it, moon dimmed */
+.theme-switch .is-sun { color: var(--white); opacity: 1; }
+/* dark: knob slides right, the two swap */
+:root[data-theme="dark"] .theme-switch-knob { transform: translateX(100%); }
+:root[data-theme="dark"] .theme-switch .is-sun  { color: var(--ink); opacity: .42; }
+:root[data-theme="dark"] .theme-switch .is-moon { color: var(--paper); opacity: 1; }
 @media (hover: hover) {
-  .theme-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+  .theme-switch:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 }
+.theme-switch:active { transform: translate(0,0); box-shadow: none; }
+.theme-switch:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
 
 .nav-toggle {
   display: none; flex-direction: column; justify-content: center; gap: 5px;
@@ -590,7 +629,7 @@ body.is-loading { overflow: hidden; }
     margin-left: 14px;
   }
   /* nav chrome sat at 40px, just under the 44px touch-target guideline */
-  .nav-toggle, .theme-toggle { width: 44px; height: 44px; }
+  .nav-toggle { width: 44px; height: 44px; }
   /* .lang-toggle gets the same treatment, but its base rule is defined far
      below this point and at equal specificity, so an override here would
      lose the cascade. It lives next to that rule instead - see the note
@@ -779,7 +818,7 @@ body.is-loading { overflow: hidden; }
   overflow: hidden; border: none; background: var(--ink);
   /* significantly taller than the original strip — a real design
      statement rather than a thin ticker line */
-  padding: 40px 0;
+  padding: 26px 0;
   /* pulls the strip 1px into the hero-grid border above, and bleeds 1px
      below — masks the subpixel hairline that flex rounding can leave
      between adjacent elements */
@@ -795,7 +834,7 @@ body.is-loading { overflow: hidden; }
   display: flex; flex-shrink: 0; white-space: nowrap;
 }
 .marquee-track span {
-  font-family: var(--ff-display); font-size: clamp(1.6rem, 3.2vw, 2.6rem); color: var(--yellow);
+  font-family: var(--ff-display); font-size: clamp(1.05rem, 2.1vw, 1.7rem); color: var(--yellow);
   letter-spacing: 3px; white-space: nowrap;
 }
 /* WCAG 2.2.2 wants a way to stop scrolling content. A visible pause button
@@ -2971,7 +3010,9 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    ========================================================================== */
 .lang-control { position: relative; }
 .lang-toggle {
-  width: 40px; height: 40px;
+  /* a pill rather than a 40px square: the globe and the code sit side by
+     side, and cramming both into a square shrank the code to unreadable */
+  height: 40px; padding: 0 10px; gap: 6px;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: 2px solid var(--black); color: var(--black);
   cursor: pointer;
@@ -2988,8 +3029,19 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    the language button at 40px - visibly smaller than its neighbours, and
    under the tap target everything else meets. */
 @media (max-width: 760px) {
-  .lang-toggle { width: 44px; height: 44px; }
+  .lang-toggle { height: 44px; padding: 0 11px; }
+  /* The switch is 34px tall by design - a taller track would read as a
+     slab rather than a switch - which leaves it under the 44px touch
+     minimum the rest of the nav chrome meets. An invisible ::before
+     stretches the hit area to 44px while the drawn control keeps its
+     proportions. ::after is already the tooltip; ::before was free. */
+  .theme-switch::before {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 50%;
+    height: 44px; translate: 0 -50%;
+  }
 }
+.lang-globe { width: 17px; height: 17px; flex: none; }
 .lang-code {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
   /* the code is always a 2-letter Latin abbreviation (EN/ES/JA/IT) even
@@ -3038,6 +3090,16 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    attribute in the markup, so a screen reader announces "日本語" with a
    Japanese voice rather than spelling it out in the page's current language */
 .lang-option[lang="ja"] { letter-spacing: 0; }
+
+/* At 320px the cluster is 223px and leaves only 12px clear of the logo:
+   the globe widened the language button to 65px and the switch is 64px, so
+   the pair costs 41px more than the two 40px squares they replaced. Measured,
+   not guessed. Tightened for the narrowest phones only - 34px clear there -
+   while 375px and up keep the roomier base spacing. */
+@media (max-width: 360px) {
+  .nav-right { gap: 10px; }
+  .nav { padding: 20px 4vw; }
+}
 
 /* The nav's right cluster is language, theme, menu. It was four controls
    until the colour-vision menu came out, and at four the shared 18px gap

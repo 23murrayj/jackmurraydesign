@@ -877,7 +877,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
   // mouseenter/mouseleave don't bubble, so delegation uses mouseover/mouseout
   // and ignores moves that stay inside the same target (entering a child fires
   // mouseout on the parent, which would otherwise flicker the dot).
-  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
+  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-switch, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
   const cursorEdge = (e, add) => {
     const hit = e.target.closest && e.target.closest(CURSOR_TARGETS);
     if (!hit) return;
@@ -1105,10 +1105,15 @@ updateNavState();
 
 // dark / light mode toggle
 const themeToggle = document.getElementById('themeToggle');
-const themeIcon = themeToggle.querySelector('.theme-icon');
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.textContent = theme === 'dark' ? '☀︎' : '☾︎';
+  // The control is a switch now: both icons are drawn in the markup and the
+  // knob slides, so there is no glyph left to rewrite. What a switch does
+  // owe a screen reader is its state, which is aria-checked - "on" means
+  // dark. Set here rather than at the click handler so the attribute is
+  // already right on first paint, including when the OS preference or a
+  // saved choice opened the page in dark.
+  themeToggle.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
   localStorage.setItem('jm-theme', theme);
   document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
 }

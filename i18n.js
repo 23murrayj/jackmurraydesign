@@ -56,7 +56,7 @@
         'Websites, visual systems, and digital experiments.',
         "Design that's intentional, not generic."
       ],
-      'marquee.items': ['UX DESIGN', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION', 'AUTOMATION'],
+      'marquee.items': ['UX DESIGN', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
 
       'work.title': 'SELECTED PROJECTS',
       'work.num': '01 / PROJECTS',
@@ -270,7 +270,7 @@
         'Sitios web, sistemas visuales y experimentos digitales.',
         'Diseño intencional, nunca genérico.'
       ],
-      'marquee.items': ['DISEÑO UX', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION', 'AUTOMATIZACIÓN'],
+      'marquee.items': ['DISEÑO UX', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
 
       'work.title': 'PROYECTOS SELECCIONADOS',
       'work.num': '01 / PROYECTOS',
@@ -484,7 +484,7 @@
         'ウェブサイト、ビジュアルシステム、デジタルの実験。',
         'ありきたりではなく、意図のあるデザインを。'
       ],
-      'marquee.items': ['UXデザイン', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション', '自動化'],
+      'marquee.items': ['UXデザイン', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
 
       'work.title': '選りすぐりのプロジェクト',
       'work.num': '01 / プロジェクト',
@@ -698,7 +698,7 @@
         'Siti web, sistemi visivi ed esperimenti digitali.',
         'Design intenzionale, mai generico.'
       ],
-      'marquee.items': ['DESIGN UX', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION', 'AUTOMAZIONE'],
+      'marquee.items': ['DESIGN UX', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
 
       'work.title': 'PROGETTI SELEZIONATI',
       'work.num': '01 / PROGETTI',

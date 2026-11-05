@@ -110,6 +110,17 @@
   <div class="nav-right">
     <div class="lang-control">
       <button class="lang-toggle" id="langToggle" data-i18n-aria="nav.aria.language" aria-label="Choose language" data-i18n-tip="nav.aria.language" data-tip="Choose language" aria-haspopup="true" aria-expanded="false">
+        <!-- Globe AND code, not one or the other. A globe alone names the
+             topic but not the state - it cannot say which language is on -
+             and a bare code named the state but read as an inert badge
+             rather than a control. Together they answer both at once.
+             Inline SVG rather than a glyph: U+1F310 renders as a colour
+             emoji on iOS, the trap the arrows and the moon fell into. -->
+        <svg class="lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9.2"></circle>
+          <path d="M2.8 12h18.4"></path>
+          <path d="M12 2.8a14 14 0 0 1 3.8 9.2 14 14 0 0 1-3.8 9.2 14 14 0 0 1-3.8-9.2A14 14 0 0 1 12 2.8z"></path>
+        </svg>
         <span class="lang-code" id="langCode">EN</span>
       </button>
       <div class="lang-menu" id="langMenu">
@@ -119,8 +130,24 @@
         <button class="lang-option" data-lang="it" type="button" lang="it">ITALIANO</button>
       </div>
     </div>
-    <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="Dark / light mode" data-i18n-tip="nav.aria.theme" data-tip="Dark / light mode">
-      <span class="theme-icon">☾︎</span>
+    <!-- A switch, not a button. The single swapping glyph said what you
+         would GET but never what was ON, and a lone icon in a square reads
+         as decoration - people were not pressing it. A track with both ends
+         drawn shows the choice and the current position at once.
+         role="switch" + aria-checked carries that to a screen reader, which
+         a plain button could not. Both icons are permanent, so the script no
+         longer rewrites any text in here. -->
+    <button class="theme-switch" id="themeToggle" role="switch" aria-checked="false" data-i18n-aria="nav.aria.theme" aria-label="Dark / light mode" data-i18n-tip="nav.aria.theme" data-tip="Dark / light mode">
+      <span class="theme-switch-track" aria-hidden="true">
+        <svg class="theme-switch-ico is-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" focusable="false">
+          <circle cx="12" cy="12" r="4.4"></circle>
+          <path d="M12 1.6v2.4M12 20v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M1.6 12h2.4M20 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"></path>
+        </svg>
+        <svg class="theme-switch-ico is-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M20.5 14.3A8.6 8.6 0 1 1 9.7 3.5a6.9 6.9 0 0 0 10.8 10.8z"></path>
+        </svg>
+        <span class="theme-switch-knob"></span>
+      </span>
     </button>
     <button class="nav-toggle" id="navToggle" data-i18n-aria="nav.aria.menu" aria-label="menu" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
@@ -156,10 +183,10 @@
   <div class="marquee">
     <div class="marquee-track" id="marqueeTrack">
       <div class="marquee-group">
-        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
       </div>
       <div class="marquee-group" aria-hidden="true">
-        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;AUTOMATION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+        <span>UX&nbsp;DESIGN&nbsp;&nbsp;✦&nbsp;&nbsp;WEBSITES&nbsp;&nbsp;✦&nbsp;&nbsp;BRAND&nbsp;SYSTEMS&nbsp;&nbsp;✦&nbsp;&nbsp;PHOTOGRAPHY&nbsp;&nbsp;✦&nbsp;&nbsp;MOTION&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
       </div>
     </div>
   </div>
