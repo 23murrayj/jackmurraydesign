@@ -1792,11 +1792,11 @@ body.is-loading { overflow: hidden; }
   cursor: pointer;
   transition: background-color .2s ease, text-decoration-color .2s ease;
 }
-/* --ink, not --black, on the yellow. --black INVERTS with the theme - it is
-   #e8e5dc in dark mode - so inheriting it would have laid near-white text on
-   a near-white yellow the moment anyone switched themes. --ink is #111111 in
-   both themes, and the yellow is bright in both, so one declaration covers
-   them: ~17:1 either way. */
+/* --ink, not --black, on the highlight. --black INVERTS with the theme - it
+   is off-white in dark mode - so inheriting it would have laid near-white
+   text on the lime the moment anyone switched themes. --ink is #111117 in
+   both themes and the highlight is light in both, so one declaration covers
+   them: ~11:1 on the light-mode stone, ~16:1 on the dark-mode lime. */
 @media (hover: hover) {
   .prose-link:hover {
     background: var(--highlight);

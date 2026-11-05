@@ -13,8 +13,14 @@
      domain rather than a relative path. -->
 <meta name="description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
 <meta name="author" content="Jack Murray">
-<meta name="theme-color" content="#e6e3db" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#171512" media="(prefers-color-scheme: dark)">
+<!-- These paint the browser chrome (the address bar on mobile) and must
+     match the page ground exactly, or the bar sits a shade off the top of
+     the page. They are literal values because a meta tag cannot read a CSS
+     custom property - so they have to be updated by hand whenever --white
+     changes. They were missed in the repalette and still held the previous
+     ivory and near-black. -->
+<meta name="theme-color" content="#F0EEE8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111117" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://jackmurraydesign.com/">
 
 <meta property="og:title" content="Jack Murray · UX Designer">
