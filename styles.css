@@ -455,10 +455,8 @@ body.is-loading { overflow: hidden; }
    Both read as pushed in: the fill inverts and the lift and shadow are
    removed, the opposite of the hover state's raised look. */
 .lang-toggle:active,
-.cvd-toggle:active,
 .theme-toggle:active,
-.lang-toggle[aria-expanded="true"],
-.cvd-toggle[aria-expanded="true"] {
+.lang-toggle[aria-expanded="true"] {
   background: var(--black);
   color: var(--white);
   transform: translate(0, 0);
@@ -469,8 +467,9 @@ body.is-loading { overflow: hidden; }
    currently nothing - and it already says it is open by turning into an X. */
 
 /* TOOLTIPS FOR THE NAV CONTROLS
-   The moon reads as dark mode and EN reads as language, but nothing about a
-   half-filled circle says colour vision - that is the one nobody guesses.
+   A moon and a two-letter code are compact but not self-explanatory. The moon
+   especially: it could be read as night mode, a sleep setting, or nothing in
+   particular until you press it and watch the page change.
 
    Drawn here rather than left to the native title attribute: that one waits
    about a second, renders as system chrome on a page that has an opinion
@@ -482,9 +481,8 @@ body.is-loading { overflow: hidden; }
    Shown on focus-visible as well as hover, so a keyboard user gets the same
    label, and suppressed while the control's own menu is open, where it would
    only cover the thing it just opened. */
-.lang-toggle, .cvd-toggle, .theme-toggle { position: relative; }
+.lang-toggle, .theme-toggle { position: relative; }
 .lang-toggle::after,
-.cvd-toggle::after,
 .theme-toggle::after {
   content: attr(data-tip);
   position: absolute; top: calc(100% + 10px); right: 0;
@@ -503,7 +501,6 @@ body.is-loading { overflow: hidden; }
 }
 @media (hover: hover) {
   .lang-toggle:hover::after,
-  .cvd-toggle:hover::after,
   .theme-toggle:hover::after {
     opacity: 1; visibility: visible;
     transition: opacity .14s ease .45s, visibility 0s linear .45s;
@@ -511,19 +508,13 @@ body.is-loading { overflow: hidden; }
 }
 /* no delay for the keyboard: focus is deliberate, a wait just looks broken */
 .lang-toggle:focus-visible::after,
-.cvd-toggle:focus-visible::after,
 .theme-toggle:focus-visible::after {
   opacity: 1; visibility: visible; transition: none;
 }
-.lang-toggle[aria-expanded="true"]::after,
-.cvd-toggle[aria-expanded="true"]::after { content: none; }
+.lang-toggle[aria-expanded="true"]::after { content: none; }
 @media (prefers-reduced-motion: reduce) {
-  .lang-toggle::after, .cvd-toggle::after, .theme-toggle::after { transition: none; }
+  .lang-toggle::after, .theme-toggle::after { transition: none; }
 }
-/* the CVD button already inverts while a mode is on; when its menu is also
-   open, keep the open state winning so the two do not fight */
-.cvd-toggle.active-mode[aria-expanded="true"] { background: var(--black); color: var(--white); }
-
 .theme-toggle {
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
@@ -534,60 +525,6 @@ body.is-loading { overflow: hidden; }
 @media (hover: hover) {
   .theme-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 }
-
-/* color vision mode control */
-.cvd-control { position: relative; }
-.cvd-toggle {
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent; border: 2px solid var(--black); color: var(--black);
-  cursor: pointer; font-size: 1.1rem;
-  transition: background .25s, color .25s, transform .2s;
-}
-@media (hover: hover) {
-  .cvd-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
-}
-.cvd-toggle.active-mode { background: var(--black); color: var(--white); }
-/* visibility, not just opacity. opacity:0 + pointer-events:none hides a menu
-   from the eye and the mouse but NOT from the keyboard or a screen reader:
-   its buttons stayed in the tab order while it was closed, so tabbing from
-   the nav walked through invisible controls with no visible focus ring on
-   them. Audited across the page: 10 such stops, 4 here, 4 in the colour-
-   vision menu, 2 in the easter-egg menu. visibility:hidden removes them from
-   both, and transitioning it keeps the fade-out - visibility holds `visible`
-   for the duration and flips at the end. */
-.cvd-menu {
-  position: absolute; top: calc(100% + 12px); right: 0;
-  min-width: 200px;
-  background: var(--paper); border: 3px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
-  display: flex; flex-direction: column;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transform: translateY(-8px);
-  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
-  z-index: 300;
-}
-.cvd-menu.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
-.cvd-option {
-  background: none; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-  text-align: left; padding: 13px 18px;
-  font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;
-  color: var(--ink);
-  border-bottom: 2px solid var(--ink);
-}
-.cvd-option:last-child { border-bottom: none; }
-@media (hover: hover) {
-  .cvd-option:hover { background: var(--yellow); }
-}
-.cvd-option.active { background: var(--ink); color: var(--paper); }
-.cvd-option.active::after { content: '●'; color: var(--accent); margin-left: 10px; }
-
-/* the filters themselves — applied to <html> so they cover the whole
-   rendered page including fixed-position chrome */
-html.cvd-deuteranopia { filter: url(#cvd-deuteranopia); }
-html.cvd-protanopia { filter: url(#cvd-protanopia); }
-html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 
 .nav-toggle {
   display: none; flex-direction: column; justify-content: center; gap: 5px;
@@ -653,7 +590,7 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     margin-left: 14px;
   }
   /* nav chrome sat at 40px, just under the 44px touch-target guideline */
-  .nav-toggle, .theme-toggle, .cvd-toggle { width: 44px; height: 44px; }
+  .nav-toggle, .theme-toggle { width: 44px; height: 44px; }
   /* .lang-toggle gets the same treatment, but its base rule is defined far
      below this point and at equal specificity, so an override here would
      lose the cascade. It lives next to that rule instead - see the note
@@ -939,8 +876,12 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
 }
 @media (hover: hover) {
   .card:hover {
-    transform: translate(-6px, -6px) rotate(-0.4deg);
-    box-shadow: 10px 10px 0 var(--black);
+    /* Weighted toward vertical on purpose. The gallery is full-bleed, so a
+       card in the left column that travels far sideways runs past the
+       viewport edge and is clipped there; height is what reads as "raised"
+       anyway, and the offset shadow supplies the diagonal. */
+    transform: translate(-7px, -14px) rotate(-0.6deg);
+    box-shadow: 18px 18px 0 var(--black);
     z-index: 5;
   }
 }
@@ -2971,7 +2912,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 }
 @media (hover: hover) {
   :root[data-theme="dark"] .card:hover {
-    box-shadow: 10px 10px 0 var(--black), 0 0 32px color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 18px 18px 0 var(--black), 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent);
   }
 }
 @media (hover: hover) {
@@ -3023,10 +2964,10 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 
 /* ==========================================================================
    LANGUAGE SWITCHER
-   Deliberately built as a sibling of .cvd-control rather than sharing its
-   classes: the two controls look alike on purpose, but they're independent
-   features and coupling their selectors would mean every future tweak to
-   one silently moves the other.
+   Built on its own classes rather than a shared dropdown class: the menus in
+   the nav cluster look alike on purpose, but they are independent features,
+   and coupling their selectors would mean every future tweak to one silently
+   moved the others.
    ========================================================================== */
 .lang-control { position: relative; }
 .lang-toggle {
@@ -3041,11 +2982,11 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   .lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 }
 /* The nav chrome goes to the 44px touch minimum on phones. This has to live
-   here rather than with the matching rule for .nav-toggle/.theme-toggle/
-   .cvd-toggle much higher up: those three are declared above that media
-   query, this one below it, and at equal specificity the later declaration
-   wins. Putting it there left the language button at 40px - visibly smaller
-   than its two neighbours, and under the tap target everything else meets. */
+   here rather than with the matching rule for .nav-toggle/.theme-toggle much
+   higher up: those are declared above that media query, this one below it,
+   and at equal specificity the later declaration wins. Putting it there left
+   the language button at 40px - visibly smaller than its neighbours, and
+   under the tap target everything else meets. */
 @media (max-width: 760px) {
   .lang-toggle { width: 44px; height: 44px; }
 }
@@ -3056,6 +2997,14 @@ body.chaos-mode .chaos-work-cover { display: flex; }
      compact button label, and "日本語" doesn't fit a 40px square */
   font-family: 'Space Grotesk', sans-serif;
 }
+/* visibility, not just opacity. opacity:0 + pointer-events:none hides a menu
+   from the eye and the mouse but NOT from the keyboard or a screen reader:
+   its buttons stay in the tab order while it is closed, so tabbing from the
+   nav walked through invisible controls with no visible focus ring on them.
+   Audited across the page: 6 such stops, 4 here and 2 in the easter-egg menu.
+   visibility:hidden removes them from both, and transitioning it keeps the
+   fade-out - visibility holds `visible` for the duration and flips at the
+   end. */
 .lang-menu {
   position: absolute; top: calc(100% + 12px); right: 0;
   min-width: 190px;
@@ -3076,8 +3025,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;
   color: var(--ink);
   border-bottom: 2px solid var(--ink);
-  /* 44px minimum touch target — the CVD options next door sit at 40-42px,
-     which is already under the guideline; no reason to repeat that here */
+  /* 44px minimum touch target */
   min-height: 44px;
 }
 .lang-option:last-child { border-bottom: none; }
@@ -3091,13 +3039,13 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    Japanese voice rather than spelling it out in the page's current language */
 .lang-option[lang="ja"] { letter-spacing: 0; }
 
-/* four controls now share the nav's right cluster (language, colour vision,
-   theme, menu) — 4x40px plus the original 18px gaps overflowed a 375px
-   viewport once the logo was accounted for */
-@media (max-width: 480px) {
-  .nav-right { gap: 10px; }
-  .nav { padding: 20px 4vw; }
-}
+/* The nav's right cluster is language, theme, menu. It was four controls
+   until the colour-vision menu came out, and at four the shared 18px gap
+   plus 4x40px overflowed a 375px viewport once the logo was accounted for,
+   so this media query tightened both the gap and the nav's padding. Three
+   controls leave 126px clear between logo and cluster at 375px, measured,
+   so the squeeze is no longer buying anything and the base spacing stands.
+   Kept as a marker: adding a fourth control here brings the overflow back. */
 
 /* ==========================================================================
    JAPANESE TYPOGRAPHY

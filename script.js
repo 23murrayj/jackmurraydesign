@@ -877,7 +877,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
   // mouseenter/mouseleave don't bubble, so delegation uses mouseover/mouseout
   // and ignores moves that stay inside the same target (entering a child fires
   // mouseout on the parent, which would otherwise flicker the dot).
-  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, .cvd-toggle, .cvd-option, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
+  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-toggle, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
   const cursorEdge = (e, add) => {
     const hit = e.target.closest && e.target.closest(CURSOR_TARGETS);
     if (!hit) return;
@@ -1120,78 +1120,33 @@ themeToggle.addEventListener('click', () => {
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
 
-// color vision mode — applies a CSS filter to the whole page (<html>)
-// and persists the choice
-const cvdToggle = document.getElementById('cvdToggle');
-const cvdMenu = document.getElementById('cvdMenu');
-const cvdOptions = document.querySelectorAll('.cvd-option');
-function applyCvdMode(mode) {
-  document.documentElement.classList.remove('cvd-deuteranopia', 'cvd-protanopia', 'cvd-highcontrast');
-  if (mode !== 'normal') document.documentElement.classList.add(`cvd-${mode}`);
-  cvdOptions.forEach((btn) => btn.classList.toggle('active', btn.dataset.mode === mode));
-  cvdToggle?.classList.toggle('active-mode', mode !== 'normal');
-  localStorage.setItem('jm-cvd', mode);
-}
-// aria-expanded goes through one helper rather than being set at each call
-// site: the menu has four ways to close (pick an option, click outside,
-// Escape, toggle again) and the attribute has to stay true to all of them.
-// The language menu next door sets it on every path by hand, which works
-// but is four chances to miss one.
 // A menu whose trigger the reader has scrolled past is orphaned. The egg menu
-// is the clear case: it is position: fixed at the bottom-left while its
+// is the case that matters: it is position: fixed at the bottom-left while its
 // trigger sits in the footer, so opening it and scrolling up left a floating
-// panel attached to nothing on screen. The two nav dropdowns ride along with
-// the fixed nav and never orphan, but they dismiss on the same gesture,
-// because scrolling away from a menu you just opened is a plain "done here"
-// and having one of the three behave differently is worse than the rule.
+// panel attached to nothing on screen. (The language dropdown rides along with
+// the fixed nav, so its trigger is never off screen and it has no need of
+// this.)
 //
 // A distance threshold rather than any scroll at all: opening a menu can
 // itself shift the page by a pixel or two, and a menu that closes during the
 // gesture that opened it is more annoying than one that stays.
 const MENU_SCROLL_DISMISS = 40;
 let menuScrollAnchor = null;
-// Reads the menus rather than trusting the caller's own open/closed flag.
-// Taking the flag looked right and was not: clicking the egg trigger bubbles
-// to document, where the colour-vision menu's outside-click handler calls
-// setCvdMenu(false) - so opening one menu disarmed the watcher that had just
-// been armed for it, and it then survived any amount of scrolling. The state
-// that matters is whether ANY of them is open, which is on the elements.
+// Reads the menu's own class rather than trusting the caller's open/closed
+// flag. Taking the flag looked right and was not: a trigger's click bubbles to
+// document, where some other dropdown's outside-click handler runs and re-arms
+// this watcher - so opening a menu could disarm the watcher just armed for it,
+// and it then survived any amount of scrolling. The state that matters is on
+// the element.
 function armMenuScrollDismiss() {
-  const anyOpen =
-    !!cvdMenu?.classList.contains('open') ||
-    !!eggMenu?.classList.contains('open');
-  menuScrollAnchor = anyOpen ? window.scrollY : null;
+  menuScrollAnchor = eggMenu?.classList.contains('open') ? window.scrollY : null;
 }
 window.addEventListener('scroll', () => {
   if (menuScrollAnchor === null) return;
   if (Math.abs(window.scrollY - menuScrollAnchor) < MENU_SCROLL_DISMISS) return;
   menuScrollAnchor = null;
-  setCvdMenu(false);
   setEggMenu(false);
 }, { passive: true });
-
-function setCvdMenu(open) {
-  cvdMenu?.classList.toggle('open', open);
-  cvdToggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
-  armMenuScrollDismiss();
-}
-cvdToggle?.addEventListener('click', () => setCvdMenu(!cvdMenu.classList.contains('open')));
-cvdOptions.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    applyCvdMode(btn.dataset.mode);
-    setCvdMenu(false);
-  });
-});
-document.addEventListener('click', (e) => {
-  if (cvdMenu && !e.target.closest('.cvd-control')) setCvdMenu(false);
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && cvdMenu?.classList.contains('open')) {
-    setCvdMenu(false);
-    cvdToggle.focus();
-  }
-});
-applyCvdMode(localStorage.getItem('jm-cvd') || 'normal');
 
 // seamless marquee: keep duplicating the group until it's wide enough
 // to fill at least double the viewport, so the -50% loop never shows a gap

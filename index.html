@@ -119,17 +119,6 @@
         <button class="lang-option" data-lang="it" type="button" lang="it">ITALIANO</button>
       </div>
     </div>
-    <div class="cvd-control">
-      <button class="cvd-toggle" id="cvdToggle" data-i18n-aria="nav.aria.colorVision" aria-label="Color vision simulator" data-i18n-tip="nav.aria.colorVision" data-tip="Color vision simulator" aria-haspopup="true" aria-expanded="false">
-        <span class="cvd-icon">◐</span>
-      </button>
-      <div class="cvd-menu" id="cvdMenu">
-        <button class="cvd-option active" data-mode="normal" type="button" data-i18n="cvd.normal">NORMAL</button>
-        <button class="cvd-option" data-mode="deuteranopia" type="button" data-i18n="cvd.deuteranopia">DEUTERANOPIA</button>
-        <button class="cvd-option" data-mode="protanopia" type="button" data-i18n="cvd.protanopia">PROTANOPIA</button>
-        <button class="cvd-option" data-mode="highcontrast" type="button" data-i18n="cvd.highcontrast">HIGH CONTRAST</button>
-      </div>
-    </div>
     <button class="theme-toggle" id="themeToggle" data-i18n-aria="nav.aria.theme" aria-label="Dark / light mode" data-i18n-tip="nav.aria.theme" data-tip="Dark / light mode">
       <span class="theme-icon">☾︎</span>
     </button>
@@ -138,25 +127,6 @@
 </nav>
 <div class="nav-overlay" id="navOverlay"></div>
 
-<!-- color vision deficiency simulation filters, applied via CSS filter: url(#...) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <filter id="cvd-deuteranopia">
-      <feColorMatrix type="matrix" values="
-        0.625 0.375 0     0 0
-        0.7   0.3   0     0 0
-        0     0.3   0.7   0 0
-        0     0     0     1 0" />
-    </filter>
-    <filter id="cvd-protanopia">
-      <feColorMatrix type="matrix" values="
-        0.567 0.433 0     0 0
-        0.558 0.442 0     0 0
-        0     0.242 0.758 0 0
-        0     0     0     1 0" />
-    </filter>
-  </defs>
-</svg>
 
 <!-- MAIN LANDMARK — also the skip-link target. tabindex="-1" lets it
      receive programmatic focus from the skip link without becoming a
@@ -598,13 +568,13 @@
 </main>
 
 <footer class="footer">
-  <!-- The four things above are built and nobody knows it: the only way to
-       find the colour-vision mode is to press an unlabelled half-circle on
-       the off chance. This is not here to make anyone click them - most
-       readers need none of them - it is here because on a portfolio the work
-       only counts if someone can see it was done. Set quietly: a credit line,
-       not a boast. -->
-  <p class="footer-built" data-i18n="footer.built">FOUR LANGUAGES · DARK &amp; LIGHT · COLOR VISION SIMULATOR · AA CONTRAST · KEYBOARD NAVIGATION · REDUCED MOTION</p>
+  <!-- Most of the work named here is invisible by design - a reader who
+       needs none of it never finds out it was done, and the two toggles that
+       do have controls are a moon and a two-letter code in the corner. This
+       is not here to make anyone press them: it is here because on a
+       portfolio the work only counts if someone can see it was done. Set
+       quietly - a credit line, not a boast. -->
+  <p class="footer-built" data-i18n="footer.built">FOUR LANGUAGES · DARK &amp; LIGHT · AA CONTRAST · KEYBOARD NAVIGATION · REDUCED MOTION</p>
   <div class="footer-row">
     <span>© 2026 JACK MURRAY <button class="egg-trigger" id="eggTrigger" aria-label="???" aria-haspopup="true" aria-expanded="false">✦</button></span>
     <span class="live-clock" id="liveClock">00:00:00</span>
