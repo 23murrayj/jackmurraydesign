@@ -82,6 +82,43 @@ on graphic slabs (marquee, loader, about section, footer, pong):
 > in dark mode a cream knob sat on a cream track. If a component must mirror
 > between themes, build it from `--black`/`--white`.
 
+### The superseded palette (do not reintroduce)
+
+Replaced 2026-11-05 at commit `9c1f3ac`; the last version using it is
+`1ba4dd4`. Jack's brief was to drop the saturated yellow and red. Recorded so
+a stray hex can be *identified* as old rather than mistaken for intentional —
+if you find one of these values anywhere, it is a leftover.
+
+| Token | Old light | Old dark |
+|---|---|---|
+| `--black` | `#1e1c17` | `#e8e5dc` |
+| `--white` | `#e6e3db` | `#171512` |
+| `--accent` | `#ff3b30` flat red | `#ff2d55` neon red |
+| `--accent-ink` | `#b32921` | `#ff2d55` |
+| `--accent-on` | `#ffffff` | `#171512` |
+| `--yellow` → now `--highlight` | `#fffb00` pure yellow | `#f9ff2e` |
+| `--blue` | `#0a5cff` | `#00d4ff` cyan |
+| `--green` | `#16d160` | `#00ff95` |
+| `--muted` | `#62615a` | `#9c9b92` |
+| `--line` | `#b3b0a3` | `#38372f` |
+| `--ink` / `--paper` | `#111111` / `#f5f5f0` | *(fixed, same)* |
+| `--muted-ink` | `#a8a79c` | *(fixed, same)* |
+| `--warn-ink` | `#b32921` | *(fixed, same)* |
+| `--chip` / `--chip-lead` | `rgba(30,28,23,.07)` / `.24` | `rgba(232,229,220,.10)` / `.22` |
+
+Also gone: the chaos-mode/pong hardcoded hexes `#ff2d55`, `#f9ff2e`, `#00e1ff`,
+which were the last place the old red and yellow survived.
+
+Two things changed that are easy to get wrong when porting old code:
+
+- **`--accent-on` used to be white.** It is now near-black, because white
+  fails on both new accents. An old snippet assuming white-on-accent is a
+  contrast bug.
+- **`--yellow` no longer exists.** It is `--highlight`, and in *light* mode it
+  is stone, not yellow. Six hero shapes still referenced `var(--yellow)` after
+  the rename and silently fell back to an inherited colour — grep for the old
+  name after any token rename.
+
 ### Contrast rules (non-negotiable)
 
 Coral is **3.26:1** on ivory and dusty blue **3.42:1** — fine for display type

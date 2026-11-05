@@ -36,7 +36,10 @@ home page, a project overlay and the about page.
 
 **Design / build**
 - Full repalette to warm ivory + coral/dusty-blue (light) and near-black +
-  pink/electric-blue/lime (dark). `--yellow` renamed `--highlight`.
+  pink/electric-blue/lime (dark). `--yellow` renamed `--highlight`. The brief
+  was to drop the saturated yellow and red. The outgoing values are tabulated
+  in `CLAUDE.md` and the last commit using them is `1ba4dd4`, so the old look
+  can be recovered or an old hex recognised.
 - Hero rebuilt: typewriter → standing "UX DESIGNER & DIGITAL CREATIVE.",
   no divider rule, CTA on a permanent accent block, marquee as a seam with
   SELECTED PROJECTS visible beneath it.
