@@ -944,7 +944,42 @@ html.cvd-highcontrast { filter: contrast(1.45) saturate(1.15); }
     z-index: 5;
   }
 }
-.card-media { overflow: hidden; aspect-ratio: 4/3; flex: none; }
+.card-media { overflow: hidden; aspect-ratio: 4/3; flex: none; position: relative; }
+/* A badge on the photograph itself, present at rest.
+   The bar at the foot of the card says what pressing it does, but the photo
+   is the biggest thing on the card and still read as an illustration - so the
+   card looked like an article with a button under it rather than one object
+   you can press anywhere. This marks the picture as part of the control.
+   A pseudo-element, so the card template does not need a node for it and no
+   project can ship without one. \2197 is the same arrow the social rows use,
+   with \FE0E to hold it to text presentation - iOS renders U+2197 as a colour
+   emoji otherwise. */
+.card-media::after {
+  content: '\2197\FE0E';
+  position: absolute; top: 0; right: 0;
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--paper); color: var(--ink);
+  border-left: 3px solid var(--black);
+  border-bottom: 3px solid var(--black);
+  font-size: 1.05rem; font-weight: 700; line-height: 1;
+  transition: background-color .2s ease, color .2s ease;
+  z-index: 2;
+}
+/* the badge and the bar light together, so the whole card reads as one
+   control reacting rather than two parts reacting separately */
+@media (hover: hover) {
+  .card:hover .card-media::after { background: var(--accent); color: var(--paper); }
+  .card:hover .card-media img { transform: scale(1.04); }
+}
+.card:active .card-media::after,
+.card:focus-visible .card-media::after { background: var(--accent); color: var(--paper); }
+.card-media img { transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+@media (prefers-reduced-motion: reduce) {
+  .card-media img { transition: none; }
+  .card:hover .card-media img { transform: none; }
+  .card-media::after { transition: none; }
+}
 .card-info {
   padding: 22px 24px 28px;
   display: flex; flex-direction: column; gap: 6px;
