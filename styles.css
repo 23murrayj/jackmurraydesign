@@ -523,21 +523,33 @@ body.is-loading { overflow: hidden; }
    as a position, not just a picture, which is what the old lone glyph
    could never show. */
 .theme-switch {
-  --sw-w: 64px; --sw-h: 34px; --sw-pad: 3px;
+  /* 40px tall, the height of every other control in the cluster - at 34 it
+     read as a near-match rather than a match, which is worse than either.
+     68 wide makes the knob land exactly square: the padding box is 62x34,
+     so a half-width knob is 28 across and 28 down. */
+  --sw-w: 68px; --sw-h: 40px; --sw-pad: 3px;
   width: var(--sw-w); height: var(--sw-h);
   flex: none; padding: 0;
-  background: var(--paper);
-  border: 3px solid var(--black);
+  /* transparent over a --black rule, exactly like .lang-toggle beside it.
+     This was background: var(--paper) with a var(--black) knob, and --ink
+     and --paper are declared NOT to flip with the theme (they pair with the
+     literal --yellow on the marquee and loader). So in dark mode the track
+     stayed cream while the knob inverted to cream as well: a pale blob on a
+     pale blob. --black/--white flip, so the pair mirrors on its own. */
+  background: transparent;
+  border: 2px solid var(--black);
   cursor: pointer;
-  transition: transform .2s, box-shadow .2s, background-color .25s;
+  transition: transform .2s, box-shadow .2s, border-color .25s;
 }
 .theme-switch-track {
   position: relative; display: block; width: 100%; height: 100%;
 }
 .theme-switch-ico {
   position: absolute; top: 50%; translate: 0 -50%;
-  width: 17px; height: 17px;
-  color: var(--ink); opacity: .42;
+  width: 16px; height: 16px;
+  /* the dimmed icon sits on the bare track, so it takes the ink colour that
+     flips; the lit one sits on the knob and takes the page colour */
+  color: var(--black); opacity: .55;
   transition: opacity .25s ease, color .25s ease;
   z-index: 2;
 }
@@ -557,8 +569,8 @@ body.is-loading { overflow: hidden; }
 .theme-switch .is-sun { color: var(--white); opacity: 1; }
 /* dark: knob slides right, the two swap */
 :root[data-theme="dark"] .theme-switch-knob { transform: translateX(100%); }
-:root[data-theme="dark"] .theme-switch .is-sun  { color: var(--ink); opacity: .42; }
-:root[data-theme="dark"] .theme-switch .is-moon { color: var(--paper); opacity: 1; }
+:root[data-theme="dark"] .theme-switch .is-sun  { color: var(--black); opacity: .55; }
+:root[data-theme="dark"] .theme-switch .is-moon { color: var(--white); opacity: 1; }
 @media (hover: hover) {
   .theme-switch:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 }
@@ -816,9 +828,18 @@ body.is-loading { overflow: hidden; }
 .marquee {
   position: relative; z-index: 2;
   overflow: hidden; border: none; background: var(--ink);
-  /* significantly taller than the original strip — a real design
-     statement rather than a thin ticker line */
   padding: 26px 0;
+  /* FULL BLEED. The band lives inside .hero, which pads its content by 5vw,
+     so the strip stopped 51px short of each edge at 1024 and read as a panel
+     sitting on the page rather than a rule drawn across it.
+     50% resolves against the containing block - the hero's CONTENT box - and
+     50vw against the viewport, so the difference is exactly whatever padding
+     the parent applies, whatever it is and at any width. Cancelling 5vw by
+     hand would work today and break the first time that padding changes.
+     It lands on the hero's border box, not past it, so .hero { overflow:
+     hidden } has nothing to clip. */
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   /* pulls the strip 1px into the hero-grid border above, and bleeds 1px
      below — masks the subpixel hairline that flex rounding can leave
      between adjacent elements */
@@ -3010,9 +3031,8 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    ========================================================================== */
 .lang-control { position: relative; }
 .lang-toggle {
-  /* a pill rather than a 40px square: the globe and the code sit side by
-     side, and cramming both into a square shrank the code to unreadable */
-  height: 40px; padding: 0 10px; gap: 6px;
+  /* square again: the mark stands alone, so there is nothing to sit beside */
+  width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: 2px solid var(--black); color: var(--black);
   cursor: pointer;
@@ -3023,32 +3043,18 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   .lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
 }
 /* The nav chrome goes to the 44px touch minimum on phones. This has to live
-   here rather than with the matching rule for .nav-toggle/.theme-toggle much
+   here rather than with the matching rule for .nav-toggle much
    higher up: those are declared above that media query, this one below it,
    and at equal specificity the later declaration wins. Putting it there left
    the language button at 40px - visibly smaller than its neighbours, and
    under the tap target everything else meets. */
 @media (max-width: 760px) {
-  .lang-toggle { height: 44px; padding: 0 11px; }
-  /* The switch is 34px tall by design - a taller track would read as a
-     slab rather than a switch - which leaves it under the 44px touch
-     minimum the rest of the nav chrome meets. An invisible ::before
-     stretches the hit area to 44px while the drawn control keeps its
-     proportions. ::after is already the tooltip; ::before was free. */
-  .theme-switch::before {
-    content: '';
-    position: absolute; left: 0; right: 0; top: 50%;
-    height: 44px; translate: 0 -50%;
-  }
+  /* both go to the 44px touch minimum together, so they stay the same
+     height as each other at every width */
+  .lang-toggle { width: 44px; height: 44px; }
+  .theme-switch { --sw-h: 44px; }
 }
-.lang-globe { width: 17px; height: 17px; flex: none; }
-.lang-code {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
-  /* the code is always a 2-letter Latin abbreviation (EN/ES/JA/IT) even
-     while the rest of the UI is in Japanese — it has to stay legible as a
-     compact button label, and "日本語" doesn't fit a 40px square */
-  font-family: 'Space Grotesk', sans-serif;
-}
+.lang-mark { width: 21px; height: 21px; flex: none; }
 /* visibility, not just opacity. opacity:0 + pointer-events:none hides a menu
    from the eye and the mouse but NOT from the keyboard or a screen reader:
    its buttons stay in the tab order while it is closed, so tabbing from the
@@ -3090,16 +3096,6 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    attribute in the markup, so a screen reader announces "日本語" with a
    Japanese voice rather than spelling it out in the page's current language */
 .lang-option[lang="ja"] { letter-spacing: 0; }
-
-/* At 320px the cluster is 223px and leaves only 12px clear of the logo:
-   the globe widened the language button to 65px and the switch is 64px, so
-   the pair costs 41px more than the two 40px squares they replaced. Measured,
-   not guessed. Tightened for the narrowest phones only - 34px clear there -
-   while 375px and up keep the roomier base spacing. */
-@media (max-width: 360px) {
-  .nav-right { gap: 10px; }
-  .nav { padding: 20px 4vw; }
-}
 
 /* The nav's right cluster is language, theme, menu. It was four controls
    until the colour-vision menu came out, and at four the shared 18px gap

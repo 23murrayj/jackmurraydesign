@@ -983,8 +983,9 @@
       btn.classList.toggle('active', btn.dataset.lang === current);
       btn.setAttribute('aria-current', btn.dataset.lang === current ? 'true' : 'false');
     });
-    var label = document.getElementById('langCode');
-    if (label) label.textContent = current.toUpperCase();
+    /* The trigger used to carry a two-letter code that this kept in step.
+       It shows the translate mark alone now - which language is on is told
+       by the marked option above, and by its aria-current. */
   }
 
   /* pick the starting language: saved choice first, then the browser's
