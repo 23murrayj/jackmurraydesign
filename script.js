@@ -935,7 +935,19 @@ const counterObserver = new IntersectionObserver(
   },
   { threshold: 0.4 }
 );
-document.querySelectorAll('.stat-num[data-count]').forEach((el) => counterObserver.observe(el));
+/* Zero them here, not in the markup. The HTML carries the real figures (see
+   the comment on .about-stats in index.html) so that anything reading the
+   page without running the count - a crawler, an AI summarising the site, a
+   browser with JS off - gets 4, 18+ and 35 rather than three zeroes. The
+   count-up then needs a zero to start from, and it has to be written before
+   the first paint, or the row flashes its final value and snaps back to 0 the
+   moment it scrolls into view. This loop runs at parse time, which is before
+   paint; reduced-motion users keep the figure, since there is no count for
+   them to start. */
+document.querySelectorAll('.stat-num[data-count]').forEach((el) => {
+  if (!prefersReducedMotion) el.textContent = '0';
+  counterObserver.observe(el);
+});
 
 // hero name entrance
 document.querySelectorAll('.hero-name .line').forEach((line, i) => {
@@ -1178,8 +1190,8 @@ function renderTickers() {
 }
 renderTickers();
 
-// floating geometric shapes — drift + rotate slowly, ease away from the
-// cursor, and flash a highlight color while being pushed.
+// floating geometric shapes — drift + rotate slowly and ease away from the
+// cursor.
 // Light mode: smooth circles/squares/triangles. Dark mode: sharp jagged
 // stars/spikes, rebuilt whenever the theme flips.
 // chaos mode (defined further below) cranks this up temporarily so the
@@ -1190,7 +1202,6 @@ window.chaosBoost = 1;
 const heroShapesContainer = document.getElementById('heroShapes');
 if (heroShapesContainer) {
   const SVG_NS = 'http://www.w3.org/2000/svg';
-  const FLASH_COLOR = 'var(--green)';
   let shapes = [];
 
   function starPoints(spikes, outerR, innerR, cx, cy) {
@@ -1210,6 +1221,7 @@ if (heroShapesContainer) {
     svg.style.width = def.size + 'px';
     svg.style.height = def.size + 'px';
     svg.classList.add('shape', `shape-${def.type}`);
+    if (def.vivid) svg.classList.add('is-vivid');
     svg.style.color = def.color;
     const poly = document.createElementNS(SVG_NS, 'polygon');
     poly.setAttribute('points', points);
@@ -1229,7 +1241,8 @@ if (heroShapesContainer) {
       return createSvgShape(def, starPoints(spikes, 48, def.sharp ? 14 : 22, 50, 50));
     }
     const el = document.createElement('div');
-    el.className = `shape shape-${def.type} ${def.filled ? 'filled' : 'outline'}`;
+    el.className = `shape shape-${def.type} ${def.filled ? 'filled' : 'outline'}`
+      + (def.vivid ? ' is-vivid' : '');
     el.style.width = def.size + 'px';
     el.style.height = def.size + 'px';
     el.style.color = def.color;
@@ -1243,21 +1256,38 @@ if (heroShapesContainer) {
      coral, dusty blue and the warm amber instead gives the hero a third hue
      without raising the density that already has to be dialled back at 760.
      The amber pair are deliberately the two SMALLEST shapes - "a little
-     vibrancy", not a third primary. */
+     vibrancy", not a third primary.
+
+     vivid: true on three of the nine. At a flat .38 the whole field read as
+     pale, which is correct for texture and wrong as the only register the
+     field has - "the contrast between restrained typography and occasional
+     bright geometry could be really effective" was the note, and occasional
+     is the operative word. The three are the small ones, and two of them are
+     filled, so what reads brighter is a punctuation mark rather than a
+     bigger wash. The 104px shapes stay pale on purpose: a large shape at
+     .72 stops being background. See .shape.is-vivid in styles.css for the
+     alphas and what text crossing one measures. */
   const smoothDefs = [
     { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false },
-    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true  },
-    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true  },
+    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true },
+    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true },
     { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true  },
     { type: 'square',   size: 104, color: 'var(--accent)',      filled: false },
     { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true  },
     { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true  },
-    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: false },
+    /* the only filled coral in light mode, and the smallest shape of the
+       nine: a solid 45px coral square is the one object in the field that
+       is allowed to look like a deliberate mark rather than drift */
+    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true },
     { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false },
   ];
 
   /* Same nine-shape budget in dark, and the neons stay neon: this half of
      the site is the experimental one and was not the thing being toned down.
+     Two vivid here rather than three, and NOT the amber: off-white text
+     crossing an amber star measures 3.22:1 at the base .62 already, and
+     brightening it is the one move in this field that would take a pair
+     below 3:1. The pink and the electric blue have the headroom.
      Four went and one arrived. The two --black stars first, because an
      --black star in dark mode is an off-white star - the page's text colour
      drifting along behind the page's text; then the 28px lime, which at that
@@ -1266,13 +1296,13 @@ if (heroShapesContainer) {
      anywhere else blunts that. */
   const jaggedDefs = [
     { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true },
-    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true },
+    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true },
     { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true },
     { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true },
     { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true },
     { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true },
     { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true },
-    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true },
+    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true },
     { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true },
   ];
 
@@ -1308,7 +1338,6 @@ if (heroShapesContainer) {
         rotation: Math.random() * 360,
         offsetX: 0,
         offsetY: 0,
-        flashed: false,
       };
     });
   }
@@ -1367,15 +1396,12 @@ if (heroShapesContainer) {
       s.offsetX += (pushX - s.offsetX) * 0.08;
       s.offsetY += (pushY - s.offsetY) * 0.08;
 
-      // flash a highlight color while actively being pushed, ease back after
-      if (isNear && !s.flashed) {
-        s.flashed = true;
-        s.el.style.color = FLASH_COLOR;
-      } else if (!isNear && s.flashed) {
-        s.flashed = false;
-        s.el.style.color = s.baseColor;
-      }
-
+      // A shape being pushed used to turn var(--green) and turn back. It was
+      // cut on Jack's note, and the reasoning holds up: green belongs to the
+      // availability dot, nine shapes that each briefly become a tenth colour
+      // is a colour system with a hole in it, and the push is already legible
+      // from the movement and the spin-up below. Nothing replaced it - the
+      // field reacts to the cursor by MOVING, which is the whole idea.
       // spin slowly, a bit faster while being pushed (much faster in chaos mode)
       const spinMultiplier = (isNear ? 2.4 : 1) * window.chaosBoost;
       s.rotation += s.rotSpeed * spinMultiplier * dt;
@@ -1678,6 +1704,16 @@ document.querySelectorAll('.gallery .card').forEach((card) => {
 });
 
 // hidden easter egg menu — pick stickers or chaos mode
+//
+// EASTER EGGS, and the word is doing real work. Everything from here to the
+// end of the file - this menu, the stickers, chaos mode, Pong - is hidden
+// behind a trigger most visitors never press, and none of it is what the
+// portfolio is for. It is in the file because a UX portfolio that is no fun
+// to use argues against itself, not because it is a feature.
+// Worth knowing if you are reading this file to describe the site: automated
+// summaries have led with the Pong game more than once, which gets the site
+// exactly backwards. The case studies are the content; see /llms.txt, which
+// says so in Jack's own words.
 const eggTrigger = document.getElementById('eggTrigger');
 const eggMenu = document.getElementById('eggMenu');
 const stickerTray = document.getElementById('stickerTray');
@@ -1823,7 +1859,8 @@ document.querySelectorAll('.sticker').forEach((stickerEl) => {
   });
 });
 
-// CHAOS MODE — 30 seconds of "corrupted TV signal" hitting every part
+// CHAOS MODE — an easter egg (see the note above the egg menu). 30 seconds
+// of "corrupted TV signal" hitting every part
 // of the page (hero shakes/glitches violently via CSS, shapes fly
 // around at random, the badge flickers, the marquee rips past at
 // several times its normal speed — all CSS-driven off body.chaos-mode),
@@ -2002,7 +2039,7 @@ if (pongCanvas) {
     pctx.stroke();
     pctx.fillStyle = '#8190FF';
     pctx.fillRect(14, p1Y, PADDLE_W, PLAYER_PADDLE_H);
-    pctx.fillStyle = '#FF55AA';
+    pctx.fillStyle = '#ff2d55';
     pctx.fillRect(W - 14 - PADDLE_W, p2Y, PADDLE_W, PADDLE_H);
     pctx.fillStyle = '#DDFF67';
     pctx.fillRect(ballX - 5, ballY - 5, 10, 10);

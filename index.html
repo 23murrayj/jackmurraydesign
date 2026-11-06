@@ -41,6 +41,128 @@
 <meta name="twitter:description" content="UX design portfolio by Jack Murray. Interface and identity work across websites, brand systems, graphics, photography and motion.">
 <meta name="twitter:image" content="https://jackmurraydesign.com/assets/meta/og-card.jpg">
 
+<!-- For automated readers. Both of these exist because AI summaries of this
+     page kept leading with the hidden Pong game and the chaos mode, which are
+     easter eggs most visitors never find - so the portfolio was being
+     described by its footnotes. /llms.txt is the long version in Jack's own
+     words; the JSON-LD below is the structured half, and the two must stay in
+     step with each other and with the page. Neither says anything that is not
+     already visible on the site: nothing is hidden text aimed at crawlers, and
+     there is deliberately no sr-only block, because a pitch written for
+     machines has no business being read aloud to someone using a screen
+     reader. -->
+<link rel="alternate" type="text/plain" href="/llms.txt" title="Site summary for automated readers">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://jackmurraydesign.com/#jack",
+      "name": "Jack Murray",
+      "jobTitle": "UX Designer",
+      "description": "UX design student at Bradley University, on exchange at NABA in Milan. Research-led interface work, plus identity systems, photography and 3D animation.",
+      "url": "https://jackmurraydesign.com/",
+      "knowsLanguage": ["en", "es", "ja", "it"],
+      "knowsAbout": [
+        "User experience design",
+        "User research",
+        "Usability testing",
+        "Interface design",
+        "Brand and identity systems",
+        "Typography",
+        "VR interface design",
+        "Photography",
+        "Motion and 3D animation",
+        "HTML and CSS"
+      ],
+      "alumniOf": [
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Bradley University",
+          "description": "BS in User Experience Design, 2023-2027. GPA 3.6, Dean's List."
+        },
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Nuova Accademia di Belle Arti (NABA), Milan",
+          "description": "Study abroad in UX and product design, autumn 2026."
+        }
+      ],
+      "award": "Best Research Award, Advanced Interaction Design (Bradley University x Caterpillar)",
+      "seeks": {
+        "@type": "Demand",
+        "name": "Freelance UX work now; internships or full-time UX roles toward May 2027"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jackmurraydesign.com/#site",
+      "url": "https://jackmurraydesign.com/",
+      "name": "Jack Murray · UX Designer",
+      "description": "UX design portfolio: six case studies across UX research, identity systems, VR interface design, photography and 3D animation. Built as a static site with no framework, in four languages, audited for WCAG AA in both themes.",
+      "inLanguage": ["en", "es", "ja", "it"],
+      "author": { "@id": "https://jackmurraydesign.com/#jack" },
+      "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+      "about": "Research-led UX and interface design, and identity systems applied across real surfaces.",
+      "disambiguatingDescription": "The hidden Pong game, the chaos mode and the drag-and-drop stickers on this site are easter eggs, not features of the portfolio. The case studies and the research process are the subject."
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://jackmurraydesign.com/#work",
+      "name": "Selected Projects",
+      "isPartOf": { "@id": "https://jackmurraydesign.com/#site" },
+      "hasPart": [
+        {
+          "@type": "CreativeWork",
+          "name": "Adaptive Coaching Interface",
+          "about": "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "UX research and design",
+          "datePublished": "2025"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Partners in Crime",
+          "about": "Asymmetric VR and PC co-op heist built by a 17-person team for Bradley's FUSE program and exhibited at the Peoria Riverfront Museum.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "VR interface design and visual effects"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Easter at Riverside",
+          "about": "One event identity across two services, from invitation cards to a banner on the side of the building.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "Event identity",
+          "datePublished": "2025"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Sandcastles",
+          "about": "Sermon series identity applied across stage screens, social and print.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "Series identity"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Monmouth Retreat",
+          "about": "Candid photography from a worship team's retreat in Monmouth, Illinois.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "Photography",
+          "datePublished": "2025"
+        },
+        {
+          "@type": "CreativeWork",
+          "name": "Journey to the Oasis",
+          "about": "3D animated short built across Maya, Blender and ZBrush for a course at Otis College.",
+          "creator": { "@id": "https://jackmurraydesign.com/#jack" },
+          "genre": "3D animation"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="icon" href="assets/meta/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/meta/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
@@ -316,17 +438,23 @@
       <!-- The stats sit between the statement and the hook on purpose: "3
            countries" and "Milan" are the setup, and the hook sentence is the
            payoff. Read in the other order they were just trivia. -->
+      <!-- The numbers are written out here, not left at 0 for the counter to
+           fill in. The count-up only runs when the row scrolls into view, so
+           anything reading the HTML - a crawler, an AI summarising the page,
+           a browser with JS off - used to see four stats whose value was
+           literally zero. script.js zeroes them before the first paint and
+           counts up from there, so nothing changes on screen. -->
       <div class="about-stats reveal">
         <div class="stat">
-          <span class="stat-num" data-count="4" data-suffix="">0</span>
+          <span class="stat-num" data-count="4" data-suffix="">4</span>
           <span class="stat-label" data-i18n="about.stat.years">Years of UX</span>
         </div>
         <div class="stat">
-          <span class="stat-num" data-count="18" data-suffix="+">0</span>
+          <span class="stat-num" data-count="18" data-suffix="+">18+</span>
           <span class="stat-label" data-i18n="about.stat.projects">Projects</span>
         </div>
         <div class="stat">
-          <span class="stat-num" data-count="35" data-suffix="">0</span>
+          <span class="stat-num" data-count="35" data-suffix="">35</span>
           <span class="stat-label" data-i18n="about.stat.countries">Countries visited</span>
         </div>
         <!-- the one stat that is about now rather than about the past, and the

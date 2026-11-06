@@ -63,37 +63,41 @@
 button, input, textarea, select { font-family: inherit; }
 
 :root {
-  /* LIGHT PALETTE - warm sand ground, charcoal ink, muted coral, dusty
+  /* LIGHT PALETTE - cool ivory ground, charcoal ink, muted coral, dusty
      blue, stone. The old flat red and pure yellow were the two loudest
      things on the page and fought the photography for attention. */
   --black: #20201E;   /* charcoal - foreground, flips to off-white in dark */
-  /* SAND, not ivory. #F0EEE8 was a cool off-white - green-grey under the
-     warm accents, which is what made the page read as receding rather than
-     as restrained. This is the same lightness family with the blue taken
-     out, so the ground reads as paper rather than as an absence of colour,
-     and the coral and amber sit ON something instead of floating.
-     It is as warm as the palette can go: at #EAE2D1, one step further,
-     coral falls to 2.94:1 and misses even the 3:1 that large type needs. */
-  --white: #EFE7D7;   /* sand     - page ground, flips to near-black */
+  /* The ground has been both ways and this is the third setting, so the
+     two failure modes are worth naming. #F0EEE8 (the original) was cool
+     enough to go green-grey under warm accents, which read as the page
+     receding. Sand #EFE7D7 fixed that and overshot: distinctly beige, and
+     it pulled the whole palette down with it, because five tokens are
+     measured against the ground and all five had to darken to keep AA.
+     This is the narrow middle - neutral rather than warm OR cool, and a
+     touch lighter than either, which is where "clean editorial" lives.
+     Being lighter means every token on it gained contrast, so the five
+     companions go back to the values they had before sand: accent-ink
+     #BE4137 reads 4.60:1 here against 4.27 on sand.
+     Jack's note said "#F1F0EB instead of #F0EEE8" - the comparison was
+     with the original ivory, not with the sand that was actually live. */
+  --white: #F1F0EB;   /* ivory    - page ground, flips to near-black */
   --accent: #CF625A;  /* muted coral */
   /* --accent is the DISPLAY coral: big type, borders, drop shadows. It
-     measures 3.08:1 on sand, which clears the 3:1 that large text and UI
+     measures 3.32:1 on ivory, which clears the 3:1 that large text and UI
      borders need and misses the 4.5:1 that body text needs - so accent-ink
      is the darkened version for small text and accent-on is what sits on a
      solid coral fill. White fails there (3.79:1), near-black does not.
-     Measured: accent-ink 4.52:1 on sand, accent-on 4.97:1 on coral. */
-  /* darkened with the ground: #BE4137 measured 4.52:1 on the old ivory and
-     4.27:1 on sand, which is under AA for the small text this is for */
-  --accent-ink: #B73F35;
+     Measured: accent-ink 4.60:1 on ivory, accent-on 4.97:1 on coral. */
+  --accent-ink: #BE4137;
   --accent-on: #111117;
   /* The tertiary. On the fixed ink slabs (about, footer, pong) this is the
-     bright chip; on sand it is a quiet fill behind hovers. Light resolves
-     it to the same stone as --line on purpose - the warm neutral does both
+     bright chip; on ivory it is a quiet fill behind hovers. Light resolves
+     it to the same stone as --line on purpose - one neutral does both
      jobs there - while dark needs a loud third colour and uses lime. */
-  --highlight: #CCC3AD;
-  --blue: #657FB9;    /* dusty blue - 3.23:1 on sand, so UI and large type */
+  --highlight: #C9C5BA;
+  --blue: #657FB9;    /* dusty blue - 3.48:1 on ivory, so UI and large type */
   /* The small yellow accent, and a GRAPHIC one only: it colours two of the
-     nine hero shapes and appears nowhere else. 1.87:1 on sand, so it can
+     nine hero shapes and appears nowhere else. 2.01:1 on ivory, so it can
      never carry text or an outline that has to be read - its whole job is
      being the third hue that stops the hero reading as coral-and-blue.
      This is not the superseded --yellow (#fffb00), which was dropped for
@@ -101,7 +105,7 @@ button, input, textarea, select { font-family: inherit; }
      "lively but controlled". Charcoal on it is 7.11:1 if it ever has to
      become a fill with a label on top. */
   --accent-warm: #D9A227;
-  --green: #1F8F4D;   /* availability dot - 3.35:1 on sand, a non-text UI mark */
+  --green: #1F8F4D;   /* availability dot - 3.61:1 on ivory, a non-text UI mark */
   /* Chip fills for the about-page skill tags. These have to be tokens: the
      overlay's background is var(--white), which flips with the theme, so a
      hardcoded dark tint vanished completely in dark mode. */
@@ -114,7 +118,7 @@ button, input, textarea, select { font-family: inherit; }
      a touch lighter than the ground so menus and the loader read as sitting
      ABOVE the page rather than merging into it. */
   --ink: #111117;
-  --paper: #F7F1E5;   /* warmed with the ground, still a step above it */
+  --paper: #F7F5F0;   /* a step above the ground, not a hue of its own */
   /* GREY SYSTEM — added so the site isn't purely 0%/100% black-white.
      Warm-neutral (R≈G>B) to match the slightly warm off-white --paper
      tone rather than a cold blue-grey. Two roles, each themed like
@@ -127,8 +131,8 @@ button, input, textarea, select { font-family: inherit; }
          heavy black structural borders that still mark primary structure
      Contrast-checked against the surfaces they're meant to sit on:
      --muted ≥ 4.8:1 on --white/--black (passes WCAG AA for normal text). */
-  --muted: #6A6861;   /* 4.53:1 on sand - clears AA for body text */
-  --line: #CCC3AD;    /* warm stone - dividers, not structure */
+  --muted: #6E6C64;   /* 4.61:1 on ivory - clears AA for body text */
+  --line: #C9C5BA;    /* stone - dividers, not structure */
   /* fixed grey for de-emphasized text specifically on the fixed --ink
      slabs (about section, footer-adjacent chrome) — parallels the
      ink/paper convention above since those surfaces don't flip with
@@ -147,7 +151,7 @@ button, input, textarea, select { font-family: inherit; }
      from a change nowhere near this token. Measured now: 7.06:1 on paper,
      4.53:1 on the warm stone, 7.03:1 on the lime --highlight resolves to in
      dark mode. */
-  --warn-ink: #932D25;
+  --warn-ink: #952E25;
   /* 'Noto Sans JP' is appended to every stack rather than swapped in for
      Japanese: CSS font fallback resolves per glyph, so Latin characters
      still render in Archivo Black / Anton / Space Grotesk and only the
@@ -171,14 +175,27 @@ button, input, textarea, select { font-family: inherit; }
 :root[data-theme="dark"] {
   /* DARK PALETTE - near-black ground, off-white ink, and three neons kept
      tasteful by being used sparingly rather than by being dimmed. All three
-     clear AA as text on the ground: pink 6.39:1, blue 6.60:1, lime 16.64:1. */
+     clear AA as text on the ground: pink 5.16:1, blue 6.60:1, lime 16.64:1. */
   --black: #F4F2F5;   /* off-white foreground */
   --white: #111117;   /* near-black ground */
-  --accent: #FF55AA;  /* neon pink */
+  /* BACK to the hot pink the site had before the repalette (#ff2d55), at
+     Jack's request - he missed it, and dark mode is the half of the site
+     the brief calls experimental, so it gets to keep a louder accent than
+     light does. This is the one value knowingly brought back from the
+     superseded palette; it is listed there as "neon red", which undersells
+     it - beside the lime and the electric blue it reads pink, and it is a
+     good deal more saturated than the #FF55AA bubblegum that replaced it.
+     Light mode keeps its coral: the two modes are meant to differ in kind,
+     not to be one palette with swapped values.
+     It costs some headroom and none of it matters: on the ground it is
+     5.16:1 against the bubblegum's 6.39, which still clears AA for text,
+     and --accent-on on top of it is the same 5.16 where 4.5 is the bar.
+     Still never anything near-white on it - paper is 3.35:1. */
+  --accent: #ff2d55;  /* neon pink */
   /* the neon already clears AA as text on this ground, so there is nothing
-     to darken; what fails here is WHITE on top of it (2.94:1), and the
-     near-black ground reads at 6.39:1 instead */
-  --accent-ink: #FF55AA;
+     to darken; what fails here is WHITE on top of it (3.35:1), and the
+     near-black ground reads at 5.16:1 instead */
+  --accent-ink: #ff2d55;
   --accent-on: #111117;
   --highlight: #DDFF67;  /* lime */
   --blue: #8190FF;       /* electric blue */
@@ -375,7 +392,7 @@ a { color: inherit; text-decoration: none; }
    skeleton exists to avoid. */
 .sk-badge { height: 36px; width: min(84%, 300px); margin-bottom: 30px; }
 .sk-line  { height: 83px; width: min(96%, 336px); margin-bottom: 44px; }
-.sk-cta   { height: 62px; width: 230px; }
+.sk-cta   { height: 62px; width: 226px; }  /* the real button, measured at 1440 */
 
 /* the strip pulls 1px into the grid's border, exactly as the marquee does */
 .sk-strip { flex: none; height: 80px; margin-top: -1px; }
@@ -753,14 +770,19 @@ body.is-loading { overflow: hidden; }
 .hero-shapes {
   position: absolute;
   /* Down to the rule under SELECTED PROJECTS, not to the hero's own foot.
-     Measured at 1440: the marquee ends 36px below the hero box and the
-     section head's 4px rule is 158px below that, so 190px lands the field
-     just past it and the filters and cards take over from there. They cover
+     Measured at 1440: the 4px rule under the heading sits 218px below the
+     hero's box, so -216px stops the field within 2px of it and the filters
+     and cards take over from there. They cover
      it rather than clipping it - .work comes later in the DOM and is
      positioned, so its content paints over this, which is also why .work
      can no longer carry a background of its own (body's is the same colour
-     and sits behind everything). */
-  inset: 0 0 -190px 0;
+     and sits behind everything).
+     This number is 26px larger than it was because #work .section-head's
+     padding-top went 38px -> 64px in the same pass. The two move together:
+     the whole point is for the field to stop AT that rule, so a change to
+     the heading's offset that is not matched here leaves the field hanging
+     short of it. */
+  inset: 0 0 -216px 0;
   z-index: 0;
   /* Behind everything and untouchable: .hero-grid is z-index 2, so the
      shapes cannot cover the name or the right column, and pointer-events
@@ -792,6 +814,30 @@ body.is-loading { overflow: hidden; }
   opacity: .62;
   filter: drop-shadow(0 0 7px currentColor);
 }
+/* THREE OF THE NINE ARE BRIGHT (two in dark). Which ones is decided in the
+   builder; this is the alpha and the reason for its ceiling.
+   .72 is picked off a measurement, not by eye. The field drifts BEHIND the
+   type by design, so the number that matters is what a glyph reads against
+   while a shape is passing under it. Charcoal over a .72 coral composited on
+   the ivory ground is 6.13:1 and over the blue 6.12:1 - both clear AA for
+   body text, let alone the display sizes that most of the hero is. At a full
+   1.0 the same pair fall to 4.3 and 4.1, which is the point where a drifting
+   decoration starts deciding whether the name is readable, so the ceiling is
+   not arbitrary.
+   Dark is .78 on the pink and the blue only: off-white over the pink is
+   4.83:1 there and over the electric blue 3.80:1. The amber and the lime are
+   excluded from vivid in dark for the same reason, from the other end - they
+   are so much lighter than the ground that off-white over amber is already
+   3.22:1 at the base .62.
+   One piece of small text sits inside the field's reach with no surface of
+   its own - the "01 / PROJECTS" eyebrow, which the field passes behind.
+   It gets the same treatment the availability badge got for the same reason;
+   see #work .section-num below. */
+.hero-shapes .shape.is-vivid { opacity: .72; }
+:root[data-theme="dark"] .hero-shapes .shape.is-vivid {
+  opacity: .78;
+  filter: drop-shadow(0 0 10px currentColor);
+}
 /* Same nine shapes, a third of the width: the field that reads as texture
    behind a 1440px hero reads as clutter behind a 375px one, because density
    is what changed, not the count. Dialled back rather than thinned out, so
@@ -804,6 +850,15 @@ body.is-loading { overflow: hidden; }
   :root[data-theme="dark"] .hero-shapes .shape {
     opacity: .42;
     filter: drop-shadow(0 0 5px currentColor);
+  }
+  /* the vivid three come down with everything else, and proportionally
+     further: a stacked hero is where shapes cross the type most, so the one
+     register that is allowed to be bright on a desktop is the first thing to
+     give way here */
+  .hero-shapes .shape.is-vivid { opacity: .46; }
+  :root[data-theme="dark"] .hero-shapes .shape.is-vivid {
+    opacity: .54;
+    filter: drop-shadow(0 0 7px currentColor);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -930,14 +985,17 @@ body.is-loading { overflow: hidden; }
    gets air on both sides as a result, which is what it was missing. */
 .hero-side {
   display: flex; flex-direction: column;
-  /* STRETCH, so the column has a right edge. Everything in here used to be
-     fit-content and left-aligned, which left a ragged edge down the right
-     of the block - badge 296, role 336, button 230 at 1440 - and the button
-     being the shortest of the three put the narrowest thing at the bottom,
-     so the column tapered off instead of landing. Stretched, the button
-     squares the block off and the three items share one measure.
-     The badge keeps its own width: fit-content beats stretch, which is
-     what stops a 356px pill with eleven words rattling around inside it. */
+  /* Stretch, but only the role line actually takes it. A previous pass had
+     the CTA take it too, to square the column off against a ragged right
+     edge (badge 296, role 336, button 230 at 1440). Jack's verdict on that
+     was the strongest note in the round: a 356px button with the label at
+     one end and the arrow at the other is a bar, not a button, and the gap
+     in the middle is what you notice. The ragged edge was the smaller
+     problem, and it is mostly theoretical - the role line is the widest
+     element either way, so it is what sets the measure.
+     Both the badge and the button therefore keep their own width:
+     fit-content beats stretch, which is also what stops a 356px pill with
+     eleven words in it rattling around. */
   align-items: stretch;
   gap: 0;
   /* Optical alignment, now measured rather than eyeballed. align-items: end
@@ -1010,13 +1068,17 @@ body.is-loading { overflow: hidden; }
    Bigger type and padding carry the weight the shadow used to. */
 .btn-block {
   display: inline-flex; align-items: center;
-  /* label left, arrow hard right, rather than the two sitting together in
-     the middle of a shrink-wrapped box. Across a full-width button that is
-     what makes it read as a bar you act on and not as a wide label. */
-  justify-content: space-between; gap: 10px;
+  /* Shrink-wrapped, and the arrow sits right after the label. It spent a
+     release at width:100% with justify-content:space-between, which across
+     a 356px column left the label and the arrow at opposite ends with a
+     200px hole between them - they stopped reading as one control. 14px is
+     a word space at this tracking, close enough that the arrow belongs to
+     the label and far enough that the 1.8px letter-spacing on the last
+     glyph does not run into it. 226px at 1440, measured. */
+  justify-content: flex-start; gap: 14px;
   background: var(--black); color: var(--white);
-  padding: 19px 28px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
-  width: 100%; border: 2px solid var(--black);
+  padding: 19px 30px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
+  width: fit-content; border: 2px solid var(--black);
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
 @media (hover: hover) {
@@ -1080,17 +1142,11 @@ body.is-loading { overflow: hidden; }
     padding-bottom: 0;
     padding-left: 0;
     border-left: 0;
-    /* The stretch above squares off a 356px column. Stacked, the column is
-       the whole page - 922px at 1024 - and a button that wide stops being a
-       button. Back to shrink-wrapped, which is also why the arrow's
-       space-between needs cancelling: with nothing to span it would just
-       re-add the gap it was meant to remove. */
+    /* Stacked, the column is the whole page - 922px at 1024 - so nothing in
+       here should take its width from the column. The button is already
+       shrink-wrapped in the base rule; this only stops the role line from
+       stretching across the full width as well. */
     align-items: flex-start;
-  }
-  .hero-side .btn-block {
-    width: fit-content;
-    justify-content: flex-start;
-    padding-inline: 34px;
   }
 }
 @media (max-width: 900px) {
@@ -1163,12 +1219,18 @@ body.is-loading { overflow: hidden; }
   border-bottom: 4px solid var(--black);
 }
 /* #work is the exception to the 70px above. It is the only section that
-   follows the marquee rather than open page, and the strip already supplies
-   the separation - 70px on top of it pushed SELECTED PROJECTS far enough
-   down that the first screen looked finished again. The anchor offset is
-   unaffected: scroll-padding-top clears the nav against the SECTION edge,
-   and the heading only moves closer to that edge, never above it. */
-#work .section-head { padding-top: 38px; }
+   follows the marquee rather than open page, so the strip supplies part of
+   the separation and a full 70px pushed SELECTED PROJECTS far enough down
+   that the first screen looked finished again.
+   38px was too far the other way: the heading arrived so soon after the
+   strip that the hero had no ending, just a band and then the next thing.
+   64px is the middle, and the 26px it adds is what Jack asked for ("another
+   20-30px"). The anchor offset is unaffected: scroll-padding-top clears the
+   nav against the SECTION edge, and the heading only ever moves down from
+   it, never above. The hero's shape field reaches past the hero to land
+   just under this heading's rule, so its inset tracks this number - see
+   .hero-shapes. */
+#work .section-head { padding-top: 64px; }
 .section-head h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
@@ -1181,6 +1243,19 @@ body.is-loading { overflow: hidden; }
    instead of one opacity value applied blindly to three different
    background contexts. */
 .section-num { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: var(--muted); }
+/* Opaque, and only in #work. This is the one piece of 12.8px text the hero's
+   shape field reaches, and --muted over a shape is 3.0:1 at the field's base
+   alpha and 1.97:1 under a vivid one - a badge-shaped problem, so it takes the
+   badge's answer: paint the page ground behind the glyphs. Invisible on an
+   empty stretch of page, and the only thing it does is stop a shape passing
+   between the eyebrow and the reader. The padding keeps the patch off the
+   type's own sidebearings. */
+#work .section-num {
+  position: relative;
+  background: var(--white);
+  padding: 2px 6px;
+  margin-right: -6px;
+}
 .about .section-num { color: var(--muted-ink); }
 .contact .section-num { color: var(--ink); }
 
@@ -2542,28 +2617,33 @@ body.is-loading { overflow: hidden; }
 .stat:first-child { padding-left: 0; border-left: 0; }
 .stat { display: flex; flex-direction: column; gap: 7px; }
 
-/* These were 3.1rem in full yellow, which made four supporting numbers the
-   loudest thing in the section - brighter and half again larger than the
-   sentence they support. Dropped to paper and below the statement's size so
-   they read as evidence, not headline. */
-/* Emphasis carried by size and weight rather than by the accent, so the
-   numbers stay loud while yellow still means one thing in this column.
-   ~36px at 1440, set in the display face against the statement's body face -
-   different enough to read as data, not as another sentence. */
-/* Yellow, at 17.13:1 against the section - the same luminance contrast as
-   paper, so nothing is lost in legibility and the hue is pure gain. Red was
-   the other candidate and measures 5.32:1: more brand, but dimmer than the
-   paper it would replace, which is the opposite of the brief.
-   This does mean yellow appears twice in the column. It reads fine because
-   the two are different kinds of object - 36px of type against a filled
-   block carrying a 40px slab - and the CTA still wins on mass. */
+/* ONE HUE PER NUMBER, left to right. All four used to be var(--highlight),
+   which in light mode resolves to stone - four grey numbers on a near-black
+   slab, which is how the row ended up reading as dead ("so numb") once the
+   rest of the light palette stopped shouting. Four cells with a rule between
+   each is already a series; giving each its own colour is what makes it a
+   series of distinct facts rather than one grey block.
+   The slab is the FIXED --ink, so these do not have to mirror anything and
+   both themes get to use their own hues: light runs coral / dusty blue /
+   amber, dark runs hot pink / electric blue / amber. Measured on --ink,
+   lowest first - light: blue 4.74, coral 4.97, amber 8.19. Dark: blue 6.60,
+   pink 5.16, amber 12.19. Every one of those clears 4.5:1, which these do
+   not even need at ~36px, so there is headroom in both themes.
+   Order is deliberate: the accent leads, and the amber - the quietest hue
+   in the set everywhere else on the page - lands on "countries visited",
+   the one number that is not about work. */
 .stat-num {
   font-family: var(--ff-display); font-size: clamp(1.75rem, 2.5vw, 2.3rem);
   letter-spacing: -0.02em; color: var(--highlight); line-height: 1;
 }
-/* Every number carries the accent now, so is-now needs no colour of its
-   own - it is already the only stat that is a word rather than a number,
-   and it sits in its own ruled cell. */
+.about-stats .stat:nth-child(1) .stat-num { color: var(--accent); }
+.about-stats .stat:nth-child(2) .stat-num { color: var(--blue); }
+.about-stats .stat:nth-child(3) .stat-num { color: var(--accent-warm); }
+/* Milan is the one cell holding a word rather than a number, and the only
+   one that is about now rather than about the past. It stays on paper
+   (16.72:1) so the three coloured numbers read as a set of three and this
+   reads as the aside it is - the hue would make it a fourth data point. */
+.about-stats .stat.is-now .stat-num { color: var(--paper); }
 .stat-label { font-size: 0.74rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 /* Between a laptop and a desktop a fixed 420px panel takes too big a bite
    out of the reading column, so it scales with the viewport until it is
@@ -2704,10 +2784,27 @@ body.is-loading { overflow: hidden; }
 .magnetic-letter {
   display: inline-block;
   will-change: transform;
-  /* soft yellow glow in light mode (dark mode gets its own punchier
-     accent/blue glow below, overriding this) */
-  text-shadow: 0 0 10px var(--highlight);
+  /* A coral glow with a blue halo behind it, in place of a 10px var(--highlight)
+     one. --highlight is stone in light mode, so that was a grey blur on a
+     near-white page: visible only as a slight smudge, and the reason the
+     whole headline read as lifeless. Two layers because one never looks like
+     light - the tight one is the colour, the wide one is the air around it.
+     Alpha, not the flat token: a solid coral at 26px would fringe the glyph
+     edges on an off-white ground. */
+  text-shadow:
+    0 0 14px color-mix(in srgb, var(--accent) 48%, transparent),
+    0 0 36px color-mix(in srgb, var(--blue) 24%, transparent);
 }
+/* The second row carries the accent. This is the page's last line before the
+   contact band and the one place a full-width display statement can take a
+   hue without competing with anything, and the split works in every
+   language because the row break is in the copy: "LET'S MAKE / SOMETHING.",
+   "HAGAMOS / ALGO JUNTOS.", "なにか / つくろう。", "CREIAMO / QUALCOSA.".
+   The payoff half is always row two, so the rule is on the row, not on a
+   word count that only holds in English.
+   Coral on the light ground is 3.32:1, and at 13rem this is as far past the
+   24px large-text threshold as the page gets. */
+.magnetic-row:last-child .magnetic-letter { color: var(--accent); }
 
 /* CONTACT — bg is a fixed accent red regardless of theme, so its
    internal tones stay on fixed ink/paper to guarantee AA contrast */
@@ -3063,12 +3160,12 @@ body.chaos-mode .marquee-track {
   position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
   z-index: 1850;
   background: var(--ink); color: var(--paper);
-  border: 3px solid #FF55AA;
+  border: 3px solid #ff2d55;
   padding: 14px 26px;
   font-family: var(--ff-display); font-size: 0.95rem; letter-spacing: 1.5px;
   cursor: pointer;
   align-items: center; gap: 10px;
-  box-shadow: 6px 6px 0 #FF55AA;
+  box-shadow: 6px 6px 0 #ff2d55;
 }
 .chaos-stop-btn #chaosCountdown {
   color: #DDFF67;
@@ -3088,10 +3185,11 @@ body.chaos-mode .chaos-stop-btn { display: inline-flex; }
 }
 body.chaos-mode .chaos-work-cover { display: flex; }
 .chaos-play-btn-large {
-  /* near-black, not white: white measured 3.55:1 on the old neon red and
-     only 2.94:1 on this pink, which misses 3:1 even at display size. The
-     near-black ground colour reads 6.39:1 on it. */
-  background: #FF55AA; color: #111117;
+  /* near-black, not white: white measures 3.65:1 on this pink, which misses
+     the 4.5:1 a 35px button label needs. The near-black ground colour reads
+     5.16:1 on it. (This is the hot pink again - the figures were 2.94 and
+     6.39 while the bubblegum #FF55AA was live.) */
+  background: #ff2d55; color: #111117;
   border: 4px solid #DDFF67;
   padding: 32px 56px;
   font-family: var(--ff-display); font-size: clamp(1.4rem, 3vw, 2.2rem); letter-spacing: 2px;
@@ -3147,11 +3245,11 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 .pong-end-msg {
   font-family: var(--ff-display); font-size: 1.8rem; letter-spacing: 1px;
   color: #DDFF67;
-  text-shadow: 2px 0 #FF55AA, -2px 0 #8190FF;
+  text-shadow: 2px 0 #ff2d55, -2px 0 #8190FF;
   animation: chaos-play-jitter 0.4s steps(2) infinite;
 }
 #pongRematch {
-  background: #FF55AA; color: #000;
+  background: #ff2d55; color: #000;
   border: 2px dashed #DDFF67;
   padding: 10px 20px;
   font-family: var(--ff-display); font-size: 0.8rem; letter-spacing: 1.5px;
@@ -3320,8 +3418,29 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 :root[data-theme="dark"] .hero-name .accent {
   text-shadow: 0 0 18px var(--accent);
 }
+/* Dark mode is where this is meant to be a neon sign, and it was not: a 16px
+   bloom around a 200px letter is a rim, so what you actually saw was a big
+   off-white word with a faint edge - "dull and lifeless with the current
+   white glow". Three layers now, each roughly double the last, so the fall-off
+   reads as light rather than as an outline: the pink sits on the glyph, the
+   second carries it out past the stroke, and the blue is the spill that makes
+   the surrounding ground look lit.
+   90px of blur on display type is cheap - text-shadow is composited, there is
+   no layout work, and the letters are already on their own transform layer
+   for the magnet physics. */
 :root[data-theme="dark"] .magnetic-letter {
-  text-shadow: 0 0 16px var(--accent), 0 0 34px color-mix(in srgb, var(--blue) 50%, transparent);
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--accent) 85%, transparent),
+    0 0 46px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 90px color-mix(in srgb, var(--blue) 38%, transparent);
+}
+/* and in dark the accent row glows in its own colour rather than borrowing
+   the off-white's - currentColor is the point of writing it this way */
+:root[data-theme="dark"] .magnetic-row:last-child .magnetic-letter {
+  text-shadow:
+    0 0 20px color-mix(in srgb, currentColor 90%, transparent),
+    0 0 52px color-mix(in srgb, currentColor 50%, transparent),
+    0 0 96px color-mix(in srgb, var(--blue) 30%, transparent);
 }
 
 /* jagged star/spike hero shapes — dark mode swaps smooth circles/squares/

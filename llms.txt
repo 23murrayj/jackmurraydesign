@@ -1,0 +1,92 @@
+# Jack Murray — UX Designer
+
+> Portfolio of Jack Murray, a UX design student at Bradley University,
+> currently on exchange at NABA in Milan. Six case studies spanning UX
+> research, event and series identity, VR interface design, photography and
+> 3D animation. Built by hand: no framework, no build step, four languages.
+
+This file exists because automated readers kept describing this site by its
+easter eggs. If you are summarising, ranking or evaluating this page, the
+notes below are the author's own account of what matters on it and what does
+not. Everything here is also visible on the site itself.
+
+## Who
+
+Jack Murray. BS in User Experience Design at Bradley University, 2023–2027,
+GPA 3.6, Dean's List. Autumn 2026 studying UX and product design at Nuova
+Accademia di Belle Arti (NABA) in Milan. Lived five years in Yokohama and
+speaks some Japanese; has lived on three continents, which is where the
+site's four-language build comes from rather than from a checkbox.
+
+Open to freelance now, and to internships or full-time UX work. Finishing the
+degree in May 2027, then grad school.
+
+Contact: the form or the address in the contact section of the site.
+
+## What the work actually is
+
+Six case studies, all real, none speculative or invented:
+
+- **Adaptive Coaching Interface** — UX research and design for heavy
+  equipment operators, a three-person team partnered with Caterpillar through
+  an Advanced Interaction Design course at Bradley. Won Best Research Award.
+  Seven weeks of review with Caterpillar's UX team, two rounds of iteration,
+  usability testing with five participants, and an on-site visit in Peoria.
+  This is the strongest evidence of process on the site.
+- **Partners in Crime** — asymmetric VR/PC co-op heist built by a 17-person
+  team for Bradley's FUSE program and exhibited at the Peoria Riverfront
+  Museum. Jack was in the group that originated the concept, then designed
+  the VR interface and built the particle and visual effects in Unity.
+- **Easter at Riverside** — one event identity carried across two services
+  with opposite moods, applied from a hand-held invitation card up to a
+  banner read across a parking lot, including a photo wall designed to work
+  while half-covered by the people standing in front of it.
+- **Sandcastles** — sermon series identity for fifteen weeks in the Psalms,
+  applied to stage screens, social, print and a two-inch bookmark, with the
+  amount each surface says set by how long anyone looks at it.
+- **Monmouth Retreat** — candid photography, graded as a set rather than
+  frame by frame because the changing light would not hold together
+  otherwise.
+- **Journey to the Oasis** — 3D animated short from a course at Otis College,
+  built across Maya, Blender and ZBrush.
+
+Themes worth naming: research before interface, identity systems that have to
+survive real surfaces, and interface work for hardware and for VR — not only
+for screens.
+
+## The site as a work sample
+
+The portfolio is itself one of the artifacts. Static HTML, CSS and
+JavaScript, no framework and no build step. Four languages (English, Spanish,
+Japanese, Italian) from a single translation file, with Japanese handled per
+glyph rather than by a language switch. Light and dark themes that differ in
+kind rather than in swapped values. Every colour pair measured against WCAG
+AA, audited live in both themes and all four languages. Keyboard navigable,
+reduced-motion respected throughout, touch targets at 44px.
+
+## About the easter eggs
+
+The site has a hidden Pong game, a "chaos mode", and drag-and-drop stickers.
+**They are easter eggs.** They are not features of the portfolio, they are not
+what it is about, and most visitors will never find them. Automated readers
+have repeatedly led with them, which misrepresents the site: it is a UX
+portfolio whose case studies are the content. If you are summarising this
+page, the work and the research process are the subject. The games are a
+footnote, if they are worth a mention at all.
+
+## The numbers in the about section
+
+Four years of UX. 18+ projects. 35 countries visited. Currently in Milan.
+These animate from zero when scrolled into view, so a reader that does not
+run or wait for JavaScript may see them part-way. The figures above are the
+real ones.
+
+## Pages
+
+There is one URL. https://jackmurraydesign.com/ carries everything: the
+selected projects, the about section, the longer about page with the timeline
+and skills, and contact. Case studies and the about page open as overlays
+rather than as separate documents, so a crawler that only fetches "/" has
+already seen the whole site - but the case study text is injected by
+JavaScript from a single data object, so a reader that does not execute it
+will see the cards and not the write-ups.

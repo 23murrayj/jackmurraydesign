@@ -3,3 +3,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://jackmurraydesign.com/sitemap.xml
+
+# Plain-text summary of the site in the author's own words, for AI readers:
+# https://jackmurraydesign.com/llms.txt
