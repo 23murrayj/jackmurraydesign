@@ -51,7 +51,7 @@
 
       'hero.badge': 'OPEN TO PROJECTS & DESIGN WORK',
       'hero.cta': 'VIEW PROJECTS',
-      'hero.role': 'UX DESIGNER &<br>DIGITAL CREATIVE.',
+      'hero.role': 'UX DESIGNER &<br>DIGITAL CREATIVE',
       'marquee.items': ['UX/UI', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
 
       'work.title': 'SELECTED PROJECTS',
@@ -261,7 +261,7 @@
 
       'hero.badge': 'DISPONIBLE PARA PROYECTOS Y DISEÑO',
       'hero.cta': 'VER PROYECTOS',
-      'hero.role': 'DISEÑADOR UX &<br>CREATIVO DIGITAL.',
+      'hero.role': 'DISEÑADOR UX &<br>CREATIVO DIGITAL',
       'marquee.items': ['UX/UI', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
 
       'work.title': 'PROYECTOS SELECCIONADOS',
@@ -471,7 +471,7 @@
 
       'hero.badge': 'プロジェクト・デザインのご依頼受付中',
       'hero.cta': 'プロジェクトを見る',
-      'hero.role': 'UXデザイナー &<br>デジタルクリエイティブ。',
+      'hero.role': 'UXデザイナー &<br>デジタルクリエイティブ',
       'marquee.items': ['UX/UI', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
 
       'work.title': '選りすぐりのプロジェクト',
@@ -681,7 +681,7 @@
 
       'hero.badge': 'DISPONIBILE PER PROGETTI E DESIGN',
       'hero.cta': 'GUARDA I PROGETTI',
-      'hero.role': 'DESIGNER UX &<br>CREATIVO DIGITALE.',
+      'hero.role': 'DESIGNER UX &<br>CREATIVO DIGITALE',
       'marquee.items': ['UX/UI', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
 
       'work.title': 'PROGETTI SELEZIONATI',

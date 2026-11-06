@@ -1027,6 +1027,30 @@ function applyTheme(theme) {
   localStorage.setItem('jm-theme', theme);
   document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
 }
+
+/* Switching, as opposed to applying. The difference is the class: for the
+   length of the change it puts every element on one transition clock (see
+   the .theme-switching block in styles.css), so the page changes colour as
+   a single surface instead of component by component.
+   It belongs here and not in applyTheme because applyTheme also runs on
+   load, and a page that cross-fades out of the wrong colour every time it
+   opens is worse than one that snapped.
+   The timeout reads the duration from the token rather than restating it -
+   a 450 written here would quietly stop matching the CSS the first time
+   the token is tuned - and the class is cleared on a timer rather than on
+   transitionend, which fires once per property per element and never at
+   all for whatever happened not to change. */
+let themeSwitchTimer = 0;
+function switchTheme(theme) {
+  const root = document.documentElement;
+  const secs = parseFloat(getComputedStyle(root).getPropertyValue('--theme-dur')) || 0.45;
+  root.classList.add('theme-switching');
+  applyTheme(theme);
+  clearTimeout(themeSwitchTimer);
+  themeSwitchTimer = setTimeout(() => {
+    root.classList.remove('theme-switching');
+  }, secs * 1000 + 60);
+}
 // The inline script in <head> already set data-theme before the first paint
 // (see the note there). Read that back rather than deriving the answer a
 // second time, so the two can never drift apart; the localStorage and OS
@@ -1038,7 +1062,7 @@ const savedTheme = document.documentElement.getAttribute('data-theme')
 applyTheme(savedTheme);
 themeToggle.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme');
-  applyTheme(current === 'dark' ? 'light' : 'dark');
+  switchTheme(current === 'dark' ? 'light' : 'dark');
 });
 
 // A menu whose trigger the reader has scrolled past is orphaned. The egg menu
@@ -1212,34 +1236,44 @@ if (heroShapesContainer) {
     return el;
   }
 
+  /* NINE, not twelve. Three of the old twelve were var(--highlight), and
+     light mode resolves that to stone, which is 1.43:1 on the ground at full
+     strength - at .38 alpha it is a shape you cannot actually find, so the
+     field was really nine objects and three ghosts. Cutting to what was visible and spending the colour on
+     coral, dusty blue and the warm amber instead gives the hero a third hue
+     without raising the density that already has to be dialled back at 760.
+     The amber pair are deliberately the two SMALLEST shapes - "a little
+     vibrancy", not a third primary. */
   const smoothDefs = [
-    { type: 'circle', size: 90, color: 'var(--accent)', filled: false },
-    { type: 'square', size: 70, color: 'var(--blue)', filled: true },
-    { type: 'triangle', size: 60, color: 'var(--highlight)', filled: false },
-    { type: 'circle', size: 50, color: 'var(--black)', filled: true },
-    { type: 'square', size: 110, color: 'var(--accent)', filled: false },
-    { type: 'triangle', size: 80, color: 'var(--blue)', filled: true },
-    { type: 'circle', size: 65, color: 'var(--highlight)', filled: false },
-    { type: 'square', size: 45, color: 'var(--black)', filled: false },
-    { type: 'circle', size: 36, color: 'var(--accent)', filled: true },
-    { type: 'triangle', size: 50, color: 'var(--black)', filled: false },
-    { type: 'square', size: 30, color: 'var(--highlight)', filled: true },
-    { type: 'circle', size: 110, color: 'var(--blue)', filled: false },
+    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false },
+    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true  },
+    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true  },
+    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true  },
+    { type: 'square',   size: 104, color: 'var(--accent)',      filled: false },
+    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true  },
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true  },
+    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: false },
+    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false },
   ];
 
+  /* Same nine-shape budget in dark, and the neons stay neon: this half of
+     the site is the experimental one and was not the thing being toned down.
+     Four went and one arrived. The two --black stars first, because an
+     --black star in dark mode is an off-white star - the page's text colour
+     drifting along behind the page's text; then the 28px lime, which at that
+     size was a speck. The --green star became the amber one: green still has
+     a job on this page as the availability dot, and reading it as decoration
+     anywhere else blunts that. */
   const jaggedDefs = [
-    { type: 'star', size: 95, color: 'var(--accent)', filled: false, spikes: 7, sharp: true },
-    { type: 'star', size: 65, color: 'var(--blue)', filled: true, spikes: 5, sharp: true },
-    { type: 'star', size: 55, color: 'var(--highlight)', filled: false, spikes: 8, sharp: true },
-    { type: 'star', size: 50, color: 'var(--green)', filled: true, spikes: 6, sharp: true },
-    { type: 'star', size: 110, color: 'var(--accent)', filled: false, spikes: 6, sharp: true },
-    { type: 'star', size: 80, color: 'var(--blue)', filled: false, spikes: 9, sharp: true },
-    { type: 'star', size: 60, color: 'var(--highlight)', filled: true, spikes: 5, sharp: true },
-    { type: 'star', size: 40, color: 'var(--black)', filled: false, spikes: 7, sharp: true },
-    { type: 'star', size: 34, color: 'var(--accent)', filled: true, spikes: 5, sharp: true },
-    { type: 'star', size: 48, color: 'var(--black)', filled: false, spikes: 8, sharp: true },
-    { type: 'star', size: 28, color: 'var(--highlight)', filled: true, spikes: 5, sharp: true },
-    { type: 'star', size: 115, color: 'var(--blue)', filled: false, spikes: 6, sharp: true },
+    { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true },
+    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true },
+    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true },
+    { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true },
+    { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true },
+    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true },
+    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true },
+    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true },
+    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true },
   ];
 
   function buildShapes() {
@@ -1250,7 +1284,7 @@ if (heroShapesContainer) {
       const el = createShapeEl(def);
       // opacity lives in CSS (.hero-shapes .shape) so the two themes can
       // differ - a neon on near-black carries at a lower alpha than a muted
-      // coral on ivory does - and so it is not buried in a JS string
+      // coral on sand does - and so it is not buried in a JS string
       heroShapesContainer.appendChild(el);
       return {
         el,
@@ -1260,7 +1294,7 @@ if (heroShapesContainer) {
         baseY: Math.random(),
         // Wider travel and more spread in speed than before: every shape
         // used to drift at much the same rate over much the same distance,
-        // which read as one slow field rather than twelve separate objects.
+        // which read as one slow field rather than nine separate objects.
         // The range matters more than the average - shapes that clearly
         // overtake each other are what makes the field look alive.
         ampX: 55 + Math.random() * 130,
@@ -1309,7 +1343,7 @@ if (heroShapesContainer) {
 
     shapes.forEach((s) => {
       // Two sine terms per axis, not one. A single sine traces a clean
-      // ellipse and twelve ellipses read as clockwork; the faster, smaller
+      // ellipse and nine ellipses read as clockwork; the faster, smaller
       // wobble on top breaks the period so each path wanders instead.
       const driftX = s.baseX * rect.width
         + Math.sin(time * s.speed + s.phase) * s.ampX

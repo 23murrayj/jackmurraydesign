@@ -103,24 +103,41 @@ colour there, not at call sites.**
 | Token | Light | Dark | Role |
 |---|---|---|---|
 | `--black` | `#20201E` charcoal | `#F4F2F5` off-white | Foreground. **Flips.** |
-| `--white` | `#F0EEE8` ivory | `#111117` near-black | Page ground. **Flips.** |
+| `--white` | `#EFE7D7` sand | `#111117` near-black | Page ground. **Flips.** |
 | `--accent` | `#CF625A` coral | `#FF55AA` neon pink | Display + **fills** |
-| `--accent-ink` | `#BE4137` | `#FF55AA` | **Small text only** |
+| `--accent-ink` | `#B73F35` | `#FF55AA` | **Small text only** |
 | `--accent-on` | `#111117` | `#111117` | Sits on an `--accent` fill |
-| `--highlight` | `#C9C5BA` stone | `#DDFF67` lime | Tertiary / hover fills |
+| `--highlight` | `#CCC3AD` warm stone | `#DDFF67` lime | Tertiary / hover fills |
 | `--blue` | `#657FB9` dusty | `#8190FF` electric | Secondary |
+| `--accent-warm` | `#D9A227` amber | `#FFC847` | **Graphic only** — two hero shapes |
 | `--green` | `#1F8F4D` | `#3DE88A` | Availability dot |
-| `--muted` | `#6E6C64` | `#9C9AA3` | Secondary text |
-| `--line` | `#C9C5BA` | `#33333D` | Light dividers |
+| `--muted` | `#6A6861` | `#9C9AA3` | Secondary text |
+| `--line` | `#CCC3AD` | `#33333D` | Light dividers |
 
 **Fixed tokens that deliberately do NOT flip** — they pair with `--highlight`
 on graphic slabs (marquee, loader, about section, footer, pong):
-`--ink: #111117`, `--paper: #F7F5F0`, `--muted-ink: #a8a79c`,
-`--warn-ink: #952E25`.
+`--ink: #111117`, `--paper: #F7F1E5`, `--muted-ink: #a8a79c`,
+`--warn-ink: #932D25`.
 
 > This caught us once: the theme switch was built from `--paper`/`--black`, so
 > in dark mode a cream knob sat on a cream track. If a component must mirror
 > between themes, build it from `--black`/`--white`.
+
+`--accent-warm` is the hero's third hue and is **never text**: 1.87:1 on sand.
+It is not a revival of the superseded `--yellow` below — that was `#fffb00`,
+the loudest thing on the page; this is a dark amber spent on the two smallest
+shapes in the field.
+
+**The ground went from ivory to sand** on 2026-11-06. `#F0EEE8` was a cool
+off-white that turned green-grey under the warm accents, which read as the
+page receding rather than as restraint. Sand is the warm end of what the
+palette can take: one step further (`#EAE2D1`) drops coral to 2.94:1 and it
+misses even the 3:1 that large type needs. Four tokens moved **with** it —
+`--accent-ink`, `--highlight`/`--line`, `--muted`, `--paper`, `--warn-ink` —
+because each is measured against the ground or against something that is.
+Warmer alternatives, rendered at half scale with the real fonts, are in
+`scratchpad/options.html` (gitignored): serve the site and open
+`/scratchpad/options.html`.
 
 ### The superseded palette (do not reintroduce)
 
@@ -161,21 +178,29 @@ Two things changed that are easy to get wrong when porting old code:
 
 ### Contrast rules (non-negotiable)
 
-Coral is **3.26:1** on ivory and dusty blue **3.42:1** — fine for display type
+Coral is **3.08:1** on sand and dusty blue **3.23:1** — fine for display type
 and UI borders, **below AA for body text**. Hence the split:
 
 - `--accent` → fills and large/display type. `--accent-on` goes on top (4.97:1).
-- `--accent-ink` → small text and outlines (4.52:1 on ivory).
-- **Never** fill with `--accent-ink` and put `--accent-on` on it — that's 3.58:1.
-- White on coral is 3.79:1 and on pink 2.94:1. **Don't use white on accents.**
+- `--accent-ink` → small text and outlines (4.52:1 on sand).
+- **Never** fill with `--accent-ink` and put `--accent-on` on it — that's 3.38:1.
+- **Nothing near-white goes on an accent fill.** White on coral is 3.79:1, on
+  pink 2.94:1, and `--paper` is no better — it sat on the card hover's coral
+  fill at 3.47:1 for months because a resting-DOM walk never visits `:hover`.
+  `--accent-on` is the only correct label colour on `--accent`.
 
 Targets: 4.5:1 body text, 3:1 for ≥24px or ≥18.66px-bold and for UI borders.
 After any colour change, **re-run the live audit** (walk `body *`, composite
 backgrounds, compare) across light + dark × home + project overlay + about page.
 Current state: **0 failures.**
 
-**Audit hover states by hand** — a walk of the resting DOM misses them. That's
-how `--warn-ink` on `--highlight` sat at 3.55:1 unnoticed.
+**Audit hover states by hand** — a walk of the resting DOM misses them, and
+this is now the source of every contrast bug this project has shipped:
+`--warn-ink` on `--highlight` sat at 3.55:1 unnoticed, then at 4.44:1 again
+after the ground warmed, and `--paper` on the card hover's coral fill went
+unseen entirely. After a palette change, **list the `:hover` and `:focus`
+rules that pair two tokens and measure each pair by hand** — the audit script
+will not do it for you.
 
 ## Typography
 
@@ -217,15 +242,40 @@ four languages whenever you size display type.**
 - 13 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: 12 per theme, drift on **two sine terms per axis** (one sine
+- Hero shapes: 9 per theme, drift on **two sine terms per axis** (one sine
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
   Behind `.hero-grid` (z 0 vs 2) and `pointer-events: none`.
+- **The field reaches past the hero**, 190px down, to the rule under SELECTED
+  PROJECTS, so the marquee reads as a seam and not a lid. Three things make
+  that work together: `.hero` is `overflow: clip visible` (NOT `hidden
+  visible`, which computes to auto and makes it a scroll container — three
+  sticky elements depend on that not happening), `.hero-shapes` is
+  `inset: 0 0 -190px 0`, and **`.work` carries no background** — it was
+  `var(--white)`, the same colour body already paints, and an opaque one
+  there covers the field. `.work` is positioned and later in the DOM, so its
+  content still paints over the shapes, which is what keeps the cards clean.
+- **They are allowed to drift across the type, and that is settled.** A build
+  that held them out of the name, the right column, the nav and the marquee —
+  measured boxes, envelope-reserving placement, a per-frame clamp — spread
+  well at 1440, where the two-column split leaves real negative space. Below
+  that it did not: a stacked hero has one pocket, so the field concentrated
+  into it, and at 375 it collapsed to four-to-six shapes inside one 60×50
+  patch. Jack's call was the free field at every width. The z-order and the
+  ≤760px opacity are what protect the text. **Do not reintroduce a keep-out.**
 - `drop-shadow`, not `box-shadow`, on SVG shapes — box-shadow traces the
   element box, not the star.
 - Theme is applied by a **blocking inline script in `<head>`**, before first
   paint. Without it the page painted light then transitioned to dark over
   250ms on every load.
+- **The switch itself runs on one clock.** `switchTheme()` (not `applyTheme`,
+  which also runs on load) adds `.theme-switching` to `<html>` for
+  `--theme-dur`, and a blanket rule puts every element on `--theme-dur` /
+  `--theme-ease` for colour properties only. Before this the page changed
+  theme in passes — body over .35s, cards .25s, filter buttons .2s, the
+  section rules and marquee not at all. Two carve-outs: the knob gets
+  `transform` back (it has to travel), and `.hero-shapes .shape` does not (JS
+  writes its transform every frame, and a transition makes the field smear).
 
 ## UX rules
 
@@ -234,6 +284,10 @@ four languages whenever you size display type.**
 - Cards are one object: photo badge, title, tags, and the action bar all
   respond together. Tags are plain text — as pills, people clicked them
   instead of the card.
+- **The card hover is small on purpose.** `translate(-4px, -6px)` and a 12px
+  shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
+  that lifts 14px stops being part of its row, which is a lot of movement to
+  say "clickable" when the shadow already says it. Do not grow it again.
 - Controls that open menus use `aria-expanded`; the theme control is
   `role="switch"` + `aria-checked`.
 - Menus close on outside click, Escape, and scrolling away (40px threshold).

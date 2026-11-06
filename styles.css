@@ -63,27 +63,45 @@
 button, input, textarea, select { font-family: inherit; }
 
 :root {
-  /* LIGHT PALETTE - warm ivory ground, charcoal ink, muted coral, dusty
+  /* LIGHT PALETTE - warm sand ground, charcoal ink, muted coral, dusty
      blue, stone. The old flat red and pure yellow were the two loudest
      things on the page and fought the photography for attention. */
   --black: #20201E;   /* charcoal - foreground, flips to off-white in dark */
-  --white: #F0EEE8;   /* ivory    - page ground, flips to near-black */
+  /* SAND, not ivory. #F0EEE8 was a cool off-white - green-grey under the
+     warm accents, which is what made the page read as receding rather than
+     as restrained. This is the same lightness family with the blue taken
+     out, so the ground reads as paper rather than as an absence of colour,
+     and the coral and amber sit ON something instead of floating.
+     It is as warm as the palette can go: at #EAE2D1, one step further,
+     coral falls to 2.94:1 and misses even the 3:1 that large type needs. */
+  --white: #EFE7D7;   /* sand     - page ground, flips to near-black */
   --accent: #CF625A;  /* muted coral */
   /* --accent is the DISPLAY coral: big type, borders, drop shadows. It
-     measures 3.26:1 on ivory, which clears the 3:1 that large text and UI
+     measures 3.08:1 on sand, which clears the 3:1 that large text and UI
      borders need and misses the 4.5:1 that body text needs - so accent-ink
      is the darkened version for small text and accent-on is what sits on a
      solid coral fill. White fails there (3.79:1), near-black does not.
-     Measured: accent-ink 4.52:1 on ivory, accent-on 4.97:1 on coral. */
-  --accent-ink: #BE4137;
+     Measured: accent-ink 4.52:1 on sand, accent-on 4.97:1 on coral. */
+  /* darkened with the ground: #BE4137 measured 4.52:1 on the old ivory and
+     4.27:1 on sand, which is under AA for the small text this is for */
+  --accent-ink: #B73F35;
   --accent-on: #111117;
   /* The tertiary. On the fixed ink slabs (about, footer, pong) this is the
-     bright chip; on ivory it is a quiet fill behind hovers. Light resolves
+     bright chip; on sand it is a quiet fill behind hovers. Light resolves
      it to the same stone as --line on purpose - the warm neutral does both
      jobs there - while dark needs a loud third colour and uses lime. */
-  --highlight: #C9C5BA;
-  --blue: #657FB9;    /* dusty blue - 3.42:1 on ivory, so UI and large type */
-  --green: #1F8F4D;   /* availability dot - 3.55:1, a non-text UI mark */
+  --highlight: #CCC3AD;
+  --blue: #657FB9;    /* dusty blue - 3.23:1 on sand, so UI and large type */
+  /* The small yellow accent, and a GRAPHIC one only: it colours two of the
+     nine hero shapes and appears nowhere else. 1.87:1 on sand, so it can
+     never carry text or an outline that has to be read - its whole job is
+     being the third hue that stops the hero reading as coral-and-blue.
+     This is not the superseded --yellow (#fffb00), which was dropped for
+     being the loudest thing on the page; an amber this dark stays inside
+     "lively but controlled". Charcoal on it is 7.11:1 if it ever has to
+     become a fill with a label on top. */
+  --accent-warm: #D9A227;
+  --green: #1F8F4D;   /* availability dot - 3.35:1 on sand, a non-text UI mark */
   /* Chip fills for the about-page skill tags. These have to be tokens: the
      overlay's background is var(--white), which flips with the theme, so a
      hardcoded dark tint vanished completely in dark mode. */
@@ -93,10 +111,10 @@ button, input, textarea, select { font-family: inherit; }
      elements (marquee, loader, about slab, footer) that pair with the
      --highlight accent and must stay guaranteed-readable in both modes.
      --ink matches the dark theme's ground so the two agree; --paper stays
-     a touch lighter than ivory so menus and the loader read as sitting
+     a touch lighter than the ground so menus and the loader read as sitting
      ABOVE the page rather than merging into it. */
   --ink: #111117;
-  --paper: #F7F5F0;
+  --paper: #F7F1E5;   /* warmed with the ground, still a step above it */
   /* GREY SYSTEM — added so the site isn't purely 0%/100% black-white.
      Warm-neutral (R≈G>B) to match the slightly warm off-white --paper
      tone rather than a cold blue-grey. Two roles, each themed like
@@ -109,8 +127,8 @@ button, input, textarea, select { font-family: inherit; }
          heavy black structural borders that still mark primary structure
      Contrast-checked against the surfaces they're meant to sit on:
      --muted ≥ 4.8:1 on --white/--black (passes WCAG AA for normal text). */
-  --muted: #6E6C64;   /* 4.53:1 on ivory - clears AA for body text */
-  --line: #C9C5BA;    /* stone - dividers, not structure */
+  --muted: #6A6861;   /* 4.53:1 on sand - clears AA for body text */
+  --line: #CCC3AD;    /* warm stone - dividers, not structure */
   /* fixed grey for de-emphasized text specifically on the fixed --ink
      slabs (about section, footer-adjacent chrome) — parallels the
      ink/paper convention above since those surfaces don't flip with
@@ -124,15 +142,27 @@ button, input, textarea, select { font-family: inherit; }
      is hovered. The stone that --highlight became in light mode is darker
      than the yellow it replaced, which took the old value down to 3.55:1 -
      a hover state is easy to miss in an audit of the resting page, so it is
-     written down here. Measured: 7.15:1 on paper, 4.52:1 on stone, 6.89:1
-     on the lime that --highlight resolves to in dark mode. */
-  --warn-ink: #952E25;
+     written down here. It caught us a second time when the ground went to
+     sand and --highlight warmed with it: 4.52:1 became 4.44:1, under AA,
+     from a change nowhere near this token. Measured now: 7.06:1 on paper,
+     4.53:1 on the warm stone, 7.03:1 on the lime --highlight resolves to in
+     dark mode. */
+  --warn-ink: #932D25;
   /* 'Noto Sans JP' is appended to every stack rather than swapped in for
      Japanese: CSS font fallback resolves per glyph, so Latin characters
      still render in Archivo Black / Anton / Space Grotesk and only the
      CJK characters — which those three faces simply do not contain —
      fall through to Noto. That keeps mixed strings like "UXデザイン"
      correct without a single language-conditional font rule. */
+  /* One clock for the theme switch. Every surface, rule and label on the
+     page changes colour at the same moment and over the same curve, which
+     is the difference between a theme switch and a page redrawing itself a
+     component at a time - see the .theme-switching block near the bottom.
+     The ease is flat-out-then-settle rather than ease: a colour cross-fade
+     that decelerates late reads as deliberate, one on a symmetrical curve
+     reads as a dissolve. */
+  --theme-dur: .45s;
+  --theme-ease: cubic-bezier(.32, .72, 0, 1);
   --ff-display: 'Archivo Black', 'Noto Sans JP', sans-serif;
   --ff-body: 'Space Grotesk', 'Noto Sans JP', sans-serif;
   --ff-condensed: 'Anton', 'Noto Sans JP', sans-serif;
@@ -152,6 +182,12 @@ button, input, textarea, select { font-family: inherit; }
   --accent-on: #111117;
   --highlight: #DDFF67;  /* lime */
   --blue: #8190FF;       /* electric blue */
+  /* dark's yellow runs hot like the rest of this palette: 12.19:1 on the
+     ground. Declared even though dark spends it on a single star - a token
+     that exists in one theme only falls back to an inherited colour in the
+     other, and does it silently. That is exactly how six hero shapes kept
+     pointing at var(--yellow) for a release after the rename. */
+  --accent-warm: #FFC847;
   --green: #3DE88A;
   --muted: #9C9AA3;   /* 6.78:1 on the near-black ground */
   --line: #33333D;
@@ -187,7 +223,9 @@ body {
   color: var(--black);
   font-family: var(--ff-body);
   cursor: default;
-  transition: background .35s ease, color .35s ease;
+  /* on the shared clock, like everything else the switch touches */
+  transition: background var(--theme-dur) var(--theme-ease),
+              color var(--theme-dur) var(--theme-ease);
 }
 
 a { color: inherit; text-decoration: none; }
@@ -325,11 +363,19 @@ a { color: inherit; text-decoration: none; }
   width: 100%; margin-bottom: 0;
 }
 
-.sk-side { display: flex; flex-direction: column; gap: 22px; padding-bottom: 1.2rem; }
-/* measured off the real controls, which do not scale with the viewport */
-.sk-badge { height: 67px; width: 100%; }
-.sk-line  { height: 50px; width: 100%; }
-.sk-cta   { height: 71px; width: 100%; }
+/* Margins, not a flat gap: the real column steps 30 then 44, and a single
+   gap cannot say that - with 22px the loader put the CTA 36px above where
+   the page then drew it. padding-bottom mirrors .hero-side's baseline nudge. */
+.sk-side { display: flex; flex-direction: column; padding-bottom: 16px; }
+/* Measured off the real controls at 1440, in the widest language, since
+   these do not scale with the viewport: badge 36x296 (Spanish is the long
+   one at 324), role line 83 high and 336 wide (Italian), CTA 62x230. The old
+   67/50/71 were left over from the cycling one-line tagline and were out by
+   31px on the badge alone, which is the kind of handover jump this whole
+   skeleton exists to avoid. */
+.sk-badge { height: 36px; width: min(84%, 300px); margin-bottom: 30px; }
+.sk-line  { height: 83px; width: min(96%, 336px); margin-bottom: 44px; }
+.sk-cta   { height: 62px; width: 230px; }
 
 /* the strip pulls 1px into the grid's border, exactly as the marquee does */
 .sk-strip { flex: none; height: 80px; margin-top: -1px; }
@@ -349,9 +395,13 @@ a { color: inherit; text-decoration: none; }
   .sk-side { padding-bottom: 0; }
   .sk-title { width: min(62%, 560px); }
   .sk-title-2 { width: min(94%, 860px); }
-  .sk-badge { height: 36px; width: min(88%, 330px); }
-  .sk-line  { height: 15px; width: min(55%, 290px); }
-  .sk-cta   { height: 54px; width: 195px; }
+  /* heights are the same stacked - these controls are fixed-size - so only
+     the width caps change, to stop three bars stretching across a 922px
+     column they never fill. Measured at 375: badge 324 (Spanish), role 320
+     (Italian), CTA 264 (Italian). */
+  .sk-badge { width: min(88%, 324px); }
+  .sk-line  { width: min(95%, 336px); }
+  .sk-cta   { width: min(72%, 264px); }
 }
 @media (max-width: 760px) {
   /* .hero-name's own mobile clamp */
@@ -446,7 +496,7 @@ body.is-loading { overflow: hidden; }
 }
 /* accent-ink, not accent: at 22.4px/400 this sits just under the large-text
    threshold (24px, or 18.66px at 700), so it needs the full 4.5:1 that the
-   display coral cannot give on ivory. The darkened one reads 4.52:1 and is
+   display coral cannot give on sand. The darkened one reads 4.52:1 and is
    the same hue. In dark mode the two tokens are the same neon, so nothing
    changes there. */
 .nav-logo .dot { color: var(--accent-ink); }
@@ -588,7 +638,9 @@ body.is-loading { overflow: hidden; }
   width: calc(50% - var(--sw-pad));
   height: calc(100% - var(--sw-pad) * 2);
   background: var(--black);
-  transition: transform .34s cubic-bezier(.2,.8,.2,1);
+  /* same curve as the page, so the knob and the colour change are one
+     gesture rather than two things that happen to start together */
+  transition: transform var(--theme-dur) var(--theme-ease);
   z-index: 1;
 }
 /* light: knob left, sun lit and inverted on it, moon dimmed */
@@ -689,35 +741,64 @@ body.is-loading { overflow: hidden; }
   display: flex; flex-direction: column; justify-content: center;
   padding: 110px 5vw 0;
   background: var(--white);
-  overflow: hidden;
+  /* clip sideways, spill downwards. The field used to stop dead at the
+     marquee because this was overflow: hidden, which made the strip read as
+     a lid on it; the shapes now carry on into the band under SELECTED
+     PROJECTS and the two sections stop looking like separate drawings.
+     "clip visible" rather than "hidden visible" on purpose: pairing visible
+     with hidden forces it to auto and makes this a scroll container, and
+     three sticky elements depend on that not happening. */
+  overflow: clip visible;
 }
 .hero-shapes {
-  position: absolute; inset: 0; z-index: 0;
+  position: absolute;
+  /* Down to the rule under SELECTED PROJECTS, not to the hero's own foot.
+     Measured at 1440: the marquee ends 36px below the hero box and the
+     section head's 4px rule is 158px below that, so 190px lands the field
+     just past it and the filters and cards take over from there. They cover
+     it rather than clipping it - .work comes later in the DOM and is
+     positioned, so its content paints over this, which is also why .work
+     can no longer carry a background of its own (body's is the same colour
+     and sits behind everything). */
+  inset: 0 0 -190px 0;
+  z-index: 0;
   /* Behind everything and untouchable: .hero-grid is z-index 2, so the
      shapes cannot cover the name or the right column, and pointer-events
      keeps them from swallowing a click aimed at the CTA behind them.
      contain tells the browser nothing inside affects layout outside, which
-     matters because twelve elements are being transformed every frame. */
+     matters because nine elements are being transformed every frame.
+     The z-order and the opacity below are the whole of what protects the
+     text: shapes DO drift across the name and the column, and are meant to.
+     A build that fenced them out of the type's measured boxes was tried and
+     dropped - it turned a field into a huddle in whatever corner the layout
+     left over, worst on a phone, where there is no corner to spare. */
   pointer-events: none;
   contain: layout paint;
 }
 /* Set here rather than inline in the builder, so the two themes can differ.
-   Light stays texture - the muted coral and stone sit behind the largest
-   type on the site and must not compete with it.
+   Light stays texture - the muted coral, dusty blue and amber sit behind the
+   largest type on the site and must not compete with it.
    Dark is the opposite case and is deliberately louder: the neons ARE the
    look there, so they run at nearly double the alpha and each shape carries
    a glow in its own colour. drop-shadow rather than box-shadow because most
    of these are SVG polygons, where box-shadow would trace the element box
-   and not the star. */
+   and not the star.
+   The glow is why these shapes carry a bigger box than their geometry: a
+   7px blur paints out to about 3 sigma, so a 110px star measures 150px.
+   Nothing depends on that now, but it is the reason a shape looks closer to
+   the type than its size suggests. */
 .hero-shapes .shape { opacity: .38; }
 :root[data-theme="dark"] .hero-shapes .shape {
   opacity: .62;
   filter: drop-shadow(0 0 7px currentColor);
 }
-/* Same twelve shapes, a third of the width: the field that reads as texture
+/* Same nine shapes, a third of the width: the field that reads as texture
    behind a 1440px hero reads as clutter behind a 375px one, because density
    is what changed, not the count. Dialled back rather than thinned out, so
-   the phone keeps the same look with less of it. */
+   the phone keeps the same look with less of it.
+   This is also the rule that makes shapes crossing the type acceptable at
+   the width where they cross it most - a stacked hero leaves them nowhere
+   else to go - so these alphas are not free to rise. */
 @media (max-width: 760px) {
   .hero-shapes .shape { opacity: .26; }
   :root[data-theme="dark"] .hero-shapes .shape {
@@ -842,58 +923,109 @@ body.is-loading { overflow: hidden; }
    the headline is large enough to hold its own side of the page without a
    drawn border explaining where it ends, and dropping the rule gave the
    column back its 34px of indent, which the role line spends on type size.
-   The badge sits apart above; the button takes the widest gap because it is
-   the one thing to DO. */
+   The gaps used to be a flat 30/30, which grouped nothing - this comment
+   claimed a rhythm the CSS did not have. They now step 30 -> 44: the badge
+   is a label sitting close above the line it qualifies, and the widest gap
+   in the column is the one before the single thing to DO. The role line
+   gets air on both sides as a result, which is what it was missing. */
 .hero-side {
   display: flex; flex-direction: column;
-  align-items: flex-start;
+  /* STRETCH, so the column has a right edge. Everything in here used to be
+     fit-content and left-aligned, which left a ragged edge down the right
+     of the block - badge 296, role 336, button 230 at 1440 - and the button
+     being the shortest of the three put the narrowest thing at the bottom,
+     so the column tapered off instead of landing. Stretched, the button
+     squares the block off and the three items share one measure.
+     The badge keeps its own width: fit-content beats stretch, which is
+     what stops a 356px pill with eleven words rattling around inside it. */
+  align-items: stretch;
   gap: 0;
-  padding-bottom: 1.2rem;
+  /* Optical alignment, now measured rather than eyeballed. align-items: end
+     lines this column's BOX up with the name's box, and the name's box runs
+     40px below its own baseline (font descent at 192px that MURRAY. has no
+     glyph to use). 16px puts the CTA's bottom border on the baseline itself,
+     which is the line the eye actually reads the name as sitting on.
+     A px value, not a rem: this only applies above 1280, where the name is
+     capped at 12rem, so the offset it corrects is a constant. The old 1.2rem
+     landed the border 3px under the baseline. */
+  padding-bottom: 16px;
   /* the role line sizes off THIS box, not the viewport - see below */
   container-type: inline-size;
 }
 .hero-side > * { margin: 0; }
-.badge-available { margin-bottom: 30px; }
+.badge-available { margin-bottom: 30px; }  /* a label close above its line */
 /* The standing role line. Display face at a size that can hold the column
    on its own, tracked tight so two lines stack as a block rather than a
    sentence. clamp so it never outgrows the column it sits in. */
 .hero-role {
-  font-family: var(--ff-display);
+  /* BODY face at 600, not the display face at 900. Archivo Black is a
+     single-weight (400) file that paints like a 900, so this line used to be
+     a second black headline standing next to the first one - two maximum
+     weights competing, and the name is meant to win that outright. Space
+     Grotesk is the one variable file already loaded (400-700 in a single
+     21 KB woff2), so 600 costs no extra download and gives the hierarchy a
+     middle step: name 900, role 600, everything else 400-700.
+     Noto still backs it per glyph, so "UXデザイナー" resolves unchanged. */
+  font-family: var(--ff-body);
+  font-weight: 600;
   /* cqw, not vw. This column is not a fraction of the viewport: .hero-name
      is sized by "MURRAY." at its min-content width, so the name track takes
      900px of a 1440px screen and leaves the side column 356. A vw-based size
      knew nothing about that and set 33.6px type into a 320px box, which
-     wrapped "DIGITAL CREATIVE." onto a third line. 8.2cqw keeps the longest
+     wrapped "DIGITAL CREATIVE." onto a third line. The cqw keeps the longest
      line inside the column at every width, because the column is what it
      measures. The rem floor and ceiling stop it collapsing on a phone or
-     ballooning on an ultrawide. */
-  font-size: clamp(1.3rem, 8.6cqw, 2.3rem);
-  line-height: 1.02;
-  letter-spacing: -0.025em;
+     ballooning on an ultrawide.
+     Raised from 8.6cqw with the face change: Space Grotesk 600 sets the same
+     string about 18% narrower than Archivo Black does at the same size, so
+     the old value left the column visibly slack.
+     Sized on ITALIAN, not English. "CREATIVO DIGITALE." is the longest line
+     of the four at 8.95em against English's 8.30, so a size picked to fit
+     English puts it 13px past the column edge. Measured at 1440 (356px
+     column, type capped at 37.6px): Italian 336, Spanish 316, English 312 -
+     the tightest language keeps 20px. */
+  font-size: clamp(1.45rem, 10.6cqw, 2.35rem);
+  /* a lighter face needs more leading, not less: at 1.02 the two uppercase
+     lines locked into a solid block, which is the look the 900 weight was
+     being dropped to get away from */
+  line-height: 1.1;
+  /* -0.025em was tightening Archivo Black's already-tight sidebearings.
+     Space Grotesk's caps are wider apart by design and go slack if pulled
+     in that hard; a hair of negative keeps the two lines reading as one
+     object without closing the counters up. */
+  letter-spacing: -0.012em;
   text-transform: uppercase;
-  /* the description under this is gone, so the button follows directly and
-     this gap is the whole separation between saying and doing */
-  margin-bottom: 30px !important;
+  /* the widest gap in the column: nothing comes between saying and doing,
+     so this is the whole separation between them. No !important - the only
+     rule it has to beat is ".hero-side > *", which is the same specificity
+     and declared earlier, so source order already settles it. */
+  margin-bottom: 44px;
 }
-/* The hero CTA carries an accent block at REST, not only on hover. It is
-   the single action on the first screen and was a plain dark rectangle that
-   the eye walked past; the offset block is the same hard-shadow vocabulary
-   the cards and the menus already use, so it adds weight without adding a
-   new idea. Bigger type and padding to match. */
+/* The hero CTA is a flat charcoal block at rest. It used to rest on a 9px
+   coral offset, which made the one quiet surface on the first screen as loud
+   as the shapes behind it and put a second coral mass directly under the
+   coral full stop in the name. The block is still in the vocabulary, it is
+   just earned by pointing at the button instead of being on permanently -
+   same move the availability badge above it makes, at the same 2px border.
+   Bigger type and padding carry the weight the shadow used to. */
 .btn-block {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center;
+  /* label left, arrow hard right, rather than the two sitting together in
+     the middle of a shrink-wrapped box. Across a full-width button that is
+     what makes it read as a bar you act on and not as a wide label. */
+  justify-content: space-between; gap: 10px;
   background: var(--black); color: var(--white);
-  padding: 19px 34px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
-  width: fit-content; border: 2px solid var(--black);
-  box-shadow: 9px 9px 0 var(--accent);
+  padding: 19px 28px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
+  width: 100%; border: 2px solid var(--black);
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
 @media (hover: hover) {
-  /* presses INTO the block rather than inverting: the fill stays, so the
+  /* lifts OUT of the page and casts the block, then :active drops it back
+     flush - the gesture reads as press, and the fill never changes, so the
      label never changes contrast mid-gesture */
-  .btn-block:hover { transform: translate(5px, 5px); box-shadow: 2px 2px 0 var(--accent); }
+  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 7px 7px 0 var(--accent); }
 }
-.btn-block:active { transform: translate(9px, 9px); box-shadow: 0 0 0 var(--accent); }
+.btn-block:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 /* The arrow drifts, to say there is more below without shouting it. Pulled
    out of the translated string and into a pseudo-element for the same reason
    the about CTA's was: I18N.apply() assigns textContent, so any span inside
@@ -948,6 +1080,17 @@ body.is-loading { overflow: hidden; }
     padding-bottom: 0;
     padding-left: 0;
     border-left: 0;
+    /* The stretch above squares off a 356px column. Stacked, the column is
+       the whole page - 922px at 1024 - and a button that wide stops being a
+       button. Back to shrink-wrapped, which is also why the arrow's
+       space-between needs cancelling: with nothing to span it would just
+       re-add the gap it was meant to remove. */
+    align-items: flex-start;
+  }
+  .hero-side .btn-block {
+    width: fit-content;
+    justify-content: flex-start;
+    padding-inline: 34px;
   }
 }
 @media (max-width: 900px) {
@@ -1042,7 +1185,12 @@ body.is-loading { overflow: hidden; }
 .contact .section-num { color: var(--ink); }
 
 /* WORK / GALLERY */
-.work { position: relative; background: var(--white); padding-bottom: 40px; }
+/* No background. It was var(--white), which is exactly what body already
+   paints, so it was only ever redundant - and now it is harmful: an opaque
+   background here covers the hero's shape field where it reaches into this
+   section. The content still paints above the field, which is what keeps
+   the cards clean. */
+.work { position: relative; padding-bottom: 40px; }
 
 .filters {
   display: flex; flex-wrap: wrap; gap: 12px;
@@ -1083,12 +1231,16 @@ body.is-loading { overflow: hidden; }
 }
 @media (hover: hover) {
   .card:hover {
-    /* Weighted toward vertical on purpose. The gallery is full-bleed, so a
+    /* Even on both axes now, and smaller. The 14px vertical lift made a card
+       jump out of its row - in a grid of them the hovered one stopped being
+       part of the row at all, which is a lot of movement to say "this is
+       clickable". The shadow does that job; the card only has to come off
+       the page far enough for the shadow to look cast rather than drawn.
+       Still slightly less sideways than up: the gallery is full-bleed, so a
        card in the left column that travels far sideways runs past the
-       viewport edge and is clipped there; height is what reads as "raised"
-       anyway, and the offset shadow supplies the diagonal. */
-    transform: translate(-7px, -14px) rotate(-0.6deg);
-    box-shadow: 18px 18px 0 var(--black);
+       viewport edge and is clipped there. */
+    transform: translate(-4px, -6px) rotate(-0.4deg);
+    box-shadow: 12px 12px 0 var(--black);
     z-index: 5;
   }
 }
@@ -1116,12 +1268,19 @@ body.is-loading { overflow: hidden; }
 }
 /* the badge and the bar light together, so the whole card reads as one
    control reacting rather than two parts reacting separately */
+/* --accent-on, not --paper. A near-white label on a coral fill measured
+   3.47:1 and 2.94:1 on the dark theme's pink - under AA both times, and it
+   had been that way since the fill was introduced, because a resting-DOM
+   contrast walk never visits a :hover rule. The palette's own rule covers
+   this exactly: --accent is a fill, and what goes on a fill is --accent-on
+   (4.97:1 on coral, 6.39:1 on pink). The sand ground took it from 3.47 to
+   3.37 and is how it finally got looked at. */
 @media (hover: hover) {
-  .card:hover .card-media::after { background: var(--accent); color: var(--paper); }
+  .card:hover .card-media::after { background: var(--accent); color: var(--accent-on); }
   .card:hover .card-media img { transform: scale(1.04); }
 }
 .card:active .card-media::after,
-.card:focus-visible .card-media::after { background: var(--accent); color: var(--paper); }
+.card:focus-visible .card-media::after { background: var(--accent); color: var(--accent-on); }
 .card-media img { transition: transform .45s cubic-bezier(.2,.8,.2,1); }
 @media (prefers-reduced-motion: reduce) {
   .card-media img { transition: none; }
@@ -1177,14 +1336,14 @@ body.is-loading { overflow: hidden; }
 }
 .card-cta-arrow { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
 @media (hover: hover) {
-  .card:hover .card-cta { background: var(--accent); color: var(--paper); }
+  .card:hover .card-cta { background: var(--accent); color: var(--accent-on); }  /* see .card-media::after above */
   .card:hover .card-cta-arrow { transform: translateX(7px); }
 }
 /* :active and :focus-visible do it too, so the signal is not hover-only -
    on a phone there is no hover at all, and pressing a card used to give no
    feedback of any kind until the overlay had finished opening. */
 .card:active .card-cta,
-.card:focus-visible .card-cta { background: var(--accent); color: var(--paper); }
+.card:focus-visible .card-cta { background: var(--accent); color: var(--accent-on); }
 
 /* The press itself. The card is the primary interactive element on the page
    and had neither a pressed state nor a focus ring. */
@@ -2123,8 +2282,8 @@ body.is-loading { overflow: hidden; }
    click that ended the visit anyway. It now lives only on the about page,
    where it IS the next step and keeps its filled treatment.
    Filled with --accent, not --accent-ink. accent-ink is the DARKENED coral
-   for small text on ivory; used as a fill it put --accent-on (near-black)
-   at 3.58:1. The display coral takes the same label at 4.97:1, which is
+   for small text on sand; used as a fill it put --accent-on (near-black)
+   at 3.38:1. The display coral takes the same label at 4.97:1, which is
    also the division the palette already documents: ink for text, accent
    for fills. */
 .about-cta-row .about-readmore-btn {
@@ -3133,20 +3292,26 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   box-shadow: 0 0 10px 2px var(--green);
 }
 @media (hover: hover) {
+  /* tracks the base rule's offset - this one is more specific and declared
+     later, so a stale 18px here would put the two themes on different lifts */
   :root[data-theme="dark"] .card:hover {
-    box-shadow: 18px 18px 0 var(--black), 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 12px 12px 0 var(--black), 0 0 34px color-mix(in srgb, var(--accent) 45%, transparent);
   }
 }
+/* Dark keeps the neon bloom at rest and loses the hard offset block with
+   light: the two modes are supposed to differ in kind, and a bloom with no
+   offset is a glow around a flat button, not a drop shadow under it. Rest
+   is declared outside @media (hover: hover) so a touch device in dark mode
+   still gets the glow - the hover states are what has to be gated.
+   The offsets have to track the base rule rather than restate old ones:
+   this selector is more specific and declared later, so a stale value here
+   would quietly cancel the press in dark mode only. */
+:root[data-theme="dark"] .btn-block {
+  box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 34%, transparent);
+}
 @media (hover: hover) {
-  /* Dark keeps the neon bloom, but the offsets have to track the base rule,
-     not restate the old ones: the CTA now rests on a 9px block and presses
-     into a 2px one, and this selector is more specific and declared later,
-     so a stale 6px here would quietly cancel the press in dark mode only. */
-  :root[data-theme="dark"] .btn-block {
-    box-shadow: 9px 9px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 38%, transparent);
-  }
   :root[data-theme="dark"] .btn-block:hover {
-    box-shadow: 2px 2px 0 var(--accent), 0 0 26px color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow: 7px 7px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 }
 :root[data-theme="dark"] .btn-block:active {
@@ -3313,10 +3478,16 @@ html[lang="ja"] .pong-end-msg {
 
 /* The role line is set from its column in cqw, which assumes Latin
    proportions. Japanese is full-width: "デジタルクリエイティブ。" is 12 glyphs
-   at roughly 1em each, so the same size that leaves English 40px of slack
-   in a 356px column leaves Japanese 7px - inside the margin a different CJK
-   fallback font could swallow. Sized down here so every language keeps real
-   headroom rather than the shortest one setting the ceiling for all four. */
+   at roughly 1em each, so the same size that leaves English 44px of slack
+   in a 356px column leaves Japanese nothing - and nothing is inside the
+   margin a different CJK fallback font could swallow. Sized down here so
+   every language keeps real headroom rather than the shortest one setting
+   the ceiling for all four.
+   Left at 7.6cqw when the Latin line moved to 10.6: that change was Space
+   Grotesk setting Latin narrower than Archivo Black did at the same size,
+   and none of it reaches Japanese, which still falls through to Noto at
+   about 1em a glyph. Measured at 1440: 27.1px type, longest line 317 of
+   the 356px column. */
 html[lang="ja"] .hero-role { font-size: clamp(1.2rem, 7.6cqw, 2.05rem); }
 
 /* Japanese sets without word spaces and wraps at almost any character, so
@@ -3477,4 +3648,53 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 #projectMedia img[data-full]:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
+}
+
+/* ==========================================================================
+   THE THEME SWITCH, AS ONE MOVE
+   The page used to change theme a component at a time. Nothing was wrong
+   with any single rule - body cross-faded over .35s, the cards over .25s,
+   the filter buttons over .2s, the section rules and the marquee not at all
+   - but run together they read as the page being repainted in passes
+   rather than as one surface changing colour, and the parts that snapped
+   drew the eye to themselves.
+
+   So for the length of the switch, and only then, everything moves on the
+   same clock. The class is added by the toggle, not by applyTheme, so the
+   first paint of a saved dark theme is still instant: a page that fades in
+   from the wrong colour on every load is the bug this would otherwise
+   reintroduce.
+
+   Longhands, not the shorthand, and deliberately no `transform` in the
+   list: during the switch the only thing that should be moving is colour.
+   The two exceptions below put transform back where it is the point.
+   ========================================================================== */
+:root.theme-switching *,
+:root.theme-switching *::before,
+:root.theme-switching *::after {
+  transition-property: background-color, background-image, border-color, color,
+                       fill, stroke, box-shadow, text-shadow, opacity, filter !important;
+  transition-duration: var(--theme-dur) !important;
+  transition-timing-function: var(--theme-ease) !important;
+  transition-delay: 0s !important;
+}
+/* The knob is the one thing the user is looking at, and it has to travel. */
+:root.theme-switching .theme-switch-knob {
+  transition-property: transform, background-color !important;
+}
+/* The hero field is positioned by JS every frame. A transition on its
+   transform makes each frame chase the last one and the whole field smears
+   across the hero for the length of the switch - it is the one place where
+   inheriting this rule actively looks broken. Its colour still cross-fades,
+   which is the part that matters when the palette flips under it. */
+:root.theme-switching .hero-shapes .shape {
+  transition-property: color, fill, stroke, filter, opacity !important;
+}
+/* Switching theme is not a motion effect anyone asked for. */
+@media (prefers-reduced-motion: reduce) {
+  :root.theme-switching *,
+  :root.theme-switching *::before,
+  :root.theme-switching *::after {
+    transition-duration: 0s !important;
+  }
 }

@@ -18,8 +18,10 @@
      the page. They are literal values because a meta tag cannot read a CSS
      custom property - so they have to be updated by hand whenever --white
      changes. They were missed in the repalette and still held the previous
-     ivory and near-black. -->
-<meta name="theme-color" content="#F0EEE8" media="(prefers-color-scheme: light)">
+     ivory and near-black, and were missed AGAIN when the ground went from
+     that ivory to sand - twice now, so: grep this file for the old value
+     every time --white moves. -->
+<meta name="theme-color" content="#EFE7D7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111117" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://jackmurraydesign.com/">
 
@@ -212,7 +214,10 @@
            someone first looked - and it could not be read at a glance at all.
            Stated once, it anchors the column and gives the right side
            something with enough weight to hold its own against the name. -->
-      <p class="hero-role" data-i18n-html="hero.role">UX DESIGNER &amp;<br>DIGITAL CREATIVE.</p>
+      <!-- No full stop. The name above ends in one, in coral, and it is the
+           page's one piece of punctuation-as-graphic; a second period 150px
+           below it made that read as a habit rather than a mark. -->
+      <p class="hero-role" data-i18n-html="hero.role">UX DESIGNER &amp;<br>DIGITAL CREATIVE</p>
       <a href="#work" class="btn-block" data-i18n="hero.cta">VIEW PROJECTS</a>
     </div>
   </div>
