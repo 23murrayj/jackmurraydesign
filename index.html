@@ -18,10 +18,11 @@
      the page. They are literal values because a meta tag cannot read a CSS
      custom property - so they have to be updated by hand whenever --white
      changes. They were missed in the repalette and still held the previous
-     ivory and near-black, and were missed AGAIN when the ground went from
-     that ivory to sand - twice now, so: grep this file for the old value
-     every time --white moves. -->
-<meta name="theme-color" content="#EFE7D7" media="(prefers-color-scheme: light)">
+     ivory and near-black, were missed AGAIN at ivory -> sand, and AGAIN at
+     sand -> this one. Three times, which is enough to call it a property of
+     the file and not bad luck: this line holds --white's value and nothing
+     else, so change it in the SAME edit that changes --white. -->
+<meta name="theme-color" content="#F0ECE1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111117" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://jackmurraydesign.com/">
 

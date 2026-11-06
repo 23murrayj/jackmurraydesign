@@ -102,57 +102,82 @@ colour there, not at call sites.**
 
 | Token | Light | Dark | Role |
 |---|---|---|---|
-| `--black` | `#20201E` charcoal | `#F4F2F5` off-white | Foreground. **Flips.** |
-| `--white` | `#F1F0EB` ivory | `#111117` near-black | Page ground. **Flips.** |
+| `--black` | `#1A1A18` near-black | `#F4F2F5` off-white | Foreground. **Flips.** |
+| `--white` | `#F0ECE1` warm ivory | `#111117` near-black | Page ground. **Flips.** |
 | `--accent` | `#CF625A` coral | `#ff2d55` hot pink | Display + **fills** |
-| `--accent-ink` | `#BE4137` | `#ff2d55` | **Small text only** |
-| `--accent-on` | `#111117` | `#111117` | Sits on an `--accent` fill |
-| `--highlight` | `#C9C5BA` stone | `#DDFF67` lime | Tertiary / hover fills |
+| `--accent-ink` | `#B73F35` | `#ff2d55` | **Small text only** |
+| `--accent-on` | `#1A1A18` | `#1A1A18` | Sits on an `--accent` fill |
+| `--highlight` | `#CBC4B4` stone | `#DDFF67` lime | Tertiary / hover fills |
 | `--blue` | `#657FB9` dusty | `#8190FF` electric | Secondary |
 | `--accent-warm` | `#D9A227` amber | `#FFC847` | **Graphic only** — two hero shapes |
 | `--green` | `#1F8F4D` | `#3DE88A` | Availability dot |
-| `--muted` | `#6E6C64` | `#9C9AA3` | Secondary text |
-| `--line` | `#C9C5BA` | `#33333D` | Light dividers |
+| `--muted` | `#6A6861` | `#9C9AA3` | Secondary text |
+| `--line` | `#CBC4B4` | `#33333D` | Light dividers |
 
-**Fixed tokens that deliberately do NOT flip** — they pair with `--highlight`
-on graphic slabs (marquee, loader, about section, footer, pong):
-`--ink: #111117`, `--paper: #F7F5F0`, `--muted-ink: #a8a79c`,
-`--warn-ink: #952E25`.
+**Tokens that never INVERT** — the graphic slabs (marquee, loader, about
+section, footer, pong) are a dark surface with light type in both themes, so
+these stay on their side of the line: `--paper: #F7F3EB`,
+`--muted-ink: #a8a79c`, `--warn-ink: #932D25`.
+
+`--ink` belongs to that group but **does change value between themes**:
+`#1A1A18` light (= `--black`, so there is one black on the page) and
+`#111117` dark (= the dark ground, so the slabs stay part of the page instead
+of becoming panels on it). It is still never light, which is the guarantee
+the group exists for. **Dark must keep its own `--ink` declaration** — drop it
+and dark inherits light's value and every slab turns into a lighter rectangle.
 
 > This caught us once: the theme switch was built from `--paper`/`--black`, so
 > in dark mode a cream knob sat on a cream track. If a component must mirror
 > between themes, build it from `--black`/`--white`.
 
-`--accent-warm` is the hero's third hue and is **never text**: 2.01:1 on the
+### One black
+
+Light mode has exactly one dark value, `#1A1A18`, and it is `--black`,
+`--ink` and `--accent-on`. It used to have two — charcoal `#20201E` on the
+type, buttons and rules, `#111117` on the marquee, about slab and footer —
+which is 13.83:1 against 15.94:1, and the second one blue where the first is
+warm. Jack caught it on the marquee: side by side it reads as a mistake, and
+it also made the charcoal look light, which is the answer to "is the black
+too light?" — it was, relative to the strip next to it.
+
+Not `#000`: a pure black on a warm paper ground reads as a screenshot of a
+design rather than a printed page, and the brief's word is editorial.
+**If you add a dark surface, use `--ink`, never a literal.** The chaos-mode
+and pong hexes are the one exception and they carry `#1A1A18` explicitly.
+
+`--accent-warm` is the hero's third hue and is **never text**: 1.94:1 on the
 ground. It is not a revival of the superseded `--yellow` below — that was
 `#fffb00`, the loudest thing on the page; this is a dark amber spent on the
 two smallest shapes in the field.
 
-### The ground has been set three times — don't make it four blind
+### The ground has been set four times — the search is finished
 
-`#F0EEE8` ivory → `#EFE7D7` sand (2026-11-06) → `#F1F0EB` (2026-11-06, same
-day). Both ends are now known to be wrong, which is the useful part:
+`#F0EEE8` ivory → `#EFE7D7` sand → `#F1F0EB` cool → **`#F0ECE1`**, all on
+2026-11-05/06. Three of the four are known-wrong by Jack's own eye, which is
+the useful part:
 
-- **Too cool** (`#F0EEE8`) goes green-grey under the warm accents and reads as
-  the page receding rather than as restraint.
-- **Too warm** (`#EFE7D7`) reads as distinctly beige, and it drags the whole
-  palette down with it: five tokens are measured against the ground, so all
-  five had to darken to hold AA, and the page lost the thing warming it was
-  supposed to add.
+- **Too cool** (`#F0EEE8`, `#F1F0EB`) goes green-grey under the warm accents
+  and reads as the page receding rather than as restraint.
+- **Too warm** (`#EFE7D7`) reads as distinctly beige, and drags the palette
+  down with it: five tokens are measured against the ground, so all five had
+  to darken to hold AA, and the page lost the thing warming it was for.
 
-`#F1F0EB` is neutral rather than warm or cool, and a touch lighter than
-either, which gives every token on it more headroom than it had — so the five
-companions are back at their pre-sand values (`--accent-ink` `#BE4137`,
-`--highlight`/`--line` `#C9C5BA`, `--muted` `#6E6C64`, `--paper` `#F7F5F0`,
-`--warn-ink` `#952E25`). **If you move the ground, move those five and
-re-measure**: each is measured against it or against something that is.
+`#F0ECE1` is the midpoint of the last two, picked by Jack after seeing both.
+**It is warm enough to need the sand-era companions**, which is the trap:
+`--accent-ink #BE4137` measures 4.45:1 here and `--muted #6E6C64` 4.46:1, both
+under AA, so the darker `#B73F35` / `#6A6861` are required, and
+`--warn-ink` needs `#932D25` to hold 4.58:1 on the stone.
+
+**If you move the ground, move those five and re-measure** — `--accent-ink`,
+`--highlight`/`--line`, `--muted`, `--paper`, `--warn-ink`. And the
+`theme-color` meta in `index.html`, which has now been missed **three times
+running**; it holds `--white`'s value and nothing else.
 
 The hard warm limit is unchanged: at `#EAE2D1`, one step past sand, coral
 falls to 2.94:1 and misses even the 3:1 that large type and UI borders need.
 
-Alternatives at half scale with the real fonts are in `scratchpad/options.html`
-(gitignored): serve the site and open `/scratchpad/options.html`. Note that
-page still shows sand as "in now".
+`scratchpad/options.html` (gitignored) renders alternatives at half scale with
+the real fonts, but its "in now" swatch is stale — it still shows sand.
 
 **Dark's accent went back to `#ff2d55`** on 2026-11-06, at Jack's request —
 he missed it. It is the one value deliberately recovered from the superseded
@@ -203,12 +228,12 @@ Two things changed that are easy to get wrong when porting old code:
 
 ### Contrast rules (non-negotiable)
 
-Coral is **3.32:1** on the ground and dusty blue **3.48:1** — fine for display type
+Coral is **3.21:1** on the ground and dusty blue **3.36:1** — fine for display type
 and UI borders, **below AA for body text**. Hence the split:
 
-- `--accent` → fills and large/display type. `--accent-on` goes on top (4.97:1).
-- `--accent-ink` → small text and outlines (4.60:1 on the ground).
-- **Never** fill with `--accent-ink` and put `--accent-on` on it — that's 3.58:1.
+- `--accent` → fills and large/display type. `--accent-on` goes on top (4.60:1).
+- `--accent-ink` → small text and outlines (4.71:1 on the ground).
+- **Never** fill with `--accent-ink` and put `--accent-on` on it — that's 3.13:1.
 - **Nothing near-white goes on an accent fill.** White on coral is 3.79:1, on
   pink 3.35:1, and `--paper` is no better — it sat on the card hover's coral
   fill at 3.47:1 for months because a resting-DOM walk never visits `:hover`.
@@ -323,18 +348,24 @@ four languages whenever you size display type.**
 - Cards are one object: photo badge, title, tags, and the action bar all
   respond together. Tags are plain text — as pills, people clicked them
   instead of the card.
-- **"LET'S MAKE / SOMETHING." has its payoff row in `--accent`**, and the
-  rule is on `.magnetic-row:last-child`, not on a word count — the row break
-  is in the copy, so row two is the payoff in all four languages. Its glow is
-  three layered blooms in dark (pink on the glyph, pink past the stroke, blue
-  as spill) because a single 16px shadow around a 200px letter is a rim, not
-  a neon sign, and the headline read as white and lifeless.
-- **The stats each carry their own hue** — coral / dusty blue / amber in
-  light, hot pink / electric blue / amber in dark, with Milan on `--paper`
-  because it is a word, not a number. They were all `--highlight`, which light
-  mode resolves to stone: four grey numbers on a near-black slab, which read
-  as dead once the rest of the palette stopped shouting. The slab is the fixed
-  `--ink`, so neither theme has to mirror the other here.
+- **"LET'S MAKE / SOMETHING." carries its colour in the GLOW, not the type.**
+  Three layered blooms in both themes (tight / fall-off / spill) because a
+  single 16px shadow around a 200px letter is a rim, not a neon sign, and the
+  headline read as white and lifeless. Setting row two in `--accent` was tried
+  and rejected: at 13rem a coral half-sentence stops being a headline and
+  becomes a highlighted phrase, and the two rows read as two voices rather
+  than one line that happens to break. **Colour around the letterform reads as
+  light; colour inside it reads as a change of subject.**
+- **The stats are all one colour, `--accent`.** This row has been three
+  things: all `--highlight` (stone in light — four grey numbers, dead), then a
+  hue per cell (fixed the greyness, broke something worse — four figures in
+  four colours is four separate things, and you count the colours before
+  reading the numbers), now one accent across all four. They are one fact
+  about one person; the series is held together by its rhythm — four cells,
+  three rules, one size — not by variety. The accent specifically because it
+  is the only option legible in both themes that also *means* something: it is
+  the colour of the full stop in the name. **Don't give them a hue each
+  again.**
 - **The card hover is small on purpose.** `translate(-4px, -6px)` and a 12px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to

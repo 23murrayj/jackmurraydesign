@@ -63,62 +63,81 @@
 button, input, textarea, select { font-family: inherit; }
 
 :root {
-  /* LIGHT PALETTE - cool ivory ground, charcoal ink, muted coral, dusty
+  /* LIGHT PALETTE - warm ivory ground, near-black ink, muted coral, dusty
      blue, stone. The old flat red and pure yellow were the two loudest
      things on the page and fought the photography for attention. */
-  --black: #20201E;   /* charcoal - foreground, flips to off-white in dark */
-  /* The ground has been both ways and this is the third setting, so the
-     two failure modes are worth naming. #F0EEE8 (the original) was cool
-     enough to go green-grey under warm accents, which read as the page
-     receding. Sand #EFE7D7 fixed that and overshot: distinctly beige, and
-     it pulled the whole palette down with it, because five tokens are
-     measured against the ground and all five had to darken to keep AA.
-     This is the narrow middle - neutral rather than warm OR cool, and a
-     touch lighter than either, which is where "clean editorial" lives.
-     Being lighter means every token on it gained contrast, so the five
-     companions go back to the values they had before sand: accent-ink
-     #BE4137 reads 4.60:1 here against 4.27 on sand.
-     Jack's note said "#F1F0EB instead of #F0EEE8" - the comparison was
-     with the original ivory, not with the sand that was actually live. */
-  --white: #F1F0EB;   /* ivory    - page ground, flips to near-black */
+  /* ONE black on the page. There used to be two: this charcoal on the type,
+     the buttons and the rules, and --ink #111117 on the marquee, the about
+     slab and the footer - 13.83:1 against 15.94:1, and the second one blue
+     where the first is warm. Side by side on the same screen that reads as a
+     mistake, which is what Jack caught on the marquee.
+     #1A1A18 is darker than the charcoal was and warmer than the ink, and
+     --ink now takes this same value in light mode, so every black surface
+     and every black mark agree. It also answers the other half of the
+     question: yes, the old charcoal was a little light, and the reason it
+     looked light was that the strip beside it was darker.
+     Not #000. A pure black on a warm paper ground reads as a screenshot of
+     a design rather than a printed page, and the brief's word is editorial.
+     14.77:1 on the ground, where 4.5 is the bar. */
+  --black: #1A1A18;   /* near-black - foreground, flips to off-white in dark */
+  /* Fourth setting, and the last one: this is the midpoint of the two Jack
+     has now seen and rejected, chosen by him after seeing both.
+     #F0EEE8 (the original) and #F1F0EB were cool enough to go green-grey
+     under warm accents, which reads as the page receding. Sand #EFE7D7 went
+     the other way - distinctly beige, and it pulled the whole palette down
+     with it, because five tokens are measured against the ground and all
+     five had to darken to keep AA.
+     The trap in landing here: it is warm enough to need the SAND-era
+     companions, not the cool ones. accent-ink #BE4137 measures 4.45:1 on
+     this ground and muted #6E6C64 4.46:1 - both just under AA - so the
+     darker #B73F35 and #6A6861 are not optional. A midpoint ground does not
+     get midpoint companions; it gets whichever set still clears 4.5. */
+  --white: #F0ECE1;   /* warm ivory - page ground, flips to near-black */
   --accent: #CF625A;  /* muted coral */
   /* --accent is the DISPLAY coral: big type, borders, drop shadows. It
-     measures 3.32:1 on ivory, which clears the 3:1 that large text and UI
+     measures 3.21:1 on the ground, which clears the 3:1 that large text and UI
      borders need and misses the 4.5:1 that body text needs - so accent-ink
      is the darkened version for small text and accent-on is what sits on a
      solid coral fill. White fails there (3.79:1), near-black does not.
-     Measured: accent-ink 4.60:1 on ivory, accent-on 4.97:1 on coral. */
-  --accent-ink: #BE4137;
-  --accent-on: #111117;
+     Measured: accent-ink 4.71:1 on the ground, accent-on 4.60:1 on coral. */
+  --accent-ink: #B73F35;
+  --accent-on: #1A1A18;
   /* The tertiary. On the fixed ink slabs (about, footer, pong) this is the
-     bright chip; on ivory it is a quiet fill behind hovers. Light resolves
+     bright chip; on the ground it is a quiet fill behind hovers. Light resolves
      it to the same stone as --line on purpose - one neutral does both
      jobs there - while dark needs a loud third colour and uses lime. */
-  --highlight: #C9C5BA;
-  --blue: #657FB9;    /* dusty blue - 3.48:1 on ivory, so UI and large type */
+  --highlight: #CBC4B4;
+  --blue: #657FB9;    /* dusty blue - 3.36:1 on the ground, so UI and large type */
   /* The small yellow accent, and a GRAPHIC one only: it colours two of the
-     nine hero shapes and appears nowhere else. 2.01:1 on ivory, so it can
+     nine hero shapes and appears nowhere else. 1.94:1 on the ground, so it can
      never carry text or an outline that has to be read - its whole job is
      being the third hue that stops the hero reading as coral-and-blue.
      This is not the superseded --yellow (#fffb00), which was dropped for
      being the loudest thing on the page; an amber this dark stays inside
-     "lively but controlled". Charcoal on it is 7.11:1 if it ever has to
+     "lively but controlled". The ink on it is 7.37:1 if it ever has to
      become a fill with a label on top. */
   --accent-warm: #D9A227;
-  --green: #1F8F4D;   /* availability dot - 3.61:1 on ivory, a non-text UI mark */
+  --green: #1F8F4D;   /* availability dot - 3.49:1 on the ground, a non-text UI mark */
   /* Chip fills for the about-page skill tags. These have to be tokens: the
      overlay's background is var(--white), which flips with the theme, so a
      hardcoded dark tint vanished completely in dark mode. */
-  --chip: rgba(32, 32, 30, 0.07);
-  --chip-lead: rgba(32, 32, 30, 0.24);
-  /* fixed ink/paper: do NOT flip with theme — used by graphic "chip"
-     elements (marquee, loader, about slab, footer) that pair with the
-     --highlight accent and must stay guaranteed-readable in both modes.
-     --ink matches the dark theme's ground so the two agree; --paper stays
-     a touch lighter than the ground so menus and the loader read as sitting
-     ABOVE the page rather than merging into it. */
-  --ink: #111117;
-  --paper: #F7F5F0;   /* a step above the ground, not a hue of its own */
+  --chip: rgba(26, 26, 24, 0.07);
+  --chip-lead: rgba(26, 26, 24, 0.24);
+  /* --ink and --paper are the graphic "chip" pair: the marquee, the loader,
+     the about slab, the footer and pong are always a dark surface with light
+     type, in BOTH themes, so these never invert the way --black/--white do.
+     --ink is dark in both themes - but which dark is now the theme's own.
+     Light takes --black's #1A1A18, because a strip of #111117 beside a
+     #1A1A18 button is two blacks on one screen and reads as a mistake.
+     Dark keeps #111117, which is the dark ground exactly, so the about slab
+     and the marquee go on being part of the page rather than panels laid on
+     top of it. Both are dark, so everything that pairs --paper, --highlight
+     or --muted-ink on --ink stays readable - which is the guarantee this
+     pair exists for, and it survives the value changing.
+     --paper stays a touch lighter than the ground so menus and the loader
+     read as sitting ABOVE the page rather than merging into it. */
+  --ink: #1A1A18;
+  --paper: #F7F3EB;   /* a step above the ground, warmed with it */
   /* GREY SYSTEM — added so the site isn't purely 0%/100% black-white.
      Warm-neutral (R≈G>B) to match the slightly warm off-white --paper
      tone rather than a cold blue-grey. Two roles, each themed like
@@ -131,8 +150,8 @@ button, input, textarea, select { font-family: inherit; }
          heavy black structural borders that still mark primary structure
      Contrast-checked against the surfaces they're meant to sit on:
      --muted ≥ 4.8:1 on --white/--black (passes WCAG AA for normal text). */
-  --muted: #6E6C64;   /* 4.61:1 on ivory - clears AA for body text */
-  --line: #C9C5BA;    /* stone - dividers, not structure */
+  --muted: #6A6861;   /* 4.72:1 on the ground - clears AA for body text */
+  --line: #CBC4B4;    /* stone - dividers, not structure */
   /* fixed grey for de-emphasized text specifically on the fixed --ink
      slabs (about section, footer-adjacent chrome) — parallels the
      ink/paper convention above since those surfaces don't flip with
@@ -151,7 +170,7 @@ button, input, textarea, select { font-family: inherit; }
      from a change nowhere near this token. Measured now: 7.06:1 on paper,
      4.53:1 on the warm stone, 7.03:1 on the lime --highlight resolves to in
      dark mode. */
-  --warn-ink: #952E25;
+  --warn-ink: #932D25;
   /* 'Noto Sans JP' is appended to every stack rather than swapped in for
      Japanese: CSS font fallback resolves per glyph, so Latin characters
      still render in Archivo Black / Anton / Space Grotesk and only the
@@ -175,7 +194,8 @@ button, input, textarea, select { font-family: inherit; }
 :root[data-theme="dark"] {
   /* DARK PALETTE - near-black ground, off-white ink, and three neons kept
      tasteful by being used sparingly rather than by being dimmed. All three
-     clear AA as text on the ground: pink 5.16:1, blue 6.60:1, lime 16.64:1. */
+     clear AA as text on the ground: pink 5.16:1, blue 6.60:1, lime 16.64:1.
+     (Those are against the dark ground, which has not moved.) */
   --black: #F4F2F5;   /* off-white foreground */
   --white: #111117;   /* near-black ground */
   /* BACK to the hot pink the site had before the repalette (#ff2d55), at
@@ -189,14 +209,14 @@ button, input, textarea, select { font-family: inherit; }
      not to be one palette with swapped values.
      It costs some headroom and none of it matters: on the ground it is
      5.16:1 against the bubblegum's 6.39, which still clears AA for text,
-     and --accent-on on top of it is the same 5.16 where 4.5 is the bar.
+     and --accent-on on top of it is 4.78 where 4.5 is the bar.
      Still never anything near-white on it - paper is 3.35:1. */
   --accent: #ff2d55;  /* neon pink */
   /* the neon already clears AA as text on this ground, so there is nothing
      to darken; what fails here is WHITE on top of it (3.35:1), and the
      near-black ground reads at 5.16:1 instead */
   --accent-ink: #ff2d55;
-  --accent-on: #111117;
+  --accent-on: #1A1A18;   /* the one black, same as light - see the note there */
   --highlight: #DDFF67;  /* lime */
   --blue: #8190FF;       /* electric blue */
   /* dark's yellow runs hot like the rest of this palette: 12.19:1 on the
@@ -206,6 +226,12 @@ button, input, textarea, select { font-family: inherit; }
      pointing at var(--yellow) for a release after the rename. */
   --accent-warm: #FFC847;
   --green: #3DE88A;
+  /* --ink flips now (see the note in :root). Dark's value is the ground
+     itself, so the marquee, the about slab and the footer stay part of the
+     page instead of becoming panels sitting on it. Without this line dark
+     would inherit light's #1A1A18 and every one of those surfaces would
+     turn into a slightly-lighter rectangle. */
+  --ink: #111117;
   --muted: #9C9AA3;   /* 6.78:1 on the near-black ground */
   --line: #33333D;
   /* light tint on the dark ground, and a touch stronger: a 7% wash that
@@ -2028,9 +2054,10 @@ body.is-loading { overflow: hidden; }
 }
 /* --ink, not --black, on the highlight. --black INVERTS with the theme - it
    is off-white in dark mode - so inheriting it would have laid near-white
-   text on the lime the moment anyone switched themes. --ink is #111117 in
-   both themes and the highlight is light in both, so one declaration covers
-   them: ~11:1 on the light-mode stone, ~16:1 on the dark-mode lime. */
+   text on the lime the moment anyone switched themes. --ink is dark in BOTH
+   themes (it changes value between them now, but never inverts) and the
+   highlight is light in both, so one declaration covers them: 10.04:1 on the
+   light-mode stone, 16.64:1 on the dark-mode lime. */
 @media (hover: hover) {
   .prose-link:hover {
     background: var(--highlight);
@@ -2617,33 +2644,25 @@ body.is-loading { overflow: hidden; }
 .stat:first-child { padding-left: 0; border-left: 0; }
 .stat { display: flex; flex-direction: column; gap: 7px; }
 
-/* ONE HUE PER NUMBER, left to right. All four used to be var(--highlight),
-   which in light mode resolves to stone - four grey numbers on a near-black
-   slab, which is how the row ended up reading as dead ("so numb") once the
-   rest of the light palette stopped shouting. Four cells with a rule between
-   each is already a series; giving each its own colour is what makes it a
-   series of distinct facts rather than one grey block.
-   The slab is the FIXED --ink, so these do not have to mirror anything and
-   both themes get to use their own hues: light runs coral / dusty blue /
-   amber, dark runs hot pink / electric blue / amber. Measured on --ink,
-   lowest first - light: blue 4.74, coral 4.97, amber 8.19. Dark: blue 6.60,
-   pink 5.16, amber 12.19. Every one of those clears 4.5:1, which these do
-   not even need at ~36px, so there is headroom in both themes.
-   Order is deliberate: the accent leads, and the amber - the quietest hue
-   in the set everywhere else on the page - lands on "countries visited",
-   the one number that is not about work. */
+/* ONE COLOUR, all four, and it is the accent.
+   This row has now been three things. var(--highlight) made it four grey
+   numbers in light mode, because light resolves that to stone - dead. A hue
+   per cell fixed the greyness and broke something worse: four figures in
+   four colours is four separate things, and a reader counts the colours
+   before reading the numbers. They are one fact about one person, and a
+   series is held together by its rhythm - four cells, three rules, one
+   typeface, one size - not by variety.
+   The accent rather than paper or stone because it is the only option that
+   is legible in both themes AND means something: it is the colour of the
+   full stop in the name and of the card hover, so the numbers now point at
+   the same thing the rest of the page points at. Paper would be correct and
+   silent, which is where this started.
+   4.60:1 on the slab in light, 4.78:1 in dark. Both clear AA for body text,
+   which type at ~36px does not even need. */
 .stat-num {
   font-family: var(--ff-display); font-size: clamp(1.75rem, 2.5vw, 2.3rem);
-  letter-spacing: -0.02em; color: var(--highlight); line-height: 1;
+  letter-spacing: -0.02em; color: var(--accent); line-height: 1;
 }
-.about-stats .stat:nth-child(1) .stat-num { color: var(--accent); }
-.about-stats .stat:nth-child(2) .stat-num { color: var(--blue); }
-.about-stats .stat:nth-child(3) .stat-num { color: var(--accent-warm); }
-/* Milan is the one cell holding a word rather than a number, and the only
-   one that is about now rather than about the past. It stays on paper
-   (16.72:1) so the three coloured numbers read as a set of three and this
-   reads as the aside it is - the hue would make it a fourth data point. */
-.about-stats .stat.is-now .stat-num { color: var(--paper); }
 .stat-label { font-size: 0.74rem; font-weight: 400; letter-spacing: 1px; color: var(--muted-ink); }
 /* Between a laptop and a desktop a fixed 420px panel takes too big a bite
    out of the reading column, so it scales with the viewport until it is
@@ -2784,27 +2803,28 @@ body.is-loading { overflow: hidden; }
 .magnetic-letter {
   display: inline-block;
   will-change: transform;
-  /* A coral glow with a blue halo behind it, in place of a 10px var(--highlight)
-     one. --highlight is stone in light mode, so that was a grey blur on a
-     near-white page: visible only as a slight smudge, and the reason the
-     whole headline read as lifeless. Two layers because one never looks like
-     light - the tight one is the colour, the wide one is the air around it.
-     Alpha, not the flat token: a solid coral at 26px would fringe the glyph
-     edges on an off-white ground. */
+  /* A coral glow with a blue halo behind it, in place of a 10px
+     var(--highlight) one. --highlight is stone in light mode, so that was a
+     grey blur on a near-white page: visible only as a slight smudge, and the
+     reason the whole headline read as lifeless.
+     Three layers, same structure as dark's: tight for the colour, mid for
+     the fall-off, wide for the air. The glow is carrying ALL of this line's
+     colour now that the letters do not, so it is stronger than it was - but
+     the tight layer stays under 60% alpha, because a solid coral hugging a
+     near-black glyph on a near-white page stops reading as light and starts
+     reading as print that missed registration. */
   text-shadow:
-    0 0 14px color-mix(in srgb, var(--accent) 48%, transparent),
-    0 0 36px color-mix(in srgb, var(--blue) 24%, transparent);
+    0 0 12px color-mix(in srgb, var(--accent) 58%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent) 26%, transparent),
+    0 0 62px color-mix(in srgb, var(--blue) 22%, transparent);
 }
-/* The second row carries the accent. This is the page's last line before the
-   contact band and the one place a full-width display statement can take a
-   hue without competing with anything, and the split works in every
-   language because the row break is in the copy: "LET'S MAKE / SOMETHING.",
-   "HAGAMOS / ALGO JUNTOS.", "なにか / つくろう。", "CREIAMO / QUALCOSA.".
-   The payoff half is always row two, so the rule is on the row, not on a
-   word count that only holds in English.
-   Coral on the light ground is 3.32:1, and at 13rem this is as far past the
-   24px large-text threshold as the page gets. */
-.magnetic-row:last-child .magnetic-letter { color: var(--accent); }
+/* The letters stay the foreground colour - the GLOW is the coloured part.
+   Setting the second row in the accent was tried and it was worse: at 13rem
+   a coral half-sentence stops being a headline and becomes a highlighted
+   phrase, and the two rows read as two different voices rather than one
+   line that happens to break. The glow does the whole job, because colour
+   around the letterform reads as light on the type while colour inside it
+   reads as a change of subject. */
 
 /* CONTACT — bg is a fixed accent red regardless of theme, so its
    internal tones stay on fixed ink/paper to guarantee AA contrast */
@@ -3189,7 +3209,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
      the 4.5:1 a 35px button label needs. The near-black ground colour reads
      5.16:1 on it. (This is the hot pink again - the figures were 2.94 and
      6.39 while the bubblegum #FF55AA was live.) */
-  background: #ff2d55; color: #111117;
+  background: #ff2d55; color: #1A1A18;
   border: 4px solid #DDFF67;
   padding: 32px 56px;
   font-family: var(--ff-display); font-size: clamp(1.4rem, 3vw, 2.2rem); letter-spacing: 2px;
@@ -3249,7 +3269,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   animation: chaos-play-jitter 0.4s steps(2) infinite;
 }
 #pongRematch {
-  background: #ff2d55; color: #000;
+  background: #ff2d55; color: #1A1A18;
   border: 2px dashed #DDFF67;
   padding: 10px 20px;
   font-family: var(--ff-display); font-size: 0.8rem; letter-spacing: 1.5px;
@@ -3434,14 +3454,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
     0 0 46px color-mix(in srgb, var(--accent) 45%, transparent),
     0 0 90px color-mix(in srgb, var(--blue) 38%, transparent);
 }
-/* and in dark the accent row glows in its own colour rather than borrowing
-   the off-white's - currentColor is the point of writing it this way */
-:root[data-theme="dark"] .magnetic-row:last-child .magnetic-letter {
-  text-shadow:
-    0 0 20px color-mix(in srgb, currentColor 90%, transparent),
-    0 0 52px color-mix(in srgb, currentColor 50%, transparent),
-    0 0 96px color-mix(in srgb, var(--blue) 30%, transparent);
-}
+
 
 /* jagged star/spike hero shapes — dark mode swaps smooth circles/squares/
    triangles for sharp, aggressive geometry (rebuilt in JS on theme change) */
