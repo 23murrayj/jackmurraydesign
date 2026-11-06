@@ -2052,7 +2052,11 @@ if (pongCanvas) {
   function pongLoop() {
     if (!pongRunning) return;
     // player paddle moves a bit faster than before (was 5) so quick
-    // returns feel responsive instead of always trailing the ball
+    // returns feel responsive instead of always trailing the ball.
+    // A drag sets p1Y directly (see the pointer handlers below), so these
+    // two only ever fight each other if someone holds a key while dragging,
+    // and the key wins for that frame - which is what a person doing both
+    // at once would expect.
     if (keys['ArrowUp'] || keys['w'] || keys['W']) p1Y -= 6.5;
     if (keys['ArrowDown'] || keys['s'] || keys['S']) p1Y += 6.5;
     p1Y = Math.max(0, Math.min(H - PLAYER_PADDLE_H, p1Y));
@@ -2155,6 +2159,59 @@ if (pongCanvas) {
     pongWindow.classList.remove('open');
     pongRunning = false;
   }
+  /* DRAG TO PLAY. This was keyboard-only, which on a phone meant the egg
+     menu handed you a game with no way to play it - the window opened, the
+     CPU scored five times, and that was the whole experience. Removing it
+     below some width was the other option and it is the worse one: a
+     portfolio that drops a feature on mobile rather than adapting it is
+     making an argument its own case studies disagree with.
+     The paddle centres on the pointer rather than stepping like the keys do,
+     because a finger is an absolute position and a key is a direction. Drag
+     anywhere on the canvas, not just on the paddle - at 375 the board scales
+     to about 337px and the paddle displays ~7px wide, which is nothing to
+     aim at, and you are watching the ball anyway.
+     Pointer events rather than touch events so one path covers finger, pen
+     and mouse; dragging with a mouse now works too, which it never did.
+     setPointerCapture keeps a drag alive when it slides off the canvas -
+     easy to do when the board is 90vw. The canvas also carries
+     touch-action: none (styles.css), or a vertical drag scrolls the page
+     out from under the game instead of moving the paddle. */
+  let pongPointerId = null;
+  function pongPointerY(e) {
+    const rect = pongCanvas.getBoundingClientRect();
+    // the canvas is 480x320 internally and displayed at whatever max-width
+    // leaves it, so a client coordinate scales by the DISPLAYED height
+    return (e.clientY - rect.top) * (H / rect.height);
+  }
+  function movePaddleTo(y) {
+    p1Y = Math.max(0, Math.min(H - PLAYER_PADDLE_H, y - PLAYER_PADDLE_H / 2));
+  }
+  pongCanvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    pongPointerId = e.pointerId;
+    pongCanvas.setPointerCapture(e.pointerId);
+    movePaddleTo(pongPointerY(e));
+  });
+  pongCanvas.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== pongPointerId) return;
+    movePaddleTo(pongPointerY(e));
+  });
+  function endPongDrag(e) { if (e.pointerId === pongPointerId) pongPointerId = null; }
+  pongCanvas.addEventListener('pointerup', endPongDrag);
+  pongCanvas.addEventListener('pointercancel', endPongDrag);
+
+  /* The footer names the controls, so on a touch device it has to name the
+     one that exists. Swapping the data-i18n attribute rather than the text
+     means i18n.apply() keeps resolving it on every language change, with no
+     listener to remember - it reads the attribute live. The textContent is
+     set here as well because i18n.js already ran its first apply() by the
+     time this file executes. */
+  const pongFooter = document.querySelector('.pong-footer');
+  if (pongFooter && window.matchMedia('(pointer: coarse)').matches) {
+    pongFooter.setAttribute('data-i18n', 'pong.controlsTouch');
+    pongFooter.textContent = T.t('pong.controlsTouch');
+  }
+
   chaosPlayBtn?.addEventListener('click', openPong);
   pongClose?.addEventListener('click', closePong);
   pongRematch?.addEventListener('click', startPongGame);

@@ -233,7 +233,10 @@
       'pong.win': 'YOU WIN',
       'pong.lose': 'CPU WINS',
       'pong.rematch': 'REMATCH ▶',
-      'pong.controls': '↑/↓ OR W/S TO MOVE, FIRST TO 5'
+      'pong.controls': '↑/↓ OR W/S TO MOVE, FIRST TO 5',
+      // shown instead on a touch device, where the other one names two
+      // inputs the visitor does not have - see the pointer control in script.js
+      'pong.controlsTouch': 'DRAG TO MOVE, FIRST TO 5'
     },
 
     /* ---------------------------------------------------------------- ES */
@@ -443,7 +446,8 @@
       'pong.win': 'GANASTE',
       'pong.lose': 'GANA LA CPU',
       'pong.rematch': 'REVANCHA ▶',
-      'pong.controls': '↑↑/↓ O W/S PARA MOVER, PRIMERO A 5'
+      'pong.controls': '↑/↓ O W/S PARA MOVER, PRIMERO A 5',
+      'pong.controlsTouch': 'ARRASTRA PARA MOVER, PRIMERO A 5'
     },
 
     /* ---------------------------------------------------------------- JA */
@@ -653,7 +657,8 @@
       'pong.win': 'あなたの勝ち',
       'pong.lose': 'CPUの勝ち',
       'pong.rematch': 'もう一回 ▶',
-      'pong.controls': '↑/↓ または W/S で移動, 5点先取'
+      'pong.controls': '↑/↓ または W/S で移動, 5点先取',
+      'pong.controlsTouch': 'ドラッグで移動, 5点先取'
     },
 
     /* ---------------------------------------------------------------- IT */
@@ -863,7 +868,8 @@
       'pong.win': 'HAI VINTO',
       'pong.lose': 'VINCE LA CPU',
       'pong.rematch': 'RIVINCITA ▶',
-      'pong.controls': '↑/↓ O W/S PER MUOVERTI, PRIMO A 5'
+      'pong.controls': '↑/↓ O W/S PER MUOVERTI, PRIMO A 5',
+      'pong.controlsTouch': 'TRASCINA PER MUOVERE, PRIMO A 5'
     }
   };
 

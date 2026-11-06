@@ -394,6 +394,17 @@ four languages whenever you size display type.**
   Read the element's own class, never the caller's flag.
 - Touch targets ≥44px. Use an invisible `::before` to extend a hit area rather
   than inflating a control.
+- **Every interaction has a touch path, including the easter eggs.** Pong was
+  keyboard-only for a release, so on a phone the egg menu opened a game with
+  no way to play it — the CPU scored five times and that was the experience.
+  It takes a drag now (pointer events, so one path covers finger, pen and
+  mouse; `touch-action: none` on the canvas or the drag scrolls the page
+  instead). Removing it below a breakpoint was the other option and it is the
+  worse one: **a portfolio that drops a feature on mobile rather than adapting
+  it is arguing against its own case studies.** If a control names its inputs,
+  the label has to follow the device too — `.pong-footer` swaps its
+  `data-i18n` key to `pong.controlsTouch` on a coarse pointer, which keeps
+  working across language changes because `apply()` reads the attribute live.
 - Four languages (en/es/ja/it), ~764 keys. **Every user-facing string goes in
   `i18n.js` in all four.** `data-i18n` sets textContent; `data-i18n-html` for
   markup; `data-i18n-aria`, `data-i18n-alt`, `data-i18n-tip`.
