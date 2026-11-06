@@ -307,18 +307,30 @@ four languages whenever you size display type.**
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
   Behind `.hero-grid` (z 0 vs 2) and `pointer-events: none`.
-- **The field reaches past the hero**, 216px down, to the rule under SELECTED
-  PROJECTS, so the marquee reads as a seam and not a lid. Three things make
-  that work together: `.hero` is `overflow: clip visible` (NOT `hidden
+- **The field reaches past the hero**, 306px down, to the top of the first
+  card — through the heading AND the filter row, so the hero thins out across
+  three bands (strip, heading, tags) rather than ending twice. Three things
+  make that work together: `.hero` is `overflow: clip visible` (NOT `hidden
   visible`, which computes to auto and makes it a scroll container — three
   sticky elements depend on that not happening), `.hero-shapes` is
-  `inset: 0 0 -216px 0`, and **`.work` carries no background** — it was
+  `inset: 0 0 -306px 0`, and **`.work` carries no background** — it was
   `var(--white)`, the same colour body already paints, and an opaque one
   there covers the field. `.work` is positioned and later in the DOM, so its
   content still paints over the shapes, which is what keeps the cards clean.
-  **That 216 tracks `#work .section-head`'s `padding-top` (64px).** The two
-  move together — the field is supposed to stop AT that rule, so changing the
-  heading's offset without matching this leaves the field hanging short of it.
+  **That 306 is measured from the hero's box to the first card**, so it tracks
+  everything between: `#work .section-head`'s `padding-top` (64px) and the
+  `.filters` row (40px/10px padding plus chip height). Change any of those and
+  re-measure. Being a px value against a row that can wrap, it stops partway
+  up the filter row on a phone instead of at the cards — the right failure,
+  since the shapes are dialled back below 760 anyway.
+- **Small text and controls inside the field's reach get an opaque
+  background.** Three now: the availability badge, `#work .section-num`, and
+  the filter chips. The chips' text was never the problem (`--black` over even
+  a vivid shape is 6.13:1) — a shape drifting through an outlined chip makes
+  it read as busy rather than as a control, and these have to stay
+  unambiguously clickable. The 2px border is what makes the occlusion read
+  right: the chip is an object in front, so a shape behind it should be hidden
+  rather than showing through.
 - **They are allowed to drift across the type, and that is settled.** A build
   that held them out of the name, the right column, the nav and the marquee —
   measured boxes, envelope-reserving placement, a per-frame clamp — spread
@@ -351,7 +363,9 @@ four languages whenever you size display type.**
 - **"LET'S MAKE / SOMETHING." carries its colour in the GLOW, not the type.**
   Three layered blooms in both themes (tight / fall-off / spill) because a
   single 16px shadow around a 200px letter is a rim, not a neon sign, and the
-  headline read as white and lifeless. Setting row two in `--accent` was tried
+  headline read as white and lifeless. Four layers each, now that the glow is
+  the only colour on the line and Jack asked for it to carry further. Setting
+  row two in `--accent` was tried
   and rejected: at 13rem a coral half-sentence stops being a headline and
   becomes a highlighted phrase, and the two rows read as two voices rather
   than one line that happens to break. **Colour around the letterform reads as
@@ -366,10 +380,14 @@ four languages whenever you size display type.**
   is the only option legible in both themes that also *means* something: it is
   the colour of the full stop in the name. **Don't give them a hue each
   again.**
-- **The card hover is small on purpose.** `translate(-4px, -6px)` and a 12px
+- **The card hover is small on purpose.** `translate(-4px, -6px)` and an 8px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to
-  say "clickable" when the shadow already says it. Do not grow it again.
+  say "clickable" when the shadow already says it. The shadow then stayed at
+  12px for a round after the lift came down, which was its own bug — a 4/6px
+  lift under a 12px block casts further than the card moved, so it reads as a
+  sticker laid on the page rather than a card that rose off it. **Keep the
+  shadow in proportion to the lift.** Do not grow either again.
 - Controls that open menus use `aria-expanded`; the theme control is
   `role="switch"` + `aria-checked`.
 - Menus close on outside click, Escape, and scrolling away (40px threshold).

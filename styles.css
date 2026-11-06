@@ -795,20 +795,26 @@ body.is-loading { overflow: hidden; }
 }
 .hero-shapes {
   position: absolute;
-  /* Down to the rule under SELECTED PROJECTS, not to the hero's own foot.
-     Measured at 1440: the 4px rule under the heading sits 218px below the
-     hero's box, so -216px stops the field within 2px of it and the filters
-     and cards take over from there. They cover
+  /* Down to the top of the first card, not to the hero's own foot.
+     Measured at 1440: the first card's top edge sits 307px below the hero's
+     box, so -306px stops the field 1px short of it. It used to stop at the
+     heading's rule, 218px down, which made that rule a hard line the field
+     died at; carrying it through the filter row instead lets the hero thin
+     out across three bands - strip, heading, tags - rather than ending
+     twice. Past this point the cards take over and they cover
      it rather than clipping it - .work comes later in the DOM and is
      positioned, so its content paints over this, which is also why .work
      can no longer carry a background of its own (body's is the same colour
      and sits behind everything).
-     This number is 26px larger than it was because #work .section-head's
-     padding-top went 38px -> 64px in the same pass. The two move together:
-     the whole point is for the field to stop AT that rule, so a change to
-     the heading's offset that is not matched here leaves the field hanging
-     short of it. */
-  inset: 0 0 -216px 0;
+     This number is measured from the hero's box to the first card, so it
+     tracks EVERYTHING between them: #work .section-head's padding-top (64px)
+     and the .filters row's height and padding (40px top, 10px bottom).
+     Change any of those and re-measure, or the field stops in the wrong
+     place. It is a px value against a row that can wrap, so on a narrow
+     screen, where the filters take two lines, the field stops partway up
+     that row instead of at the cards - the right failure, since the shapes
+     are already dialled back below 760. */
+  inset: 0 0 -306px 0;
   z-index: 0;
   /* Behind everything and untouchable: .hero-grid is z-index 2, so the
      shapes cannot cover the name or the right column, and pointer-events
@@ -1299,7 +1305,17 @@ body.is-loading { overflow: hidden; }
 }
 .filter-btn {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px;
-  background: transparent; border: 2px solid var(--black); color: var(--black);
+  /* Opaque, not transparent. The hero's shape field now runs past this row
+     to the first card, and these are 12.8px chips: the text itself is safe
+     either way (--black over even a vivid shape measures 6.13:1), but a
+     coral circle drifting through an outlined chip makes it read as busy
+     rather than as a control, and these have to stay unambiguously
+     clickable. Same answer as the availability badge and the 01 / PROJECTS
+     eyebrow - paint the page ground, invisible on open page and solid where
+     it matters. The 2px border is what makes the occlusion read correctly:
+     the chip is an object in front, so a shape passing behind it should be
+     hidden rather than showing through. */
+  background: var(--white); border: 2px solid var(--black); color: var(--black);
   padding: 10px 18px; cursor: pointer;
   transition: background .25s, color .25s, transform .2s;
 }
@@ -1341,7 +1357,11 @@ body.is-loading { overflow: hidden; }
        card in the left column that travels far sideways runs past the
        viewport edge and is clipped there. */
     transform: translate(-4px, -6px) rotate(-0.4deg);
-    box-shadow: 12px 12px 0 var(--black);
+    /* 8, not 12. The lift came down a round ago and the shadow did not, so
+       the block was casting further than the card had actually moved - a
+       4/6px lift under a 12px shadow reads as a sticker laid on the page
+       rather than a card that rose off it. */
+    box-shadow: 8px 8px 0 var(--black);
     z-index: 5;
   }
 }
@@ -2814,9 +2834,10 @@ body.is-loading { overflow: hidden; }
      near-black glyph on a near-white page stops reading as light and starts
      reading as print that missed registration. */
   text-shadow:
-    0 0 12px color-mix(in srgb, var(--accent) 58%, transparent),
-    0 0 30px color-mix(in srgb, var(--accent) 26%, transparent),
-    0 0 62px color-mix(in srgb, var(--blue) 22%, transparent);
+    0 0 14px color-mix(in srgb, var(--accent) 76%, transparent),
+    0 0 34px color-mix(in srgb, var(--accent) 42%, transparent),
+    0 0 72px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 104px color-mix(in srgb, var(--blue) 24%, transparent);
 }
 /* The letters stay the foreground colour - the GLOW is the coloured part.
    Setting the second row in the accent was tried and it was worse: at 13rem
@@ -3413,7 +3434,10 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   /* tracks the base rule's offset - this one is more specific and declared
      later, so a stale 18px here would put the two themes on different lifts */
   :root[data-theme="dark"] .card:hover {
-    box-shadow: 12px 12px 0 var(--black), 0 0 34px color-mix(in srgb, var(--accent) 45%, transparent);
+    /* tracks the light rule's offset - this one is more specific and
+       declared later, so a stale 12px here would put the two themes on
+       different shadows */
+    box-shadow: 8px 8px 0 var(--black), 0 0 30px color-mix(in srgb, var(--accent) 42%, transparent);
   }
 }
 /* Dark keeps the neon bloom at rest and loses the hard offset block with
@@ -3450,9 +3474,10 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    for the magnet physics. */
 :root[data-theme="dark"] .magnetic-letter {
   text-shadow:
-    0 0 18px color-mix(in srgb, var(--accent) 85%, transparent),
-    0 0 46px color-mix(in srgb, var(--accent) 45%, transparent),
-    0 0 90px color-mix(in srgb, var(--blue) 38%, transparent);
+    0 0 16px color-mix(in srgb, var(--accent) 100%, transparent),
+    0 0 40px color-mix(in srgb, var(--accent) 70%, transparent),
+    0 0 78px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 0 130px color-mix(in srgb, var(--blue) 34%, transparent);
 }
 
 
