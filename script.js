@@ -114,7 +114,7 @@ updateScrollProgress();
 const projectData = {
   'cat-coaching': {
     bg: '#f2a71b',
-    thumb: { src: 'assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1 },
+    thumb: { src: 'assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: 'assets/projects/cat-coaching/thumb-800.jpg' },
     category: 'UX/UI',
     title: 'CATERPILLAR UX CHALLENGE',
     desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
@@ -145,7 +145,7 @@ const projectData = {
     // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
     // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
     // 2x the 717px it renders at — it read soft on a retina screen.
-    thumb: { src: 'assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050 },
+    thumb: { src: 'assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: 'assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
     title: 'EASTER AT RIVERSIDE',
     desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
@@ -183,7 +183,7 @@ const projectData = {
     // so the logotype isn't cropped. The gameplay still lives in the video.
     // cropped in ~1.2x on the logo rather than upscaled back to 1400 — the card
     // renders at 717px, so these are the real pixels and nothing is invented
-    thumb: { src: 'assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1 },
+    thumb: { src: 'assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1, small: 'assets/projects/fuse-partners-in-crime/cover-banner-800.jpg' },
     category: 'UX/UI',
     alsoIn: ['MOTION'],
     title: 'PARTNERS IN CRIME',
@@ -209,7 +209,7 @@ const projectData = {
     // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
     // wordmark runs nearly edge to edge, so letting the card frame crop the
     // 16:9 version would cut the ends off the word the project is named after.
-    thumb: { src: 'assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050 },
+    thumb: { src: 'assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: 'assets/projects/sandcastles/thumb-800.jpg' },
     category: 'GRAPHICS',
     title: 'SANDCASTLES',
     desc: "Sermon series identity applied across stage screens, social, and print.",
@@ -240,7 +240,7 @@ const projectData = {
     // export, so the card frame fits it exactly and nothing is cover-cropped.
     // altIndex points the alt text at that photo; without it the thumbnail
     // inherits alt.1, which describes a different photograph entirely.
-    thumb: { src: 'assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9 },
+    thumb: { src: 'assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9, small: 'assets/projects/monmouth-retreat/thumb-800.jpg' },
     category: 'PHOTOGRAPHY',
     title: 'MONMOUTH RETREAT',
     desc: "Candid photography from a worship team's retreat in Monmouth.",
@@ -343,7 +343,7 @@ const projectData = {
     // the card, while lower leads with the dark ship hulls instead of the
     // city. altIndex 1 resolves to alt.1, which is its own string
     // rather than the poster's — this crop excludes the ships alt.2 describes.
-    thumb: { src: 'assets/projects/oasis-journey/thumb.jpg', w: 1400, h: 1049, altIndex: 1 },
+    thumb: { src: 'assets/projects/oasis-journey/thumb.jpg', w: 1400, h: 1049, altIndex: 1, small: 'assets/projects/oasis-journey/thumb-800.jpg' },
     category: 'MOTION',
     title: 'JOURNEY TO THE OASIS',
     desc: "3D animated short created as an early motion and storytelling project.",
@@ -421,6 +421,21 @@ function mediaTag(entry, projectId, index, projectTitle) {
   const alt = resolveAlt(entry, projectId, index, projectTitle);
   const dims = (typeof entry === 'object' && entry.w && entry.h)
     ? ` width="${entry.w}" height="${entry.h}"` : '';
+  /* A second, smaller copy for small screens, where the full one is a waste
+     of most of its pixels: a card is the full width of a phone, so about
+     375 CSS px, which even at 2x device pixels wants 750 - against a 1400px
+     file. The set is 2090KB at full size and 703KB at 800, and the 800 is
+     still 2x for that card, so nothing visible is lost.
+     800 rather than 700 on purpose: the browser picks the first candidate
+     that meets the device's requirement, and a 750px requirement would skip
+     a 700 and take the 1400 anyway.
+     'sizes' describes the CARD grid specifically - full width below 800px
+     where .gallery is one column, half above it where it is two - so only
+     thumbs carry 'small'. A gallery photo inside a project would need its
+     own sizes and does not have one. */
+  const srcset = (typeof entry === 'object' && entry.small && entry.w)
+    ? ` srcset="${escapeAttr(entry.small)} 800w, ${escapeAttr(src)} ${entry.w}w"`
+      + ` sizes="(max-width: 800px) 100vw, 50vw"` : '';
   // An alt that came from the translation file has to be re-resolved when the
   // language changes. Stamping the project id and image index lets that happen
   // in place — re-rendering instead would restart any playing video and drop
@@ -440,7 +455,7 @@ function mediaTag(entry, projectId, index, projectTitle) {
     ? ` data-exif="${escapeAttr(entry.exif)}"` : '';
   // explicit width/height reserve the box so images don't shift the layout
   // as they decode; lazy loading keeps a 20-photo set off the critical path
-  return `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${track}${full}${exif}` +
+  return `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${srcset}${track}${full}${exif}` +
          ` loading="lazy" decoding="async">`;
 }
 
@@ -776,8 +791,22 @@ projectBack.addEventListener('click', closeProject);
 // title, or the explicit "read more" button
 const aboutOverlay = document.getElementById('aboutOverlay');
 const aboutBack = document.getElementById('aboutBack');
+/* The panel's photos carry data-src rather than src (see index.html), so
+   they cost nothing until someone opens it. Runs before the class is added,
+   so the request is in flight as the slide starts rather than after it, and
+   it is a no-op on every open after the first. content-visibility: hidden
+   was tried for this first and does not work: it computes, but the engine
+   leaves contain: none and the subtree stays laid out, so the images fetch
+   anyway. Holding the URL back is the only version that is actually true. */
+function loadAboutPhotos() {
+  aboutOverlay.querySelectorAll('img[data-src]').forEach((img) => {
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+  });
+}
 function openAboutPage(e) {
   e?.preventDefault();
+  loadAboutPhotos();
   aboutOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
   // Reset the PANEL's own scroll, not the window's. Scrolling the window to 0

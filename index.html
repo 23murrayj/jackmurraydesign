@@ -526,7 +526,14 @@
            own intrinsic height to the row, so on a wide screen the picture set
            the row height instead of the text and hung below the button. -->
       <div class="about-photo-frame">
-        <img class="about-photo" src="assets/about/jack-portrait.jpg"
+        <!-- data-src, not src. These three photos are 1.6MB between them and
+             they live in an overlay nobody has opened yet - but a closed
+             overlay sits at translateY(100%), one viewport down, which is
+             inside the range loading="lazy" fetches, so all three downloaded
+             on the home page. openAboutPage() swaps them in. The width and
+             height stay here so the panel reserves the right space the moment
+             it opens. -->
+        <img class="about-photo" data-src="assets/about/jack-portrait.jpg"
              width="900" height="1871" loading="lazy" decoding="async"
              data-i18n-alt="aboutpage.photoAlt"
              alt="Jack with a camera in a Milan palazzo courtyard, red threads strung between the arches behind him.">
@@ -579,11 +586,11 @@
          width/ratio lands on the same height for both. Change either photo and
          they still line up. -->
     <div class="about-photos">
-      <img class="wide" src="assets/about/jack-hiking.jpg" width="1600" height="900"
+      <img class="wide" data-src="assets/about/jack-hiking.jpg" width="1600" height="900"
            loading="lazy" decoding="async"
            data-i18n-alt="aboutpage.bandAlt"
            alt="Jack on a grassy ridge in the Dolomites with jagged peaks behind him.">
-      <img class="square" src="assets/about/jack-easter-team.jpg" width="1400" height="1365"
+      <img class="square" data-src="assets/about/jack-easter-team.jpg" width="1400" height="1365"
            loading="lazy" decoding="async"
            data-i18n-alt="aboutpage.teamAlt"
            alt="Jack and the Riverside creative team in front of the printed Easter at Riverside photo wall.">

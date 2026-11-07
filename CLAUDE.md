@@ -518,6 +518,44 @@ up from there. Markup holds the truth, JS holds the animation — not the other
 way round. If you add another count-up, ticker or type-on effect, do it the
 same way.
 
+## Performance
+
+Measured 2026-11-07. The first load is ~1.5MB and images are almost all of
+it; the text is 142KB gzipped (CSS 57, JS 38, i18n 31, HTML 16) and the
+fonts about 45KB.
+
+- **A hidden overlay still downloads its images.** The project and about
+  panels sit at `translateY(100%)` — exactly one viewport down, which is
+  inside the range `loading="lazy"` fetches. The about panel's three photos
+  (1.6MB) were downloading on the home page for everyone. They carry
+  `data-src` now and `openAboutPage()` swaps them in.
+  **`content-visibility: hidden` does NOT fix this** — it was tried first.
+  It computes, but the engine leaves `contain: none`, the subtree stays laid
+  out (`scrollHeight` 2730 on a "hidden" panel) and the images fetch anyway.
+  Holding the URL back is the only version that is actually true.
+- **Card thumbs ship at two sizes.** `small:` in `projectData` points at an
+  800px copy and `mediaTag` emits `srcset` + `sizes`. A card is full-width on
+  a phone, so even at 2x it wants 750px against a 1400px file; the set is
+  2090KB full size and 703KB at 800. 800 and not 700 because the browser
+  takes the first candidate that MEETS the requirement, so a 750 requirement
+  skips a 700 and takes the 1400. Verified: phones pick `-800`, a 1440
+  desktop at 2x picks the full file, so nothing visible is lost.
+- **Cache headers are in `vercel.json`.** Fonts are `immutable` for a year.
+  Everything else under `/assets/` gets an hour fresh plus a week of
+  `stale-while-revalidate`, so a changed photo appears within the hour and
+  a repeat visit still pays no round trip. It was `max-age=0,
+  must-revalidate`, which revalidated every asset on every visit.
+- **No WebP/AVIF, and not for lack of trying.** This machine has no
+  ffmpeg, ImageMagick or cwebp, and `sips` can read WebP but not write it
+  (`sips --formats` lists it without "Writable"). Re-encoding the JPEGs at
+  full size is also a bad trade with sips: quality 80 barely moves a 547KB
+  file and quality 60 halves it but is too low for a photography portfolio.
+  **If you ever get image tooling, WebP/AVIF on the thumbs is the biggest
+  remaining win.**
+- Not done, and deliberately: `i18n.js` ships all four languages (31KB
+  gzipped) to everyone. Splitting it costs a round trip and a loading state
+  on the one thing that must never flash untranslated.
+
 ## Coding conventions
 
 - **Comments explain *why*, with the measurement that justified it.** This
