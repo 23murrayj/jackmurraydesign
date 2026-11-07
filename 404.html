@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Page not found — Jack Murray</title>
+<!-- The body copy used to end "Everything lives on the one page anyway",
+     which stopped being true when /work/<id> and /about became real URLs.
+     A 404 that misdescribes the site is worse than a plain one. -->
 <meta name="robots" content="noindex">
 <link rel="icon" href="/assets/meta/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/meta/apple-touch-icon.png">
@@ -129,14 +132,17 @@
 <body>
   <div class="shapes" id="shapes" aria-hidden="true"></div>
   <p class="code">4<span>0</span>4</p>
-  <h1>This page doesn't exist.</h1>
-  <p>The link may be out of date, or the address might have a typo in it. Everything lives on the one page anyway.</p>
-  <a class="home" href="/">BACK TO THE PORTFOLIO</a>
+  <h1 data-i18n="e404.heading">This page doesn't exist.</h1>
+  <p data-i18n="e404.body">The link may be out of date, or the address might have a typo in it.</p>
+  <a class="home" href="/" data-i18n="e404.home">BACK TO THE PORTFOLIO</a>
 
 <!-- The hero's floating shapes, inlined. Same behaviour - drift, repel from
-     the cursor, flash green while pushed, smooth geometry in light mode and
-     jagged stars in dark - but self-contained, because the whole point of
-     this file is that it renders when script.js is the thing that 404'd.
+     the cursor, smooth geometry in light mode and jagged stars in dark -
+     but self-contained, because the whole point of this file is that it
+     renders when script.js is the thing that 404'd.
+     No colour flash on push: that was cut from the hero field (green belongs
+     to the availability dot) and a 404 that behaves differently from the
+     site is its own small bug.
      It is pure decoration in an aria-hidden container, so if this script
      never runs the page is exactly what it was before. -->
 <script>
@@ -145,7 +151,6 @@
   if (!box) return;
 
   var SVG = 'http://www.w3.org/2000/svg';
-  var FLASH = 'var(--green)';
   var darkQ = window.matchMedia('(prefers-color-scheme: dark)');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = window.matchMedia('(pointer: fine)').matches;
@@ -242,7 +247,7 @@
         phase: Math.random() * Math.PI * 2,
         rotSpeed: (Math.random() - 0.5) * (darkQ.matches ? 30 : 18),
         rotation: Math.random() * 360,
-        offsetX: 0, offsetY: 0, flashed: false
+        offsetX: 0, offsetY: 0
       };
     });
     if (reduced) place();
@@ -287,8 +292,6 @@
       s.offsetX += (pushX - s.offsetX) * 0.08;
       s.offsetY += (pushY - s.offsetY) * 0.08;
 
-      if (near && !s.flashed) { s.flashed = true; s.el.style.color = FLASH; }
-      else if (!near && s.flashed) { s.flashed = false; s.el.style.color = s.baseColor; }
 
       s.rotation += s.rotSpeed * (near ? 2.4 : 1) * dt;
 
@@ -304,6 +307,25 @@
   if (reduced) window.addEventListener('resize', place);
   else requestAnimationFrame(frame);
 })();
+</script>
+<!-- Loaded last and deliberately optional. The strings above are the English
+     fallback, already in the markup, so if this file is itself missing the
+     page is exactly what it was. i18n.js null-checks the language switcher,
+     which this page does not have, so all it does here is translate. -->
+<script src="/i18n.js"></script>
+<!-- i18n's apply() sets document.title from html.title, which is the SITE
+     title - correct everywhere except here, where the tab should say the
+     page was not found. apply() runs on DOMContentLoaded and again on every
+     language change, and listeners fire after it, so this re-asserts the
+     title at both moments rather than racing it. -->
+<script>
+  (function () {
+    if (!window.I18N) return;
+    function setTitle() { document.title = I18N.t('e404.title') || document.title; }
+    document.addEventListener('DOMContentLoaded', setTitle);
+    I18N.onChange(setTitle);
+    setTitle();
+  })();
 </script>
 </body>
 </html>

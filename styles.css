@@ -72,6 +72,21 @@ button, input, textarea, select { font-family: inherit; }
    layout already expects and nothing else has to change. */
 picture { display: contents; }
 
+/* Available to a screen reader, invisible to everyone else. The page had no
+   such class until the filter count needed one - everything else that is
+   hidden here is hidden from EVERYBODY, which is a different thing.
+   clip-path plus 1px rather than display:none or visibility:hidden: both of
+   those remove the element from the accessibility tree as well, which would
+   silence the live region this exists for. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 :root {
   /* LIGHT PALETTE - warm ivory ground, near-black ink, muted coral, dusty
      blue, stone. The old flat red and pure yellow were the two loudest

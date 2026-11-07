@@ -402,18 +402,32 @@
     <span class="section-num" data-i18n="work.num">01 / PROJECTS</span>
   </div>
 
-  <div class="filters reveal" id="filters">
+  <!-- role=group + a label, so the set announces as one thing rather than
+       five loose buttons appearing between the heading and the grid.
+       aria-pressed rather than role=radio: radio would be the tighter match
+       for "exactly one at a time", but it also commits to arrow-key
+       navigation between the options, and a half-implemented radiogroup is
+       worse for a screen-reader user than honest toggle buttons. The class
+       alone told nobody which filter was on - that state was visible only as
+       a fill, which is the same bug the language menu was fixed for. -->
+  <div class="filters reveal" id="filters" role="group" data-i18n-aria="filter.aria" aria-label="Filter projects by category">
     <!-- Only categories that actually have projects get a button: a filter
          that leads to an empty grid reads as a broken site, not an empty one.
          BRANDING and WEB are sitting in i18n.js ready for when there's work
          to put under them. Order leads with UX/UI, which is the positioning
          the hero and the about page both claim. -->
-    <button class="filter-btn active" data-filter="ALL" data-i18n="filter.ALL">ALL</button>
-    <button class="filter-btn" data-filter="UX/UI" data-i18n="filter.UX/UI">UX/UI</button>
-    <button class="filter-btn" data-filter="GRAPHICS" data-i18n="filter.GRAPHICS">GRAPHICS</button>
-    <button class="filter-btn" data-filter="PHOTOGRAPHY" data-i18n="filter.PHOTOGRAPHY">PHOTOGRAPHY</button>
-    <button class="filter-btn" data-filter="MOTION" data-i18n="filter.MOTION">MOTION</button>
+    <button class="filter-btn active" aria-pressed="true" data-filter="ALL" data-i18n="filter.ALL">ALL</button>
+    <button class="filter-btn" aria-pressed="false" data-filter="UX/UI" data-i18n="filter.UX/UI">UX/UI</button>
+    <button class="filter-btn" aria-pressed="false" data-filter="GRAPHICS" data-i18n="filter.GRAPHICS">GRAPHICS</button>
+    <button class="filter-btn" aria-pressed="false" data-filter="PHOTOGRAPHY" data-i18n="filter.PHOTOGRAPHY">PHOTOGRAPHY</button>
+    <button class="filter-btn" aria-pressed="false" data-filter="MOTION" data-i18n="filter.MOTION">MOTION</button>
   </div>
+  <!-- Filtering is a visual change with nothing to hear: the grid goes from
+       six cards to one and a screen-reader user gets silence. This says how
+       many are left. role=status is polite, so it waits for a pause rather
+       than interrupting, and it is the only thing on the page that needs to
+       be announced without being seen. -->
+  <p class="sr-only" id="filterStatus" role="status" aria-live="polite"></p>
 
   <div class="gallery" id="gallery">
     <!-- Cards are generated from projectData in script.js (see renderGallery).

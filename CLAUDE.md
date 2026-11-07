@@ -512,8 +512,21 @@ is most of the point.
 
 ## UX rules
 
-- **State lives in one place.** The language button shows the translate mark
-  only; which language is on is told by the menu's marked option + `aria-current`.
+- **State lives in one place, and a class is not state.** The language button
+  shows the translate mark only; which language is on is told by the menu's
+  marked option + `aria-current`. The filters carry `aria-pressed` for the
+  same reason — they had only the `.active` class, so the current filter was
+  visible as a fill and announced as nothing. `aria-pressed` rather than
+  `role="radio"`: radio is the tighter match for "exactly one at a time" but
+  commits to arrow-key navigation between the options, and a
+  half-implemented radiogroup is worse than honest toggle buttons.
+- **A visual-only change needs saying out loud.** Filtering takes the grid
+  from six cards to one with no sound at all, so `#filterStatus`
+  (`role="status"`, `.sr-only`) announces the count. Singular and plural are
+  separate keys, not "1 project(s)" — three of the four languages are not
+  English. `.sr-only` uses `clip-path` and 1px rather than `display: none`,
+  which would take the live region out of the accessibility tree and silence
+  the thing it exists for.
 - Cards are one object: photo badge, title, tags, and the action bar all
   respond together. Tags are plain text — as pills, people clicked them
   instead of the card.
@@ -573,6 +586,28 @@ is most of the point.
 - Four languages (en/es/ja/it), ~764 keys. **Every user-facing string goes in
   `i18n.js` in all four.** `data-i18n` sets textContent; `data-i18n-html` for
   markup; `data-i18n-aria`, `data-i18n-alt`, `data-i18n-tip`.
+
+## Accessibility: what is already right
+
+Checked by driving the page, not by reading the markup — and two things that
+*looked* broken were not, so verify the same way before "fixing" them:
+
+- **Dialogs trap focus.** There is a real Tab handler keyed off
+  `dialogStack`; eight Tabs forward and three Shift+Tabs back never leave an
+  open panel. Counting tabbable elements behind the overlay does NOT show
+  this — they are all still in the DOM, just unreachable.
+- **Focus returns to the trigger.** `deactivateDialog` restores it, verified
+  by focusing a card, pressing Enter, then Escape: focus lands back on the
+  exact card. Testing with a programmatic `.click()` shows focus going to
+  `<body>` instead, because a scripted click never focuses the element —
+  that is the test being wrong, not the page.
+- Overlays are `inert` while closed, `aria-modal`, scroll-locked while open.
+- 16 `prefers-reduced-motion` blocks; every hover behind `@media (hover: hover)`.
+- The honeypot is `aria-hidden`, `tabindex="-1"` and parked at -9999px.
+
+**Known gap, not yet fixed:** `.reveal` starts at `opacity: 0` and only JS
+reveals it, with no `<noscript>` fallback — 19 blocks, including the about
+statement and the contact form. With JS blocked most of the page is blank.
 
 ## Machine readers are an audience
 

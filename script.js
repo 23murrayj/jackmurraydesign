@@ -537,20 +537,43 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 // go stale the moment the gallery is re-rendered and filtering would
 // silently stop matching anything
 const galleryCards = () => document.querySelectorAll('.gallery .card');
+const filterStatus = document.getElementById('filterStatus');
 filterBtns.forEach((btn) => {
   btn.addEventListener('click', () => {
-    filterBtns.forEach((b) => b.classList.remove('active'));
+    filterBtns.forEach((b) => {
+      b.classList.remove('active');
+      // the class is the paint, aria-pressed is the state. Both, every time,
+      // or the two drift and the announcement stops matching the screen
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     const filter = btn.dataset.filter;
+    let shown = 0;
     galleryCards().forEach((card) => {
       // a space-separated list now, so one project can sit under more than
       // one filter — the VR game is interface work and motion work both
       const match = filter === 'ALL' ||
         card.dataset.category.split(' ').includes(filter);
       card.classList.toggle('hidden-card', !match);
+      if (match) shown++;
     });
+    announceFilterCount(shown);
   });
 });
+
+/* Say how many are left. Filtering is otherwise a silent change: the grid
+   goes from six cards to one and a screen-reader user has no way to know
+   anything happened, let alone whether the category was empty.
+   Singular and plural are separate keys rather than a "1 project(s)" fudge,
+   because three of the four languages are not English and two of them do
+   not pluralise the way it does. */
+function announceFilterCount(n) {
+  if (!filterStatus) return;
+  filterStatus.textContent = n === 1
+    ? T.t('filter.count.one')
+    : T.tf('filter.count.many', { n: n });
+}
 
 
 // project detail overlay open/close
