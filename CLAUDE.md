@@ -350,7 +350,20 @@ four languages whenever you size display type.**
     `document.startViewTransition()` snapshots before and after, and a
     `clip-path` circle animated on `::view-transition-new(root)` reveals the
     new theme from the centre of the switch, radius to the furthest viewport
-    corner so it always finishes off-screen. 620ms on the page's own curve.
+    corner so it always finishes off-screen. 450ms on the page's own curve —
+    this is a control people press repeatedly to compare the two modes, not
+    a one-off reveal, so it is short; below ~350 it reads as a flash rather
+    than a wipe.
+    **`.theme-instant` goes on for the length of the snapshot** and that is
+    not optional. The new snapshot is captured the instant the callback
+    returns, which is also the instant ~51 elements start their OWN colour
+    transitions — so without it the capture freezes them at their old
+    colours and the wipe reveals a new page wearing an old badge, old chips
+    and an old nav. The badge showed it worst, because its own transition
+    covers `background` and `color` but **not** `border-color`: the border
+    arrived instantly and the fill lagged, so it read as two different boxes
+    stacked on each other. Suppressing transitions makes every element final
+    before the capture, and nothing animates when the class comes off.
     The CSS at the end of `styles.css` turns OFF both default pseudo
     animations — leaving the cross-fade on runs it under the wipe and turns
     a clean edge into a dissolve. `mix-blend-mode: normal` matters as much:
@@ -380,6 +393,28 @@ four languages whenever you size display type.**
   observable there. Verify the logic by stubbing `document.startViewTransition`
   and `Element.prototype.animate` and asserting the keyframes, origin, radius,
   duration and which path was taken — not by watching.
+
+## The loading skeleton
+
+It exists to make the handover invisible, so **it is only as good as its last
+measurement** — and it has drifted badly twice. Re-measure it against the
+real hero whenever the hero changes, at 1440 AND at 375.
+
+- **`.sk-hero` must mirror `.hero`'s `min-height: 80vh`, not `flex: 1`.**
+  The loader is a fixed full-viewport box, so `flex: 1` made the skeleton
+  hero 900px tall at a 900px window against the real 720. Both centre their
+  group inside themselves, and centring the same content in 900 instead of
+  720 put every landmark **87px low**. This was by far the biggest jump.
+- Everything else is mirrored by hand and therefore goes stale: the grid's
+  `padding-bottom` (86 desktop / 64 stacked), the strip's height (38, and
+  full-bleed by the marquee's own `calc(50% - 50vw)`), the CTA's width (226
+  at every width now it is shrink-wrapped), the role line's height (83
+  desktop, 79 stacked — it is sized in `cqw` off its column, so it really
+  does change), and the first name bar's width (61%, because the ink runs
+  548 against MURRAY.'s 900).
+- The way to check is to capture the skeleton's boxes before it is removed,
+  then the real ones after, and diff them. Current state: exact at 1440 on
+  grid/CTA/strip, within 2px at 375, within 4px at 1024.
 
 ## UX rules
 
@@ -422,6 +457,14 @@ four languages whenever you size display type.**
   Read the element's own class, never the caller's flag.
 - Touch targets ≥44px. Use an invisible `::before` to extend a hit area rather
   than inflating a control.
+- **A theme change must not change layout.** It did: `.hero-grid`'s 6px
+  bottom border was zeroed in dark instead of just hiding the bar its
+  `::after` draws, so the hero was 6px shorter in dark and the marquee and
+  every section below it moved on each switch. Under the wipe that is worse
+  than a jump — the two snapshots disagree about where everything below the
+  hero is, and the circle's edge drags a 6px step across the page. The
+  marquee's own padding carries the same fix for the same reason. Verify by
+  diffing every landmark's box between themes; it should come back empty.
 - **Every interaction has a touch path, including the easter eggs.** Pong was
   keyboard-only for a release, so on a phone the egg menu opened a game with
   no way to play it — the CPU scored five times and that was the experience.

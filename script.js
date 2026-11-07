@@ -1099,14 +1099,32 @@ function switchTheme(theme) {
     Math.max(y, window.innerHeight - y)
   );
 
-  // No .theme-switching here on purpose. Under the wipe the live page is
-  // hidden behind a static snapshot, so cross-fading its colours at the same
-  // time buys nothing and would double the effect for the frame after the
-  // circle finishes.
+  /* .theme-instant for the length of the snapshot, and this one is not
+     optional. The new snapshot is captured the moment the callback returns -
+     and 51 elements on this page carry their own colour transitions (the
+     badge is .25s on background and color, the cards, the chips, the nav,
+     the form fields). Those transitions START at the callback, so at capture
+     time every one of them still computes its OLD colour, and the snapshot
+     freezes it that way for the whole wipe: inside the circle you get a new
+     page with an old badge drawn on it. Worse for the badge specifically,
+     whose border-color is NOT in its transition list - the border arrives
+     instantly and the fill lags, so it reads as two different boxes stacked
+     on each other. That is the artifact Jack reported.
+     Killing transitions makes every element final before the capture, so
+     the snapshot is simply the new theme. Nothing animates when the class
+     comes off again, because everything is already where it belongs.
+     No .theme-switching here either: under the wipe the live page is hidden
+     behind a static snapshot, so cross-fading it as well buys nothing. */
+  const root = document.documentElement;
+  root.classList.add('theme-instant');
   const transition = document.startViewTransition(() => applyTheme(theme));
+  // ready settles once the snapshots exist and the pseudo tree is built, so
+  // it is the earliest safe point to let transitions back in. finally, not
+  // then: a skipped transition rejects, and the class still has to come off.
+  transition.ready.finally(() => root.classList.remove('theme-instant'));
   transition.ready
     .then(() => {
-      document.documentElement.animate(
+      root.animate(
         {
           clipPath: [
             `circle(0px at ${x}px ${y}px)`,
@@ -1114,9 +1132,14 @@ function switchTheme(theme) {
           ],
         },
         {
-          duration: 620,
+          duration: 450,
           easing: 'cubic-bezier(.32, .72, 0, 1)',
-          // the same curve the rest of the page eases on - fast out of the
+          // 450, down from 620. This is a control people press repeatedly to
+          // compare the two modes, not a one-off reveal, and a transition you
+          // sit through twice in five seconds should be short. 450 still
+          // reads as a travelling edge; below ~350 it starts to look like a
+          // flash rather than a wipe.
+          // The same curve the rest of the page eases on - fast out of the
           // switch, long settle, so the wipe arrives rather than sweeps
           pseudoElement: '::view-transition-new(root)',
         }

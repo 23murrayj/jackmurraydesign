@@ -357,7 +357,14 @@ a { color: inherit; text-decoration: none; }
    same reason it is there: the hero centres its whole group, strip included,
    so leaving the strip outside put every landmark ~79px too high. */
 .sk-hero {
-  flex: 1 1 auto; min-height: 0;
+  /* min-height: 80vh and NOT flex: 1. This is the single biggest source of
+     handover jump there has been: the loader is a fixed, full-viewport box,
+     so flex: 1 made this 900px tall at a 900px window while the real .hero
+     is 80vh = 720px. Both centre their group inside themselves, and centring
+     the same content in 900 instead of 720 put every landmark 87px low -
+     the name, the badge, the role line and the CTA all of it.
+     Mirror the real rule exactly and the arithmetic takes care of itself. */
+  flex: none; min-height: 80vh;
   /* .hero's own padding and centring: the 110px clears the fixed nav, and the
      hero centres its whole group - grid and marquee strip together. */
   padding: 110px 5vw 0;
@@ -388,14 +395,20 @@ a { color: inherit; text-decoration: none; }
   align-items: end;
   gap: 40px;
   border-bottom: 6px solid var(--ink);
-  padding-bottom: 50px;
+  /* 86, mirroring .hero-grid. It was 50 from before the marquee was opened
+     up into a seam, which put the strip 36px high of where the page then
+     drew it. */
+  padding-bottom: 86px;
 }
 .sk-name { display: flex; flex-direction: column; }
 /* one line of .hero-name: its clamp() x its 0.84 line-height, less a 6px gap
    so the two bars read as two lines instead of fusing into one L-shape */
 .sk-title {
   height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84 - 6px);
-  width: 72%;
+  /* 61%, measured: the two lines are JACK and MURRAY., and the h1's box is
+     the width of the longer one. At 1440 the ink runs 548 and 900, so the
+     first bar is 548/900 of the second. 72% drew JACK 100px too wide. */
+  width: 61%;
   margin-bottom: 6px;
 }
 /* full height on the second bar: the 6px gap is taken out of the first one's
@@ -416,35 +429,48 @@ a { color: inherit; text-decoration: none; }
    67/50/71 were left over from the cycling one-line tagline and were out by
    31px on the badge alone, which is the kind of handover jump this whole
    skeleton exists to avoid. */
-.sk-badge { height: 36px; width: min(84%, 300px); margin-bottom: 30px; }
+.sk-badge { height: 36px; width: min(83%, 296px); margin-bottom: 30px; }
 .sk-line  { height: 83px; width: min(96%, 336px); margin-bottom: 44px; }
 .sk-cta   { height: 62px; width: 226px; }  /* the real button, measured at 1440 */
 
-/* the strip pulls 1px into the grid's border, exactly as the marquee does */
-.sk-strip { flex: none; height: 80px; margin-top: -1px; }
+/* The strip pulls 1px into the grid's border, exactly as the marquee does -
+   and like the marquee it is FULL BLEED and 38px tall. It was 80px tall and
+   inset by the hero's 5vw, so the loader drew a tall panel where the page
+   draws a thin band edge to edge: 42px too tall and 144px too narrow at
+   1440. The margins are the marquee's own calc, which cancels whatever
+   padding the parent has at any width. */
+.sk-strip {
+  flex: none; height: 38px; margin-top: -1px;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
 
 /* Tracks .hero-grid's stacking breakpoint, which moved to 1280 when the
    standing role line made a 162px side column unusable. If these two drift
    apart the loader shows a two-column hero and the page then renders a
    stacked one, so the layout visibly jumps at the handover. */
 @media (max-width: 1280px) {
-  /* .hero-grid's own stacked settings */
+  /* .hero-grid's own stacked settings - 64, not 40: it tracks the real
+     rule, which opened up with the marquee seam. */
   .sk-hero-grid {
     grid-template-columns: 1fr;
     align-items: start;
     gap: 30px;
-    padding-bottom: 40px;
+    padding-bottom: 64px;
   }
   .sk-side { padding-bottom: 0; }
   .sk-title { width: min(62%, 560px); }
   .sk-title-2 { width: min(94%, 860px); }
-  /* heights are the same stacked - these controls are fixed-size - so only
-     the width caps change, to stop three bars stretching across a 922px
-     column they never fill. Measured at 375: badge 324 (Spanish), role 320
-     (Italian), CTA 264 (Italian). */
-  .sk-badge { width: min(88%, 324px); }
-  .sk-line  { width: min(95%, 336px); }
-  .sk-cta   { width: min(72%, 264px); }
+  /* Width caps so three bars don't stretch across a 922px column they never
+     fill, and the role line's own height, which DOES change stacked: it is
+     sized in cqw off its column, so two lines come out 83px at 1440 and 79
+     at 375. The badge and the CTA are fixed-size and keep their heights.
+     Measured at 375: badge 296, role 286 wide and 79 high, CTA 226 - the
+     CTA is 226 at every width now that it is shrink-wrapped rather than
+     filling the column, so the old 264 cap drew it 17px too wide here. */
+  .sk-badge { width: min(88%, 296px); }
+  .sk-line  { width: min(95%, 286px); height: 79px; }
+  .sk-cta   { width: 226px; }
 }
 @media (max-width: 760px) {
   /* .hero-name's own mobile clamp */
@@ -3425,9 +3451,17 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 }
 /* the neon belongs here, on the ground that can carry it, and nowhere else */
 :root[data-theme="dark"] .marquee-track span { color: var(--highlight); }
-/* the hero grid's 6px ink rule is the top of that black mass in light mode;
-   in dark mode it would leave an invisible ink gap above the new top rule */
-:root[data-theme="dark"] .hero-grid { border-bottom-width: 0; }
+/* The hero grid's 6px ink rule is the top of that black mass in light mode.
+   Dark draws its own 2px rules on the marquee instead, so the bar is hidden
+   here - but ONLY the bar. The border itself stays at 6px and stays
+   transparent, because it is holding layout: zeroing the width as well made
+   the hero 6px shorter in dark than in light, which moved the marquee and
+   every section under it by 6px on every theme switch. Under a cross-fade
+   that was a small jump; under the view-transition wipe it is worse, because
+   the two snapshots then disagree about where everything below the hero is
+   and the circle's edge drags a 6px step across the page.
+   The marquee's own padding comment two rules up records the same bug being
+   fixed for the strip. A theme change must not change layout. */
 :root[data-theme="dark"] .hero-grid::after { display: none; }
 
 :root[data-theme="dark"] .marquee-track span,
@@ -3891,4 +3925,20 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   ::view-transition-new(root) {
     animation: none !important;
   }
+}
+
+/* Every transition off, for the few milliseconds either side of a view
+   transition's snapshot. switchTheme adds this before startViewTransition
+   and drops it once .ready settles.
+   The snapshot is taken the instant the callback returns, which is also the
+   instant 51 elements start their own colour transitions - so without this
+   the capture freezes them at their OLD colours and the wipe reveals a new
+   page wearing an old badge, old chips and an old nav. Suppressing the
+   transitions makes every element final before the capture. Nothing
+   animates when the class is removed, because nothing is left to animate. */
+:root.theme-instant,
+:root.theme-instant *,
+:root.theme-instant *::before,
+:root.theme-instant *::after {
+  transition: none !important;
 }
