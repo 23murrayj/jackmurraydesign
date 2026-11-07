@@ -2022,9 +2022,23 @@ body.is-loading { overflow: hidden; }
 /* the pair between the intro and the timeline: everything below here is text,
    and the page needs a breath before it */
 .about-photos { display: flex; gap: 20px; margin: 0 0 80px; }
-.about-photos img {
-  height: auto; min-width: 0; display: block; object-fit: cover;
+/* The <picture> is the flex item here, not the <img>, and the sizing classes
+   are on it to match (see index.html).
+   picture { display: contents } is the global default and it is right nearly
+   everywhere - but not where the image is a flex or grid ITEM. Measured with
+   it: this pair came to 861px inside a 922px row against the 902 it should
+   fill, because the items were being stretched to equal height and
+   aspect-ratio then derived their widths from that height instead of from
+   flex-grow. Unwrapping the pictures in the live DOM put it back to exactly
+   570 + 332 + 20, which is how the cause was pinned down.
+   Giving the wrapper a box and letting the image fill it is the version that
+   does not depend on how transparent display: contents happens to be. */
+.about-photos picture {
+  display: block; min-width: 0;
   border: 4px solid var(--black);
+}
+.about-photos img {
+  width: 100%; height: 100%; display: block; object-fit: cover;
 }
 .about-photos .wide { flex: 1.778 1 0; aspect-ratio: 16/9; }
 .about-photos .square { flex: 1.026 1 0; aspect-ratio: 1400/1365; }

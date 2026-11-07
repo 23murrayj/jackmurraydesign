@@ -1192,7 +1192,18 @@ function switchTheme(theme) {
         },
         {
           duration: 450,
-          easing: 'cubic-bezier(.32, .72, 0, 1)',
+          /* ease-out, NOT the page's own cubic-bezier(.32,.72,0,1). That
+             curve is "fast out, long settle", which is right for a colour
+             change and wrong for a wipe: measured, it put the circle 78% of
+             the way across at a quarter of the duration and 95% at half, so
+             all the travel happened in the first ~100ms and the rest was an
+             invisible crawl in the far corner. At 450ms that read as no
+             animation at all, which is exactly what Jack reported.
+             ease-out spreads it - 38% / 68% / 91% at the quarters - so the
+             edge is visibly moving for the whole duration. The wipe's
+             subject is the travel; the settle it was borrowing belongs to
+             something that is changing in place. */
+          easing: 'cubic-bezier(0, 0, .58, 1)',
           // 450, down from 620. This is a control people press repeatedly to
           // compare the two modes, not a one-off reveal, and a transition you
           // sit through twice in five seconds should be short. 450 still

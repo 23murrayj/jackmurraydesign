@@ -350,10 +350,18 @@ four languages whenever you size display type.**
     `document.startViewTransition()` snapshots before and after, and a
     `clip-path` circle animated on `::view-transition-new(root)` reveals the
     new theme from the centre of the switch, radius to the furthest viewport
-    corner so it always finishes off-screen. 450ms on the page's own curve —
-    this is a control people press repeatedly to compare the two modes, not
-    a one-off reveal, so it is short; below ~350 it reads as a flash rather
-    than a wipe.
+    corner so it always finishes off-screen. 450ms, short because this is a
+    control people press repeatedly to compare the two modes rather than a
+    one-off reveal.
+    **The easing is `ease-out`, NOT the page's `--theme-ease`.** That curve
+    is "fast out, long settle", which is right for something changing in
+    place and wrong for a wipe, where the travel IS the subject: measured,
+    it put the circle 78% across at a quarter of the duration and 95% at
+    half, so all the motion happened in the first ~100ms and the rest was an
+    invisible crawl in the far corner. Jack reported the animation as simply
+    "gone". ease-out gives 38% / 68% / 91% at the quarters, so the edge is
+    visibly moving the whole time. **If the wipe ever looks dead again,
+    check the easing before the duration.**
     **`.theme-instant` goes on for the length of the snapshot** and that is
     not optional. The new snapshot is captured the instant the callback
     returns, which is also the instant ~51 elements start their OWN colour
@@ -550,11 +558,22 @@ fonts about 45KB.
   quality 85, which measures 37–39dB PSNR against the JPEG — the same
   picture. The home page went from ~2.3MB of JPEG to 961KB of WebP.
   Three things to know before touching it:
-  - **`picture { display: contents }` is load-bearing.** A `<picture>` is
-    `display: inline` by default, so it — not the `<img>` — becomes the flex
-    or grid item and every rule written against the image stops applying.
-    It broke exactly that way first time: `.about-photos .square` is a flex
-    item and the photo fell back to its intrinsic 1400×1365.
+  - **`picture { display: contents }` is the default and it is not enough
+    where the image is a flex or grid ITEM.** A `<picture>` is
+    `display: inline` otherwise, so it — not the `<img>` — becomes the item
+    and every rule written against the image stops applying; `contents`
+    fixes that for the common case. But it is not fully transparent: with it,
+    `.about-photos` came to 861px inside a 922px row against the 902 it
+    should fill, because the items were stretched to equal height and
+    `aspect-ratio` then derived their widths from the height instead of from
+    `flex-grow`. Unwrapping the pictures in the live DOM restored 570 + 332 +
+    20 exactly, which is how it was pinned down.
+    **Where an image is a flex or grid item, put the sizing class on the
+    `<picture>`, give it `display: block`, and let the `<img>` fill it**
+    (`width/height: 100%`, `object-fit: cover`). That is `.about-photos`.
+    The about-page portrait is NOT one of these: its grid item is
+    `.about-photo-frame`, and its `object-fit`/`object-position` rules have
+    to stay on the image, so it keeps `display: contents`.
   - **The `.webp` path is the `.jpg` path with the extension swapped**, which
     only works because every inline jpg has a sibling webp. A `<picture>`
     falls back when a browser cannot DECODE a type, not when a file 404s, so

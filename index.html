@@ -592,16 +592,19 @@
          width/ratio lands on the same height for both. Change either photo and
          they still line up. -->
     <div class="about-photos">
-      <picture>
+      <!-- the sizing class goes on the <picture>, not the <img>: these two are
+           flex items here and grid items under 760, and the element that IS
+           the item has to be the one carrying flex/grid/aspect-ratio. -->
+      <picture class="wide">
         <source type="image/webp" data-srcset="assets/about/jack-hiking.webp">
-        <img class="wide" data-src="assets/about/jack-hiking.jpg" width="1600" height="900"
+        <img data-src="assets/about/jack-hiking.jpg" width="1600" height="900"
              loading="lazy" decoding="async"
              data-i18n-alt="aboutpage.bandAlt"
              alt="Jack on a grassy ridge in the Dolomites with jagged peaks behind him.">
       </picture>
-      <picture>
+      <picture class="square">
         <source type="image/webp" data-srcset="assets/about/jack-easter-team.webp">
-        <img class="square" data-src="assets/about/jack-easter-team.jpg" width="1400" height="1365"
+        <img data-src="assets/about/jack-easter-team.jpg" width="1400" height="1365"
              loading="lazy" decoding="async"
              data-i18n-alt="aboutpage.teamAlt"
              alt="Jack and the Riverside creative team in front of the printed Easter at Riverside photo wall.">
