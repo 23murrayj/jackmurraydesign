@@ -344,14 +344,42 @@ four languages whenever you size display type.**
 - Theme is applied by a **blocking inline script in `<head>`**, before first
   paint. Without it the page painted light then transitioned to dark over
   250ms on every load.
-- **The switch itself runs on one clock.** `switchTheme()` (not `applyTheme`,
-  which also runs on load) adds `.theme-switching` to `<html>` for
-  `--theme-dur`, and a blanket rule puts every element on `--theme-dur` /
-  `--theme-ease` for colour properties only. Before this the page changed
-  theme in passes — body over .35s, cards .25s, filter buttons .2s, the
-  section rules and marquee not at all. Two carve-outs: the knob gets
-  `transform` back (it has to travel), and `.hero-shapes .shape` does not (JS
-  writes its transform every frame, and a transition makes the field smear).
+- **The switch is a circular wipe out of the control, with a fallback.**
+  `switchTheme()` (not `applyTheme`, which also runs on load) has two paths:
+  - **View Transitions**, when the browser has them and motion is allowed.
+    `document.startViewTransition()` snapshots before and after, and a
+    `clip-path` circle animated on `::view-transition-new(root)` reveals the
+    new theme from the centre of the switch, radius to the furthest viewport
+    corner so it always finishes off-screen. 620ms on the page's own curve.
+    The CSS at the end of `styles.css` turns OFF both default pseudo
+    animations — leaving the cross-fade on runs it under the wipe and turns
+    a clean edge into a dissolve. `mix-blend-mode: normal` matters as much:
+    the default `plus-lighter` blends the snapshots additively, which on a
+    near-white to near-black page blows the overlap out to white.
+    **No `.theme-switching` on this path** — the live page is behind a static
+    snapshot, so cross-fading it as well buys nothing.
+  - **The coordinated cross-fade**, for no-VT browsers and for reduced
+    motion, where a 600ms wipe across the viewport is the thing the setting
+    exists to prevent. Adds `.theme-switching` to `<html>` for
+    `--theme-dur`; a blanket rule puts every element on `--theme-dur` /
+    `--theme-ease` for colour properties only. Before this the page changed
+    theme in passes — body over .35s, cards .25s, filter buttons .2s, the
+    section rules and marquee not at all. Two carve-outs: the knob gets
+    `transform` back (it has to travel), and `.hero-shapes .shape` does not
+    (JS writes its transform every frame, and a transition makes it smear).
+- **The hero field is positioned the moment it is built** (`placeShapes()` at
+  the end of `buildShapes()`), not on the next animation frame. That one-frame
+  gap is invisible normally and very visible under a view transition: the
+  theme switch rebuilds the field inside the transition callback and the new
+  snapshot is taken BEFORE the next frame, so without it the wipe reveals
+  nine shapes piled in the top-left corner and holds them there for 620ms.
+  **Anything JS positions must be positioned synchronously for the same
+  reason.**
+- **The browser pane cannot run a view transition.** Its frozen rendering
+  means `transition.ready` never settles, so the wipe neither starts nor is
+  observable there. Verify the logic by stubbing `document.startViewTransition`
+  and `Element.prototype.animate` and asserting the keyframes, origin, radius,
+  duration and which path was taken — not by watching.
 
 ## UX rules
 

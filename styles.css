@@ -3862,3 +3862,33 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
     transition-duration: 0s !important;
   }
 }
+
+/* THE THEME WIPE (the path switchTheme takes when View Transitions exist).
+   The browser's default is a cross-fade between the two snapshots. Both
+   default animations are turned off here because the reveal is driven
+   instead by a clip-path circle animated in switchTheme - leaving the
+   cross-fade on would run underneath it and turn a clean edge into a
+   dissolve with a circle vaguely inside it.
+   mix-blend-mode: normal matters as much as the animation: the default
+   plus-lighter blends the two snapshots additively, which on a page that
+   goes near-white to near-black blows the overlap out to white. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* the incoming theme is the thing being revealed, so it sits on top and the
+   outgoing one just holds still underneath it */
+::view-transition-old(root) { z-index: 0; }
+::view-transition-new(root) { z-index: 1; }
+/* Belt and braces for reduced motion. switchTheme already takes the other
+   path and never starts a transition, so nothing here should ever match -
+   but if a future caller starts one without checking, this stops it being
+   an animation. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}

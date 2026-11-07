@@ -1052,8 +1052,25 @@ function applyTheme(theme) {
    the token is tuned - and the class is cleared on a timer rather than on
    transitionend, which fires once per property per element and never at
    all for whatever happened not to change. */
+/* Switching, as opposed to applying, in two paths.
+
+   The good one is a circular wipe out of the switch itself, using the View
+   Transitions API: the browser snapshots the page before and after, and the
+   new snapshot is revealed by a clip-path circle growing from the control
+   the visitor just pressed. It reads as one gesture with a cause - you
+   flipped the switch and the new mode flooded out of it - rather than as the
+   page changing colour on its own. The knob does not slide during this; it
+   is already in its new position when the circle uncovers it, which at the
+   exact origin of the wipe is the right story anyway.
+
+   The fallback is what the site did before, and it stays for two cases:
+   a browser without startViewTransition, and anyone who has asked for
+   reduced motion, for whom a 600ms wipe across the whole viewport is
+   exactly the thing they turned off. They get the coordinated cross-fade
+   instead - every element on one clock, which is still a long way from the
+   component-by-component mess this started as. */
 let themeSwitchTimer = 0;
-function switchTheme(theme) {
+function coordinatedSwitch(theme) {
   const root = document.documentElement;
   const secs = parseFloat(getComputedStyle(root).getPropertyValue('--theme-dur')) || 0.45;
   root.classList.add('theme-switching');
@@ -1062,6 +1079,54 @@ function switchTheme(theme) {
   themeSwitchTimer = setTimeout(() => {
     root.classList.remove('theme-switching');
   }, secs * 1000 + 60);
+}
+function switchTheme(theme) {
+  if (prefersReducedMotion || typeof document.startViewTransition !== 'function') {
+    coordinatedSwitch(theme);
+    return;
+  }
+
+  // Origin: the middle of the switch. Radius: the furthest corner from it,
+  // so the circle always finishes off-screen rather than stopping short and
+  // leaving a visible edge. getBoundingClientRect is viewport-relative,
+  // which is what clip-path on the snapshot wants - the snapshot is the
+  // viewport, not the document.
+  const r = themeToggle.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 2;
+  const end = Math.hypot(
+    Math.max(x, window.innerWidth - x),
+    Math.max(y, window.innerHeight - y)
+  );
+
+  // No .theme-switching here on purpose. Under the wipe the live page is
+  // hidden behind a static snapshot, so cross-fading its colours at the same
+  // time buys nothing and would double the effect for the frame after the
+  // circle finishes.
+  const transition = document.startViewTransition(() => applyTheme(theme));
+  transition.ready
+    .then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${end}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 620,
+          easing: 'cubic-bezier(.32, .72, 0, 1)',
+          // the same curve the rest of the page eases on - fast out of the
+          // switch, long settle, so the wipe arrives rather than sweeps
+          pseudoElement: '::view-transition-new(root)',
+        }
+      );
+    })
+    // ready rejects when a transition is skipped, which is what happens if
+    // the switch is hit twice before the first finishes. The theme has still
+    // been applied by then, so there is nothing to recover - just don't
+    // throw an unhandled rejection over it.
+    .catch(() => {});
 }
 // The inline script in <head> already set data-theme before the first paint
 // (see the note there). Read that back rather than deriving the answer a
@@ -1306,6 +1371,41 @@ if (heroShapesContainer) {
     { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true },
   ];
 
+  /* Where a shape sits at a given moment, with no cursor and no chaos in it.
+     Pulled out of the animation loop so the loop and the initial placement
+     below cannot drift apart - this formula is the look of the whole field
+     and it should exist once.
+     Two sine terms per axis, not one. A single sine traces a clean ellipse
+     and nine ellipses read as clockwork; the faster, smaller wobble on top
+     breaks the period so each path wanders instead. */
+  function driftAt(s, time, rect) {
+    return {
+      x: s.baseX * rect.width
+        + Math.sin(time * s.speed + s.phase) * s.ampX
+        + Math.sin(time * s.wobbleSpeed + s.phase * 1.7) * s.wobbleAmp,
+      y: s.baseY * rect.height
+        + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY
+        + Math.cos(time * s.wobbleSpeed * 0.83 + s.phase) * s.wobbleAmp,
+    };
+  }
+
+  /* Put every shape where it belongs the instant it is built, instead of
+     leaving it at translate(0,0) until the next animation frame.
+     That gap is normally one frame and invisible. It stops being invisible
+     under a view transition: the theme switch rebuilds the field inside the
+     transition callback, and the new snapshot is taken BEFORE the next frame
+     runs - so without this the wipe would reveal nine shapes piled in the
+     top-left corner and hold them there for the length of the animation. */
+  function placeShapes() {
+    const rect = heroShapesContainer.getBoundingClientRect();
+    const time = performance.now() / 1000;
+    shapes.forEach((s) => {
+      const d = driftAt(s, time, rect);
+      s.el.style.transform =
+        `translate(${d.x - s.size / 2}px, ${d.y - s.size / 2}px) rotate(${s.rotation}deg)`;
+    });
+  }
+
   function buildShapes() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const defs = isDark ? jaggedDefs : smoothDefs;
@@ -1340,6 +1440,7 @@ if (heroShapesContainer) {
         offsetY: 0,
       };
     });
+    placeShapes();
   }
   buildShapes();
   document.addEventListener('themechange', buildShapes);
@@ -1371,15 +1472,7 @@ if (heroShapesContainer) {
     lastT = t;
 
     shapes.forEach((s) => {
-      // Two sine terms per axis, not one. A single sine traces a clean
-      // ellipse and nine ellipses read as clockwork; the faster, smaller
-      // wobble on top breaks the period so each path wanders instead.
-      const driftX = s.baseX * rect.width
-        + Math.sin(time * s.speed + s.phase) * s.ampX
-        + Math.sin(time * s.wobbleSpeed + s.phase * 1.7) * s.wobbleAmp;
-      const driftY = s.baseY * rect.height
-        + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY
-        + Math.cos(time * s.wobbleSpeed * 0.83 + s.phase) * s.wobbleAmp;
+      const { x: driftX, y: driftY } = driftAt(s, time, rect);
 
       const dx = driftX - heroMouseX;
       const dy = driftY - heroMouseY;
