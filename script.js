@@ -1180,7 +1180,14 @@ function switchTheme(theme) {
   // ready settles once the snapshots exist and the pseudo tree is built, so
   // it is the earliest safe point to let transitions back in. finally, not
   // then: a skipped transition rejects, and the class still has to come off.
-  transition.ready.finally(() => root.classList.remove('theme-instant'));
+  // .catch after the .finally, not instead of it: finally passes a rejection
+  // straight through, so this chain is its own promise and an aborted
+  // transition - hit the switch twice quickly and the first one is skipped -
+  // became an unhandled InvalidStateError in the console. The class still has
+  // to come off either way, which is what finally is for.
+  transition.ready
+    .finally(() => root.classList.remove('theme-instant'))
+    .catch(() => {});
   transition.ready
     .then(() => {
       root.animate(

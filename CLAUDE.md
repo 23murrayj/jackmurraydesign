@@ -362,8 +362,31 @@ four languages whenever you size display type.**
     "gone". ease-out gives 38% / 68% / 91% at the quarters, so the edge is
     visibly moving the whole time. **If the wipe ever looks dead again,
     check the easing before the duration.**
+    **The switch animates itself**, via three `view-transition-name`s —
+    `theme-knob`, `theme-sun`, `theme-moon`. A name lifts an element into
+    its own group, which the browser animates from its old box to its new
+    one, so the knob genuinely slides across the track and is drawn above
+    the wipe. Without the names the knob is just part of the root snapshot,
+    and since the wipe starts AT the switch it is revealed already moved —
+    an instant flip. That is what it looked like for a release.
+    **The knob moves on `left`, not `transform`**, and that is the whole
+    trick: a group animates between BOXES, and an element's own transform
+    is painted into its snapshot instead of moving its box. With
+    `translateX(100%)` the group travelled 1.26px and the "slide" was a
+    cross-fade between a picture of the knob on the left and one on the
+    right. On `left` the boxes differ by the full 37px and it travels.
+    **Three timings on purpose**, and they are not the page's: the knob is
+    `--knob-dur` .52s on `--knob-ease`, which overshoots slightly — a
+    control that slides to a hard stop reads as a value being set, one that
+    arrives with weight reads as a switch being thrown. The icons are
+    `--ico-dur` .3s, shorter, so the swap finishes before the knob lands
+    rather than moving in lockstep. The wipe is 450ms. Nothing shares a
+    clock with anything else here, deliberately.
     **`.theme-instant` goes on for the length of the snapshot** and that is
-    not optional. The new snapshot is captured the instant the callback
+    not optional — it is also what makes the knob group work, since the
+    knob's own `left` transition would otherwise leave it at its old
+    position at capture time and the group would measure no movement at
+    all (that is exactly what happens if you test a transition without it). The new snapshot is captured the instant the callback
     returns, which is also the instant ~51 elements start their OWN colour
     transitions — so without it the capture freezes them at their old
     colours and the wipe reveals a new page wearing an old badge, old chips
@@ -372,6 +395,10 @@ four languages whenever you size display type.**
     arrived instantly and the fill lagged, so it read as two different boxes
     stacked on each other. Suppressing transitions makes every element final
     before the capture, and nothing animates when the class comes off.
+    Chain `.catch()` AFTER the `.finally()` that removes it: `finally`
+    passes a rejection straight through, so an aborted transition — hit the
+    switch twice quickly and the first is skipped — threw an unhandled
+    InvalidStateError into the console until it was caught.
     The CSS at the end of `styles.css` turns OFF both default pseudo
     animations — leaving the cross-fade on runs it under the wipe and turns
     a clean edge into a dissolve. `mix-blend-mode: normal` matters as much:

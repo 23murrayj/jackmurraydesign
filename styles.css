@@ -196,6 +196,18 @@ picture { display: contents; }
      reads as a dissolve. */
   --theme-dur: .45s;
   --theme-ease: cubic-bezier(.32, .72, 0, 1);
+  /* The knob is a THING THAT MOVES, so it does not share the page's colour
+     timing. It is slower than the wipe (520 against 450) and it overshoots
+     slightly before settling - a control that slides to a hard stop reads
+     as a value being set, one that arrives with a little weight reads as a
+     switch being thrown, which is what this is.
+     The icons are a third timing again, and shorter: they are not
+     travelling, they are swapping, and a cross-fade that runs as long as
+     the slide makes the two read as one mechanical movement. Staggering
+     them is what gives the control a sense of parts. */
+  --knob-dur: .52s;
+  --knob-ease: cubic-bezier(.34, 1.42, .64, 1);
+  --ico-dur: .3s;
   --ff-display: 'Archivo Black', 'Noto Sans JP', sans-serif;
   --ff-body: 'Space Grotesk', 'Noto Sans JP', sans-serif;
   --ff-condensed: 'Anton', 'Noto Sans JP', sans-serif;
@@ -717,15 +729,31 @@ body.is-loading { overflow: hidden; }
   width: calc(50% - var(--sw-pad));
   height: calc(100% - var(--sw-pad) * 2);
   background: var(--black);
-  /* same curve as the page, so the knob and the colour change are one
-     gesture rather than two things that happen to start together */
-  transition: transform var(--theme-dur) var(--theme-ease);
+  /* The knob moves on LEFT, not on transform, and that is deliberate even
+     though transform is the cheaper property.
+     A view transition animates a named group from its old BOX to its new
+     one, and an element's own transform is painted into its snapshot rather
+     than moving that box - so with translateX(100%) the group travelled
+     1.26px (measured) and the slide was really a cross-fade between a
+     picture of the knob on the left and one of it on the right. On left it
+     is a genuine layout change, the group boxes differ by the full 39px,
+     and the knob slides.
+     It costs nothing here: one 37px absolutely-positioned element inside a
+     control, on a layer of its own, twice per theme change.
+     Colour is on the page's timing, position on the knob's - the fill is
+     changing in place while the knob is travelling, and they are not the
+     same kind of movement. */
+  transition: left var(--knob-dur) var(--knob-ease),
+              background-color var(--theme-dur) var(--theme-ease);
   z-index: 1;
 }
 /* light: knob left, sun lit and inverted on it, moon dimmed */
 .theme-switch .is-sun { color: var(--white); opacity: 1; }
 /* dark: knob slides right, the two swap */
-:root[data-theme="dark"] .theme-switch-knob { transform: translateX(100%); }
+/* 50% of an 84px track is 42, which is exactly where the knob's own width
+   (calc(50% - 3) = 39) used to put it via translateX(100%): 3 + 39 = 42,
+   and its right edge lands on 81, the track less its padding. */
+:root[data-theme="dark"] .theme-switch-knob { left: 50%; }
 :root[data-theme="dark"] .theme-switch .is-sun  { color: var(--black); opacity: .55; }
 :root[data-theme="dark"] .theme-switch .is-moon { color: var(--white); opacity: 1; }
 @media (hover: hover) {
@@ -3911,9 +3939,13 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   transition-timing-function: var(--theme-ease) !important;
   transition-delay: 0s !important;
 }
-/* The knob is the one thing the user is looking at, and it has to travel. */
+/* The knob is the one thing the user is looking at, and it has to travel -
+   on LEFT now, not transform (see the knob's own rule for why), and on its
+   own duration and curve rather than the blanket colour ones above. */
 :root.theme-switching .theme-switch-knob {
-  transition-property: transform, background-color !important;
+  transition-property: left, background-color !important;
+  transition-duration: var(--knob-dur), var(--theme-dur) !important;
+  transition-timing-function: var(--knob-ease), var(--theme-ease) !important;
 }
 /* The hero field is positioned by JS every frame. A transition on its
    transform makes each frame chase the last one and the whole field smears
@@ -3976,4 +4008,51 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 :root.theme-instant *::before,
 :root.theme-instant *::after {
   transition: none !important;
+}
+
+/* THE SWITCH ANIMATES ITSELF, not just the page behind it.
+
+   Without these names the knob is part of the root snapshot, so the wipe
+   simply reveals it already in its new position - and because the wipe
+   STARTS at the switch, that happens at t=0 and the knob appears to flip
+   instantly. It did, and that is the regression Jack caught.
+
+   A view-transition-name lifts an element into its own group, and the
+   browser then animates that group from its old box to its new one. For the
+   knob that is a real slide across the track, drawn above the wipe, for
+   free - no JS and no second source of truth about where the knob sits.
+
+   Three names, three timings on purpose:
+     - the knob travels, slowest, with the overshoot
+     - the two icons cross-fade, quicker, so the swap finishes before the
+       knob lands rather than moving in lockstep with it */
+.theme-switch-knob { view-transition-name: theme-knob; }
+.theme-switch-ico.is-sun { view-transition-name: theme-sun; }
+.theme-switch-ico.is-moon { view-transition-name: theme-moon; }
+
+::view-transition-group(theme-knob) {
+  animation-duration: var(--knob-dur);
+  animation-timing-function: var(--knob-ease);
+}
+::view-transition-group(theme-sun),
+::view-transition-group(theme-moon),
+::view-transition-old(theme-sun),
+::view-transition-new(theme-sun),
+::view-transition-old(theme-moon),
+::view-transition-new(theme-moon) {
+  animation-duration: var(--ico-dur);
+  animation-timing-function: ease-out;
+}
+
+/* A switch is a control, and a control that bounces is a control that is
+   harder to use. Reduced motion takes the coordinated path and never starts
+   a view transition, so these should never match - but if one is ever
+   started from somewhere else, this stops the overshoot. */
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch-knob { transition: none; }
+  ::view-transition-group(theme-knob),
+  ::view-transition-group(theme-sun),
+  ::view-transition-group(theme-moon) {
+    animation: none !important;
+  }
 }
