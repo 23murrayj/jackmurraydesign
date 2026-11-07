@@ -2953,7 +2953,18 @@ body.is-loading { overflow: hidden; }
   color: currentColor;
 }
 .social-link-text, .social-link-arrow { position: relative; z-index: 1; }
-.social-link-arrow { font-size: 1.3rem; transition: transform .35s cubic-bezier(.2,.8,.2,1), color .3s ease; }
+/* margin-right, so only the arrow moves and the row's box and label stay
+   where they are. The row pads 6px, and the hover sends the arrow 5px
+   further right - which left it 1px off the edge of a row that also clips
+   (overflow: hidden), so the gesture ran the glyph into the border instead
+   of away from it. 12px of margin puts it 18px in at rest and 13px at the
+   end of the travel, and 18 is the same inset the label takes when the row
+   is hovered, so the two ends of the row move by the same amount. */
+.social-link-arrow {
+  font-size: 1.3rem;
+  margin-right: 12px;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), color .3s ease;
+}
 .social-link::before {
   content: ''; position: absolute; inset: 0; width: 0;
   background: var(--ink);
