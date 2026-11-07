@@ -114,7 +114,7 @@ updateScrollProgress();
 const projectData = {
   'cat-coaching': {
     bg: '#f2a71b',
-    thumb: { src: 'assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: 'assets/projects/cat-coaching/thumb-800.jpg' },
+    thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
     category: 'UX/UI',
     title: 'CATERPILLAR UX CHALLENGE',
     desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
@@ -125,8 +125,8 @@ const projectData = {
     // photos are supporting evidence here, not the point — the sidebar
     // shell lets the write-up be read while they scroll past
     sidebar: true,
-    hero: { src: 'assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
-            full: 'assets/projects/cat-coaching/hero-full.jpg' },
+    hero: { src: '/assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
+            full: '/assets/projects/cat-coaching/hero-full.jpg' },
     // One supporting photo, not two. The whiteboard shot came out and the
     // team shot takes the full width under the hero - see the :only-child
     // rule in styles.css. Alt strings are resolved BY POSITION and the hero
@@ -135,8 +135,8 @@ const projectData = {
     // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
     // untouched.
     detailImages: [
-      { src: 'assets/projects/cat-coaching/03-team.jpg', w: 700, h: 700,
-        full: 'assets/projects/cat-coaching/03-team-full.jpg' }
+      { src: '/assets/projects/cat-coaching/03-team.jpg', w: 700, h: 700,
+        full: '/assets/projects/cat-coaching/03-team-full.jpg' }
     ]
   },
 
@@ -145,7 +145,7 @@ const projectData = {
     // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
     // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
     // 2x the 717px it renders at — it read soft on a retina screen.
-    thumb: { src: 'assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: 'assets/projects/easter-riverside/thumb-800.jpg' },
+    thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
     title: 'EASTER AT RIVERSIDE',
     desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
@@ -156,23 +156,23 @@ const projectData = {
     // hero + supporting shots: the design, then the design in the wild
     layout: 'mixed',
     // `full` is the click-to-zoom source; `src` stays the smaller in-page one
-    hero: { src: 'assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
-            full: 'assets/projects/easter-riverside/01-hero-full.jpg' },
+    hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
+            full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
     detailImages: [
-      { src: 'assets/projects/easter-riverside/03-banner.jpg', w: 1200, h: 900,
-        full: 'assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
-      { src: 'assets/projects/easter-riverside/02-photo-wall.jpg', w: 800, h: 1200,
-        full: 'assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
-      { src: 'assets/projects/easter-riverside/04-invite-cards.jpg', w: 900, h: 1200,
-        full: 'assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
+      { src: '/assets/projects/easter-riverside/03-banner.jpg', w: 1200, h: 900,
+        full: '/assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
+      { src: '/assets/projects/easter-riverside/02-photo-wall.jpg', w: 800, h: 1200,
+        full: '/assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
+      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg', w: 900, h: 1200,
+        full: '/assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
     ]
   },
   'fuse-partners-in-crime': {
     bg: '#1aa64b',
     video: {
-      src: 'assets/projects/fuse-partners-in-crime/partners-in-crime.mp4',
+      src: '/assets/projects/fuse-partners-in-crime/partners-in-crime.mp4',
       type: 'video/mp4',
-      poster: 'assets/projects/fuse-partners-in-crime/video-poster.jpg',
+      poster: '/assets/projects/fuse-partners-in-crime/video-poster.jpg',
       // The capture is a 3840x1080 split screen showing both players at once,
       // which is the whole premise of the game. Forced into the default 16:9
       // frame it would letterback to a strip, so the frame takes its ratio
@@ -183,7 +183,7 @@ const projectData = {
     // so the logotype isn't cropped. The gameplay still lives in the video.
     // cropped in ~1.2x on the logo rather than upscaled back to 1400 — the card
     // renders at 717px, so these are the real pixels and nothing is invented
-    thumb: { src: 'assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1, small: 'assets/projects/fuse-partners-in-crime/cover-banner-800.jpg' },
+    thumb: { src: '/assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1, small: '/assets/projects/fuse-partners-in-crime/cover-banner-800.jpg' },
     category: 'UX/UI',
     alsoIn: ['MOTION'],
     title: 'PARTNERS IN CRIME',
@@ -193,13 +193,13 @@ const projectData = {
     role: 'VR Interface & VFX',
     layout: 'video',
     detailImages: [
-      { src: 'assets/projects/fuse-partners-in-crime/02-museum-play.jpg', w: 757, h: 760 },
-      { src: 'assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760 },
+      { src: '/assets/projects/fuse-partners-in-crime/02-museum-play.jpg', w: 757, h: 760 },
+      { src: '/assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760 },
       // the exhibition standup: title lockup, the full 17-person crew by
       // department, and the in-game scanner art. Unreadable at strip width by
       // definition, so it carries a zoom source.
-      { src: 'assets/projects/fuse-partners-in-crime/04-standup-banner.jpg', w: 210, h: 700,
-        full: 'assets/projects/fuse-partners-in-crime/04-standup-banner-full.jpg' }
+      { src: '/assets/projects/fuse-partners-in-crime/04-standup-banner.jpg', w: 210, h: 700,
+        full: '/assets/projects/fuse-partners-in-crime/04-standup-banner-full.jpg' }
     ]
   },
 
@@ -209,7 +209,7 @@ const projectData = {
     // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
     // wordmark runs nearly edge to edge, so letting the card frame crop the
     // 16:9 version would cut the ends off the word the project is named after.
-    thumb: { src: 'assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: 'assets/projects/sandcastles/thumb-800.jpg' },
+    thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
     category: 'GRAPHICS',
     title: 'SANDCASTLES',
     desc: "Sermon series identity applied across stage screens, social, and print.",
@@ -219,18 +219,18 @@ const projectData = {
     role: 'Graphic Designer',
     // same shape as easter-riverside: the design, then the design in use
     layout: 'mixed',
-    hero: { src: 'assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
-            full: 'assets/projects/sandcastles/01-hero-full.jpg' },
+    hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
+            full: '/assets/projects/sandcastles/01-hero-full.jpg' },
     // Two applications, both of them the finished thing in use. 02-photoshop.jpg
     // and 04-instagram.jpg are still on disk but unused: the Photoshop shot was
     // a photo of a screen rather than a screenshot, and it showed one near-final
     // state while the copy claims iteration, so it was promising something it
     // didn't deliver.
     detailImages: [
-      { src: 'assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
-        full: 'assets/projects/sandcastles/05-reading-plan-full.jpg' },
-      { src: 'assets/projects/sandcastles/03-stage.jpg', w: 1200, h: 671,
-        full: 'assets/projects/sandcastles/03-stage-full.jpg' }
+      { src: '/assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
+        full: '/assets/projects/sandcastles/05-reading-plan-full.jpg' },
+      { src: '/assets/projects/sandcastles/03-stage.jpg', w: 1200, h: 671,
+        full: '/assets/projects/sandcastles/03-stage-full.jpg' }
     ]
   },
   'monmouth-retreat': {
@@ -240,7 +240,7 @@ const projectData = {
     // export, so the card frame fits it exactly and nothing is cover-cropped.
     // altIndex points the alt text at that photo; without it the thumbnail
     // inherits alt.1, which describes a different photograph entirely.
-    thumb: { src: 'assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9, small: 'assets/projects/monmouth-retreat/thumb-800.jpg' },
+    thumb: { src: '/assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9, small: '/assets/projects/monmouth-retreat/thumb-800.jpg' },
     category: 'PHOTOGRAPHY',
     title: 'MONMOUTH RETREAT',
     desc: "Candid photography from a worship team's retreat in Monmouth.",
@@ -255,41 +255,41 @@ const projectData = {
     // clustered at the end. The landscape/portrait pattern is load-bearing:
     // the row packer needs portraits at 2, 5, 9, 12 and 16 to fill every row.
     photos: [
-      { src: 'assets/projects/monmouth-retreat/01.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/01-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/01.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/01-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
-      { src: 'assets/projects/monmouth-retreat/02.jpg', w: 800, h: 1200, full: 'assets/projects/monmouth-retreat/02-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/02.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/02-full.jpg',
         exif: '85mm · f/13 · 1/160 s · ISO 160' },
-      { src: 'assets/projects/monmouth-retreat/03.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/03-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/03.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/03-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/04.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/04-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/04.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/04-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/05.jpg', w: 800, h: 1200, full: 'assets/projects/monmouth-retreat/05-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/05.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/05-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/06.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/06-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/06.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/06-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' },
-      { src: 'assets/projects/monmouth-retreat/07.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/07-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/07.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/07-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 1000' },
-      { src: 'assets/projects/monmouth-retreat/08.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/08-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/08.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/08-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
-      { src: 'assets/projects/monmouth-retreat/09.jpg', w: 800, h: 1200, full: 'assets/projects/monmouth-retreat/09-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/09.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/09-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 800' },
-      { src: 'assets/projects/monmouth-retreat/10.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/10-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/10.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/10-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/11.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/11-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/11.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/11-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 640' },
-      { src: 'assets/projects/monmouth-retreat/12.jpg', w: 843, h: 1200, full: 'assets/projects/monmouth-retreat/12-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/12.jpg', w: 843, h: 1200, full: '/assets/projects/monmouth-retreat/12-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
-      { src: 'assets/projects/monmouth-retreat/13.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/13-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/13.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/13-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/14.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/14-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/14.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/14-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/15.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/15-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/15.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/15-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' },
-      { src: 'assets/projects/monmouth-retreat/16.jpg', w: 800, h: 1200, full: 'assets/projects/monmouth-retreat/16-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/16.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/16-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: 'assets/projects/monmouth-retreat/17.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/17-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/17.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/17-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 640' },
-      { src: 'assets/projects/monmouth-retreat/18.jpg', w: 1200, h: 800, full: 'assets/projects/monmouth-retreat/18-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/18.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/18-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' }
     ]
   },
@@ -327,13 +327,13 @@ const projectData = {
     // via a Swift one-liner — this machine has no ffmpeg. Jack picked the shot:
     // the canyon arch with the ship small against the dune.
     video: {
-      src: 'assets/projects/oasis-journey/journey-to-the-oasis.mp4',
+      src: '/assets/projects/oasis-journey/journey-to-the-oasis.mp4',
       type: 'video/mp4',
-      poster: 'assets/projects/oasis-journey/video-poster.jpg'
+      poster: '/assets/projects/oasis-journey/video-poster.jpg'
     },
     detailImages: [
-      { src: 'assets/projects/oasis-journey/poster-art.jpg', w: 776, h: 1200,
-        full: 'assets/projects/oasis-journey/poster-art-full.jpg' }
+      { src: '/assets/projects/oasis-journey/poster-art.jpg', w: 776, h: 1200,
+        full: '/assets/projects/oasis-journey/poster-art-full.jpg' }
     ],
     // 4:3 crop of the poster artwork, taken below the title lockup so the card
     // shows the render rather than a squeezed portrait poster. Cut from the
@@ -343,7 +343,7 @@ const projectData = {
     // the card, while lower leads with the dark ship hulls instead of the
     // city. altIndex 1 resolves to alt.1, which is its own string
     // rather than the poster's — this crop excludes the ships alt.2 describes.
-    thumb: { src: 'assets/projects/oasis-journey/thumb.jpg', w: 1400, h: 1049, altIndex: 1, small: 'assets/projects/oasis-journey/thumb-800.jpg' },
+    thumb: { src: '/assets/projects/oasis-journey/thumb.jpg', w: 1400, h: 1049, altIndex: 1, small: '/assets/projects/oasis-journey/thumb-800.jpg' },
     category: 'MOTION',
     title: 'JOURNEY TO THE OASIS',
     desc: "3D animated short created as an early motion and storytelling project.",
@@ -373,7 +373,7 @@ const projectData = {
    a time — no broken intermediate state.
 
    An image entry can be:
-     'assets/projects/x/01.jpg'                       a path
+     '/assets/projects/x/01.jpg'                       a path
      { src: '...', alt: '...', w: 1600, h: 1200 }     a path plus metadata
      '<svg ...>'                                       legacy inline artwork
    ========================================================================== */
@@ -499,10 +499,11 @@ function renderGallery() {
     const thumb = p.thumb || p.svg || p.heroSvg ||
                   (p.images && p.images[0]) || (p.photos && p.photos[0]) || '';
     return `
-    <article class="card reveal" data-tilt data-project="${escapeAttr(id)}"` +
+    <a class="card reveal" data-tilt data-project="${escapeAttr(id)}"` +
+      ` href="/work/${escapeAttr(id)}"` +
       ` data-category="${escapeAttr([p.category].concat(p.alsoIn || []).join(' '))}"` +
       ` style="--bg:${escapeAttr(p.bg || '#111')};"` +
-      ` role="button" tabindex="0" aria-label="${escapeAttr(p.title)}">
+      ` aria-label="${escapeAttr(p.title)}">
       <div class="card-media">${mediaTag(thumb, id,
         (thumb && thumb.altIndex ? thumb.altIndex - 1 : 0), p.title)}</div>
       <div class="card-info">
@@ -516,15 +517,15 @@ function renderGallery() {
              for it. So people clicked the category tags instead - those being
              the only objects on the card shaped like controls. This names the
              action and gives it somewhere to land.
-             aria-hidden, because the <article> already carries role="button"
-             and an aria-label with the project's title; announcing this too
-             would read every card out twice. -->
+             aria-hidden, because the card is a link carrying an aria-label
+             with the project's title; announcing this too would read every
+             card out twice. -->
         <div class="card-cta" aria-hidden="true">
           <span data-i18n="card.cta">VIEW CASE STUDY</span>
           <span class="card-cta-arrow">\u2192\ufe0e</span>
         </div>
       </div>
-    </article>`;
+    </a>`;
   }).join('');
 }
 renderGallery();
@@ -805,10 +806,116 @@ function closeProject() {
   deactivateDialog(projectOverlay);
 }
 
-document.querySelectorAll('.gallery .card').forEach((card) => {
-  card.addEventListener('click', () => openProject(card.dataset.project));
+/* ==========================================================================
+   ROUTING
+
+   The case studies and the about page are overlays, and for a while that
+   meant the site had exactly one URL. For a portfolio that is a real cost:
+   nobody can send a colleague "look at the Caterpillar one", a case study
+   cannot be linked from an application or a LinkedIn post, Google has one
+   page to index instead of seven, and the browser's Back button left the
+   site instead of closing the panel.
+
+   So the overlays get URLs - /work/<id> and /about - without becoming
+   separate documents. vercel.json rewrites those paths to index.html; this
+   reads the path back and opens the right panel.
+
+   The shape is deliberately one-way: openProject/closeProject stay pure UI
+   and know nothing about history. Everything a visitor can click goes
+   through navigate(), popstate goes through syncToRoute(), and both end at
+   the same place. Nothing calls the UI functions and the history API in the
+   same breath, which is how these end up out of step.
+   ========================================================================== */
+
+/* The address bar is only half of a shareable URL - the other half is what
+   the link looks like when it is pasted somewhere. Without this every case
+   study would share as "Jack Murray · UX Designer" with the home page's
+   canonical, which tells Google the six project URLs are duplicates of "/"
+   and collapses them straight back into one page.
+   Re-run on language change too (see T.onChange), or a visitor who switches
+   language with a panel open keeps the previous language's title. */
+function applyRouteMeta(r) {
+  const base = T.t('html.title') || 'Jack Murray';
+  const title = r.kind === 'project' && projectData[r.id]
+    ? projectData[r.id].title + ' · ' + base
+    : r.kind === 'about'
+      ? T.t('aboutpage.heading').replace(/[.!]$/, '') + ' · ' + base
+      : base;
+  document.title = title;
+  const url = 'https://jackmurraydesign.com' + pathForRoute(r);
+  const canonical = document.querySelector('link[rel=canonical]');
+  if (canonical) canonical.href = url;
+  const og = document.querySelector('meta[property="og:url"]');
+  if (og) og.content = url;
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.content = title;
+  const desc = r.kind === 'project' && projectData[r.id]
+    ? T.t('proj.' + r.id + '.desc') || projectData[r.id].desc
+    : T.t('html.description');
+  for (const sel of ['meta[name=description]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+    const el = document.querySelector(sel);
+    if (el && desc) el.content = desc;
+  }
+}
+
+function routeFromPath(path) {
+  const m = path.match(/^\/work\/([\w-]+)\/?$/);
+  if (m && projectData[m[1]]) return { kind: 'project', id: m[1] };
+  if (/^\/about\/?$/.test(path)) return { kind: 'about' };
+  return { kind: 'home' };
+}
+function pathForRoute(r) {
+  if (r.kind === 'project') return '/work/' + r.id;
+  if (r.kind === 'about') return '/about';
+  return '/';
+}
+
+/* Make the UI match a route. Close first, so switching straight from one
+   panel to another (the about page links into a case study) never has both
+   open at once. */
+function syncToRoute(r) {
+  if (r.kind !== 'project' && projectOverlay.classList.contains('open')) closeProject();
+  if (r.kind !== 'about' && aboutOverlay.classList.contains('open')) closeAboutPage();
+  if (r.kind === 'project' && openProjectId !== r.id) openProject(r.id);
+  if (r.kind === 'about' && !aboutOverlay.classList.contains('open')) openAboutPage();
+  applyRouteMeta(r);
+}
+
+function navigate(r) {
+  if (pathForRoute(r) !== location.pathname) {
+    history.pushState({ kind: r.kind, id: r.id || null }, '', pathForRoute(r));
+  }
+  syncToRoute(r);
+}
+
+/* Closing goes BACK rather than pushing "/", so opening and closing a panel
+   does not leave a trail of entries to walk out through.
+   That is only safe because of the replaceState in the boot block below:
+   a visitor who lands directly on /work/<id> gets a synthetic "/" entry
+   underneath, so there is always somewhere of ours to go back to and Back
+   can never step off the site. */
+function leaveOverlay() {
+  if (history.state && history.state.kind && history.state.kind !== 'home') history.back();
+  else navigate({ kind: 'home' });
+}
+
+window.addEventListener('popstate', () => syncToRoute(routeFromPath(location.pathname)));
+
+/* Cards are real links now, so a plain click is the only one to intercept.
+   Cmd/ctrl/shift/middle-click and "open in new tab" have to keep working -
+   that is most of the point of making them links rather than buttons, and
+   calling preventDefault on them would quietly take it away again. */
+function isPlainClick(e) {
+  return !e.defaultPrevented && e.button === 0
+    && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+document.addEventListener('click', (e) => {
+  const card = e.target.closest?.('.card[href]');
+  if (!card || !isPlainClick(e)) return;
+  e.preventDefault();
+  navigate({ kind: 'project', id: card.dataset.project });
 });
-projectBack.addEventListener('click', closeProject);
+projectBack.addEventListener('click', leaveOverlay);
 
 // full about page overlay — opened from the nav link, the about section
 // title, or the explicit "read more" button
@@ -852,16 +959,19 @@ function closeAboutPage() {
   document.body.style.overflow = '';
   deactivateDialog(aboutOverlay);
 }
-document.getElementById('navAboutLink')?.addEventListener('click', openAboutPage);
-document.getElementById('aboutTitle')?.addEventListener('click', openAboutPage);
+/* goAbout, not openAboutPage: the panel has a URL now and every way in has
+   to agree about that, or Back and the address bar disagree with the page. */
+function goAbout(e) { e?.preventDefault(); navigate({ kind: 'about' }); }
+document.getElementById('navAboutLink')?.addEventListener('click', goAbout);
+document.getElementById('aboutTitle')?.addEventListener('click', goAbout);
 document.getElementById('aboutTitle')?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') openAboutPage(e);
+  if (e.key === 'Enter' || e.key === ' ') goAbout(e);
 });
-document.getElementById('aboutReadMore')?.addEventListener('click', openAboutPage);
+document.getElementById('aboutReadMore')?.addEventListener('click', goAbout);
 // the portrait is a second door to the same page, not decoration
 document.querySelectorAll('.about-panel .about-portrait')
-  .forEach((el) => el.addEventListener('click', openAboutPage));
-aboutBack?.addEventListener('click', closeAboutPage);
+  .forEach((el) => el.addEventListener('click', goAbout));
+aboutBack?.addEventListener('click', leaveOverlay);
 
 // A link in the about copy can hand off to a project. Delegated on document
 // rather than bound to the anchor: apply() rewrites that paragraph's
@@ -881,8 +991,7 @@ document.addEventListener('click', (e) => {
   const id = link.dataset.openProject;
   if (!projectData[id]) return;
   e.preventDefault();
-  if (aboutOverlay.classList.contains('open')) closeAboutPage();
-  openProject(id);
+  navigate({ kind: 'project', id });
 });
 
 // Escape closes whichever overlay is currently open, restoring the
@@ -892,8 +1001,9 @@ document.addEventListener('keydown', (e) => {
   // innermost first, or Escape would close the project overlay out from
   // under an open lightbox
   if (lightbox && lightbox.classList.contains('open')) closeLightbox();
-  else if (projectOverlay.classList.contains('open')) closeProject();
-  else if (aboutOverlay.classList.contains('open')) closeAboutPage();
+  // through the router, so Escape and the Back button land in the same place
+  else if (projectOverlay.classList.contains('open')) leaveOverlay();
+  else if (aboutOverlay.classList.contains('open')) leaveOverlay();
 });
 
 // live clock — small brutalist data readout in the footer
@@ -1883,18 +1993,11 @@ copyEmailBtn?.addEventListener('click', async () => {
   }, 1800);
 });
 
-// keyboard navigation: gallery cards are clickable but not natively
-// focusable — make them tabbable and Enter/Space-activatable
-document.querySelectorAll('.gallery .card').forEach((card) => {
-  card.setAttribute('tabindex', '0');
-  card.setAttribute('role', 'button');
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openProject(card.dataset.project);
-    }
-  });
-});
+// Gallery cards used to be <article role="button"> and needed tabindex, a
+// keydown handler and an aria-label to behave like controls. They are
+// <a href="/work/..."> now, so the browser supplies focus, Enter, the
+// context menu and open-in-new-tab, and all of that went away. The handler
+// this replaced also swallowed the space bar, which on a link should scroll.
 
 // hidden easter egg menu — pick stickers or chaos mode
 //
@@ -2454,7 +2557,10 @@ T.onChange(() => {
   refreshAltText();
   // only if the visitor switched language with a project overlay open
   if (openProjectId) fillProjectDetail(openProjectId);
+  // the tab title, the canonical and the share text are all translated
+  applyRouteMeta(routeFromPath(location.pathname));
 });
+
 
 
 /* ==========================================================================
@@ -2664,3 +2770,48 @@ setInert(lightbox, true);
     strip.classList.remove('is-paused');
   });
 })();
+
+/* ==========================================================================
+   BOOT THE ROUTE — and this has to be the LAST thing in the file.
+
+   It was 200 lines higher to begin with, next to the other i18n wiring, and
+   that threw "Cannot access 'dialogStack' before initialization": opening a
+   panel calls activateDialog, which reads a const declared further down, so
+   the whole of syncToRoute died in the temporal dead zone after the overlay
+   had been given its class but before the title and canonical were set. A
+   deep link looked like it worked and shared as the home page.
+
+   The replaceState is what makes Back safe. A visitor who lands directly on
+   /work/easter-riverside has exactly one history entry, so a Back out of the
+   open panel would leave the site, and leaveOverlay() would have to behave
+   differently depending on how the visitor arrived. Putting a synthetic "/"
+   underneath first means there is always one of ours to go back to and every
+   path through the code is the same afterwards.
+
+   applyRouteMeta runs again on DOMContentLoaded because i18n.js applies its
+   strings there, after this file executes, and its pass resets
+   document.title to the generic one.
+   ========================================================================== */
+{
+  const initial = routeFromPath(location.pathname);
+  if (initial.kind === 'home') {
+    /* A path that matched the rewrite but not a real project - /work/typo,
+       or a slug from a project that has since been renamed - lands here.
+       The rewrite already served the home page with a 200, so the only
+       thing left to fix is the address bar: normalise it to "/" rather than
+       leave a URL showing that does not exist. The canonical says "/" too,
+       so a crawler that reached it is told the same thing. */
+    const stray = location.pathname !== '/';
+    history.replaceState(
+      { kind: 'home', id: null }, '',
+      (stray ? '/' : location.pathname) + location.search + location.hash
+    );
+  } else {
+    history.replaceState({ kind: 'home', id: null }, '', '/');
+    history.pushState({ kind: initial.kind, id: initial.id || null }, '', pathForRoute(initial));
+  }
+  syncToRoute(initial);
+  document.addEventListener('DOMContentLoaded', () => {
+    applyRouteMeta(routeFromPath(location.pathname));
+  });
+}

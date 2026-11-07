@@ -83,10 +83,20 @@ real ones.
 
 ## Pages
 
-There is one URL. https://jackmurraydesign.com/ carries everything: the
-selected projects, the about section, the longer about page with the timeline
-and skills, and contact. Case studies and the about page open as overlays
-rather than as separate documents, so a crawler that only fetches "/" has
-already seen the whole site - but the case study text is injected by
-JavaScript from a single data object, so a reader that does not execute it
-will see the cards and not the write-ups.
+Every case study has its own URL, and so does the about page:
+
+- https://jackmurraydesign.com/ - home: selected projects, about, contact
+- https://jackmurraydesign.com/about - the long about page, timeline, skills
+- https://jackmurraydesign.com/work/cat-coaching
+- https://jackmurraydesign.com/work/easter-riverside
+- https://jackmurraydesign.com/work/fuse-partners-in-crime
+- https://jackmurraydesign.com/work/sandcastles
+- https://jackmurraydesign.com/work/monmouth-retreat
+- https://jackmurraydesign.com/work/oasis-journey
+
+They are single-page overlays behind the scenes - the server rewrites those
+paths to the same document and the page opens the right panel from the URL -
+but they are real addresses: linkable, shareable and each with its own title
+and canonical. The case study text is injected by JavaScript from one data
+object, so a reader that does not execute JavaScript will see the cards and
+not the write-ups.

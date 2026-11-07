@@ -451,6 +451,65 @@ real hero whenever the hero changes, at 1440 AND at 375.
   then the real ones after, and diff them. Current state: exact at 1440 on
   grid/CTA/strip, within 2px at 375, within 4px at 1024.
 
+## Routing
+
+The case studies and the about page are overlays, but they are **real URLs**:
+`/work/<id>` and `/about`. They were not, and that cost more than it looked:
+nobody could send a colleague "look at the Caterpillar one", no case study
+could be linked from an application, Google had one page to index instead of
+eight, and Back left the site instead of closing the panel.
+
+`vercel.json` rewrites those paths to `index.html`; `serve.json` mirrors it so
+local dev behaves the same. **`serve.json` is deliberately not
+`serve --single`** — a blanket SPA fallback answers every 404 with the page,
+which would hand a missing `.webp` back as HTML and turn a broken
+`<picture>` invariant into a silently broken image instead of a 404.
+
+The shape is one-way and worth keeping that way:
+
+- `openProject` / `closeProject` / `openAboutPage` / `closeAboutPage` are
+  **pure UI** and know nothing about history.
+- everything a visitor can click goes through `navigate()`, `popstate` goes
+  through `syncToRoute()`, and both end in the same place. Nothing calls a UI
+  function and the history API in the same breath — that is how these drift.
+- closing uses `history.back()`, so opening and closing does not leave a
+  trail of entries. That is only safe because the boot block
+  `replaceState`s a synthetic `/` underneath a direct deep link, so there is
+  always one of ours to go back to and Back can never step off the site.
+
+### Three things that will break it
+
+- **Asset paths must be root-relative.** This is the one that actually broke:
+  `src="assets/…"` resolves against `/work/` on a deep link, so every image,
+  the stylesheet and both scripts 404 and the page arrives dead. All of
+  `index.html` and the 77 paths in `script.js` are `/assets/…` now. **CSS
+  `url()` is the exception** — it resolves against the stylesheet's own URL,
+  so those six are correct as they are and must not be "fixed".
+- **The boot block has to be the LAST thing in `script.js`.** Put higher, it
+  throws "Cannot access 'dialogStack' before initialization": opening a panel
+  calls `activateDialog`, which reads a `const` declared further down, so
+  `syncToRoute` dies in the temporal dead zone *after* the overlay has its
+  class but *before* the title and canonical are set. A deep link looks like
+  it works and shares as the home page.
+- **`applyRouteMeta` runs again on `DOMContentLoaded`**, because `i18n.js`
+  applies its strings there — after this file executes — and its pass resets
+  `document.title` to the generic one.
+
+Per-route `<title>`, canonical, `og:url`, `og:title` and description are all
+set by `applyRouteMeta`, and re-run on language change. Without the canonical
+Google reads the six project URLs as duplicates of `/` and collapses them
+back into one page, which would undo the whole exercise.
+
+**Cards are `<a href="/work/…">`**, not `<article role="button">`. That is
+what makes the URL copyable, middle-clickable and crawlable; the role,
+`tabindex` and keydown handler all went away because a link supplies them.
+The click handler ignores modified clicks on purpose — calling
+`preventDefault` on a cmd-click would quietly remove open-in-new-tab, which
+is most of the point.
+
+**Adding or renaming a project means four files**: `projectData`,
+`sitemap.xml`, `llms.txt` and the JSON-LD in `index.html`.
+
 ## UX rules
 
 - **State lives in one place.** The language button shows the translate mark

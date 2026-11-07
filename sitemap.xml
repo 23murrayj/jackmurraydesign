@@ -1,10 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Single-page site: projects and the about page are overlays on "/", not
-     separate URLs, so there is one entry. Points at the live domain. -->
+<!-- The case studies and the about page are overlays rather than separate
+     documents, but they have had their own URLs since the routing went in -
+     /work/<id> and /about, rewritten to index.html by vercel.json and opened
+     from the path by script.js. They are listed here because they are real,
+     linkable, indexable addresses; leaving them out was telling Google this
+     was a one-page site when it is not.
+     Keep this in step with projectData. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jackmurraydesign.com/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/cat-coaching</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/easter-riverside</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/fuse-partners-in-crime</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/sandcastles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/monmouth-retreat</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jackmurraydesign.com/work/oasis-journey</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>
