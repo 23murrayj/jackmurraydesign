@@ -455,8 +455,31 @@ function mediaTag(entry, projectId, index, projectTitle) {
     ? ` data-exif="${escapeAttr(entry.exif)}"` : '';
   // explicit width/height reserve the box so images don't shift the layout
   // as they decode; lazy loading keeps a 20-photo set off the critical path
-  return `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${srcset}${track}${full}${exif}` +
-         ` loading="lazy" decoding="async">`;
+  /* WEBP FIRST, JPEG AS THE FALLBACK. Same pictures, about half the bytes -
+     the 50 images that render inline are 13370KB as JPEG and 6321KB as WebP
+     at quality 85, which measures 37-39dB PSNR against the JPEG, i.e. the
+     same image.
+     The .webp path is the .jpg path with the extension swapped, which only
+     works because EVERY inline jpg has a sibling webp - see the note in
+     CLAUDE.md and the one-liner that checks it. This matters: a <picture>
+     falls back to the <img> when the browser cannot decode a type, NOT when
+     the file 404s, so a missing webp is a broken image rather than a
+     graceful degradation.
+     AVIF was generated and measured too and is not here: it came out 8%
+     smaller than WebP on the home page, which does not pay for a second set
+     of 50 files and a third source. */
+  const webp = src.replace(/\.jpg$/, '.webp');
+  const webpSmall = (typeof entry === 'object' && entry.small)
+    ? entry.small.replace(/\.jpg$/, '.webp') : null;
+  const webpSet = (webpSmall && entry.w)
+    ? `${escapeAttr(webpSmall)} 800w, ${escapeAttr(webp)} ${entry.w}w`
+    : escapeAttr(webp);
+  const webpSizes = (webpSmall && entry.w) ? ` sizes="(max-width: 800px) 100vw, 50vw"` : '';
+  const img = `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${srcset}${track}${full}${exif}` +
+              ` loading="lazy" decoding="async">`;
+  return src.endsWith('.jpg')
+    ? `<picture><source type="image/webp" srcset="${webpSet}"${webpSizes}>${img}</picture>`
+    : img;
 }
 
 /* ==========================================================================
@@ -799,6 +822,13 @@ const aboutBack = document.getElementById('aboutBack');
    leaves contain: none and the subtree stays laid out, so the images fetch
    anyway. Holding the URL back is the only version that is actually true. */
 function loadAboutPhotos() {
+  // the <source> first: a <picture> picks its candidate when the img gets
+  // its src, so a source still holding data-srcset at that moment is simply
+  // not in the running and the browser takes the jpeg
+  aboutOverlay.querySelectorAll('source[data-srcset]').forEach((s) => {
+    s.srcset = s.dataset.srcset;
+    s.removeAttribute('data-srcset');
+  });
   aboutOverlay.querySelectorAll('img[data-src]').forEach((img) => {
     img.src = img.dataset.src;
     img.removeAttribute('data-src');

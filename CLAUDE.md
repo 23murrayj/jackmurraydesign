@@ -545,13 +545,33 @@ fonts about 45KB.
   `stale-while-revalidate`, so a changed photo appears within the hour and
   a repeat visit still pays no round trip. It was `max-age=0,
   must-revalidate`, which revalidated every asset on every visit.
-- **No WebP/AVIF, and not for lack of trying.** This machine has no
-  ffmpeg, ImageMagick or cwebp, and `sips` can read WebP but not write it
-  (`sips --formats` lists it without "Writable"). Re-encoding the JPEGs at
-  full size is also a bad trade with sips: quality 80 barely moves a 547KB
-  file and quality 60 halves it but is too low for a photography portfolio.
-  **If you ever get image tooling, WebP/AVIF on the thumbs is the biggest
-  remaining win.**
+- **Every inline image is WebP with a JPEG fallback**, via `<picture>`. The
+  50 images that render inline are 13370KB as JPEG and 6321KB as WebP at
+  quality 85, which measures 37–39dB PSNR against the JPEG — the same
+  picture. The home page went from ~2.3MB of JPEG to 961KB of WebP.
+  Three things to know before touching it:
+  - **`picture { display: contents }` is load-bearing.** A `<picture>` is
+    `display: inline` by default, so it — not the `<img>` — becomes the flex
+    or grid item and every rule written against the image stops applying.
+    It broke exactly that way first time: `.about-photos .square` is a flex
+    item and the photo fell back to its intrinsic 1400×1365.
+  - **The `.webp` path is the `.jpg` path with the extension swapped**, which
+    only works because every inline jpg has a sibling webp. A `<picture>`
+    falls back when a browser cannot DECODE a type, not when a file 404s, so
+    a missing webp is a broken image. Check the invariant:
+    `for f in $(find assets/projects assets/about -name "*.jpg" ! -name "*-full.jpg"); do [ -f "${f%.jpg}.webp" ] || echo "MISSING ${f%.jpg}.webp"; done`
+  - **To regenerate** (sharp is not a project dependency and must not become
+    one — install it outside the repo):
+    `cd <scratch> && npm install sharp`, then for each jpg
+    `sharp(src).webp({ quality: 85 }).toFile(dest)`.
+- **The `-full` lightbox originals are still JPEG only** (29 files, 20MB).
+  They are swapped into the lightbox by JS on a click, which a `<picture>`
+  cannot drive — it would need the format choice made in script. Worth doing
+  if the lightbox ever feels slow.
+- **AVIF was measured and rejected**, not overlooked: 5546KB against WebP's
+  6321KB over the same 50 images, and only 8% better on the home page
+  specifically. That does not pay for a second set of 50 files and a third
+  `<source>`.
 - Not done, and deliberately: `i18n.js` ships all four languages (31KB
   gzipped) to everyone. Splitting it costs a round trip and a loading state
   on the one thing that must never flash untranslated.

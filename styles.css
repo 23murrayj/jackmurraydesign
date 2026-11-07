@@ -61,6 +61,16 @@
    button's arrow looked lighter and shorter than the hero's: a different
    typeface, not a different size. */
 button, input, textarea, select { font-family: inherit; }
+/* A <picture> must not become the layout box. Every image that carries a
+   WebP source is wrapped in one, and the wrapper is display: inline by
+   default - so it, not the <img>, becomes the flex or grid item, and every
+   rule written against the image stops applying.
+   It broke exactly that way the first time: .about-photos .square is a flex
+   item sized "flex: 1.026 1 0", and once the picture was the item the image
+   fell back to its intrinsic 1400x1365 instead of 332x324.
+   display: contents dissolves the wrapper, so the <img> is the child the
+   layout already expects and nothing else has to change. */
+picture { display: contents; }
 
 :root {
   /* LIGHT PALETTE - warm ivory ground, near-black ink, muted coral, dusty
