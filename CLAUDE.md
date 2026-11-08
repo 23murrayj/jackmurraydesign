@@ -40,6 +40,15 @@ repeatedly. Symptoms and the fix:
 - Screenshots taken right after `location.reload()` catch the loader mid-fade
   and the reveal animations mid-flight; the hero name looks dim. Wait ~2.5s,
   and kill transitions before capturing.
+- **`getComputedStyle` goes stale.** It can keep reporting the old value
+  after a change that definitely applied. Caught red-handed testing the
+  `<noscript>` fallback: setting `el.style.opacity = '1'` inline AND adding
+  a `.reveal{opacity:0.42 !important}` stylesheet both still read back
+  `"0"`, which is impossible in a live browser. It made a working fix look
+  broken. **Sanity-check the probe before believing it** — set a value
+  inline and read it back; if that does not move, nothing you measure that
+  way is worth anything, and the answer is a screenshot (which forces a
+  paint) rather than a number.
 
 Never conclude something is broken from a screenshot alone — measure it.
 
@@ -605,9 +614,17 @@ Checked by driving the page, not by reading the markup — and two things that
 - 16 `prefers-reduced-motion` blocks; every hover behind `@media (hover: hover)`.
 - The honeypot is `aria-hidden`, `tabindex="-1"` and parked at -9999px.
 
-**Known gap, not yet fixed:** `.reveal` starts at `opacity: 0` and only JS
-reveals it, with no `<noscript>` fallback — 19 blocks, including the about
-statement and the contact form. With JS blocked most of the page is blank.
+- **There is a `<noscript>` fallback and it must stay.** `.reveal` starts 19
+  blocks at `opacity: 0` and only JS adds `.in-view`, so without it a
+  visitor whose scripts are blocked gets the hero and then an empty red band
+  where the contact form should be — which reads as "I have seen this site",
+  not as broken, so nobody would report it. The `<noscript>` in `<head>`
+  sets `.reveal { opacity: 1; transform: none }`. It costs normal visitors
+  nothing: a browser with JS enabled does not parse inside `<noscript>` at
+  all, which is checkable — `document.styleSheets.length` stays 1 and the
+  element's `childElementCount` is 0 because the CSS is held as plain text.
+  It must sit AFTER the stylesheet link; same specificity as the rule it
+  overrides, so it wins only on source order.
 
 ## Machine readers are an audience
 

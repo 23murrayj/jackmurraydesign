@@ -212,6 +212,22 @@
 <link rel="preload" href="/assets/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/styles.css">
 
+<!-- Fourteen blocks on this page carry .reveal, which starts them at
+     opacity: 0 and waits for JavaScript to add .in-view as they scroll into
+     view. If that script never runs - a content blocker, a failed request,
+     a syntax error from a future edit - those blocks stay invisible
+     forever: both about columns, the stats, all three section headings, the
+     filters and the whole contact form. What is left looks like a hero and
+     then nothing, which reads as "I have seen this site" rather than as
+     broken, so nobody would even report it.
+     A browser with JavaScript enabled does not parse what is inside
+     <noscript> at all - the CSS below never reaches the stylesheet and
+     changes nothing about what anyone normally sees. With it disabled the
+     content is simply there, unanimated.
+     After the stylesheet on purpose: same specificity as the .reveal rule
+     it overrides, so it has to win on source order. -->
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+
 <!-- THEME, BEFORE THE FIRST PAINT.
      script.js is deferred, so applyTheme() ran after the page had already
      painted in the default light palette. A reader who had chosen dark - or
