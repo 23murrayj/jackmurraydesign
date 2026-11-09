@@ -1068,7 +1068,17 @@ body.is-loading { overflow: hidden; }
   letter-spacing: -0.04em;
   text-transform: uppercase;
 }
-.hero-name .line { display: block; overflow: hidden; }
+/* No overflow: hidden. It used to be here to mask the entrance, and it
+   never did: the markup is <span class="line">MURRAY<span class="accent">.
+   </span></span> and the animation transforms .line ITSELF, so the clip box
+   travels with its own content and hides nothing.
+   What it did do was cut the bottom off the full stop. line-height is 0.84,
+   deliberately tighter than the glyphs, so at 375 the line box ends 7px
+   above where the period's ink does - invisible in light mode, obvious in
+   dark, where the 18px accent glow wants another 18px below that and gets a
+   hard horizontal edge instead. Jack spotted it on a phone.
+   The page's own overflow-x: clip still catches anything running wide. */
+.hero-name .line { display: block; }
 .hero-name .accent { color: var(--accent); }
 
 .hero-name.glitch { animation: glitch-flicker 0.24s linear; }
@@ -3744,13 +3754,25 @@ html[lang="ja"] .project-body h2,
 html[lang="ja"] .about-page-intro h2,
 html[lang="ja"] .about-page-subhead,
 html[lang="ja"] .timeline-role,
-html[lang="ja"] .stat-num,
 html[lang="ja"] .magnetic-letter,
 html[lang="ja"] .contact-statement,
 html[lang="ja"] .chaos-play-btn-large,
 html[lang="ja"] .pong-end-msg {
   font-weight: 900;
 }
+
+/* The stat NUMBERS are the exception to the rule above, and they have to be
+   taken back out of it. That list exists so Japanese glyphs reach the
+   optical weight Latin has at 400 - Noto Sans JP carries real weights, so
+   asking for 900 gets a real 900. But three of the four stat cells hold
+   Latin digits in any language ("4", "18+", "35"), and those render in
+   Archivo Black, which ships ONE face at 400. Asking it for 900 gets
+   synthetic bold: the browser smears the glyph, and in dark mode the
+   text-shadow then wraps a fatter shape, so the glow roughly doubles. On a
+   phone in Japanese it read as unreadable, which is how Jack found it.
+   The fourth cell is a place name - "ミラノ" in Japanese - and that IS
+   Japanese, so it keeps the 900 on its own. */
+html[lang="ja"] .stat.is-now .stat-num { font-weight: 900; }
 
 /* The role line is set from its column in cqw, which assumes Latin
    proportions. Japanese is full-width: "デジタルクリエイティブ。" is 12 glyphs

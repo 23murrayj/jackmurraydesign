@@ -104,6 +104,14 @@ The giant `JACK MURRAY.` headline is **the main visual focus and stays exactly
 as it is.** Layout problems get solved by moving other things, never by
 shrinking the name.
 
+`.hero-name .line` must not clip. It carried `overflow: hidden` for a mask it
+never performed — the animation transforms `.line` itself, so the clip box
+travels with its own content. What it did do was cut the bottom off the full
+stop: `line-height: 0.84` is tighter than the glyphs, so the ink already runs
+~7px past the line box at 375 and the dark-mode glow wants 18px more. The cut
+is invisible in light and obvious in dark. The page's `overflow-x: clip` is
+what catches anything running wide; the line does not need to.
+
 ## Palette
 
 Tokens live in `:root` / `:root[data-theme="dark"]` in `styles.css`. **Change
@@ -271,6 +279,16 @@ will not do it for you.
 
 Japanese needs `font-weight: 900` to match Latin's optical weight, and its
 tracking is reset — see the `html[lang="ja"]` block.
+
+**That 900 only belongs on elements whose CONTENT is Japanese.** Noto Sans JP
+carries real weights, so it gets a real 900; **Archivo Black and Anton each
+ship one face at 400**, so asking them for 900 gets *synthetic* bold — the
+browser smears the glyph. In dark mode the glow then wraps a fatter shape and
+roughly doubles, which is how it was found: the about stats were unreadable
+on a phone in Japanese. Three of those four cells hold Latin digits in every
+language, so they are out of the list; only `.stat.is-now .stat-num` (ミラノ)
+keeps the 900. **Before adding a selector to that block, ask what it actually
+contains in Japanese** — if the answer is digits or Latin, it does not belong.
 
 **CJK sizing is a real constraint.** Full-width glyphs are ~1em each, so a size
 that leaves English 40px of slack in a 356px column leaves Japanese 7px.
