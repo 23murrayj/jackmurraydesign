@@ -1565,19 +1565,71 @@ if (heroShapesContainer) {
      bigger wash. The 104px shapes stay pale on purpose: a large shape at
      .72 stops being background. See .shape.is-vivid in styles.css for the
      alphas and what text crossing one measures. */
+  /* SLOTS. `at` is the shape's resting centre as a fraction of the field
+     box - which is the hero plus the 306px it overhangs into #work, not the
+     hero alone, so a y of .86 is down in the band under SELECTED PROJECTS.
+
+     These used to be Math.random() per shape per build, and that was the
+     whole of what made the field look unconsidered. Random nine-point
+     scatter clumps: on any given load two or three shapes would overlap
+     into one blob and a quadrant would be empty, and because it re-rolled
+     on every load and every theme switch there was no arrangement to
+     judge, let alone tune. Authored, the composition is a thing with
+     intent that can be argued with - and it is the same one every time.
+
+     The arrangement is THREE BANDS OF THREE, and each band carries a left,
+     a centre and a right:
+         y .195 / .21  / .26    x .11  .44  .82
+         y .42  / .45  / .49    x .14  .95  .40
+         y .745 / .86  / .88    x .88  .25  .70
+     Measured against the real hero at 1440, where the field box is
+     1440x1026: the nav ends at y .092, the name occupies .184-.499, the
+     side column .236-.499, the marquee strip .579-.640, SELECTED PROJECTS
+     .702-.875 and the filter row .914-1.002. So band one sits across the
+     top of the name, band two across its foot and the margins either side,
+     band three down in the seam.
+     Band two is NOT on the marquee, and that was a correction: at .57-.66
+     all three rested on or beside the strip, and a 50px near-black circle
+     at .38 over a near-black slab is not a shape, it is a smudge. They
+     cross it on the drift, which is fine and always was; they just do not
+     live there.
+     That is the same "thin out across strip, heading and tags" the field
+     was extended 306px for - it only actually happens if shapes LIVE down
+     there rather than wandering down by luck, which is what nine random
+     y values gave: usually six in the hero and three nowhere useful.
+
+     Two more things the slots are doing:
+     - The two largest forms are the corner-to-corner diagonal, .11/.195
+       and .88/.745. The name is heavy left and the column light right, so
+       the bottom-right anchor is the counterweight to the headline, and it
+       lands in the same corner as the seam ring in styles.css.
+     - No resting position is in the nav band or under the full stop after
+       MURRAY, and both are about the SWING, not the resting point. Every
+       shape travels +/- its amplitude: the 36px amber circle swings +/-116px
+       vertically, so a rest at .17 would have put it in the nav on half of
+       every cycle, and the black 50px circle swings +/-127 horizontally, so
+       a rest at .55/.52 parked it on the full stop - which is exactly what
+       it did, and it looked like a smudge on the page's one piece of
+       punctuation-as-graphic. They rest at .26 and .40/.49 instead, and
+       the circle's x never reaches .636 where the full stop starts.
+     This is NOT a keep-out. Nothing clamps anything at runtime, and a shape
+     is free to drift over the name, the column, the nav and the marquee -
+     the build that fenced them out of measured boxes was tried and rejected
+     and must not come back, see CLAUDE.md. This sets where a shape lives,
+     not where it is allowed to go. */
   const smoothDefs = [
-    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false },
-    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true },
-    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true },
-    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true  },
-    { type: 'square',   size: 104, color: 'var(--accent)',      filled: false },
-    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true  },
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true  },
-    /* the only filled coral in light mode, and the smallest shape of the
+    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false, at: [0.82, 0.21] },
+    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, at: [0.95, 0.45] },
+    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true, at: [0.70, 0.88] },
+    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  at: [0.40, 0.49] },
+    { type: 'square',   size: 104, color: 'var(--accent)',      filled: false, at: [0.11, 0.195] },
+    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true,  at: [0.14, 0.42] },
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true,  at: [0.44, 0.26] },
+    /* the only filled coral in light mode, and one of the smallest of the
        nine: a solid 45px coral square is the one object in the field that
        is allowed to look like a deliberate mark rather than drift */
-    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true },
-    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false },
+    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, at: [0.25, 0.86] },
+    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, at: [0.88, 0.745] },
   ];
 
   /* Same nine-shape budget in dark, and the neons stay neon: this half of
@@ -1592,16 +1644,24 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
+  /* The SAME nine slots, assigned biggest-to-biggest. Two reasons it has to
+     be the same set of coordinates and not a second composition:
+     the arrangement is the thing that was designed, and the vocabulary -
+     smooth versus jagged - is what the themes are meant to differ in;
+     and the theme switch rebuilds this field inside the view-transition
+     callback, so matching slots mean the wipe reveals the same layout
+     wearing different shapes. Before, every switch re-rolled nine random
+     positions and the field visibly jumped to a new scatter mid-wipe. */
   const jaggedDefs = [
-    { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true },
-    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true },
-    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true },
-    { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true },
-    { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true },
-    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true },
-    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true },
-    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true },
-    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true },
+    { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true, at: [0.82, 0.21] },
+    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.95, 0.45] },
+    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, at: [0.44, 0.26] },
+    { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true, at: [0.70, 0.88] },
+    { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, at: [0.11, 0.195] },
+    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true, at: [0.14, 0.42] },
+    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, at: [0.40, 0.49] },
+    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.25, 0.86] },
+    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, at: [0.88, 0.745] },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1643,32 +1703,52 @@ if (heroShapesContainer) {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const defs = isDark ? jaggedDefs : smoothDefs;
     heroShapesContainer.innerHTML = '';
-    shapes = defs.map((def) => {
+    shapes = defs.map((def, i) => {
       const el = createShapeEl(def);
       // opacity lives in CSS (.hero-shapes .shape) so the two themes can
       // differ - a neon on near-black carries at a lower alpha than a muted
       // coral on sand does - and so it is not buried in a JS string
       heroShapesContainer.appendChild(el);
+      /* 1 for the smallest shape in the set, 0 for the largest. Every
+         motion number below is derived from it, and that is the second
+         half of making this field look considered rather than generated.
+         It used to be Math.random() on all six, which gave the right
+         SPREAD - shapes overtaking each other is what stops nine objects
+         reading as one slow field - but attached that spread to nothing,
+         so a 110px form could end up the fastest, widest-travelling thing
+         on screen while a 34px speck sat nearly still. That is the exact
+         inverse of how distance reads.
+         Tying it to size instead keeps the full range and makes it mean
+         something: big forms barely move and act as structure, small ones
+         travel far and read as the live layer in front. Same idea as
+         parallax, done with amplitude rather than depth. */
+      const t = (110 - def.size) / (110 - 34);
       return {
         el,
         size: def.size,
         baseColor: def.color,
-        baseX: Math.random(),
-        baseY: Math.random(),
-        // Wider travel and more spread in speed than before: every shape
-        // used to drift at much the same rate over much the same distance,
-        // which read as one slow field rather than nine separate objects.
-        // The range matters more than the average - shapes that clearly
-        // overtake each other are what makes the field look alive.
-        ampX: 55 + Math.random() * 130,
-        ampY: 45 + Math.random() * 105,
-        speed: 0.12 + Math.random() * 0.42,
-        phase: Math.random() * Math.PI * 2,
+        baseX: def.at[0],
+        baseY: def.at[1],
+        // 40-150 across the set, and the big ones are at the bottom of it
+        ampX: 40 + 110 * t,
+        ampY: 32 + 86 * t,
+        speed: 0.14 + 0.30 * t,
+        /* the golden angle, which is the most irrational turn there is:
+           stepping phase by it spreads nine shapes as evenly round the
+           cycle as nine shapes can be spread, so no two are ever swinging
+           together. Random phases bunch - that is what random does - and a
+           bunched pair looks like the two shapes are linked. */
+        phase: i * 2.39996,
         // and a second, faster wobble so the path is not a clean ellipse
-        wobbleAmp: 6 + Math.random() * 16,
-        wobbleSpeed: 0.7 + Math.random() * 1.1,
-        rotSpeed: (Math.random() - 0.5) * (isDark ? 48 : 28), // jagged ones spin faster/harder
-        rotation: Math.random() * 360,
+        wobbleAmp: 6 + 10 * t,
+        wobbleSpeed: 0.75 + 0.5 * ((i * 0.37) % 1),
+        /* alternating, not signed at random: a field where the spin
+           directions happen to agree reads as a single rotating system.
+           Small spins faster, same reasoning as the travel. */
+        rotSpeed: (i % 2 ? 1 : -1) * (5 + 20 * t) * (isDark ? 1.7 : 1),
+        // spread round the circle, deterministic, so squares and triangles
+        // each present a different edge - a repeatable 47 degrees apart
+        rotation: (i * 47) % 360,
         offsetX: 0,
         offsetY: 0,
       };

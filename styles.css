@@ -600,12 +600,35 @@ body.is-loading { overflow: hidden; }
 .nav-logo {
   font-family: var(--ff-display); font-size: 1.4rem; letter-spacing: 1px;
 }
-/* accent-ink, not accent: at 22.4px/400 this sits just under the large-text
-   threshold (24px, or 18.66px at 700), so it needs the full 4.5:1 that the
-   display coral cannot give on sand. The darkened one reads 4.52:1 and is
-   the same hue. In dark mode the two tokens are the same neon, so nothing
-   changes there. */
-.nav-logo .dot { color: var(--accent-ink); }
+/* The wordmark's mark, and it has to be the SAME red as the full stop after
+   MURRAY - they are the same mark at two sizes, and two different reds made
+   the small one look like a near-miss rather than a repeat. That is
+   --accent, #CF625A.
+   Getting there needed the glyph to go. It used to be a "\25CF" bullet,
+   which is TEXT: at 22.4px/400 it sits just under the large-text threshold
+   (24px, or 18.66px at 700), so it owed the full 4.5:1 and --accent gives
+   3.21:1 on the ground. That is the whole reason it was --accent-ink
+   (4.52:1) and a visibly darker red. Drawn instead of typed, it is non-text
+   content, where the bar is 3:1 - so the coral passes at 3.21 and the two
+   marks finally agree. In dark both tokens are the same neon, so nothing
+   there changes.
+   Drawing it also buys back control the font never gave: "\25CF" is sized
+   and vertically placed by Archivo Black's own bullet metrics, so the dot
+   could only be nudged, never set. 0.34em against the logo's 1.4rem is
+   7.6px, which carries the same optical weight the glyph did. It sits on
+   the baseline by default - an empty inline-block aligns its bottom edge
+   there - and that is where it wants to be, because the mark it is
+   repeating is a full stop and a full stop sits on the baseline.
+   The span is empty in the HTML and aria-hidden: the glyph was being read
+   out as "black circle" after the J and the M, which is noise in a
+   wordmark. */
+.nav-logo .dot {
+  display: inline-block;
+  width: 0.34em; height: 0.34em;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-left: 0.1em;
+}
 .nav-links { display: flex; gap: 36px; }
 .nav-links a {
   font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
@@ -1219,13 +1242,30 @@ body.is-loading { overflow: hidden; }
   background: var(--black); color: var(--white);
   padding: 19px 30px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
   width: fit-content; border: 2px solid var(--black);
+  /* A resting offset block, so the button looks pressable before anyone
+     has pointed at it. It had NO resting shadow: flat black-on-sand with a
+     2px border is a label until you hover it, and on a phone - where there
+     is no hover at all - it stayed a label for the whole visit. This is the
+     one control the hero is built to send you to, so it should read as
+     raised standing still.
+     Hard, no blur, per the house rule: this is a printed offset, not a
+     light source. 4px, which is the smallest offset that still reads as two
+     planes rather than as a misprint at this 2px border weight.
+     4 at rest and 8 on hover is not an arbitrary pair - see the hover rule. */
+  box-shadow: 4px 4px 0 var(--accent);
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
 @media (hover: hover) {
   /* lifts OUT of the page and casts the block, then :active drops it back
      flush - the gesture reads as press, and the fill never changes, so the
      label never changes contrast mid-gesture */
-  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 7px 7px 0 var(--accent); }
+  /* 8, not the 7 it was. The shadow offset is measured from the element, so
+     when the button lifts translate(-4,-4) the shadow travels with it: at 7
+     the block ended up 3px from where it had been sitting, and the page it
+     was supposedly casting onto appeared to move. 4 + 4 = 8 pins it - the
+     shadow holds its exact resting position on the page and only the button
+     rises off it, which is the thing the gesture is miming. */
+  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--accent); }
 }
 .btn-block:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 /* The arrow drifts, to say there is more below without shouting it. Pulled
@@ -1240,15 +1280,22 @@ body.is-loading { overflow: hidden; }
   display: inline-block;
   animation: cta-drift 3s ease-in-out infinite;
 }
-/* scaleY lengthens the shaft without touching the shape he liked. It has to
-   live inside the keyframes: the animation drives `transform`, so a static
-   transform on the element would simply be overridden every frame. */
+/* scaleY lengthens the shaft, scaleX broadens the head. Both have to live
+   inside the keyframes: the animation drives `transform`, so a static
+   transform on the element would simply be overridden every frame.
+   1.3 on X, against the 1.55 already on Y. "\2193" is drawn narrow - a thin
+   stem under a shallow chevron - and at 15.2px the head was reading as a
+   tick rather than an arrow. Widening it spreads the chevron and thickens
+   the stem in the same pass, which is what makes it read as a drawn mark
+   beside a 700-weight label instead of a piece of punctuation. Kept under
+   the 1.55 on Y on purpose: at equal scales the glyph just gets bigger,
+   and the point is a broader arrow, not a louder one. */
 @keyframes cta-drift {
-  0%, 100% { transform: translateY(-2px) scaleY(1.55); }
-  50%      { transform: translateY(2px) scaleY(1.55); }
+  0%, 100% { transform: translateY(-2px) scale(1.3, 1.55); }
+  50%      { transform: translateY(2px) scale(1.3, 1.55); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn-block::after { animation: none; transform: scaleY(1.55); }
+  .btn-block::after { animation: none; transform: scale(1.3, 1.55); }
 }
 
 /* HERO — when the two columns stop being two columns.
@@ -1406,6 +1453,75 @@ body.is-loading { overflow: hidden; }
    section. The content still paints above the field, which is what keeps
    the cards clean. */
 .work { position: relative; padding-bottom: 40px; }
+
+/* THE SEAM FORM. One oversized ring in the top-right of #work, bleeding off
+   the right edge, behind everything the section draws.
+
+   What it is for: the hero's shape field already spills 306px into this
+   section so the two do not look like separate drawings, but everything in
+   that field is small and moving, so the overlap read as leftover hero
+   rather than as a join. This is the opposite register - one form, large,
+   and completely still - and the contrast is what makes the seam read as
+   composed. Small things drifting in front of one big thing holding still
+   is depth; nine small things drifting is weather.
+
+   Why a circle in blue: the bottom-right slot of the field is the 104px
+   dusty-blue outline circle, so this is literally that shape at structural
+   scale, in the corner it already lives in. Same family, two sizes - the
+   same relationship the JM dot has with the full stop after MURRAY.
+
+   Geometry: anchored to #work's top, NOT its bottom. "Bottom-right of the
+   next section" is 4000px down the page on a desktop, nowhere near the
+   transition it is meant to be decorating; the seam is here. min(72vw,
+   820px) keeps it oversized without being absolute - at 1440 it is 820px
+   across and shows its left two-thirds, at 375 it is 270 and still reads
+   as a curve rather than a dot. The -14vw right offset is what makes it
+   bleed: a ring fully inside the page is an object, a ring running off the
+   edge is a field.
+
+   z-index: -1 and nothing else would do. #work's own content is in-flow
+   and mostly unpositioned, so a pseudo-element at z-index auto or 0 paints
+   ABOVE the heading and the filter text (positioned descendants come after
+   inline content in paint order). Negative z puts it behind them. It is
+   safe here because <html> carries no background of its own, so body's
+   propagates to the canvas and paints below even this - if html is ever
+   given a background, body starts painting its own box at in-flow depth
+   and this ring disappears underneath it. */
+.work::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: -14vw;
+  width: min(72vw, 820px);
+  aspect-ratio: 1;
+  border: 3px solid var(--blue);
+  border-radius: 50%;
+  /* .14 and not more. At a 3px stroke this is the point where the curve
+     is legible as a deliberate edge but still loses to every piece of type
+     it passes behind. Measured: the stroke composites to rgb(221,221,219)
+     over the ground, and SELECTED PROJECTS across it is 12.78:1 against
+     14.77:1 on open page - the bar for 73.6px display type is 3, so there
+     is an order of magnitude of room. #work .section-num is unaffected
+     either way; it paints its own opaque patch and sits above this.
+     Push it past ~.25 and it stops being the background of the section
+     and starts being a thing in the section. */
+  opacity: .14;
+  pointer-events: none;
+}
+/* Dark keeps the geometry and changes the register, which is the rule for
+   these two modes everywhere else: the ring goes neon and blooms instead
+   of sitting flat. drop-shadow and not box-shadow - the element is a ring
+   with a transparent middle, and drop-shadow follows the rendered alpha,
+   so the glow is a ring too. box-shadow would trace the square box. */
+:root[data-theme="dark"] .work::before {
+  /* .34, higher than light's .14, because a dusty blue at 14% over
+     near-black is nothing at all - dark needs more alpha to show the same
+     amount of form. Heading across it measures 9.41:1 against 16.9 open,
+     same 3:1 bar. */
+  opacity: .34;
+  filter: drop-shadow(0 0 16px var(--blue));
+}
 
 .filters {
   display: flex; flex-wrap: wrap; gap: 12px;
@@ -3597,11 +3713,11 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    this selector is more specific and declared later, so a stale value here
    would quietly cancel the press in dark mode only. */
 :root[data-theme="dark"] .btn-block {
-  box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 34%, transparent);
+  box-shadow: 4px 4px 0 var(--accent), 0 0 26px color-mix(in srgb, var(--accent) 34%, transparent);
 }
 @media (hover: hover) {
   :root[data-theme="dark"] .btn-block:hover {
-    box-shadow: 7px 7px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow: 8px 8px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 }
 :root[data-theme="dark"] .btn-block:active {

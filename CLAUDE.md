@@ -366,8 +366,62 @@ four languages whenever you size display type.**
   into it, and at 375 it collapsed to four-to-six shapes inside one 60×50
   patch. Jack's call was the free field at every width. The z-order and the
   ≤760px opacity are what protect the text. **Do not reintroduce a keep-out.**
+- **The field is AUTHORED, not generated, and that is the point.** Every
+  position and every motion number was `Math.random()` per shape per build
+  until 2026-11-10. Random nine-point scatter clumps — two or three shapes
+  overlap into a blob and a quadrant sits empty — and because it re-rolled on
+  every load and every theme switch there was no arrangement to judge, let
+  alone tune. Each def now carries `at: [x, y]`, its resting centre as a
+  fraction of the field box, and the nine are **three bands of three**, each
+  band holding a left, a centre and a right:
+  y .195/.21/.26 across the top of the name, y .42/.45/.49 across its foot,
+  y .745/.86/.88 down in the seam. Measured against the real hero at 1440,
+  where the box is 1440×1026: nav ends at .092, name .184–.499, side column
+  .236–.499, marquee strip .579–.640, SELECTED PROJECTS .702–.875, filters
+  .914–1.002.
+  **Both themes use the SAME nine slots**, assigned biggest-to-biggest, so the
+  theme switch — which rebuilds the field inside the view-transition callback
+  — reveals the same composition wearing different shapes instead of jumping
+  to a fresh scatter mid-wipe.
+  **Judge a slot by its swing, not its rest.** Three rules came out of getting
+  that wrong first time: nothing rests in the nav band (the 36px circle swings
+  ±116px, so a rest at .17 put it in the nav for half of every cycle),
+  nothing rests where it can reach the full stop after MURRAY (the 50px circle
+  swings ±127px, and a rest at .55/.52 parked it on the page's one piece of
+  punctuation-as-graphic), and band two is off the marquee (a near-black
+  circle at .38 over a near-black slab is a smudge, not a shape).
+  **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
+  over the name, the column, the nav and the marquee and must keep being
+  allowed to. It sets where a shape LIVES, not where it may go.
+- **Motion is derived from size**, also authored. `t = (110 - size) / 76` is 1
+  for the smallest shape and 0 for the largest, and amplitude, speed, wobble
+  and spin all come off it, so big forms barely move and read as structure
+  while small ones travel far and read as the live layer in front — parallax
+  done with amplitude. Random gave the right spread attached to nothing: a
+  110px form could come out the fastest, widest-travelling thing on screen,
+  which is the inverse of how distance reads. Phase steps by the golden angle
+  (2.39996 rad) so no two of the nine ever swing together, and spin direction
+  alternates instead of being signed at random.
+- **The seam form** (`.work::before`) is one oversized ring at the top-right
+  of #work, bleeding off the right edge, behind everything. The drifting field
+  is small and moving, so its 306px overlap into #work read as leftover hero;
+  one large, completely still form is the opposite register, and that contrast
+  is what makes the seam read as composed. Small things drifting in front of
+  one big thing holding still is depth; nine small things drifting is weather.
+  It echoes the 104px blue outline circle in the .88/.745 slot — same shape,
+  same corner, two scales. **`z-index: -1` is load-bearing**: #work's content
+  is in-flow and unpositioned, so a pseudo-element at auto or 0 paints ABOVE
+  the heading and the filter text. It only works because `<html>` carries no
+  background, so body's propagates to the canvas — **give html a background
+  and this ring disappears underneath it.** Anchored to #work's TOP, not its
+  bottom: the bottom of that section is 4000px from the transition it is
+  there to decorate. Opacity .14 light / .34 dark — dark needs more alpha to
+  show the same amount of form. Heading across the stroke measures 12.78:1
+  (light) and 9.41:1 (dark) against 14.77 and 16.9 on open page, on a 3:1 bar.
 - `drop-shadow`, not `box-shadow`, on SVG shapes — box-shadow traces the
-  element box, not the star.
+  element box, not the star. The dark seam ring glows the same way and for
+  the same reason: it is a ring with a transparent middle, and drop-shadow
+  follows the rendered alpha, so the glow is a ring too.
 - Theme is applied by a **blocking inline script in `<head>`**, before first
   paint. Without it the page painted light then transitioned to dark over
   250ms on every load.
@@ -577,6 +631,33 @@ is most of the point.
   is the only option legible in both themes that also *means* something: it is
   the colour of the full stop in the name. **Don't give them a hue each
   again.**
+- **The hero CTA carries a resting offset block**, 4px, hard and unblurred
+  like every other shadow here. It had none: flat black-on-sand with a 2px
+  border is a label until you hover it, and on a phone there is no hover at
+  all, so it stayed a label for the whole visit. **4 at rest and 8 on hover is
+  a pair, not two numbers.** A box-shadow offset is measured from the element,
+  so when the button lifts `translate(-4px, -4px)` the shadow travels with it;
+  at the old 7 the block ended up 3px from where it had been sitting and the
+  page it was supposedly casting onto appeared to move. 4 + 4 = 8 pins the
+  shadow to its resting spot so only the button rises off it. The dark
+  override replaces `box-shadow` wholesale, so it has to restate the offset
+  block alongside its neon bloom or dark loses the effect entirely.
+- **The CTA arrow is `scale(1.3, 1.55)`** — wider as well as longer. `\2193`
+  is drawn narrow, a thin stem under a shallow chevron, and at 15.2px the head
+  read as a tick. X stays under Y deliberately: at equal scales the glyph just
+  gets bigger, and the point is a broader arrow, not a louder one. Both scales
+  live inside the keyframes, because the animation drives `transform` and a
+  static one on the element is overridden every frame.
+- **The two red dots are one mark at two sizes.** The full stop after MURRAY
+  and the dot in the JM wordmark are both `--accent`, and keeping them the
+  same red meant replacing the nav one's `\25CF` glyph with a drawn
+  `border-radius` circle. As TEXT at 22.4px/400 it sat just under the
+  large-text threshold and owed the full 4.5:1, which coral cannot give on the
+  ground (3.21:1) — that is why it used to be the darker `--accent-ink`, and
+  why it read as a near-miss rather than a repeat. Drawn, it is non-text
+  content, the bar is 3:1, and 3.21 passes. The span is empty and
+  `aria-hidden`; the glyph was being announced as "black circle" after the J
+  and the M. In dark both tokens are the same neon, so nothing changes there.
 - **The card hover is small on purpose.** `translate(-4px, -6px)` and an 8px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to
