@@ -1,29 +1,43 @@
 <!-- The wordmark on a dark chip. A dark slab in both themes, like the
      marquee, the footer and the pong surface, so it wears the DARK palette -
-     which is why the mark is #ff2d55 and not the light-mode coral. It was
-     still painted in the SUPERSEDED palette (#1e1c17 / #e6e3db / #ff3b30)
-     until 2026-11-10, five days after that palette was replaced.
+     hence #ff2d55 rather than the light-mode coral.
 
-     The mark is a RECT, not a circle, because the thing it repeats is a
-     square: Archivo Black draws its full stop as a very slightly wide
-     rectangle, 42.4 x 39.8 measured at 200px, and 14.6 x 13.7 holds that
-     1.065 ratio. Its bottom sits on the text baseline, where a period sits.
+     THE LETTERS ARE OUTLINES, NOT TEXT, AND THAT IS THE POINT. This used to
+     be <text font-family="Archivo Black, Helvetica Neue, Helvetica, Arial">,
+     which only renders as Archivo Black on a machine that HAS Archivo Black
+     installed - and nobody does, because the site serves it as a webfont.
+     A favicon is drawn in SVG-as-image mode with no access to the page's
+     @font-face rules, so every visitor was getting a fallback - Helvetica on
+     a Mac, Arial on Windows, so the icon was not even the same on two
+     machines. Jack spotted it as "on Chrome the typography looks smaller".
+     Measured, by rasterising both versions as images at 256 and scanning the
+     ink: the fallback sets "JM" 32 units wide against the real face's 38,
+     16% NARROWER, while the cap height actually comes out 7% taller. So the
+     thing that read as "smaller" was width, not size - the ink ended at
+     x 36.5 instead of 42.75, which left a 9-unit hole in front of the mark
+     where 2.6 was intended, and the wordmark shrank away from its own full
+     stop.
+     Embedding the woff2 as a data: URI was the other option and is worse:
+     it puts 13KB into a 1KB file and SVG-as-image is not required to honour
+     @font-face at all. Outlines always render, everywhere, and cost nothing.
 
-     Every number here is measured, not eyeballed. At 26px the ink of "JM"
-     ends at x 43.07, so the mark starts 2.6 further on - 0.1em, the same
-     gap .nav-logo .dot carries in CSS - and ends at 60.3, leaving 3.7 of
-     right margin against 4.0 on the left. The cap band is 17.89 tall and
-     the baseline at 40.9 centres it in the 64 box.
-     The previous version ran at 28.8px, which pushed the ink to 47.07 and
-     left the mark overlapping the M by 3 units. A circle got away with that
-     because only its tangent point reached that far; a square reads as a
-     collision, so the type came down a step to make room.
-     The square is 14.6 against the old circle's 16.4 diameter on purpose:
-     a square carries more optical weight than a circle inside the same box,
-     so matching the box would have made the mark look like it grew. -->
+     Extracted with fontTools from assets/fonts/archivo-black-latin.woff2 at
+     font-size 26, letter-spacing -1.26, origin x=4, baseline y=40.9. The ink
+     of "JM" ends at x 43.07 - which the browser's own canvas measurement
+     agrees with to two decimals - so the mark starts 2.6 further on, the
+     0.1em gap .nav-logo .dot carries in CSS, and ends at 60.3 against 4.0 of
+     left margin. To regenerate, see the note in CLAUDE.md.
+
+     The mark is a RECT because the thing it repeats is a square: Archivo
+     Black draws its full stop as a very slightly wide rectangle, 42.4 x 39.8
+     at 200px, and 14.6 x 13.7 holds that 1.065 ratio. Its bottom sits on the
+     baseline, where a period sits. 14.6 and not the old circle's 16.4
+     diameter because a square carries more optical weight in the same box.
+     Colours are the current palette; this file was the last place the
+     superseded one (#1e1c17 / #e6e3db / #ff3b30) survived. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JM">
   <rect width="64" height="64" fill="#1A1A18"/>
-  <text x="4" y="40.9" font-family="Archivo Black, Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="400" font-size="26"
-        letter-spacing="-1.26" fill="#F7F3EB">JM</text>
+  <path fill="#F7F3EB" d="M12.01 41.21Q8.42 41.21 6.51 39.63Q4.6 38.04 4.6 34.69V34.45H9.98V34.66Q9.98 35.88 10.44 36.4Q10.89 36.92 11.83 36.92Q12.76 36.92 13.22 36.4Q13.67 35.88 13.67 34.66V23.01H19.42V34.69Q19.42 38.04 17.51 39.63Q15.6 41.21 12.01 41.21Z"/>
+  <path fill="#F7F3EB" d="M37.37 40.9V34.45Q37.37 33.26 37.46 31.99Q37.55 30.73 37.66 29.88Q37.76 29.02 37.79 28.78H37.68L34.38 40.9H29.88L26.56 28.81H26.45Q26.48 29.04 26.59 29.89Q26.71 30.73 26.82 31.99Q26.92 33.26 26.92 34.45V40.9H21.64V23.01H29.75L32.46 33.33H32.56L35.24 23.01H43.07V40.9Z"/>
   <rect x="45.7" y="27.2" width="14.6" height="13.7" fill="#ff2d55"/>
 </svg>

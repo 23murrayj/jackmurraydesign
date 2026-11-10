@@ -1021,17 +1021,13 @@ body.is-loading { overflow: hidden; }
   border: none;
 }
 .shape-circle { border-radius: 50%; }
-/* Every SVG-drawn shape, not just the triangle. transform-box: fill-box
-   makes the JS rotate() turn the shape about its own ink rather than about
-   whatever origin an <svg> box would otherwise give, and overflow: visible
-   stops a stroke being clipped at the viewBox edge.
-   The arc, the bar and the cross were added to this list the moment they
-   existed: leave one out and it orbits instead of spinning, which looks
-   like a bug in the drift rather than a rotation origin. */
-.shape-triangle,
-.shape-arc,
-.shape-bar,
-.shape-cross {
+/* transform-box: fill-box makes the JS rotate() turn the shape about its
+   own ink rather than about whatever origin an <svg> box would otherwise
+   give, and overflow: visible stops a stroke being clipped at the viewBox
+   edge. Any NEW svg-drawn shape type needs to join this rule (or get its
+   own, as .shape-star has) - leave one out and it orbits instead of
+   spinning, which reads as a bug in the drift. */
+.shape-triangle {
   overflow: visible;
   transform-box: fill-box;
   transform-origin: center;
@@ -1168,9 +1164,52 @@ body.is-loading { overflow: hidden; }
   padding-bottom: 16px;
   /* the role line sizes off THIS box, not the viewport - see below */
   container-type: inline-size;
+
+  /* ONE typographic unit for the whole column. Everything vertical in here
+     is a multiple of the role line's size, which is the only real type
+     measure the column has - the badge is 12px chrome and the button 15.2px
+     chrome, and spacing a column off its smallest elements is how columns
+     end up looking arbitrary.
+     Declared here and used only by the children: cqw inside a var() resolves
+     against the query container of the element that USES it, and these
+     children are inside .hero-side, which is the container. .hero-side
+     itself must never read it, because an element is not its own container
+     and the value would resolve against the wrong box. */
+  --role-size: clamp(1.45rem, 10.6cqw, 2.35rem);
 }
 .hero-side > * { margin: 0; }
-.badge-available { margin-bottom: 30px; }  /* a label close above its line */
+/* THE COLUMN'S RHYTHM. Three vertical whites, each about 1.73x the one
+   above it, measured ink to ink at 1440 where the role sets 37.6px:
+
+     between the role's own two lines   15.1px   (line-height 1.1)
+     badge to role                      26.6px   (0.8 x role size)
+     role to CTA                        45.8px   (1.3 x role size)
+
+   The ratios matter more than the numbers. A column saying three things -
+   a status, a statement, an action - has to answer "which of these belong
+   together" before it answers anything else, and it answers with white.
+   One consistent step does that: the two role lines are tighter than the
+   badge is to them, and the badge is tighter to the role than the role is
+   to the button, so the badge reads as a label ON the statement and the
+   button reads as the separate thing you do about it.
+   It was 30px and 44px flat, which came out at 26.5 and 40.9 optically -
+   a ratio of 1.54 against the inner leading's 1.76. Close enough to look
+   almost deliberate, which is the worst place for a gap to sit.
+
+   In MULTIPLES of the role size, not pixels, and that is the actual fix.
+   The role is clamped on cqw, so it sets 37.6px at 1440 and 35.8 at 375;
+   fixed margins meant the rhythm was right at one width and drifting
+   everywhere else. As multiples, the three whites hold the same ratio at
+   every width and in every language - Japanese sets its own --role-size
+   and the spacing follows it down without a second set of rules.
+
+   Optical, not box. The margins are 0.8 and 1.3 rather than the 0.7 and
+   1.22 the cap heights alone would ask for, because line-height 1.1 is
+   tighter than Space Grotesk's content box: the ink runs 3.5px above the
+   element's top edge and 3.1px below its bottom, so a box gap is always a
+   few px more generous than it looks. The numbers above are what you can
+   actually see, which is the only version that counts. */
+.badge-available { margin-bottom: calc(var(--role-size) * 0.8); }
 /* The standing role line. Display face at a size that can hold the column
    on its own, tracked tight so two lines stack as a block rather than a
    sentence. clamp so it never outgrows the column it sits in. */
@@ -1220,7 +1259,7 @@ body.is-loading { overflow: hidden; }
      English puts it 13px past the column edge. Measured at 1440 (356px
      column, type capped at 37.6px): Italian 336, Spanish 316, English 312 -
      the tightest language keeps 20px. */
-  font-size: clamp(1.45rem, 10.6cqw, 2.35rem);
+  font-size: var(--role-size);
   /* a lighter face needs more leading, not less: at 1.02 the two uppercase
      lines locked into a solid block, which is the look the 900 weight was
      being dropped to get away from */
@@ -1232,10 +1271,11 @@ body.is-loading { overflow: hidden; }
   letter-spacing: -0.012em;
   text-transform: uppercase;
   /* the widest gap in the column: nothing comes between saying and doing,
-     so this is the whole separation between them. No !important - the only
+     so this is the whole separation between them. See the rhythm note on
+     .badge-available for where 1.3 comes from. No !important - the only
      rule it has to beat is ".hero-side > *", which is the same specificity
      and declared earlier, so source order already settles it. */
-  margin-bottom: 44px;
+  margin-bottom: calc(var(--role-size) * 1.3);
 }
 /* The hero CTA is a flat charcoal block at rest. It used to rest on a 9px
    coral offset, which made the one quiet surface on the first screen as loud
@@ -3936,7 +3976,11 @@ html[lang="ja"] .stat.is-now .stat-num { font-weight: 900; }
    and none of it reaches Japanese, which still falls through to Noto at
    about 1em a glyph. Measured at 1440: 27.1px type, longest line 317 of
    the 356px column. */
-html[lang="ja"] .hero-role { font-size: clamp(1.2rem, 7.6cqw, 2.05rem); }
+/* Japanese sets the COLUMN's unit, not just the role's font-size, so the
+   two gaps come down with the type instead of staying at the Latin sizes
+   around smaller lines. Full-width glyphs are ~1em each, so this line has
+   to run smaller - see the CJK note in CLAUDE.md. */
+html[lang="ja"] .hero-side { --role-size: clamp(1.2rem, 7.6cqw, 2.05rem); }
 
 /* Japanese sets without word spaces and wraps at almost any character, so
    the tracking tuned for uppercase Latin reads as broken spacing instead of

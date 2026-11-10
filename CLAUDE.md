@@ -374,7 +374,7 @@ four languages whenever you size display type.**
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
   fraction of the field box, and the twelve are **three bands of four**, each
   band holding a left, a centre-left, a centre-right and a right:
-  y .195/.22/.24/.27 across the top of the name, y .41/.44/.46/.47 across its
+  y .215/.22/.24/.27 across the top of the name, y .41/.44/.46/.47 across its
   foot, y .745/.78/.86/.90 down in the seam. It went 9 → 12 on 2026-11-10
   on Jack's note that the field still wanted more; the band structure is what
   absorbed the three extra without the result reading as denser-but-random.
@@ -403,34 +403,40 @@ four languages whenever you size display type.**
   against the landmarks — nav `y < .092`, and the full stop's CENTRE at
   (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
   park on it.
-- **The vocabulary is circle, square, triangle, arc, bar and cross** in light,
-  and the same three new ones beside nine jagged stars in dark. The arc, bar
-  and cross arrived with the move to twelve, because three more circles would
-  have been more of the same rather than more to look at. Each has a job:
-  the **arc** is an open 270° ring that rhymes with the seam form in
-  `.work::before` — the same figure at two scales, which is what makes it a
-  motif instead of one decorative lump at the bottom of the page; the **bar**
-  is the only shape with a dominant axis, and the field had none, so nothing
-  echoed the two hardest lines on the page (the marquee band and the 4px rule
-  under each section head); the **cross** shares the bar's arm weight so the
-  two flat shapes belong to each other.
-  The arc is the only one that needs a `<path>` — `createSvgShape` takes
-  `{ points }` or `{ d }` — because an arc faked from a polygon shows its
-  facets at 110px. The bar needs `stroke: 0`: it is a 16-unit-tall rectangle
-  in a 100 box, and the default 5 would swell it by two thirds.
-- **`rot` and `spin` are per-def overrides, and the bar is why they exist.**
-  At the standard rate a 72px rule turns a full circle every 24 seconds, so
-  most of the time it is a diagonal, and a diagonal bar is just a stick. It
-  carries `rot: -4, spin: 0.1` so it holds near level and creeps. Not pinned
-  at 0: a rule that never moves while eleven things drift around it reads as
-  furniture someone forgot to animate.
+- **The vocabulary is FOUR forms and must stay that way**: circle, square and
+  triangle in light, jagged star in dark. An arc, a flat bar and a cross were
+  added on 2026-11-10 to give the field more to look at and cut the same day
+  — "I don't like the new shapes; they dont fit." They were not bad shapes;
+  they were wrong here. This page already carries a lot of distinct geometry
+  — the marquee band, the hard rules, the cards, the chips, the name itself
+  — and the field's job is to be the quiet layer behind all of it. Six kinds
+  of drifting thing stops being a texture and becomes a second subject.
+  **Variety in this field comes from SIZE and FILL, not from new forms.**
+  That is the whole lesson, and it is what "a bit more" actually wanted:
+  - **One shape is much bigger than the rest** — a 132px outline circle
+    (140px star in dark) in the bottom-right, concentric with the seam ring.
+    The sizes used to run 36–104, which is a spread, not a hierarchy: twelve
+    things all roughly of a size. The jump gives the field a top.
+  - **One big shape is FILLED** — the 90px coral circle, Jack's own
+    suggestion. Everything large was an outline before, so the field read as
+    line work with a few small solids dropped in; one soft coral disc gives
+    it a mass to sit against. At .38 over the ground it is a wash, which is
+    why the large shapes stay off the .72 vivid alpha.
 - **Every SVG-drawn shape needs `transform-box: fill-box`** and
-  `overflow: visible` — `.shape-triangle, .shape-arc, .shape-bar,
-  .shape-cross` share one rule and `.shape-star` has its own. Leave a new
-  type off that list and it orbits instead of spinning, which reads as a bug
-  in the drift rather than a wrong rotation origin.
-- **Motion is derived from size**, also authored. `t = (110 - size) / 76` is 1
-  for the smallest shape and 0 for the largest, and amplitude, speed, wobble
+  `overflow: visible` — `.shape-triangle` has a rule and `.shape-star` has
+  its own. Any NEW svg type must join one of them: leave it out and it orbits
+  instead of spinning, which reads as a bug in the drift rather than a wrong
+  rotation origin.
+- **Motion is derived from size**, also authored. `t = (maxSize - size) /
+  sizeSpan` is 1 for the smallest shape and 0 for the largest, and the range
+  comes from the loaded set rather than from literals — it was a hardcoded
+  `(110 - size) / 76`, which quietly stopped meaning anything the moment the
+  132px circle arrived and made `t` negative, running every motion number
+  backwards off the end of its range. **Changing one shape's size changes
+  every other shape's travel**, because they all sit on the same derived
+  scale: growing the biggest to 132 pushed the 104 square's vertical
+  amplitude from 39px to 57 and walked it into the nav band. Re-run the
+  envelope check after any size change, not just after a position change. and amplitude, speed, wobble
   and spin all come off it, so big forms barely move and read as structure
   while small ones travel far and read as the live layer in front — parallax
   done with amplitude. Random gave the right spread attached to nothing: a
@@ -667,6 +673,33 @@ is most of the point.
   is the only option legible in both themes that also *means* something: it is
   the colour of the full stop in the name. **Don't give them a hue each
   again.**
+- **The hero column's spacing is one ratio, not three numbers.** Badge, role
+  and CTA, and the three vertical whites between and inside them each run
+  about 1.75× the one above — measured ink to ink at 1440, where the role
+  sets 37.6px: 15.0 between the role's own two lines (line-height 1.1), 26.6
+  badge-to-role, 45.7 role-to-CTA. A column saying three things — a status,
+  a statement, an action — has to answer "which of these belong together"
+  before anything else, and it answers with white: one consistent step makes
+  the badge read as a label ON the statement and the button as the separate
+  thing you do about it. It was 30px and 44px flat, which came out 26.5 and
+  40.9 optically, a ratio of 1.54 against the inner leading's 1.76 — close
+  enough to look almost deliberate, which is the worst place for a gap to be.
+  **The margins are multiples of `--role-size`, not pixels**, and that is the
+  part that matters: the role is clamped on `cqw`, so fixed margins were
+  right at 1440 and drifting at every other width. As multiples the ratio
+  holds everywhere (1.75/1.75 at 375) and in every language —
+  `html[lang="ja"] .hero-side` overrides `--role-size` itself, so Japanese
+  brings the gaps down with its smaller type and needs no second set of
+  rules. **`--role-size` is declared on `.hero-side` and read only by its
+  children**: `cqw` inside a `var()` resolves against the query container of
+  the element that USES it, and an element is not its own container, so
+  `.hero-side` must never read it.
+  The multipliers are 0.8 and 1.3 rather than the 0.7 and 1.22 the cap
+  heights alone would suggest, because `line-height: 1.1` is tighter than
+  Space Grotesk's content box — the ink runs 3.5px above the element's top
+  edge and 3.1px below its bottom, so a box gap always reads a few px more
+  generous than it measures. Tune on the optical numbers, not the declared
+  ones.
 - **The hero CTA carries a resting offset block**, 4px, hard and unblurred
   like every other shadow here. It had none: flat black-on-sand with a 2px
   border is a label until you hover it, and on a phone there is no hover at
@@ -709,15 +742,39 @@ is most of the point.
   against 4.0 on the left. The square is 14.6 wide against the old circle's
   16.4 diameter because a square carries more optical weight inside the same
   box.
-  **To regenerate the PNGs**, write a copy of the SVG with
-  `assets/fonts/archivo-black-latin.woff2` inlined as a data: URI @font-face
-  (the shipped favicon must NOT carry it — it would add 13KB to a 1KB file),
+  **The letters in `favicon.svg` are OUTLINES, and must stay outlines.** It
+  was `<text font-family="Archivo Black, …">` until 2026-11-10, which only
+  renders as Archivo Black on a machine that HAS Archivo Black installed —
+  and nobody does, because the site serves it as a webfont. A favicon is
+  drawn in SVG-as-image mode with no access to the page's `@font-face`
+  rules, so every visitor got a fallback, and a different one per OS:
+  Helvetica on a Mac, Arial on Windows. Jack reported it as "on Chrome the
+  typography looks smaller".
+  **Measured, and the obvious explanation was wrong.** Rasterising both
+  versions as images at 256 and scanning the ink: the fallback sets "JM"
+  32 units wide against the real face's 38, **16% narrower**, while the cap
+  height comes out 7% TALLER. So what read as "smaller" was width, not size
+  — the ink ended at x 36.5 instead of 42.75, leaving a 9-unit hole in
+  front of the mark where 2.6 was intended, so the wordmark shrank away from
+  its own full stop. Embedding the woff2 as a data: URI was the alternative
+  and is worse: 13KB into a 1KB file, and SVG-as-image is not required to
+  honour `@font-face` at all.
+  **To regenerate**, extract the outlines with fontTools (not a project
+  dependency; `python3 -m pip install --target <scratch> fonttools brotli`,
+  and brotli is needed because this woff2's `glyf` table is transformed):
+  draw each glyph through a `TransformPen` with `Transform(scale, 0, 0,
+  -scale, x, baseline)` into an `SVGPathPen`, advancing x by the glyph's
+  `hmtx` width times the scale plus the letter-spacing. The y flip is the
+  easy thing to forget — font space is y-up, SVG is y-down.
+  **For the PNGs**, strip the comment, add `width`/`height` to the `<svg>`,
   then `qlmanage -t -s 512 -o <dir> <file>.svg` and `sips -z N N` down to
   192 and 180. Quick Look letterboxes anything it renders below ~512, so
   render once at 512 and scale down; do not ask it for the small sizes.
-  There is no sharp and no rsvg on this machine. Verify by sampling pixels,
-  not by looking: the bounding-box CORNER of the mark reads `#FF2D55` for a
-  square and the background colour for a circle.
+  There is no sharp and no rsvg on this machine.
+  Verify by sampling pixels, not by looking: the bounding-box CORNER of the
+  mark reads `#FF2D55` for a square and the background colour for a circle,
+  and the ink extents of the rendered image should match what fontTools
+  reports (4.60–43.07 horizontally) to within the raster's quantisation.
 - **The card hover is small on purpose.** `translate(-4px, -6px)` and an 8px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to
