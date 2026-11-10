@@ -1137,24 +1137,35 @@ body.is-loading { overflow: hidden; }
    on its own, tracked tight so two lines stack as a block rather than a
    sentence. clamp so it never outgrows the column it sits in. */
 .hero-role {
-  /* BODY face at 500, not the display face at 900. Archivo Black is a
+  /* BODY face at 400, not the display face at 900. Archivo Black is a
      single-weight (400) file that paints like a 900, so this line used to be
      a second black headline standing next to the first one - two maximum
      weights competing, and the name is meant to win that outright. Space
      Grotesk is the one variable file already loaded (400-700 in a single
-     21 KB woff2), so any weight in that range costs no extra download and
-     gives the hierarchy a middle step: name 900, role 500, body 400.
-     500 rather than the 600 it ran at first: the brief asks for bold
-     statements against LIGHTER supporting text, and at 600 this line was
-     reading as a second statement rather than as support. It is a real
-     instance of the variable font, not a synthesised one, so the strokes
-     thin evenly instead of being smeared.
-     Lighter is also the safe direction for fit - the same string sets
-     narrower, so the Italian line, which is the longest of the four and the
-     one the size was tuned on, gains slack rather than losing it.
+     21 KB woff2), so the weight on this line is free to move without a
+     second download. It has now been 600, then 500, now 400.
+     400 rather than 500: the brief asks for bold statements against
+     LIGHTER supporting text, and each step down has made this line read
+     less like a second statement standing beside the name. At 400 it is
+     the same weight as body copy, which is the part to be deliberate
+     about - the hierarchy here is carried by size (2.35rem against 1rem)
+     and by the tight tracking, not by stroke. That is the editorial
+     version of the step rather than the typographic one, and it is the
+     right one for a line whose job is to sit under a 12rem name without
+     arguing with it. It is a real instance of the variable font, not a
+     synthesised one, so the strokes thin evenly instead of being smeared.
+     Fit barely moves with weight here, which is worth knowing rather
+     than assuming: Space Grotesk is close to constant width across its
+     axis, so "CREATIVO DIGITALE" - the Italian line, the longest of the
+     four and the one the size was tuned on - measures 323.7px at 400
+     against 325.3 at 500 and 326.8 at 700, at the 37.6px this sets at
+     1440. 1.5px out of 324. So moving this weight is a decision about
+     the colour of the line on the page, not about whether it still fits;
+     it holds two lines in all four languages at 1440 and at 375 either
+     way, on 29px of slack in Italian.
      Noto still backs it per glyph, so "UXデザイナー" resolves unchanged. */
   font-family: var(--ff-body);
-  font-weight: 500;
+  font-weight: 400;
   /* cqw, not vw. This column is not a fraction of the viewport: .hero-name
      is sized by "MURRAY." at its min-content width, so the name track takes
      900px of a 1440px screen and leaves the side column 356. A vw-based size
