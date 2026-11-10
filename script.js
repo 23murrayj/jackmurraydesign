@@ -1513,7 +1513,14 @@ if (heroShapesContainer) {
     return pts.join(' ');
   }
 
-  function createSvgShape(def, points) {
+  /* All the SVG-drawn shapes go through here. `geom` is either
+     { points } for a polygon or { d } for a path - the arc is the only one
+     that needs a path, because an arc is not a closed run of straight
+     lines and faking one with a polygon would show its facets at 110px.
+     `stroke` overrides the default width, which the bar needs: it is a
+     16-unit-tall rectangle in a 100 box, and the standard 5 would swell it
+     by 10 units, two thirds thicker than drawn. */
+  function createSvgShape(def, geom) {
     const svg = document.createElementNS(SVG_NS, 'svg');
     svg.setAttribute('viewBox', '0 0 100 100');
     svg.style.width = def.size + 'px';
@@ -1521,22 +1528,51 @@ if (heroShapesContainer) {
     svg.classList.add('shape', `shape-${def.type}`);
     if (def.vivid) svg.classList.add('is-vivid');
     svg.style.color = def.color;
-    const poly = document.createElementNS(SVG_NS, 'polygon');
-    poly.setAttribute('points', points);
-    poly.style.fill = def.filled ? 'currentColor' : 'none';
-    poly.style.stroke = 'currentColor';
-    poly.style.strokeWidth = def.type === 'star' ? '3' : '5';
-    svg.appendChild(poly);
+    const node = document.createElementNS(SVG_NS, geom.d ? 'path' : 'polygon');
+    if (geom.d) node.setAttribute('d', geom.d);
+    else node.setAttribute('points', geom.points);
+    node.style.fill = def.filled ? 'currentColor' : 'none';
+    node.style.stroke = 'currentColor';
+    node.style.strokeWidth = String(
+      def.stroke !== undefined ? def.stroke : (def.type === 'star' ? 3 : 5)
+    );
+    svg.appendChild(node);
     return svg;
   }
 
   function createShapeEl(def) {
     if (def.type === 'triangle') {
-      return createSvgShape(def, '50,6 94,94 6,94');
+      return createSvgShape(def, { points: '50,6 94,94 6,94' });
     }
     if (def.type === 'star') {
       const spikes = def.spikes || 6;
-      return createSvgShape(def, starPoints(spikes, 48, def.sharp ? 14 : 22, 50, 50));
+      return createSvgShape(def, { points: starPoints(spikes, 48, def.sharp ? 14 : 22, 50, 50) });
+    }
+    /* An open ring, 270 degrees, starting top-left and sweeping clockwise
+       to bottom-right. Both endpoints are on the r=42 circle: 50-42cos45 =
+       20.3, and the large-arc flag has to be 1 because the sweep is over
+       180. It exists to tie the field to the seam ring in styles.css -
+       that is the same figure at structural scale, and having the motif
+       appear twice at two sizes is what makes it read as a motif rather
+       than as one decorative lump at the bottom of the page. Open rather
+       than closed so it is not just a second circle. */
+    if (def.type === 'arc') {
+      return createSvgShape(def, { d: 'M20.3,20.3 A42,42 0 1 1 79.7,79.7' });
+    }
+    /* A flat rule. The only shape in the field with a dominant axis, and
+       the field needed one: circles, squares, triangles and stars are all
+       roughly as wide as they are tall, so nothing echoed the two hardest
+       lines on the page - the marquee band and the 4px rule under every
+       section head. Drawn, not stroked, hence stroke: 0. */
+    if (def.type === 'bar') {
+      return createSvgShape(def, { points: '0,42 100,42 100,58 0,58' });
+    }
+    /* A plus. 26 units of arm thickness, which is the same weight as the
+       bar, so the two new flat shapes belong to each other. */
+    if (def.type === 'cross') {
+      return createSvgShape(def, {
+        points: '37,6 63,6 63,37 94,37 94,63 63,63 63,94 37,94 37,63 6,63 6,37 37,37',
+      });
     }
     const el = document.createElement('div');
     el.className = `shape shape-${def.type} ${def.filled ? 'filled' : 'outline'}`
@@ -1618,18 +1654,20 @@ if (heroShapesContainer) {
      and must not come back, see CLAUDE.md. This sets where a shape lives,
      not where it is allowed to go. */
   const smoothDefs = [
-    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false, at: [0.82, 0.21] },
-    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, at: [0.95, 0.45] },
-    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true, at: [0.70, 0.88] },
-    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  at: [0.40, 0.49] },
     { type: 'square',   size: 104, color: 'var(--accent)',      filled: false, at: [0.11, 0.195] },
-    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true,  at: [0.14, 0.42] },
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true,  at: [0.44, 0.26] },
-    /* the only filled coral in light mode, and one of the smallest of the
-       nine: a solid 45px coral square is the one object in the field that
-       is allowed to look like a deliberate mark rather than drift */
-    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, at: [0.25, 0.86] },
-    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, at: [0.88, 0.745] },
+    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, at: [0.90, 0.745] },
+    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: false, at: [0.86, 0.24] },
+    { type: 'arc',      size: 86,  color: 'var(--accent)',      filled: false, at: [0.60, 0.22] },
+    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true,  at: [0.07, 0.44] },
+    { type: 'bar',      size: 72,  color: 'var(--blue)',        filled: true,  stroke: 0, rot: -4, spin: 0.1, at: [0.40, 0.90] },
+    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, at: [0.95, 0.46] },
+    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  at: [0.52, 0.41] },
+    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true, at: [0.66, 0.86] },
+    /* the only filled coral in light mode: a solid 45px coral square is the
+       one object in the field allowed to look like a deliberate mark */
+    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, at: [0.15, 0.78] },
+    { type: 'cross',    size: 40,  color: 'var(--black)',       filled: true,  stroke: 0, at: [0.31, 0.47] },
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true,  vivid: true, at: [0.34, 0.27] },
   ];
 
   /* Same nine-shape budget in dark, and the neons stay neon: this half of
@@ -1653,15 +1691,18 @@ if (heroShapesContainer) {
      wearing different shapes. Before, every switch re-rolled nine random
      positions and the field visibly jumped to a new scatter mid-wipe. */
   const jaggedDefs = [
-    { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true, at: [0.82, 0.21] },
-    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.95, 0.45] },
-    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, at: [0.44, 0.26] },
-    { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true, at: [0.70, 0.88] },
     { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, at: [0.11, 0.195] },
-    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true, at: [0.14, 0.42] },
-    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, at: [0.40, 0.49] },
-    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.25, 0.86] },
-    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, at: [0.88, 0.745] },
+    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, at: [0.90, 0.745] },
+    { type: 'star', size: 95,  color: 'var(--accent)',      filled: false, spikes: 7, sharp: true, at: [0.86, 0.24] },
+    { type: 'arc',  size: 86,  color: 'var(--blue)',        filled: false, at: [0.60, 0.22] },
+    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true, at: [0.07, 0.44] },
+    { type: 'bar',  size: 72,  color: 'var(--highlight)',   filled: true,  stroke: 0, rot: -4, spin: 0.1, at: [0.40, 0.90] },
+    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.95, 0.46] },
+    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, at: [0.52, 0.41] },
+    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, at: [0.66, 0.86] },
+    { type: 'star', size: 34,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, at: [0.15, 0.78] },
+    { type: 'cross', size: 44, color: 'var(--accent)',      filled: true,  stroke: 0, at: [0.31, 0.47] },
+    { type: 'star', size: 40,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true, at: [0.34, 0.27] },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1744,11 +1785,21 @@ if (heroShapesContainer) {
         wobbleSpeed: 0.75 + 0.5 * ((i * 0.37) % 1),
         /* alternating, not signed at random: a field where the spin
            directions happen to agree reads as a single rotating system.
-           Small spins faster, same reasoning as the travel. */
-        rotSpeed: (i % 2 ? 1 : -1) * (5 + 20 * t) * (isDark ? 1.7 : 1),
-        // spread round the circle, deterministic, so squares and triangles
-        // each present a different edge - a repeatable 47 degrees apart
-        rotation: (i * 47) % 360,
+           Small spins faster, same reasoning as the travel.
+           `spin` scales it per shape, and the bar is the reason it exists:
+           at the standard rate a 72px rule turns a full circle every 24
+           seconds, so most of the time it is a diagonal, and a diagonal bar
+           is just a stick. The whole job of that shape is to rhyme with the
+           two hardest horizontals on the page - the marquee band and the 4px
+           rule under each section head - so it holds near level and creeps.
+           Not pinned to 0: a rule that never moves while eleven things drift
+           around it reads as a bit of furniture someone forgot to animate. */
+        rotSpeed: (i % 2 ? 1 : -1) * (5 + 20 * t) * (isDark ? 1.7 : 1)
+          * (def.spin !== undefined ? def.spin : 1),
+        /* spread round the circle, deterministic, so squares and triangles
+           each present a different edge - a repeatable 47 degrees apart.
+           `rot` overrides it where the angle IS the shape. */
+        rotation: def.rot !== undefined ? def.rot : (i * 47) % 360,
         offsetX: 0,
         offsetY: 0,
       };

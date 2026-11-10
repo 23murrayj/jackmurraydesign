@@ -624,8 +624,13 @@ body.is-loading { overflow: hidden; }
    wordmark. */
 .nav-logo .dot {
   display: inline-block;
-  width: 0.34em; height: 0.34em;
-  border-radius: 50%;
+  /* A SQUARE, because the mark it repeats is a square: Archivo Black draws
+     its full stop as a very slightly wide rectangle, 42.4 x 39.8 measured
+     at 200px, so the ratio here is 1.065 and not 1. 0.34em against the
+     logo's 1.4rem is 7.6 x 7.1px. Deliberately larger than a literal
+     period at this size would be (22.4 x .199em = 4.5px, which disappears)
+     - this is the mark as a graphic, the same way the favicon's is. */
+  width: 0.34em; height: 0.319em;
   background: var(--accent);
   margin-left: 0.1em;
 }
@@ -1016,7 +1021,17 @@ body.is-loading { overflow: hidden; }
   border: none;
 }
 .shape-circle { border-radius: 50%; }
-.shape-triangle {
+/* Every SVG-drawn shape, not just the triangle. transform-box: fill-box
+   makes the JS rotate() turn the shape about its own ink rather than about
+   whatever origin an <svg> box would otherwise give, and overflow: visible
+   stops a stroke being clipped at the viewBox edge.
+   The arc, the bar and the cross were added to this list the moment they
+   existed: leave one out and it orbits instead of spinning, which looks
+   like a bug in the drift rather than a rotation origin. */
+.shape-triangle,
+.shape-arc,
+.shape-bar,
+.shape-cross {
   overflow: visible;
   transform-box: fill-box;
   transform-origin: center;

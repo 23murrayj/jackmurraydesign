@@ -330,7 +330,7 @@ four languages whenever you size display type.**
 - 13 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: 9 per theme, drift on **two sine terms per axis** (one sine
+- Hero shapes: 12 per theme, drift on **two sine terms per axis** (one sine
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
   Behind `.hero-grid` (z 0 vs 2) and `pointer-events: none`.
@@ -372,14 +372,17 @@ four languages whenever you size display type.**
   overlap into a blob and a quadrant sits empty — and because it re-rolled on
   every load and every theme switch there was no arrangement to judge, let
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
-  fraction of the field box, and the nine are **three bands of three**, each
-  band holding a left, a centre and a right:
-  y .195/.21/.26 across the top of the name, y .42/.45/.49 across its foot,
-  y .745/.86/.88 down in the seam. Measured against the real hero at 1440,
+  fraction of the field box, and the twelve are **three bands of four**, each
+  band holding a left, a centre-left, a centre-right and a right:
+  y .195/.22/.24/.27 across the top of the name, y .41/.44/.46/.47 across its
+  foot, y .745/.78/.86/.90 down in the seam. It went 9 → 12 on 2026-11-10
+  on Jack's note that the field still wanted more; the band structure is what
+  absorbed the three extra without the result reading as denser-but-random.
+  Measured against the real hero at 1440,
   where the box is 1440×1026: nav ends at .092, name .184–.499, side column
   .236–.499, marquee strip .579–.640, SELECTED PROJECTS .702–.875, filters
   .914–1.002.
-  **Both themes use the SAME nine slots**, assigned biggest-to-biggest, so the
+  **Both themes use the SAME twelve slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
   to a fresh scatter mid-wipe.
@@ -393,6 +396,39 @@ four languages whenever you size display type.**
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
+  **Do the envelope arithmetic, do not eyeball it.** Every one of those rules
+  was broken on a first pass and only caught in a screenshot. The reusable
+  check is: reconstruct `t`, `ampX`, `ampY` and the wobble exactly as
+  `buildShapes` does, add the half-size, and test the resulting rectangle
+  against the landmarks — nav `y < .092`, and the full stop's CENTRE at
+  (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
+  park on it.
+- **The vocabulary is circle, square, triangle, arc, bar and cross** in light,
+  and the same three new ones beside nine jagged stars in dark. The arc, bar
+  and cross arrived with the move to twelve, because three more circles would
+  have been more of the same rather than more to look at. Each has a job:
+  the **arc** is an open 270° ring that rhymes with the seam form in
+  `.work::before` — the same figure at two scales, which is what makes it a
+  motif instead of one decorative lump at the bottom of the page; the **bar**
+  is the only shape with a dominant axis, and the field had none, so nothing
+  echoed the two hardest lines on the page (the marquee band and the 4px rule
+  under each section head); the **cross** shares the bar's arm weight so the
+  two flat shapes belong to each other.
+  The arc is the only one that needs a `<path>` — `createSvgShape` takes
+  `{ points }` or `{ d }` — because an arc faked from a polygon shows its
+  facets at 110px. The bar needs `stroke: 0`: it is a 16-unit-tall rectangle
+  in a 100 box, and the default 5 would swell it by two thirds.
+- **`rot` and `spin` are per-def overrides, and the bar is why they exist.**
+  At the standard rate a 72px rule turns a full circle every 24 seconds, so
+  most of the time it is a diagonal, and a diagonal bar is just a stick. It
+  carries `rot: -4, spin: 0.1` so it holds near level and creeps. Not pinned
+  at 0: a rule that never moves while eleven things drift around it reads as
+  furniture someone forgot to animate.
+- **Every SVG-drawn shape needs `transform-box: fill-box`** and
+  `overflow: visible` — `.shape-triangle, .shape-arc, .shape-bar,
+  .shape-cross` share one rule and `.shape-star` has its own. Leave a new
+  type off that list and it orbits instead of spinning, which reads as a bug
+  in the drift rather than a wrong rotation origin.
 - **Motion is derived from size**, also authored. `t = (110 - size) / 76` is 1
   for the smallest shape and 0 for the largest, and amplitude, speed, wobble
   and spin all come off it, so big forms barely move and read as structure
@@ -658,6 +694,30 @@ is most of the point.
   content, the bar is 3:1, and 3.21 passes. The span is empty and
   `aria-hidden`; the glyph was being announced as "black circle" after the J
   and the M. In dark both tokens are the same neon, so nothing changes there.
+- **The four icon files are the same mark again**, and they were the last
+  place the superseded palette survived: `favicon.svg` was still
+  `#1e1c17` / `#e6e3db` / `#ff3b30` and `site.webmanifest` still
+  `#e6e3db` on 2026-11-10, five days after the change. They are a dark slab
+  in both themes, like the marquee and pong, so they wear the DARK palette —
+  `#1A1A18` ground, `#F7F3EB` type, `#ff2d55` mark.
+  Squaring the mark forced a reflow of the whole chip: at 28.8px the ink of
+  "JM" ends at x 47.07 and the mark used to start at 44, so it overlapped the
+  M by 3 units. A circle got away with that because only its tangent point
+  reached that far; a square reads as a collision. The type came down to 26px
+  (ink ends at 43.07), the mark starts 2.6 further on — 0.1em, the same gap
+  `.nav-logo .dot` carries — and ends at 60.3, leaving 3.7 of right margin
+  against 4.0 on the left. The square is 14.6 wide against the old circle's
+  16.4 diameter because a square carries more optical weight inside the same
+  box.
+  **To regenerate the PNGs**, write a copy of the SVG with
+  `assets/fonts/archivo-black-latin.woff2` inlined as a data: URI @font-face
+  (the shipped favicon must NOT carry it — it would add 13KB to a 1KB file),
+  then `qlmanage -t -s 512 -o <dir> <file>.svg` and `sips -z N N` down to
+  192 and 180. Quick Look letterboxes anything it renders below ~512, so
+  render once at 512 and scale down; do not ask it for the small sizes.
+  There is no sharp and no rsvg on this machine. Verify by sampling pixels,
+  not by looking: the bounding-box CORNER of the mark reads `#FF2D55` for a
+  square and the background colour for a circle.
 - **The card hover is small on purpose.** `translate(-4px, -6px)` and an 8px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to

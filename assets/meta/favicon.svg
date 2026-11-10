@@ -1,6 +1,29 @@
+<!-- The wordmark on a dark chip. A dark slab in both themes, like the
+     marquee, the footer and the pong surface, so it wears the DARK palette -
+     which is why the mark is #ff2d55 and not the light-mode coral. It was
+     still painted in the SUPERSEDED palette (#1e1c17 / #e6e3db / #ff3b30)
+     until 2026-11-10, five days after that palette was replaced.
+
+     The mark is a RECT, not a circle, because the thing it repeats is a
+     square: Archivo Black draws its full stop as a very slightly wide
+     rectangle, 42.4 x 39.8 measured at 200px, and 14.6 x 13.7 holds that
+     1.065 ratio. Its bottom sits on the text baseline, where a period sits.
+
+     Every number here is measured, not eyeballed. At 26px the ink of "JM"
+     ends at x 43.07, so the mark starts 2.6 further on - 0.1em, the same
+     gap .nav-logo .dot carries in CSS - and ends at 60.3, leaving 3.7 of
+     right margin against 4.0 on the left. The cap band is 17.89 tall and
+     the baseline at 40.9 centres it in the 64 box.
+     The previous version ran at 28.8px, which pushed the ink to 47.07 and
+     left the mark overlapping the M by 3 units. A circle got away with that
+     because only its tangent point reached that far; a square reads as a
+     collision, so the type came down a step to make room.
+     The square is 14.6 against the old circle's 16.4 diameter on purpose:
+     a square carries more optical weight than a circle inside the same box,
+     so matching the box would have made the mark look like it grew. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JM">
-  <rect width="64" height="64" fill="#1e1c17"/>
-  <text x="3.8" y="42.9" font-family="Archivo Black, Helvetica Neue, Helvetica, Arial, sans-serif"
-        font-weight="900" font-size="28.8" letter-spacing="-1.4" fill="#e6e3db">JM</text>
-  <circle cx="52.2" cy="34.9" r="8.2" fill="#ff3b30"/>
+  <rect width="64" height="64" fill="#1A1A18"/>
+  <text x="4" y="40.9" font-family="Archivo Black, Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="400" font-size="26"
+        letter-spacing="-1.26" fill="#F7F3EB">JM</text>
+  <rect x="45.7" y="27.2" width="14.6" height="13.7" fill="#ff2d55"/>
 </svg>
