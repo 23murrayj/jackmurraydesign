@@ -1,112 +1,123 @@
 # PROJECT_NOTES.md
 
-Status log for the Jack Murray portfolio. Design rules live in `CLAUDE.md`.
+**Where the site stands, and what is still open.**
 
-**Last updated:** 2026-11-05
+This file holds *state*. `CLAUDE.md` holds *rules* — why things are the way
+they are, and what not to break. Keeping them apart is deliberate: the two
+used to overlap and drifted into contradicting each other (this file still
+described the card hover as `translate(-7,-14)` with an 18px shadow five days
+after Jack rejected that and it became `-4,-6` on 8px). **If a fact about how
+the site should look belongs anywhere, it belongs in CLAUDE.md, not here.**
+
+**Last updated:** 2026-11-10
 
 ---
 
 ## Where it stands
 
 Live at **jackmurraydesign.com** on Vercel. Apex + www resolve, HTTPS is good,
-redirects work. The build is clean: no console errors, no horizontal overflow
-at 320/375/1024/1440, zero WCAG AA contrast failures in both themes across the
-home page, a project overlay and the about page.
+redirects work.
 
-**The site's engineering is in good shape. The gap is content.**
+Measured on 2026-11-10, not asserted:
 
----
+| Check | State |
+|---|---|
+| WCAG AA contrast | 0 failures, light + dark, at 1440 and 375 |
+| Horizontal overflow | none at 375 or 1440 |
+| Console errors | none |
+| Dead CSS classes | 0 of 233 |
+| Unused CSS custom properties | 0 of 28 |
+| Uncalled functions in `script.js` | 0 of 77 |
+| Unused i18n keys | 0 of 199 |
+| i18n parity | 199 keys × 4 languages, exact |
+| Project list in sync | `projectData` / `sitemap.xml` / `llms.txt` / JSON-LD all agree on the same 6 |
+| WebP invariant | 50 inline JPEGs, 50 WebP siblings |
+| `debugger` / `console.log` / TODO left in source | none |
 
-## Done
-
-**Hosting / infrastructure**
-- Migrated Netlify → Vercel (Jack's choice: he wanted to learn Vercel). No
-  downtime. DNS at Porkbun; Vercel's values are project-specific
-  (`216.198.79.1`, `203398039dea6086.vercel-dns-017.com.`) — the `76.76.21.21`
-  in most tutorials is legacy and will fail.
-- `vercel.json` ports the old security headers + asset cache policy.
-- `.vercelignore` is **root-anchored** (`/docs/`, not `docs/`). It takes
-  gitignore-style patterns, so an unanchored `docs/` matched `assets/docs/`
-  and 404'd the live resume while it sat in the repo. Keep the anchors.
-- Contact form is `api/contact.js` → Resend. Honeypot, validation, 5000-char
-  cap. **Constraint:** the shared `onboarding@resend.dev` sender only delivers
-  to the address on the Resend account. A custom domain sender would lift that.
-- Removed the "Powered by Netlify" badge by leaving Netlify (hiding it was a
-  paid feature — the docs omit that; the GitHub thread saying so was right).
-
-**Design / build**
-- Full repalette to warm ivory + coral/dusty-blue (light) and near-black +
-  pink/electric-blue/lime (dark). `--yellow` renamed `--highlight`. The brief
-  was to drop the saturated yellow and red. The outgoing values are tabulated
-  in `CLAUDE.md` and the last commit using them is `1ba4dd4`, so the old look
-  can be recovered or an old hex recognised.
-- Hero rebuilt: typewriter → standing "UX DESIGNER & DIGITAL CREATIVE.",
-  no divider rule, CTA on a permanent accent block, marquee as a seam with
-  SELECTED PROJECTS visible beneath it.
-- Dark/light became a **switch** (`role="switch"`), theme applied pre-paint.
-- Language control is the translate mark; state lives in the menu.
-- Cards read as one pressable object (media badge + action bar + press/focus
-  states). Hover lifts to `translate(-7,-14)` with an 18px shadow.
-- Marquee: full-bleed, 38px, off-white light / lime dark, 55 px/s.
-- Mobile pass: overflow, sticky-hover, timeline rail, skeleton loader, scroll
-  restoration, menu dismissal, touch targets, magnetic headline on touch.
-- Fixed an iOS compositing bug where a `translateY(100%)` overlay leaked
-  through — `visibility` with a delayed transition, not transform alone.
-- About photo is back to the Milano Centrale train shot (918×1600, sharp on
-  Retina; the Dolomites file was 676px and soft).
-
-**Removed deliberately**
-- The colour-vision simulator. It simulated CVD rather than accommodating it —
-  useful to a designer, useless to a colour-blind visitor, who would use an OS
-  setting anyway. The real accommodation (never using colour as the only
-  carrier of meaning) was already in place. **Settled; don't rebuild it.**
+**The engineering is in good shape. The gap is content**, and that has been
+true for a while now.
 
 ---
 
 ## Open — content (the real gap)
 
-1. **The two Caterpillar sentences.** What the research found, and what round 2
-   changed. Only Jack has these.
+1. **The two Caterpillar sentences.** What the research found, and what round
+   two changed. Only Jack has these.
 2. **The Bradley redesign.** The only thing that would give him a second real
    UX case study. Not started.
-3. **Caterpillar confidentiality** — professor emailed ~2026-10-22, still no
-   reply after ~2 weeks. Worth a nudge. Until it lands, CAT Figma frames and
-   research artifacts stay out.
+3. **Caterpillar confidentiality** — professor emailed ~2026-10-22, no reply.
+   Worth a nudge. Until it lands, CAT Figma frames and research artifacts
+   stay out.
 
-## Open — small / mechanical
+## Open — worth doing, ranked
 
-4. **FortiGuard submission.** Jack's school network blocks the domain as
-   uncategorised. Submit at `fortiguard.com/faq/wfratingsubmit`.
-5. **VoiceOver pass.** Markup is correct (landmarks, labels, focus order, alt
-   text) but has never been *heard*. Jack would need to drive it — `Cmd+F5`.
-   This is the one genuine accessibility gap left.
-6. **Placeholder artwork still uses old-palette hexes** — the masonry gallery
-   placeholders (`generatePlaceholderSvg`) and the OASIS video SVG in
-   `script.js`. Left alone on purpose: that's stand-in *project artwork*, and
-   recolouring it is Jack's call.
-7. **Language menu has no scroll-dismiss.** It's wired separately inside
-   `i18n.js` while the egg menu uses the shared watcher. It never orphans (its
-   trigger rides in the fixed nav), so this is consistency, not a bug.
+4. **The contact form still sends from Resend's sandbox.**
+   `onboarding@resend.dev` only delivers to the address on the Resend
+   account. On a site whose entire job is getting a stranger to make contact,
+   that is the highest-consequence open item here: a recruiter's message can
+   be accepted by the form and never arrive. Fix is a verified domain sender
+   in Resend, then one line in `api/contact.js`.
+5. **The 29 `-full` lightbox JPEGs are 20MB and have no WebP.** Every other
+   inline image was converted; these were skipped because a `<picture>`
+   cannot drive a lightbox swap — the format choice has to be made in JS
+   (`Image.prototype.decode` probe, or a one-time `createImageBitmap` test).
+   Worth doing if the lightbox ever feels slow; it is the single biggest
+   remaining byte cost on the site.
+6. **VoiceOver has never actually been run.** The markup is correct —
+   landmarks, labels, focus order, live region, alt text, a real focus trap —
+   and it has been verified by driving the page, but never *heard*. Jack has
+   to do this one (`Cmd+F5`). It is the one genuine accessibility unknown.
+7. **`.layout-single` and `.layout-gallery` are supported but unused.** All
+   six projects use `mixed`, `video` or `masonry`, so those two are the
+   least-tested paths in the overlay. Not a bug — just know they are
+   unexercised before relying on one.
+8. **Placeholder artwork still uses superseded-palette hexes** —
+   `generatePlaceholderSvg` and the OASIS video SVG in `script.js`. Left
+   alone on purpose: that is stand-in *project artwork*, and recolouring it
+   is Jack's call. It is the only place old hexes remain.
+9. **The language menu has no scroll-dismiss.** It is wired separately inside
+   `i18n.js` while the egg menu uses the shared watcher. It never orphans —
+   its trigger rides in the fixed nav — so this is consistency, not a bug.
 
-## Open — needs a decision from Jack
+## Open — mechanical
 
-8. ⚠️ **Before cancelling the old WordPress hosting**, confirm the
-   eNom/hoster911 *domain registration* is separable from the hosting plan.
-   Cancelling the wrong line item could drop the domain.
+10. **FortiGuard submission.** Jack's school network blocks the domain as
+    uncategorised. Submit at `fortiguard.com/faq/wfratingsubmit`.
+11. ⚠️ **Before cancelling the old WordPress hosting**, confirm the
+    eNom/hoster911 *domain registration* is separable from the hosting plan.
+    Cancelling the wrong line item could drop the domain.
+
+---
+
+## Settled — do not rebuild
+
+- **The colour-vision simulator.** It simulated CVD rather than accommodating
+  it — useful to a designer, useless to a colour-blind visitor, who would use
+  an OS setting anyway. The real accommodation (never using colour as the
+  only carrier of meaning) was already in place.
+- **The typewriter tagline** and the "Research-led interfaces…" line. Cut
+  under the brief's "avoiding unnecessary descriptions".
+- **A keep-out for the hero shape field.** Tried, measured, rejected — it
+  collapsed the field into one corner on a phone. See CLAUDE.md → Animation.
+- **A fifth hero shape form.** Arc, bar and cross were built and cut the same
+  day. Variety there comes from size and fill. See CLAUDE.md.
 
 ---
 
 ## Working agreements
 
-- Jack pushes his own commits; the shell here can't authenticate to GitHub, so
-  `origin/main` may read stale. Verify against the GitHub API, not the local ref.
-- He responds well to being told when he's right and when a suggestion won't
-  work — several good calls of his (the marquee not being full-width, the
-  dark-mode switch looking wrong) were real bugs found by eye.
+- **Finish, commit, report — never ask.** Jack pushes his own commits; the
+  shell here cannot authenticate to GitHub, so `origin/main` may read stale.
+  Do not end a turn with "shall I commit?" or "want me to push?".
+- He responds well to being told when he is right and when a suggestion will
+  not work. Several good calls of his — the marquee not being full-width, the
+  dark-mode switch looking wrong, the three new shapes not fitting — were
+  real problems found by eye.
 - He wants reasoning, not just output. Explain the *why*, including when the
   answer is "don't build that."
-- Reference images he supplies are **direction only** — he has said explicitly
-  that generated mockups contain elements that should not be copied.
+- Reference images he supplies are **direction only** — he has said
+  explicitly that generated mockups contain elements that should not be
+  copied.
 
 ## Mistakes worth not repeating
 
@@ -114,6 +125,17 @@ home page, a project overlay and the about page.
 - Shipped an unanchored `.vercelignore` pattern after having fixed the exact
   same trap in `.gitignore` — carry fixes across files.
 - Removed sticker-dragging on mobile from an untested assumption.
-- Over-cropped the team photo after flagging the loss, then shipping it anyway.
+- Over-cropped the team photo after flagging the loss, then shipped it anyway.
 - Repeatedly misread the browser pane's frozen transitions as site bugs. See
   the warning in `CLAUDE.md`.
+- **Let comments rot.** The 2026-11-10 audit found 28 stale factual claims in
+  comments — most of them counts left behind when the hero field went from
+  nine shapes to twelve, including one that read "NINE, not twelve" after the
+  answer had become twelve. The code was correct throughout; only the prose
+  describing it was wrong, which is the kind of error that survives review
+  and misleads the next reader. **When a number in a comment stops being
+  true, fix the comment in the same commit.**
+- **Audited a count with `grep` instead of running the page.** The same audit
+  nearly "corrected" a true statement — `.reveal` is on 19 elements at
+  runtime, but only 16 appear in the markup because `renderGallery` adds the
+  rest. Count things where they happen.

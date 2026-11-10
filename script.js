@@ -1,3 +1,34 @@
+/* ========================================================================
+   script.js - Jack Murray portfolio
+   No build step, no framework, no dependencies. Loaded after i18n.js.
+
+   MAP - `grep -n "SECTION " script.js` prints this list with live line
+   numbers, which is the cheap way to find anything in here.
+
+     01  BOOT & MOTION PREFERENCE     09  PAGE CHROME
+     02  LOADER & SCROLL PROGRESS     10  HERO INTERACTIONS
+     03  PROJECT DATA                 11  NAVIGATION
+     04  MEDIA, ALT TEXT & <picture>  12  THEME SWITCH
+     05  GALLERY & FILTERS            13  MENU SCROLL-DISMISS
+     06  PROJECT OVERLAY              14  MARQUEE STRIPS
+     07  ROUTING                      15  HERO SHAPE FIELD
+     08  ABOUT OVERLAY                16  MAGNETIC HEADLINE
+                                      17  CONTACT FORM
+                                      18  EASTER EGGS
+                                      19  ROUTING BOOT (must stay last)
+
+   THE ONE ORDERING RULE: the routing boot block is SECTION 19 and must
+   remain the last thing in this file. Moved higher it throws "Cannot
+   access 'dialogStack' before initialization", and the failure is quiet -
+   a deep link looks like it works and shares as the home page.
+
+   Design rules and the reasoning behind them live in CLAUDE.md.
+   ======================================================================== */
+
+/* ------------------------------------------------------------------------
+   SECTION 01 · BOOT & MOTION PREFERENCE
+   Scroll restoration, the reduced-motion query, and the i18n shorthand.
+   ------------------------------------------------------------------------ */
 // respected throughout: users who've asked their OS for less motion get
 // a site that still works, just without the perpetual decorative motion
 // (floating shapes, magnetic letters, lagged cursor, cycling tagline) —
@@ -49,6 +80,10 @@ if (!location.hash) {
   window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 02 · LOADER & SCROLL PROGRESS
+   The skeleton it hands over to is mirrored by hand in styles.css.
+   ------------------------------------------------------------------------ */
 // Loading skeleton. The fake progress bar that used to live here advanced by
 // Math.random() every 120ms and reached 100% whenever it felt like it, which
 // is a progress indicator unconnected to any progress. The skeleton makes no
@@ -109,6 +144,10 @@ updateScrollProgress();
 // project detail data — each project picks a "layout" so the case
 // studies don't all look the same: single hero shot, scrollable photo
 // gallery, video placeholder, or a hero + smaller detail shots mix.
+/* ------------------------------------------------------------------------
+   SECTION 03 · PROJECT DATA
+   Six projects. Adding one touches FOUR files - see assets/README.md.
+   ------------------------------------------------------------------------ */
 // TYPE/ROLE are kept honest (school/personal/church/concept work) —
 // no fake client names or invented agency-style services.
 const projectData = {
@@ -203,7 +242,7 @@ const projectData = {
     ]
   },
 
-  sandcastles: {
+  'sandcastles': {
     // bg is sampled from the artwork's own paper texture (#4ea7ae), not picked
     bg: '#4ea7ae',
     // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
@@ -307,10 +346,16 @@ const projectData = {
          title: 'MY PROJECT',                 // not translated
          desc:  "...",                        // fallback; i18n.js wins
          type: 'Case Study', year: '2026', role: 'UX Designer',
-         layout: 'mixed',                     // 'single' | 'mixed'
+         layout: 'mixed',                     // see LAYOUTS below
          hero: { src: '...', w: 1900, h: 1069, full: '...' },
          detailImages: [ { src: '...', w: 1200, h: 671, full: '...' } ]
        }
+
+     LAYOUTS. styles.css carries five: single, mixed, gallery, masonry,
+     video. Three are in use - mixed (x4), video (x2), masonry (x1) - and
+     single and gallery are supported but currently unused, so they are the
+     least-tested paths. The class is built as `layout-${data.layout}`, so
+     a typo here produces no class and no error, just an unstyled panel.
 
      Then add to ALL FOUR language blocks in i18n.js:
        proj.my-project.desc / .type / .role / .body / .alt.1 .alt.2 ...
@@ -378,6 +423,10 @@ const projectData = {
      '<svg ...>'                                       legacy inline artwork
    ========================================================================== */
 
+/* ------------------------------------------------------------------------
+   SECTION 04 · MEDIA, ALT TEXT & <picture>
+   Every inline jpg needs a webp sibling or <picture> ships a broken image.
+   ------------------------------------------------------------------------ */
 function isMarkup(v) {
   return typeof v === 'string' && v.trim().charAt(0) === '<';
 }
@@ -489,6 +538,10 @@ function mediaTag(entry, projectId, index, projectTitle) {
    by i18n.js on DOMContentLoaded, which runs after this file.
    ========================================================================== */
 
+/* ------------------------------------------------------------------------
+   SECTION 05 · GALLERY & FILTERS
+   Cards are real <a href="/work/..."> links, not buttons.
+   ------------------------------------------------------------------------ */
 function renderGallery() {
   const gallery = document.getElementById('gallery');
   if (!gallery) return;
@@ -577,6 +630,10 @@ function announceFilterCount(n) {
 
 
 // project detail overlay open/close
+/* ------------------------------------------------------------------------
+   SECTION 06 · PROJECT OVERLAY
+   Pure UI. Knows nothing about history - that is SECTION 07.
+   ------------------------------------------------------------------------ */
 const projectOverlay = document.getElementById('projectOverlay');
 const projectMedia = document.getElementById('projectMedia');
 const projectCat = document.getElementById('projectCat');
@@ -850,6 +907,10 @@ function closeProject() {
    same breath, which is how these end up out of step.
    ========================================================================== */
 
+/* ------------------------------------------------------------------------
+   SECTION 07 · ROUTING
+   navigate() in, popstate out. Never call a UI fn and history in one breath.
+   ------------------------------------------------------------------------ */
 /* The address bar is only half of a shareable URL - the other half is what
    the link looks like when it is pasted somewhere. Without this every case
    study would share as "Jack Murray · UX Designer" with the home page's
@@ -942,6 +1003,10 @@ projectBack.addEventListener('click', leaveOverlay);
 
 // full about page overlay — opened from the nav link, the about section
 // title, or the explicit "read more" button
+/* ------------------------------------------------------------------------
+   SECTION 08 · ABOUT OVERLAY
+   Its photos are held back on data-src until opened - 1.6MB off the home page.
+   ------------------------------------------------------------------------ */
 const aboutOverlay = document.getElementById('aboutOverlay');
 const aboutBack = document.getElementById('aboutBack');
 /* The panel's photos carry data-src rather than src (see index.html), so
@@ -1030,6 +1095,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 // live clock — small brutalist data readout in the footer
+/* ------------------------------------------------------------------------
+   SECTION 09 · PAGE CHROME
+   Clock, cursor dot, scroll reveal, and the about counters.
+   ------------------------------------------------------------------------ */
 const liveClock = document.getElementById('liveClock');
 function updateClock() {
   if (!liveClock) return;
@@ -1157,6 +1226,10 @@ document.querySelectorAll('.hero-name .line').forEach((line, i) => {
 // that reserved the tallest line's height, which only existed because the
 // text kept changing length. See the note in index.html.
 
+/* ------------------------------------------------------------------------
+   SECTION 10 · HERO INTERACTIONS
+   The name tilt. The shape field is SECTION 15.
+   ------------------------------------------------------------------------ */
 const heroEl = document.querySelector('.hero');
 const heroNameEl = document.querySelector('.hero-name');
 
@@ -1174,6 +1247,10 @@ if (heroNameEl && !prefersReducedMotion) {
 }
 
 // mobile nav toggle
+/* ------------------------------------------------------------------------
+   SECTION 11 · NAVIGATION
+   Mobile drawer + the scrolled state.
+   ------------------------------------------------------------------------ */
 const navToggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
 const navOverlay = document.getElementById('navOverlay');
@@ -1218,6 +1295,10 @@ window.addEventListener('scroll', updateNavState);
 updateNavState();
 
 // dark / light mode toggle
+/* ------------------------------------------------------------------------
+   SECTION 12 · THEME SWITCH
+   applyTheme on load, switchTheme on press. Two paths - read the comments.
+   ------------------------------------------------------------------------ */
 const themeToggle = document.getElementById('themeToggle');
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -1375,6 +1456,10 @@ themeToggle.addEventListener('click', () => {
   switchTheme(current === 'dark' ? 'light' : 'dark');
 });
 
+/* ------------------------------------------------------------------------
+   SECTION 13 · MENU SCROLL-DISMISS
+   Shared by the language menu and the egg menu.
+   ------------------------------------------------------------------------ */
 // A menu whose trigger the reader has scrolled past is orphaned. The egg menu
 // is the case that matters: it is position: fixed at the bottom-left while its
 // trigger sits in the footer, so opening it and scrolling up left a floating
@@ -1405,6 +1490,10 @@ window.addEventListener('scroll', () => {
 
 // seamless marquee: keep duplicating the group until it's wide enough
 // to fill at least double the viewport, so the -50% loop never shows a gap
+/* ------------------------------------------------------------------------
+   SECTION 14 · MARQUEE STRIPS
+   Fixed px/second, so resizing the type does not change the speed.
+   ------------------------------------------------------------------------ */
 function setupSeamlessMarquee(trackId, groupClass, pxPerSecond) {
   const track = document.getElementById(trackId);
   if (!track) return;
@@ -1488,6 +1577,10 @@ function renderTickers() {
 }
 renderTickers();
 
+/* ------------------------------------------------------------------------
+   SECTION 15 · HERO SHAPE FIELD
+   Twelve per theme, AUTHORED positions. Four forms only - do not add a fifth.
+   ------------------------------------------------------------------------ */
 // floating geometric shapes — drift + rotate slowly and ease away from the
 // cursor.
 // Light mode: smooth circles/squares/triangles. Dark mode: sharp jagged
@@ -1556,30 +1649,33 @@ if (heroShapesContainer) {
     return el;
   }
 
-  /* NINE, not twelve. Three of the old twelve were var(--highlight), and
-     light mode resolves that to stone, which is 1.43:1 on the ground at full
-     strength - at .38 alpha it is a shape you cannot actually find, so the
-     field was really nine objects and three ghosts. Cutting to what was visible and spending the colour on
-     coral, dusty blue and the warm amber instead gives the hero a third hue
-     without raising the density that already has to be dialled back at 760.
+  /* TWELVE. It has been twelve before and the history matters, because the
+     first twelve were not twelve things you could see: three of them were
+     var(--highlight), which light mode resolves to stone at 1.43:1 on the
+     ground, and at .38 alpha that is a shape you cannot find. So it was
+     really nine objects and three ghosts, and it was cut to nine. It came
+     back to twelve on 2026-11-10 by adding three more shapes that actually
+     read, not by reinstating the ghosts. **Do not colour a light-mode shape
+     --highlight.**
      The amber pair are deliberately the two SMALLEST shapes - "a little
      vibrancy", not a third primary.
 
-     vivid: true on three of the nine. At a flat .38 the whole field read as
-     pale, which is correct for texture and wrong as the only register the
-     field has - "the contrast between restrained typography and occasional
-     bright geometry could be really effective" was the note, and occasional
-     is the operative word. The three are the small ones, and two of them are
-     filled, so what reads brighter is a punctuation mark rather than a
-     bigger wash. The 104px shapes stay pale on purpose: a large shape at
-     .72 stops being background. See .shape.is-vivid in styles.css for the
-     alphas and what text crossing one measures. */
+     vivid: true on FOUR of the twelve here, and two of the twelve in dark.
+     At a flat .38 the whole field read as pale, which is correct for texture
+     and wrong as the only register the field has - "the contrast between
+     restrained typography and occasional bright geometry could be really
+     effective" was the note, and occasional is the operative word. The vivid
+     ones are the small ones, so what reads brighter is a punctuation mark
+     rather than a bigger wash. The 104px and 132px shapes stay pale on
+     purpose: a large shape at .72 stops being background. See
+     .shape.is-vivid in styles.css for the alphas and what text crossing one
+     measures. */
   /* SLOTS. `at` is the shape's resting centre as a fraction of the field
      box - which is the hero plus the 306px it overhangs into #work, not the
      hero alone, so a y of .86 is down in the band under SELECTED PROJECTS.
 
      These used to be Math.random() per shape per build, and that was the
-     whole of what made the field look unconsidered. Random nine-point
+     whole of what made the field look unconsidered. Random twelve-point
      scatter clumps: on any given load two or three shapes would overlap
      into one blob and a quadrant would be empty, and because it re-rolled
      on every load and every theme switch there was no arrangement to
@@ -1604,7 +1700,7 @@ if (heroShapesContainer) {
      live there.
      That is the same "thin out across strip, heading and tags" the field
      was extended 306px for - it only actually happens if shapes LIVE down
-     there rather than wandering down by luck, which is what nine random
+     there rather than wandering down by luck, which is what twelve random
      y values gave: usually six in the hero and three nowhere useful.
 
      Two more things the slots are doing:
@@ -1654,9 +1750,9 @@ if (heroShapesContainer) {
     { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: true,  vivid: true, at: [0.34, 0.27] },
   ];
 
-  /* Same nine-shape budget in dark, and the neons stay neon: this half of
+  /* Same twelve-shape budget in dark, and the neons stay neon: this half of
      the site is the experimental one and was not the thing being toned down.
-     Two vivid here rather than three, and NOT the amber: off-white text
+     Two vivid here rather than four, and NOT the amber: off-white text
      crossing an amber star measures 3.22:1 at the base .62 already, and
      brightening it is the one move in this field that would take a pair
      below 3:1. The pink and the electric blue have the headroom.
@@ -1666,13 +1762,13 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
-  /* The SAME nine slots, assigned biggest-to-biggest. Two reasons it has to
+  /* The SAME twelve slots, assigned biggest-to-biggest. Two reasons it has to
      be the same set of coordinates and not a second composition:
      the arrangement is the thing that was designed, and the vocabulary -
      smooth versus jagged - is what the themes are meant to differ in;
      and the theme switch rebuilds this field inside the view-transition
      callback, so matching slots mean the wipe reveals the same layout
-     wearing different shapes. Before, every switch re-rolled nine random
+     wearing different shapes. Before, every switch re-rolled twelve random
      positions and the field visibly jumped to a new scatter mid-wipe. */
   const jaggedDefs = [
     { type: 'star', size: 140, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, at: [0.90, 0.745] },
@@ -1695,7 +1791,7 @@ if (heroShapesContainer) {
      below cannot drift apart - this formula is the look of the whole field
      and it should exist once.
      Two sine terms per axis, not one. A single sine traces a clean ellipse
-     and nine ellipses read as clockwork; the faster, smaller wobble on top
+     and twelve ellipses read as clockwork; the faster, smaller wobble on top
      breaks the period so each path wanders instead. */
   function driftAt(s, time, rect) {
     return {
@@ -1713,7 +1809,7 @@ if (heroShapesContainer) {
      That gap is normally one frame and invisible. It stops being invisible
      under a view transition: the theme switch rebuilds the field inside the
      transition callback, and the new snapshot is taken BEFORE the next frame
-     runs - so without this the wipe would reveal nine shapes piled in the
+     runs - so without this the wipe would reveal twelve shapes piled in the
      top-left corner and hold them there for the length of the animation. */
   function placeShapes() {
     const rect = heroShapesContainer.getBoundingClientRect();
@@ -1770,8 +1866,8 @@ if (heroShapesContainer) {
         ampY: 32 + 86 * t,
         speed: 0.14 + 0.30 * t,
         /* the golden angle, which is the most irrational turn there is:
-           stepping phase by it spreads nine shapes as evenly round the
-           cycle as nine shapes can be spread, so no two are ever swinging
+           stepping phase by it spreads twelve shapes as evenly round the
+           cycle as twelve shapes can be spread, so no two are ever swinging
            together. Random phases bunch - that is what random does - and a
            bunched pair looks like the two shapes are linked. */
         phase: i * 2.39996,
@@ -1840,7 +1936,7 @@ if (heroShapesContainer) {
 
       // A shape being pushed used to turn var(--green) and turn back. It was
       // cut on Jack's note, and the reasoning holds up: green belongs to the
-      // availability dot, nine shapes that each briefly become a tenth colour
+      // availability dot, twelve shapes that each briefly become a thirteenth colour
       // is a colour system with a hole in it, and the push is already legible
       // from the movement and the spin-up below. Nothing replaced it - the
       // field reacts to the cursor by MOVING, which is the whole idea.
@@ -1877,6 +1973,10 @@ if (heroShapesContainer) {
 
 // magnetic typography — each letter explodes away from the cursor then
 // snaps back with springy, slightly-overshooting physics
+/* ------------------------------------------------------------------------
+   SECTION 16 · MAGNETIC HEADLINE
+   LET'S MAKE / SOMETHING. Colour lives in the glow, never in the type.
+   ------------------------------------------------------------------------ */
 const magneticTextEl = document.getElementById('magneticText');
 
 // Shared with the physics loop below. It has to be a mutable outer binding
@@ -2061,6 +2161,10 @@ if (magneticTextEl && !prefersReducedMotion) {
   startMagnetic();
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 17 · CONTACT FORM
+   Honeypot + validation. Sender is still the Resend sandbox - see OPEN ITEMS.
+   ------------------------------------------------------------------------ */
 // Contact form. Posts to /api/contact, a function in this repository - see
 // api/contact.js for what it does with the fields. Anywhere that endpoint does
 // not exist (localhost, or a static host with no functions) the catch below
@@ -2140,6 +2244,10 @@ copyEmailBtn?.addEventListener('click', async () => {
 
 // hidden easter egg menu — pick stickers or chaos mode
 //
+/* ------------------------------------------------------------------------
+   SECTION 18 · EASTER EGGS
+   Pong, chaos mode, stickers. Deliberately hidden; not a headline feature.
+   ------------------------------------------------------------------------ */
 // EASTER EGGS, and the word is doing real work. Everything from here to the
 // end of the file - this menu, the stickers, chaos mode, Pong - is hidden
 // behind a trigger most visitors never press, and none of it is what the
@@ -2911,7 +3019,7 @@ setInert(lightbox, true);
 })();
 
 /* ==========================================================================
-   BOOT THE ROUTE — and this has to be the LAST thing in the file.
+   SECTION 19 · BOOT THE ROUTE — and this has to be the LAST thing in the file.
 
    It was 200 lines higher to begin with, next to the other i18n wiring, and
    that threw "Cannot access 'dialogStack' before initialization": opening a

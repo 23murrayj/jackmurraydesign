@@ -77,9 +77,14 @@ footnote, if they are worth a mention at all.
 ## The numbers in the about section
 
 Four years of UX. 18+ projects. 35 countries visited. Currently in Milan.
-These animate from zero when scrolled into view, so a reader that does not
-run or wait for JavaScript may see them part-way. The figures above are the
-real ones.
+
+These animate upward when scrolled into view, but the real figures are in the
+HTML and the animation starts from them: the markup carries 4, 18+ and 35,
+and the script zeroes them just before the first paint and counts back up. So
+a reader that does not execute JavaScript sees the correct numbers, not
+zeroes and not a part-way value. That is deliberate - an animated figure that
+only exists in script is invisible to anything reading the page rather than
+running it.
 
 ## Pages
 

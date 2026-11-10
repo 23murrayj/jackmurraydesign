@@ -1,5 +1,36 @@
+/* ========================================================================
+   styles.css - Jack Murray portfolio
+   No build step, no preprocessor. One file, loaded before script.js.
+
+   MAP - `grep -n "SECTION " styles.css` prints this list with live line
+   numbers, which is the cheap way to find anything in here.
+
+     01  FONTS                        14  MAGNETIC TYPOGRAPHY
+     02  RESET & GLOBAL INVARIANTS    15  CONTACT
+     03  TOKENS (the palette)         16  FOOTER
+     04  PAGE BASE & SCROLL           17  CHAOS MODE
+     05  LOADER & SKELETON            18  STICKER PACK
+     06  SCROLL PROGRESS & NOISE      19  DARK MODE INTENSITY
+     07  NAV CONTROLS                 20  LANGUAGE SWITCHER
+     08  DARK / LIGHT SWITCH          21  JAPANESE TYPOGRAPHY
+     09  HERO                         22  SKIP LINK
+     10  WORK / GALLERY               23  REAL MEDIA
+     11  PROJECT DETAIL OVERLAY       24  LIGHTBOX
+     12  FULL ABOUT PAGE OVERLAY      25  THE THEME SWITCH, AS ONE MOVE
+     13  ABOUT SECTION
+
+   TWO RULES THAT ARE NOT OBVIOUS FROM READING A RULE IN ISOLATION:
+   - Colour changes go in SECTION 03, never at a call site. A hardcoded hex
+     outside that block is a bug unless a comment says it is theme-fixed.
+   - Media-query overrides live NEXT TO the rule they override, not in a
+     breakpoint block at the bottom. A selector appearing twice is usually
+     base + override, not a duplicate.
+
+   Design rules and the reasoning behind them live in CLAUDE.md.
+   ======================================================================== */
+
 /* ==========================================================================
-   FONTS - self-hosted
+   SECTION 01 · FONTS — self-hosted
    Served from assets/fonts instead of fonts.googleapis.com. Nothing about
    this page reaches a third party now, and the critical path got much
    shorter: Google's stylesheet alone was 119 KB, because asking for Noto
@@ -53,6 +84,10 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 02 · RESET & GLOBAL INVARIANTS
+   <picture> sizing and .sr-only live here. Both are load-bearing.
+   ------------------------------------------------------------------------ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 /* Form controls do not inherit font-family - the UA stylesheet gives them a
    system default - so every button and input that was not handed one
@@ -87,6 +122,10 @@ picture { display: contents; }
   white-space: nowrap;
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 03 · TOKENS — the palette lives HERE, not at call sites
+   Change colour in this block. Dark overrides follow immediately after.
+   ------------------------------------------------------------------------ */
 :root {
   /* LIGHT PALETTE - warm ivory ground, near-black ink, muted coral, dusty
      blue, stone. The old flat red and pure yellow were the two loudest
@@ -134,7 +173,7 @@ picture { display: contents; }
   --highlight: #CBC4B4;
   --blue: #657FB9;    /* dusty blue - 3.36:1 on the ground, so UI and large type */
   /* The small yellow accent, and a GRAPHIC one only: it colours two of the
-     nine hero shapes and appears nowhere else. 1.94:1 on the ground, so it can
+     twelve hero shapes and appears nowhere else. 1.94:1 on the ground, so it can
      never carry text or an outline that has to be read - its whole job is
      being the third hue that stops the hero reading as coral-and-blue.
      This is not the superseded --yellow (#fffb00), which was dropped for
@@ -277,6 +316,10 @@ picture { display: contents; }
   --chip-lead: rgba(244, 242, 245, 0.22);
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 04 · PAGE BASE & SCROLL
+   overflow-x is clip, NOT hidden - three sticky elements depend on it.
+   ------------------------------------------------------------------------ */
 /* The nav is fixed and 94px tall (86 on phones), so an un-padded anchor jump
    parked each section heading underneath it: clicking CONTACT lost the top
    24px of the word. Every section sets its h2 70px below its own top edge,
@@ -327,6 +370,10 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 05 · LOADER & LOADING SKELETON
+   The skeleton mirrors the real hero by hand. Re-measure when the hero moves.
+   ------------------------------------------------------------------------ */
 /* LOADER */
 /* LOADING SKELETON
    Mirrors the hero's real layout at the same proportions, so the switch to
@@ -529,6 +576,9 @@ a { color: inherit; text-decoration: none; }
 
 body.is-loading { overflow: hidden; }
 
+/* ------------------------------------------------------------------------
+   SECTION 06 · SCROLL PROGRESS & NOISE
+   ------------------------------------------------------------------------ */
 /* SCROLL PROGRESS */
 .scroll-progress {
   position: fixed; top: 0; left: 0; height: 4px; width: 0%;
@@ -649,6 +699,9 @@ body.is-loading { overflow: hidden; }
 
 .nav-right { display: flex; align-items: center; gap: 18px; }
 
+/* ------------------------------------------------------------------------
+   SECTION 07 · NAV CONTROLS — states & tooltips
+   ------------------------------------------------------------------------ */
 /* PRESSED AND OPEN STATES FOR THE NAV CONTROLS
    Hover was the only feedback these had, which meant a touch user got none at
    all and a mouse user got the same lift whether a menu was open or shut.
@@ -724,6 +777,10 @@ body.is-loading { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .lang-toggle::after, .theme-switch::after { transition: none; }
 }
+/* ------------------------------------------------------------------------
+   SECTION 08 · DARK / LIGHT SWITCH (the control itself)
+   The wipe it triggers is SECTION 25.
+   ------------------------------------------------------------------------ */
 /* DARK / LIGHT SWITCH
    Drawn as a track with a sliding knob rather than the rounded capsule the
    convention usually implies: square ends, a 3px rule and a hard offset
@@ -877,6 +934,10 @@ body.is-loading { overflow: hidden; }
      controls beside it were 44. */
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 09 · HERO
+   Name, shape field, right column, marquee. Field rules: CLAUDE.md → Animation.
+   ------------------------------------------------------------------------ */
 /* HERO */
 .hero {
   position: relative;
@@ -927,7 +988,7 @@ body.is-loading { overflow: hidden; }
      shapes cannot cover the name or the right column, and pointer-events
      keeps them from swallowing a click aimed at the CTA behind them.
      contain tells the browser nothing inside affects layout outside, which
-     matters because nine elements are being transformed every frame.
+     matters because twelve elements are being transformed every frame.
      The z-order and the opacity below are the whole of what protects the
      text: shapes DO drift across the name and the column, and are meant to.
      A build that fenced them out of the type's measured boxes was tried and
@@ -953,8 +1014,11 @@ body.is-loading { overflow: hidden; }
   opacity: .62;
   filter: drop-shadow(0 0 7px currentColor);
 }
-/* THREE OF THE NINE ARE BRIGHT (two in dark). Which ones is decided in the
-   builder; this is the alpha and the reason for its ceiling.
+/* FOUR OF THE TWELVE ARE BRIGHT in light, TWO in dark. Which ones is
+   decided in the builder; this is the alpha and the reason for its ceiling.
+   Dark gets fewer on purpose: off-white text crossing an amber star already
+   measures 3.22:1 at the base .62, so brightening that pair is the one move
+   in this field that would take it under 3:1.
    .72 is picked off a measurement, not by eye. The field drifts BEHIND the
    type by design, so the number that matters is what a glyph reads against
    while a shape is passing under it. Charcoal over a .72 coral composited on
@@ -977,7 +1041,7 @@ body.is-loading { overflow: hidden; }
   opacity: .78;
   filter: drop-shadow(0 0 10px currentColor);
 }
-/* Same nine shapes, a third of the width: the field that reads as texture
+/* Same twelve shapes, a third of the width: the field that reads as texture
    behind a 1440px hero reads as clutter behind a 375px one, because density
    is what changed, not the count. Dialled back rather than thinned out, so
    the phone keeps the same look with less of it.
@@ -990,7 +1054,7 @@ body.is-loading { overflow: hidden; }
     opacity: .42;
     filter: drop-shadow(0 0 5px currentColor);
   }
-  /* the vivid three come down with everything else, and proportionally
+  /* the vivid ones come down with everything else, and proportionally
      further: a stacked hero is where shapes cross the type most, so the one
      register that is allowed to be bright on a desktop is the first thing to
      give way here */
@@ -1178,12 +1242,15 @@ body.is-loading { overflow: hidden; }
   --role-size: clamp(1.45rem, 10.6cqw, 2.35rem);
 }
 .hero-side > * { margin: 0; }
-/* THE COLUMN'S RHYTHM. Three vertical whites, each about 1.73x the one
+/* THE COLUMN'S RHYTHM. Three vertical whites, each about 1.75x the one
    above it, measured ink to ink at 1440 where the role sets 37.6px:
 
-     between the role's own two lines   15.1px   (line-height 1.1)
+     between the role's own two lines   15.0px   (line-height 1.1)
      badge to role                      26.6px   (0.8 x role size)
-     role to CTA                        45.8px   (1.3 x role size)
+     role to CTA                        45.7px   (1.3 x role size)
+
+   Measured again at 375, where the role sets 35.8px: 14.3 / 25.1 / 43.8,
+   which is 1.75 and 1.75. The ratio is the thing that holds, not the px.
 
    The ratios matter more than the numbers. A column saying three things -
    a status, a statement, an action - has to answer "which of these belong
@@ -1501,6 +1568,10 @@ body.is-loading { overflow: hidden; }
 .about .section-num { color: var(--muted-ink); }
 .contact .section-num { color: var(--ink); }
 
+/* ------------------------------------------------------------------------
+   SECTION 10 · WORK / GALLERY
+   .work carries NO background - an opaque one hides the hero field.
+   ------------------------------------------------------------------------ */
 /* WORK / GALLERY */
 /* No background. It was var(--white), which is exactly what body already
    paints, so it was only ever redundant - and now it is harmful: an opaque
@@ -1518,11 +1589,12 @@ body.is-loading { overflow: hidden; }
    rather than as a join. This is the opposite register - one form, large,
    and completely still - and the contrast is what makes the seam read as
    composed. Small things drifting in front of one big thing holding still
-   is depth; nine small things drifting is weather.
+   is depth; twelve small things drifting is weather.
 
-   Why a circle in blue: the bottom-right slot of the field is the 104px
-   dusty-blue outline circle, so this is literally that shape at structural
-   scale, in the corner it already lives in. Same family, two sizes - the
+   Why a circle in blue: the bottom-right slot of the field (.90/.745) is
+   the 132px dusty-blue outline circle - the largest shape in the set - so
+   this is literally that shape at structural scale, in the corner it
+   already lives in. Same family, two sizes - the
    same relationship the JM dot has with the full stop after MURRAY.
 
    Geometry: anchored to #work's top, NOT its bottom. "Bottom-right of the
@@ -1763,6 +1835,10 @@ body.is-loading { overflow: hidden; }
   .gallery { grid-template-columns: 1fr; }
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 11 · PROJECT DETAIL OVERLAY
+   layout-* and size-* classes are built from template literals in script.js.
+   ------------------------------------------------------------------------ */
 /* PROJECT DETAIL OVERLAY */
 .project-overlay {
   position: fixed; inset: 0; z-index: 500;
@@ -2185,6 +2261,9 @@ body.is-loading { overflow: hidden; }
 .meta-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); }
 .project-meta span:last-child { font-weight: 700; font-size: 1rem; }
 
+/* ------------------------------------------------------------------------
+   SECTION 12 · FULL ABOUT PAGE OVERLAY
+   ------------------------------------------------------------------------ */
 /* FULL ABOUT PAGE OVERLAY */
 /* Hidden by transform alone, these stayed rendered and composited the whole
    time - a full-page layer sitting just below the fold, not painted away.
@@ -2604,6 +2683,9 @@ body.is-loading { overflow: hidden; }
    survives text zoom - the chips grow, the column doesn't. */
 .about-skill-tags .tag-pair { flex-wrap: wrap; }
 
+/* ------------------------------------------------------------------------
+   SECTION 13 · ABOUT SECTION (the in-page one)
+   ------------------------------------------------------------------------ */
 /* ABOUT */
 .about { background: var(--ink); color: var(--paper); padding-bottom: 34px; position: relative; }
 .about .section-head {
@@ -3076,6 +3158,9 @@ body.is-loading { overflow: hidden; }
   .about-cta-row .about-readmore-btn { width: 100%; justify-content: center; }
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 14 · MAGNETIC TYPOGRAPHY
+   ------------------------------------------------------------------------ */
 /* MAGNETIC TYPOGRAPHY — extremely tall condensed type, edge to edge */
 .magnetic-section {
   background: var(--white);
@@ -3140,6 +3225,9 @@ body.is-loading { overflow: hidden; }
    around the letterform reads as light on the type while colour inside it
    reads as a change of subject. */
 
+/* ------------------------------------------------------------------------
+   SECTION 15 · CONTACT
+   ------------------------------------------------------------------------ */
 /* CONTACT — bg is a fixed accent red regardless of theme, so its
    internal tones stay on fixed ink/paper to guarantee AA contrast */
 .contact {
@@ -3300,6 +3388,9 @@ body.is-loading { overflow: hidden; }
   padding: 20px 5vw 0; border-top: 3px solid var(--ink);
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 16 · FOOTER
+   ------------------------------------------------------------------------ */
 /* FOOTER */
 .footer {
   /* a column now: the credit line sits above the copyright row rather than
@@ -3430,6 +3521,9 @@ body.is-loading { overflow: hidden; }
 .egg-warn svg { width: 12px; height: 12px; flex: none; }
 
 
+/* ------------------------------------------------------------------------
+   SECTION 17 · CHAOS MODE (easter egg)
+   ------------------------------------------------------------------------ */
 /* CHAOS MODE — 8 seconds of corrupted-signal glitching (desaturate/
    oversaturate swings + a small stutter-shake), not a violent strobe.
    Inverting colors was the old version; this one reads as "broken
@@ -3611,6 +3705,9 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   #pongRematch:hover { background: #DDFF67; }
 }
 
+/* ------------------------------------------------------------------------
+   SECTION 18 · STICKER PACK (easter egg)
+   ------------------------------------------------------------------------ */
 /* STICKER PACK EASTER EGG */
 .sticker-tray {
   position: fixed; bottom: 22px; left: 50%;
@@ -3708,6 +3805,9 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    scrolling while a finger is on one. The assumption was wrong and the
    feature already worked. */
 
+/* ------------------------------------------------------------------------
+   SECTION 19 · DARK MODE INTENSITY
+   ------------------------------------------------------------------------ */
 /* DARK MODE INTENSITY — heavier, more aggressive personality:
    neon glow on accent text, harsher hover shadows. Colors themselves
    already shift via the --accent/--highlight/--blue/--green overrides above. */
@@ -3836,7 +3936,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 }
 
 /* ==========================================================================
-   LANGUAGE SWITCHER
+   SECTION 20 · LANGUAGE SWITCHER
    Built on its own classes rather than a shared dropdown class: the menus in
    the nav cluster look alike on purpose, but they are independent features,
    and coupling their selectors would mean every future tweak to one silently
@@ -3928,7 +4028,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    Kept as a marker: adding a fourth control here brings the overflow back. */
 
 /* ==========================================================================
-   JAPANESE TYPOGRAPHY
+   SECTION 21 · JAPANESE TYPOGRAPHY
    Archivo Black and Anton are single-weight (400) faces that *look* black.
    Noto Sans JP at 400 is a normal weight, so Japanese glyphs falling
    through to it rendered visibly lighter than the Latin they sit beside.
@@ -3999,7 +4099,7 @@ html[lang="ja"] .magnetic-letter {
 html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 
 /* ==========================================================================
-   SKIP LINK
+   SECTION 22 · SKIP LINK
    Off-screen until focused rather than display:none — a display:none link
    is removed from the tab order entirely, which would defeat the purpose.
    ========================================================================== */
@@ -4024,7 +4124,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 #main:focus { outline: none; }
 
 /* ==========================================================================
-   REAL MEDIA
+   SECTION 23 · REAL MEDIA
    The layouts were built around inline SVG, which scales to its container
    for free. Raster images need to be told to do the same, and to crop
    rather than distort when the photo's aspect ratio doesn't match the frame
@@ -4086,7 +4186,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 .project-body-copy p + p { margin-top: 1em; }
 
 /* ==========================================================================
-   LIGHTBOX
+   SECTION 24 · LIGHTBOX
    ========================================================================== */
 .lightbox {
   position: fixed; inset: 0; z-index: 1800;
@@ -4143,7 +4243,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 }
 
 /* ==========================================================================
-   THE THEME SWITCH, AS ONE MOVE
+   SECTION 25 · THE THEME SWITCH, AS ONE MOVE
    The page used to change theme a component at a time. Nothing was wrong
    with any single rule - body cross-faded over .35s, the cards over .25s,
    the filter buttons over .2s, the section rules and the marquee not at all

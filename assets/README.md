@@ -12,9 +12,30 @@ list in `projectData` easy to read against the folder.
 
 ## Adding a project — the whole checklist
 
+This list was wrong until 2026-11-10: it stopped at step 3, which was true
+before the case studies got real URLs. A project added that way renders
+perfectly and is invisible to Google, to `/llms.txt` and to the sitemap,
+and nothing errors, so nobody finds out.
+
 1. Drop the images in `assets/projects/<id>/`
-2. Add one object to `projectData` in `script.js`
-3. Add its translated strings to `i18n.js` (`proj.<id>.desc` / `.type` / `.role`)
+2. **Generate the WebP siblings.** Every inline `.jpg` must have a `.webp`
+   next to it or `<picture>` ships a broken image — it falls back on a type
+   it cannot DECODE, not on a 404. Recipe in CLAUDE.md → Performance.
+   Check: `for f in $(find assets/projects assets/about -name "*.jpg" ! -name "*-full.jpg"); do [ -f "${f%.jpg}.webp" ] || echo "MISSING ${f%.jpg}.webp"; done`
+3. Add one object to `projectData` in `script.js` — and add a `small:` 800px
+   copy of the thumb, or phones download the 1400px one
+4. Add its translated strings to **all four** language blocks in `i18n.js`
+   (`proj.<id>.desc` / `.type` / `.role`, plus `proj.<id>.alt.<n>`)
+5. Add the URL to `sitemap.xml`
+6. Add it to `llms.txt`
+7. Add it to the JSON-LD block in `index.html`
+
+Steps 3, 5, 6 and 7 are the "four files" rule in CLAUDE.md. They are
+checkable against each other in one command:
+
+```
+grep -o "/work/[a-z-]*" sitemap.xml llms.txt | sed 's/.*work\///' | sort -u
+```
 
 The card in the gallery is generated from `projectData` — there is no card
 markup to write in `index.html`.

@@ -10,6 +10,58 @@ copy both count as part of the product.
 
 ---
 
+## START HERE — where to look, and what you can skip
+
+This file is long because the reasoning is the valuable part. You almost
+never need all of it. Find your task below and read that section.
+
+| If you are about to… | Read | And check |
+|---|---|---|
+| change any colour | **Palette** | the contrast rules at the end of it |
+| touch the hero shapes | **Animation** → the field | the envelope check |
+| move anything in the hero | **Layout**, **The loading skeleton** | re-measure the skeleton |
+| touch the theme switch | **Animation** → the switch | the browser-pane warning |
+| add / rename / remove a project | **Routing** (last line) | `assets/README.md` — it is a 7-step checklist, not 3 |
+| add any user-facing string | **UX rules** (last line) | all four languages, exact parity |
+| add an image | **Performance** | every inline jpg needs a webp sibling |
+| write anything a crawler reads | **Machine readers are an audience** | — |
+| publish a file, or touch a photo | **Safety constraints** | read the file first |
+| measure anything in the browser | **Environment** → the pane lies | sanity-check the probe |
+
+**Finding things cheaply.** Both big files carry numbered section banners:
+
+```
+grep -n "SECTION " styles.css      # 25 sections, 4.4k lines
+grep -n "SECTION " script.js       # 19 sections, 3.1k lines
+```
+
+One grep gives the whole table of contents with live line numbers. Use it
+instead of reading either file top to bottom.
+
+**Where facts live, so they stop contradicting each other:**
+
+- **CLAUDE.md** (this file) — rules, and why. What not to break.
+- **PROJECT_NOTES.md** — state. What is live, what is open, ranked.
+- **assets/README.md** — how to add images and projects. Export specs.
+- Anything describing *how the site should look* goes here, not in the other
+  two. That separation exists because the status doc and this file drifted
+  into contradicting each other about the card hover.
+
+**Two standing rules about this file itself:**
+
+1. **Numbers in it are measurements, not decoration.** When one stops being
+   true, fix it in the same commit as the change. A 2026-11-10 audit found
+   28 stale claims across the comments and docs — almost all counts left
+   behind when the hero field went from nine shapes to twelve, including a
+   comment reading "NINE, not twelve" after the answer had become twelve.
+   The code was right the whole time; only the prose was wrong.
+2. **Verify a count where it happens.** The same audit nearly "fixed" a
+   correct claim: `.reveal` is on 19 elements at runtime but only 16 in the
+   markup, because `renderGallery` adds the rest. `grep` would have made
+   that worse.
+
+---
+
 ## ⚠️ Environment: git is behind an Xcode license gate
 
 `/usr/bin/git` and `/usr/bin/python3` are Xcode shims and currently refuse to
@@ -327,7 +379,7 @@ four languages whenever you size display type.**
 
 - Every hover effect is wrapped in `@media (hover: hover)`. On touch, `:hover`
   latches on tap and never releases.
-- 13 `prefers-reduced-motion` blocks; the global one kills durations.
+- 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
 - Hero shapes: 12 per theme, drift on **two sine terms per axis** (one sine
@@ -368,7 +420,7 @@ four languages whenever you size display type.**
   ≤760px opacity are what protect the text. **Do not reintroduce a keep-out.**
 - **The field is AUTHORED, not generated, and that is the point.** Every
   position and every motion number was `Math.random()` per shape per build
-  until 2026-11-10. Random nine-point scatter clumps — two or three shapes
+  until 2026-11-10. Random scatter clumps — two or three shapes
   overlap into a blob and a quadrant sits empty — and because it re-rolled on
   every load and every theme switch there was no arrangement to judge, let
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
@@ -436,22 +488,23 @@ four languages whenever you size display type.**
   every other shape's travel**, because they all sit on the same derived
   scale: growing the biggest to 132 pushed the 104 square's vertical
   amplitude from 39px to 57 and walked it into the nav band. Re-run the
-  envelope check after any size change, not just after a position change. and amplitude, speed, wobble
-  and spin all come off it, so big forms barely move and read as structure
-  while small ones travel far and read as the live layer in front — parallax
-  done with amplitude. Random gave the right spread attached to nothing: a
-  110px form could come out the fastest, widest-travelling thing on screen,
-  which is the inverse of how distance reads. Phase steps by the golden angle
-  (2.39996 rad) so no two of the nine ever swing together, and spin direction
-  alternates instead of being signed at random.
+  envelope check after any size change, not just after a position change.
+  Amplitude, speed, wobble and spin all come off `t`, so big forms barely
+  move and read as structure while small ones travel far and read as the
+  live layer in front — parallax done with amplitude. Random gave the right
+  spread attached to nothing: a 110px form could come out the fastest,
+  widest-travelling thing on screen, which is the inverse of how distance
+  reads. Phase steps by the golden angle (2.39996 rad) so no two of the
+  twelve ever swing together, and spin direction alternates instead of being
+  signed at random.
 - **The seam form** (`.work::before`) is one oversized ring at the top-right
   of #work, bleeding off the right edge, behind everything. The drifting field
   is small and moving, so its 306px overlap into #work read as leftover hero;
   one large, completely still form is the opposite register, and that contrast
   is what makes the seam read as composed. Small things drifting in front of
-  one big thing holding still is depth; nine small things drifting is weather.
-  It echoes the 104px blue outline circle in the .88/.745 slot — same shape,
-  same corner, two scales. **`z-index: -1` is load-bearing**: #work's content
+  one big thing holding still is depth; twelve small things drifting is
+  weather. It echoes the 132px blue outline circle in the .90/.745 slot —
+  the largest shape in the set, same shape, same corner, two scales. **`z-index: -1` is load-bearing**: #work's content
   is in-flow and unpositioned, so a pseudo-element at auto or 0 paints ABOVE
   the heading and the filter text. It only works because `<html>` carries no
   background, so body's propagates to the canvas — **give html a background
@@ -543,7 +596,7 @@ four languages whenever you size display type.**
   gap is invisible normally and very visible under a view transition: the
   theme switch rebuilds the field inside the transition callback and the new
   snapshot is taken BEFORE the next frame, so without it the wipe reveals
-  nine shapes piled in the top-left corner and holds them there for 620ms.
+  twelve shapes piled in the top-left corner and holds them there for 620ms.
   **Anything JS positions must be positioned synchronously for the same
   reason.**
 - **The browser pane cannot run a view transition.** Its frozen rendering
@@ -605,9 +658,13 @@ The shape is one-way and worth keeping that way:
 - **Asset paths must be root-relative.** This is the one that actually broke:
   `src="assets/…"` resolves against `/work/` on a deep link, so every image,
   the stylesheet and both scripts 404 and the page arrives dead. All of
-  `index.html` and the 77 paths in `script.js` are `/assets/…` now. **CSS
-  `url()` is the exception** — it resolves against the stylesheet's own URL,
-  so those six are correct as they are and must not be "fixed".
+  `index.html` and the 77 paths in `script.js` are `/assets/…` now (0
+  relative ones left — checkable with
+  `grep -c "[\"']assets/" script.js`). **CSS `url()` is the exception** — it
+  resolves against the stylesheet's own URL, so the six `@font-face` ones are
+  correct as they are and must not be "fixed". (A raw `grep -c 'url('` counts
+  8: the six fonts, the noise data-URI, and a `url(%23n)` *inside* that data
+  URI, which is a filter reference and not a path at all.)
 - **The boot block has to be the LAST thing in `script.js`.** Put higher, it
   throws "Cannot access 'dialogStack' before initialization": opening a panel
   calls `activateDialog`, which reads a `const` declared further down, so
@@ -808,7 +865,7 @@ is most of the point.
   the label has to follow the device too — `.pong-footer` swaps its
   `data-i18n` key to `pong.controlsTouch` on a coarse pointer, which keeps
   working across language changes because `apply()` reads the attribute live.
-- Four languages (en/es/ja/it), ~764 keys. **Every user-facing string goes in
+- Four languages (en/es/ja/it), **199 keys each, exact parity**. Every user-facing string goes in
   `i18n.js` in all four.** `data-i18n` sets textContent; `data-i18n-html` for
   markup; `data-i18n-aria`, `data-i18n-alt`, `data-i18n-tip`.
 
