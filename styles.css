@@ -1056,18 +1056,25 @@ body.is-loading { overflow: hidden; }
    go, so what is left has to stay quiet enough to read through. Count and
    alpha are two problems, not one. These are not free to rise. */
 @media (max-width: 760px) {
-  .hero-shapes .shape { opacity: .26; }
+  /* .33 and .50, up from .26 and .42. The thinning is what paid for it:
+     with half as many objects the field had gone from busy to absent -
+     "a bit a lot quieter on the phone now" - so the survivors get some of
+     their presence back. Count down, alpha up, and the two moves together
+     land somewhere neither could reach alone.
+     Still well under the desktop .38 / .62, and deliberately so: this is
+     the width where shapes cross the type most. */
+  .hero-shapes .shape { opacity: .33; }
   :root[data-theme="dark"] .hero-shapes .shape {
-    opacity: .42;
+    opacity: .50;
     filter: drop-shadow(0 0 5px currentColor);
   }
   /* the vivid ones come down with everything else, and proportionally
      further: a stacked hero is where shapes cross the type most, so the one
      register that is allowed to be bright on a desktop is the first thing to
      give way here */
-  .hero-shapes .shape.is-vivid { opacity: .46; }
+  .hero-shapes .shape.is-vivid { opacity: .56; }
   :root[data-theme="dark"] .hero-shapes .shape.is-vivid {
-    opacity: .54;
+    opacity: .64;
     filter: drop-shadow(0 0 7px currentColor);
   }
 }

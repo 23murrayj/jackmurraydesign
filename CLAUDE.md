@@ -18,7 +18,7 @@ never need all of it. Find your task below and read that section.
 | If you are about to… | Read | And check |
 |---|---|---|
 | change any colour | **Palette** | the contrast rules at the end of it |
-| touch the hero shapes | **Animation** → the field | the envelope check |
+| touch the hero shapes | **Animation** → the field | `node tools/field-check.js` |
 | move anything in the hero | **Layout**, **The loading skeleton** | re-measure the skeleton |
 | touch the theme switch | **Animation** → the switch | the browser-pane warning |
 | add / rename / remove a project | **Routing** (last line) | `assets/README.md` — it is a 7-step checklist, not 3 |
@@ -437,8 +437,10 @@ four languages whenever you size display type.**
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
   fraction of the field box, and the twelve are **three bands of four**, each
   band holding a left, a centre-left, a centre-right and a right:
-  y .215/.22/.24/.27 across the top of the name, y .41/.44/.46/.47 across its
-  foot, y .745/.78/.86/.90 down in the seam. It went 9 → 12 on 2026-11-10
+  y .215/.22/.24/.27 across the top of the name, y .49/.50/.52/.55 across its
+  foot, y .72/.76/.84/.88 down in the seam. Bands two and three were .41–.47
+  and .745–.90 until 2026-11-11; both moved toward the marquee to close a
+  gap — see the white-space note below. It went 9 → 12 on 2026-11-10
   on Jack's note that the field still wanted more; the band structure is what
   absorbed the three extra without the result reading as denser-but-random.
   Measured against the real hero at 1440,
@@ -460,7 +462,13 @@ four languages whenever you size display type.**
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
 - **The field THINS as the screen narrows** — 12 shapes, 8 at ≤760px, 6 at
-  ≤600px — and this reverses what the opacity rule used to claim. That rule
+  ≤600px — and the alphas came UP to pay for it (.33/.56 light, .50/.64
+  dark, against .26/.46 and .42/.54 before). Half as many objects had taken
+  the phone from busy to absent: "a bit a lot quieter on the phone now".
+  Count down, alpha up — the two together land somewhere neither reaches
+  alone, and both stay under the desktop values because this is still the
+  width where shapes cross the type most.
+  Thinning also reverses what the opacity rule used to claim. That rule
   said "dialled back rather than thinned out, so the phone keeps the same
   look with less of it". Wrong: the field box is 338px wide at 375 against
   1392 at 1440, so the same twelve objects sit at nearly four times the
@@ -470,12 +478,25 @@ four languages whenever you size display type.**
   shape fighting the type it crosses; count stops the field reading as busy.
   The phone had both.
   Each def carries `keep`, 1–12, where 1 is the shape the composition can
-  least afford to lose. The ranks are chosen so **every surviving subset is
-  still a composition**, which is checkable: at 12 the three bands hold
-  4/4/4, at 8 they hold 3/2/3, at 6 exactly 2/2/2 — and all three keep the
-  full x-spread (.07–.95), both corner anchors, both shapes that bleed off
-  an edge, and something still living down in the seam. Drop by any other
-  order and the phone gets a huddle.
+  least afford to lose, and the ranks answer TWO rules.
+  **Bands:** every surviving subset still has to be a composition. At 12 the
+  three bands hold 4/4/4, at 8 they hold 3/2/3, at 6 exactly 2/2/2 — and all
+  three keep the x-spread, both corner anchors, a shape bleeding off each
+  side and something still living down in the seam.
+  **Hue: no band may hold two shapes of the same colour at 6 or 8.** The
+  first ranking satisfied the band rule and failed this one, because ranking
+  by structural importance happened to rank by colour too: at 6 it put two
+  coral shapes across the top and two blue ones directly under them. Jack saw
+  it on a phone straight away — "it looks almost like color coding". A field
+  of drifting geometry reads as decoration; the same field in horizontal
+  colour stripes reads as a chart.
+  Only at 6 and 8, and that is not laziness: there are 4 blue and 4 coral
+  shapes and 3 bands, so **by pigeonhole some band must hold two of one hue
+  at full budget.** It is also harmless there — a repeat only reads as a
+  stripe when the field is sparse enough to see the pattern.
+  **`node tools/field-check.js` checks all of it** — ranks, envelopes, band
+  balance and hue mixing at every budget. Run it after ANY change to those
+  arrays. Every one of these failures is invisible at desktop width.
   The budget is read from `matchMedia` with the **same two breakpoints the
   CSS uses**, so they cannot drift apart. It listens to those change events
   AND to `resize`, guarded on the budget actually changing — belt and
@@ -550,6 +571,21 @@ four languages whenever you size display type.**
   reads. Phase steps by the golden angle (2.39996 rad) so no two of the
   twelve ever swing together, and spin direction alternates instead of being
   signed at random.
+- **The white space around the marquee is mostly intentional, and the part
+  that was not is fixed.** Jack asked whether the gap between VIEW PROJECTS,
+  the marquee and SELECTED PROJECTS was deliberate. Most of it is: the
+  marquee is meant to be a seam with air around it, and `#work
+  .section-head`'s 64px top padding is a number he tuned himself (70 → 38
+  → 64). What was NOT deliberate was a hole in the shape field just above
+  the strip — a side effect of moving band two off the marquee so a
+  near-black circle would not smudge on a near-black slab. Measuring the
+  field's vertical occupancy in 5% slices showed one slice at y .55–.60
+  completely empty. Band two moved down and band three up, and the centre
+  shape sits at .55 now, 13px clear of the marquee's top edge at 1440.
+  **The occupancy scan is the tool for this question**: walk the shapes,
+  bucket their boxes into twentieths of the field, and look for zeroes. The
+  only ones left are the nav band and the marquee itself, and both should be
+  empty — a shape on the strip is invisible anyway.
 - **The seam form** (`.work::before`) is one oversized ring at the top-right
   of #work, bleeding off the right edge, behind everything. The drifting field
   is small and moving, so its 306px overlap into #work read as leftover hero;
