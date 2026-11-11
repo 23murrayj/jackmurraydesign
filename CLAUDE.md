@@ -392,7 +392,7 @@ four languages whenever you size display type.**
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: **12 / 8 / 6 per theme** by width (see the thinning note
+- Hero shapes: **9 / 7 / 5 per theme** by width (see the thinning note
   below), drift on **two sine terms per axis** (one sine
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
@@ -461,7 +461,7 @@ four languages whenever you size display type.**
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
-- **The field THINS as the screen narrows** — 12 shapes, 8 at ≤760px, 6 at
+- **The field THINS as the screen narrows** — 9 shapes, 7 at ≤760px, 5 at
   ≤600px — and the alphas came UP to pay for it (.33/.56 light, .50/.64
   dark, against .26/.46 and .42/.54 before). Half as many objects had taken
   the phone from busy to absent: "a bit a lot quieter on the phone now".
@@ -477,23 +477,27 @@ four languages whenever you size display type.**
   **Count and alpha are two problems and both rules stay.** Alpha stops a
   shape fighting the type it crosses; count stops the field reading as busy.
   The phone had both.
-  Each def carries `keep`, 1–12, where 1 is the shape the composition can
+  Each def carries `keep`, 1–9, where 1 is the shape the composition can
   least afford to lose, and the ranks answer TWO rules.
-  **Bands:** every surviving subset still has to be a composition. At 12 the
-  three bands hold 4/4/4, at 8 they hold 3/2/3, at 6 exactly 2/2/2 — and all
-  three keep the x-spread, both corner anchors, a shape bleeding off each
-  side and something still living down in the seam.
-  **Hue: no band may hold two shapes of the same colour at 6 or 8.** The
-  first ranking satisfied the band rule and failed this one, because ranking
-  by structural importance happened to rank by colour too: at 6 it put two
+  **Bands:** every surviving subset still has to be a composition. At 9 the
+  three bands hold 3/3/3, at 7 they hold 3/2/2, at 5 it is 2/1/2 — and all
+  three keep the x-spread (.15–.90 even at five), both corner anchors and
+  something still living down in the seam.
+  **Hue: no band may hold two shapes of the same colour, at any budget.**
+  An earlier ranking satisfied the band rule and failed this one, because
+  ranking by structural importance happened to rank by colour too: it put two
   coral shapes across the top and two blue ones directly under them. Jack saw
   it on a phone straight away — "it looks almost like color coding". A field
   of drifting geometry reads as decoration; the same field in horizontal
   colour stripes reads as a chart.
-  Only at 6 and 8, and that is not laziness: there are 4 blue and 4 coral
-  shapes and 3 bands, so **by pigeonhole some band must hold two of one hue
-  at full budget.** It is also harmless there — a repeat only reads as a
-  stripe when the field is sparse enough to see the pattern.
+  **Whether the rule is even satisfiable is arithmetic, not taste.** With H
+  shapes of one hue and 3 bands, pigeonhole forces a repeat once H > 3. At
+  twelve there were 4 blue and 4 coral, so a repeat was unavoidable at full
+  budget and the rule could only be enforced on the thinned sets. At nine the
+  counts are 3 blue, 3 coral, 2 black, 1 amber — every band gets exactly one
+  blue and one coral, and the rule holds everywhere. That is the strongest
+  argument for nine over twelve: it turns a guideline into a guarantee.
+  The checker works this out per budget rather than being told.
   **`node tools/field-check.js` checks all of it** — ranks, envelopes, band
   balance and hue mixing at every budget. Run it after ANY change to those
   arrays. Every one of these failures is invisible at desktop width.
@@ -548,6 +552,18 @@ four languages whenever you size display type.**
     which nobody has complained about, because it sits at x .95 and spends
     most of its time half off the edge. A shape reads loud because of where
     it is as much as what it is.
+- **Outline weight is 5% of the shape's size, not a fixed px.** The SVG
+  shapes were always proportional — `stroke-width` is in viewBox units —
+  while circles and squares took a flat `3px` from CSS, so the same field
+  held outlines at 2.3% of diameter on the 132 circle and 6.7% on a 45
+  square. The big shapes read as weedy wireframes next to the small ones and
+  nothing said why. `buildShapes` now sets `border-width` per shape to
+  `max(3, size * 0.05)`, matching what the triangles already did: 132 → 7px,
+  104 → 5, 72 → 4, 36 → 3 via the floor. The floor matters because 5% of the
+  smallest shape is under 2px, which at .33 alpha on a phone is not a line.
+  **Stars keep their own 3%** — a sharp star's inner radius is 14 against an
+  outer 48, and a 5-unit stroke on spikes that thin closes the notches into
+  a blob. The CSS `3px` is now only a fallback.
 - **Every SVG-drawn shape needs `transform-box: fill-box`** and
   `overflow: visible` — `.shape-triangle` has a rule and `.shape-star` has
   its own. Any NEW svg type must join one of them: leave it out and it orbits

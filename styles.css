@@ -1090,6 +1090,9 @@ body.is-loading { overflow: hidden; }
   will-change: transform;
   transition: color .35s ease;
 }
+/* 3px is only the FALLBACK. buildShapes overrides border-width per shape at
+   5% of its size, so the weight is consistent with the SVG shapes, whose
+   stroke-width has always been proportional. See createShapeEl. */
 .shape-circle.outline, .shape-square.outline {
   border: 3px solid currentColor;
   background: transparent;

@@ -1,7 +1,8 @@
 // Checks the hero field against every rule that is invisible at full width.
 // Run after ANY change to the def arrays.
 const fs = require('fs');
-const s = fs.readFileSync(process.argv[2] || 'script.js', 'utf8');
+const s_src = fs.readFileSync(process.argv[2] || 'script.js', 'utf8');
+const s = s_src;
 const W = 1440, H = 1026;                                  // measured field box at 1440
 const NAV_BOTTOM = 0.092;
 const FS_CENTRE  = { x: 0.6555, y: 0.42 };                 // the full stop after MURRAY
@@ -19,23 +20,39 @@ function defs(name) {
 }
 
 let failures = 0;
-// 4 blue and 4 coral shapes into 3 bands: by pigeonhole some band must hold
-// two of one hue at full budget, so no-repeat is impossible there. It is
-// also unnecessary - a repeat only reads as a stripe when the field is
-// sparse. Enforced at the thinned budgets, reported at the full one.
-const HUE_ENFORCED = [6, 8];
+
+// The budgets come from shapeBudget() in script.js rather than being
+// repeated here. The checker went stale once already by hardcoding a
+// shape count, which is exactly the failure it exists to catch.
+const BUDGETS = (() => {
+  const a = s_src.indexOf('function shapeBudget()');
+  const body = s_src.slice(a, s_src.indexOf('}', a));
+  const n = [...body.matchAll(/return (\d+)/g)].map(m => +m[1]);
+  return [...new Set(n)].sort((x, y) => x - y);
+})();
+
+// No band may hold two shapes of the same hue. Whether that is even
+// POSSIBLE at a given budget is arithmetic, not taste: with H shapes of one
+// hue and 3 bands, pigeonhole forces a repeat once H > 3. So the rule is
+// enforced at every budget where it is satisfiable and reported elsewhere.
+function hueRuleSatisfiable(kept) {
+  const counts = {};
+  kept.forEach(d => counts[d.hue] = (counts[d.hue] || 0) + 1);
+  return Object.values(counts).every(c => c <= 3);
+}
 for (const name of ['smoothDefs', 'jaggedDefs']) {
   const all = defs(name);
   console.error('\n=== ' + name + ' (' + all.length + ') ===');
-  if (all.length !== 12) { console.error('  PARSE FAILED'); failures++; continue; }
+  if (all.length < 4) { console.error('  PARSE FAILED (' + all.length + ' defs)'); failures++; continue; }
 
   const MAX = Math.max(...all.map(d => d.size));
   const SPAN = MAX - Math.min(...all.map(d => d.size)) || 1;
 
   // 1. ranks unique 1..12
   const ranks = all.map(d => d.keep).sort((a, b) => a - b).join(',');
-  const ok1 = ranks === '1,2,3,4,5,6,7,8,9,10,11,12';
-  console.error('  ranks unique 1-12 ............ ' + (ok1 ? 'ok' : 'FAIL ' + ranks));
+  const expect = all.map((_, i) => i + 1).join(',');
+  const ok1 = ranks === expect;
+  console.error('  ranks unique 1-' + all.length + ' ............. ' + (ok1 ? 'ok' : 'FAIL ' + ranks));
   if (!ok1) failures++;
 
   // 2. swing envelopes: nav band, the full stop's centre, resting on the marquee
@@ -57,7 +74,7 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
   console.error('  envelopes (nav / full stop / marquee) ... ' + (envFails ? envFails + ' FAIL' : 'ok'));
 
   // 3. per budget: band balance, and NO REPEATED HUE IN A BAND
-  for (const budget of [6, 8, 12]) {
+  for (const budget of BUDGETS) {
     const kept = all.filter(d => d.keep <= budget);
     const byBand = {};
     kept.forEach(d => (byBand[band(d.y)] = byBand[band(d.y)] || []).push(d));
@@ -68,10 +85,11 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
       const hues = (byBand[b] || []).map(d => d.hue);
       if (hues.length !== new Set(hues).size) hueProblem += ' ' + b + '[' + hues.join('+') + ']';
     }
-    if (hueProblem && HUE_ENFORCED.includes(budget)) failures++;
+    const enforce = hueRuleSatisfiable(kept);
+    if (hueProblem && enforce) failures++;
     console.error('  budget ' + String(budget).padStart(2) + ': bands ' + counts +
       '  x ' + xs[0].toFixed(2) + '-' + xs[xs.length - 1].toFixed(2) +
-      '  hues ' + (hueProblem ? (HUE_ENFORCED.includes(budget) ? 'FAIL repeated:' : 'repeated, allowed here:') + hueProblem : 'all mixed') +
+      '  hues ' + (hueProblem ? (enforce ? 'FAIL repeated:' : 'repeated, unavoidable here:') + hueProblem : 'all mixed') +
       '  fills ' + kept.filter(d => d.filled).length + 'f/' + kept.filter(d => !d.filled).length + 'o');
   }
 }

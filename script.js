@@ -1618,6 +1618,10 @@ if (heroShapesContainer) {
     poly.setAttribute('points', points);
     poly.style.fill = def.filled ? 'currentColor' : 'none';
     poly.style.stroke = 'currentColor';
+    /* viewBox units, so these ARE percentages of the rendered size and
+       scale for free. Stars stay at 3 where smooth shapes get 5: a sharp
+       star's inner radius is 14 against an outer 48, and a 5-unit stroke
+       on spikes that thin closes the notches up into a blob. */
     poly.style.strokeWidth = def.type === 'star' ? '3' : '5';
     svg.appendChild(poly);
     return svg;
@@ -1646,6 +1650,23 @@ if (heroShapesContainer) {
     el.style.width = def.size + 'px';
     el.style.height = def.size + 'px';
     el.style.color = def.color;
+    /* OUTLINE WEIGHT SCALES WITH THE SHAPE, and that is a fix rather than a
+       preference. The SVG shapes have always been proportional - stroke-width
+       is in viewBox units, so a triangle's outline is 5% of its size whatever
+       that size is - while circles and squares took a flat 3px from CSS. So
+       the same field held outlines at 2.3% of diameter on the 132 circle and
+       6.7% on a 45 square: the big shapes read as weedy wireframes next to
+       the small ones, and nothing said why.
+       5% matches what the triangles already do, so one weight now governs
+       every smooth outline: 132 -> 7px, 104 -> 5, 72 -> 4, 36 -> 3 via the
+       floor. The floor exists because 5% of the smallest shape is under 2px,
+       which at .33 alpha on a phone is not a line, it is a rumour.
+       Jack asked for "a little bit thicker"; what it actually needed was
+       consistent, and consistent happens to be thicker everywhere it was
+       thin. Stars keep their own 3% - see createSvgShape. */
+    if (!def.filled) {
+      el.style.borderWidth = Math.max(3, Math.round(def.size * 0.05)) + 'px';
+    }
     return el;
   }
 
@@ -1722,71 +1743,57 @@ if (heroShapesContainer) {
      the build that fenced them out of measured boxes was tried and rejected
      and must not come back, see CLAUDE.md. This sets where a shape lives,
      not where it is allowed to go. */
-  /* `keep` is the thinning rank: 1 is the shape the composition can least
-     afford to lose, 12 the most expendable. Below 761px the field is cut to
-     the first 8 by rank, below 601px to the first 6. See shapeBudget().
+  /* NINE, down from twelve on 2026-11-11. Jack: "I don't love where we're
+     at now... maybe take out a couple shapes."
 
-     The ranks are not a guess at "which do I like" - they are chosen so that
-     every surviving subset is still a composition. At 8 the three bands hold
-     3/2/3 shapes; at 6 they hold exactly 2/2/2, with both corner anchors,
-     both bleeding edge shapes and at least one object still living down in
-     the seam. Drop shapes by any other order and the phone gets a huddle. */
-  /* `keep` is the thinning rank: 1 is the shape the composition can least
-     afford to lose, 12 the most expendable. Below 761px the field is cut to
-     the first 8 by rank, below 601px to the first 6. See shapeBudget().
+     Nine is not just twelve minus three - it changes what the rules can
+     guarantee. With 4 blue and 4 coral shapes across 3 bands, pigeonhole
+     forced some band to hold two of one hue at full budget. At nine there
+     are 3 blue, 3 coral, 2 black and 1 amber, so every band gets exactly
+     one blue and one coral and **no band repeats a hue at ANY budget** -
+     the rule that used to be enforceable only on a phone now holds
+     everywhere. Colour banding is what Jack caught by eye last time; this
+     makes it structurally impossible rather than merely checked.
 
-     TWO CONSTRAINTS, and the second one was learned the hard way.
+     What went, and why those three:
+     - the 104 coral square at .11/.215, because TOP had to lose a coral
+       and the 90 disc is the one Jack asked for. The 36 amber ring moved
+       from .34 to .14 to keep something anchoring the top-left.
+     - the 80 blue triangle at .07/.50, so MID keeps its far-right shape.
+     - the 48 amber triangle at .66/.84, which also leaves amber with a
+       single instance in the whole field - the hollow ring over the name.
 
-     Bands: every surviving subset still has to be a composition. At 8 the
-     three bands hold 3/2/3 shapes; at 6 they hold exactly 2/2/2, with both
-     corner anchors, a shape bleeding off each side and something still
-     living down in the seam.
-
-     HUE: no band may hold two shapes of the same colour at any budget.
-     The first ranking satisfied the band rule and failed this one without
-     anyone noticing, because ranking by structural importance happened to
-     rank by colour too - at 6 it gave two coral shapes across the top and
-     two blue ones directly under them. Jack saw it immediately: "it looks
-     almost like color coding". A field of drifting geometry reads as
-     decoration; the same field in horizontal colour stripes reads as a
-     chart. Check both rules after ANY change to these numbers - there is a
-     script for it, and the failure is invisible at full width. */
+     `keep` is the thinning rank: 1 is the shape the composition can least
+     afford to lose. 9 above 760px, 7 at or below it, 5 at or below 600.
+     Bands come out 3/3/3, 3/2/2 and 2/2/1, hues mixed at all three.
+     `node tools/field-check.js` proves it - run it after ANY edit here. */
   const smoothDefs = [
-    /* ONE shape is much bigger than the rest, and it is the quietest thing
-       in the set: a 132px outline circle in the bottom-right, concentric
-       with the seam ring in styles.css. Before this the sizes ran 36-104,
-       which is not a hierarchy, it is a spread - twelve things all roughly
-       of a size. The jump to 132 is what gives the field a top.
-       keep: 1. It is the bottom-right anchor and the seam's own echo. */
-    { type: 'circle',   size: 132, color: 'var(--blue)',        filled: false, keep: 1,  at: [0.90, 0.72] },
-    { type: 'square',   size: 104, color: 'var(--accent)',      filled: false, keep: 2,  at: [0.11, 0.215] },
-    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, keep: 3,  at: [0.60, 0.22] },
-    /* FILLED, and it is the one that changes the character of the field.
+    /* the biggest and the quietest: a 132px outline circle in the
+       bottom-right, concentric with the seam ring in styles.css. keep: 1,
+       it is the bottom-right anchor and the seam's own echo. */
+    { type: 'circle',   size: 132, color: 'var(--blue)',        filled: false, keep: 1, at: [0.90, 0.72] },
+    /* FILLED, and the one that changes the character of the field.
        Everything large used to be an outline, so the whole thing read as
        line work with a few small solids dropped in. One big soft coral
-       disc gives it a mass to sit against. At .38 over the ground it is a
-       wash, not a blob - this is why the large shapes are kept off the
-       .72 vivid alpha.
-       keep: 10, because it is coral and so is the top-left square; on a
-       phone the two of them together were half of Jack's "color coding". */
-    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: true,  keep: 10, at: [0.86, 0.24] },
-    { type: 'triangle', size: 80,  color: 'var(--blue)',        filled: true,  keep: 9,  at: [0.07, 0.50] },
-    { type: 'square',   size: 72,  color: 'var(--black)',       filled: false, keep: 8,  at: [0.40, 0.88] },
-    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 4,  at: [0.95, 0.52] },
-    { type: 'triangle', size: 56,  color: 'var(--accent)',      filled: false, keep: 12, at: [0.31, 0.49] },
-    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  keep: 5,  at: [0.52, 0.55] },
-    { type: 'triangle', size: 48,  color: 'var(--accent-warm)', filled: true,  vivid: true, keep: 11, at: [0.66, 0.84] },
+       disc gives it a mass to sit against. Jack's own suggestion, and the
+       reason TOP loses its other coral rather than this one. */
+    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: true,  keep: 2, at: [0.86, 0.24] },
+    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, keep: 3, at: [0.60, 0.22] },
+    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  keep: 4, at: [0.52, 0.55] },
+    { type: 'triangle', size: 56,  color: 'var(--accent)',      filled: false, keep: 6, at: [0.31, 0.49] },
     /* the smallest solid coral: the one object in the field allowed to look
        like a deliberate mark rather than drift */
-    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 6,  at: [0.15, 0.76] },
-    /* HOLLOW, not filled, and it is the only shape that sits square over the
-       name. Filled it was a solid amber disc behind JACK at the field's
-       brightest alpha - the warmest hue, the highest opacity and a solid
-       mass, all on the one shape with the least room to be loud. As a ring
-       it still marks that spot without competing with the headline.
-       It keeps vivid: a 3px amber border at .38 on this ground is barely
-       there, and the point was to quieten it, not delete it. */
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 7,  at: [0.34, 0.27] },
+    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 5, at: [0.15, 0.76] },
+    /* HOLLOW, and the only shape sitting square over the name. Filled, it
+       stacked the warmest hue, the brightest alpha and a solid mass on the
+       one object with the least room to be loud. As a ring it marks the
+       spot without competing with the headline. Keeps vivid: a 3px amber
+       border at .38 is barely there, and the point was to quieten it, not
+       delete it. Moved .34 -> .14 when the coral square left, so the
+       top-left corner still has a resident. */
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 7, at: [0.14, 0.27] },
+    { type: 'square',   size: 72,  color: 'var(--black)',       filled: false, keep: 8, at: [0.40, 0.88] },
+    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 9, at: [0.95, 0.52] },
   ];
 
   /* Same twelve-shape budget in dark, and the neons stay neon: this half of
@@ -1801,32 +1808,24 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
-  /* The SAME twelve slots, assigned biggest-to-biggest. Two reasons it has to
-     be the same set of coordinates and not a second composition:
-     the arrangement is the thing that was designed, and the vocabulary -
-     smooth versus jagged - is what the themes are meant to differ in;
-     and the theme switch rebuilds this field inside the view-transition
-     callback, so matching slots mean the wipe reveals the same layout
-     wearing different shapes. Before, every switch re-rolled twelve random
-     positions and the field visibly jumped to a new scatter mid-wipe. */
+  /* The SAME nine slots, assigned biggest-to-biggest, so the theme switch -
+     which rebuilds this field inside the view-transition callback - reveals
+     the same composition wearing different shapes instead of jumping to a
+     new scatter mid-wipe. Two vivid here rather than three, and NOT the
+     amber: off-white text crossing an amber star measures 3.22:1 at the
+     base .62 already, and brightening it is the one move in this field that
+     would take a pair below 3:1. */
   const jaggedDefs = [
-    { type: 'star', size: 140, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 1,  at: [0.90, 0.72] },
-    { type: 'star', size: 110, color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.11, 0.215] },
-    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 3,  at: [0.60, 0.22] },
-    /* the filled big one, matching light's coral disc slot for slot - and
-       ranked the same, for the same colour-banding reason */
-    { type: 'star', size: 95,  color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 10, at: [0.86, 0.24] },
-    { type: 'star', size: 80,  color: 'var(--blue)',        filled: false, spikes: 9, sharp: true, keep: 9,  at: [0.07, 0.50] },
-    { type: 'star', size: 72,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 8,  at: [0.40, 0.88] },
-    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 4,  at: [0.95, 0.52] },
-    { type: 'star', size: 60,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 12, at: [0.31, 0.49] },
-    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, keep: 5,  at: [0.52, 0.55] },
-    { type: 'star', size: 44,  color: 'var(--accent-warm)', filled: true,  spikes: 6, sharp: true, keep: 11, at: [0.66, 0.84] },
-    { type: 'star', size: 40,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 6,  at: [0.15, 0.76] },
-    /* hollow here too, matching light slot for slot: this is the one that
-       sits over the name, and a filled amber star there is the same problem
-       in the other theme */
-    { type: 'star', size: 34,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, keep: 7,  at: [0.34, 0.27] },
+    { type: 'star', size: 140, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 1, at: [0.90, 0.72] },
+    { type: 'star', size: 95,  color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 2, at: [0.86, 0.24] },
+    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 3, at: [0.60, 0.22] },
+    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, keep: 4, at: [0.52, 0.55] },
+    { type: 'star', size: 60,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 6, at: [0.31, 0.49] },
+    { type: 'star', size: 40,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 5, at: [0.15, 0.76] },
+    /* hollow here too, matching light slot for slot */
+    { type: 'star', size: 34,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, keep: 7, at: [0.14, 0.27] },
+    { type: 'star', size: 72,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 8, at: [0.40, 0.88] },
+    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 9, at: [0.95, 0.52] },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1886,9 +1885,9 @@ if (heroShapesContainer) {
   const mqNarrow = window.matchMedia('(max-width: 600px)');
   const mqMobile = window.matchMedia('(max-width: 760px)');
   function shapeBudget() {
-    if (mqNarrow.matches) return 6;
-    if (mqMobile.matches) return 8;
-    return 12;
+    if (mqNarrow.matches) return 5;
+    if (mqMobile.matches) return 7;
+    return 9;
   }
   let activeBudget = shapeBudget();
 
