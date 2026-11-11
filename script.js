@@ -1803,7 +1803,7 @@ if (heroShapesContainer) {
        of .87 and Jack called it - "make sure there's also red on the left
        side". A squircle, and the smallest solid coral, so it still reads as
        the one deliberate mark rather than drift. */
-    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
+    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.6,  ratio: 0.55, reach: 1.15 },
     /* THE BIG CIRCLE TRAVELS SIDEWAYS, and the direction is forced rather
        than chosen. Jack wanted "a little bit more of a trajectory... but I
        like that it's slow and that it is large", and vertical is simply not
@@ -1822,21 +1822,29 @@ if (heroShapesContainer) {
        way off and comes back */
     { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
     { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
-    /* PLUM, outlined, and a squircle: the new hue and the new silhouette
-       arrive on the same object, so the field gains one idea rather than
-       two. Centred in the top band where the eye lands first. */
-    { type: 'square',   size: 96,  color: 'var(--accent-plum)', filled: false, round: true, keep: 7,  at: [0.42, 0.25], aspect: 0.75, ratio: 1.25, reach: 1.0 },
+    /* THE LIGHT RED SQUARE BY THE K, and getting here took a wrong turn
+       worth recording. Jack asked for "the gray hollow box around JACK" to
+       become a light red hard square; I changed the 84 at x .22, which is
+       over the JA, and he was looking at THIS one - "it's right around the
+       K most of the time", x .42. The lesson is that a shape in this field
+       is identified by where it DRIFTS, not by where its def says it rests,
+       and "around JACK" covers 300px of travel.
+       So the two squares trade identities and keep their slots: this one is
+       --accent, hollow, hard-cornered, and the 84 takes the plum and the
+       rounded corners. "Red, hard square, and a very light red... and then
+       the red box next to it, maybe that could be gray or another color."
+       Plum at .34 on the ground is what he has been calling the grey one. */
+    { type: 'square',   size: 96,  color: 'var(--accent)',      filled: false, keep: 7,  at: [0.42, 0.25], aspect: 1.0,  ratio: 0.55, reach: 1.05 },
     { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
-    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 1.6,  ratio: 0.7,  reach: 1.0 },
-    /* THE SQUARE OVER JACK. It was var(--black), which at .34 alpha on the
-       ground is a grey box, and Jack asked for "a light red regular square".
-       Coral outlined is exactly that: --accent is a light red, the 5% border
-       rule gives it a 4px line, and it stays a plain square - no round:true,
-       because the two squircles are the softened pair and this is not one of
-       them. It also puts a red mark directly on the name, which is where the
-       field's weight was always missing on the left. */
-    { type: 'square',   size: 84,  color: 'var(--accent)',      filled: false, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
-    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50], aspect: 1.8,  ratio: 0.68, reach: 1.0 },
+    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
+    /* PLUM, outlined, and a squircle - the half of the trade described
+       above. It keeps the field's fifth hue and its second softened square
+       alive, now over the JA instead of the K. It was --black until the
+       square by the K needed a colour to swap with, and --black is what
+       Jack reads as grey, so the field looks the way it did before except
+       that the red and the grey have changed places. */
+    { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, round: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50], aspect: 2.4,  ratio: 0.68, reach: 1.2 },
   ];
 
   /* Same eleven-shape budget in dark, and the neons stay neon: this half of
@@ -1868,15 +1876,15 @@ if (heroShapesContainer) {
   const jaggedDefs = [
     { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80], aspect: 0.5,  ratio: 0.62, reach: 1.6 },
     { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
-    { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
+    { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.6,  ratio: 0.55, reach: 1.15 },
     { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26], aspect: 0.45, ratio: 0.75, reach: 1.6 },
     { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
     { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
-    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 0.75, ratio: 1.25, reach: 1.0 },
+    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.0,  ratio: 0.55, reach: 1.05 },
     { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
-    { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 1.6,  ratio: 0.7,  reach: 1.0 },
+    { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
     { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
-    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50], aspect: 1.8,  ratio: 0.68, reach: 1.0 },
+    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50], aspect: 2.4,  ratio: 0.68, reach: 1.2 },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.

@@ -571,13 +571,23 @@ four languages whenever you size display type.**
   against the landmarks — nav `y < .092`, and the full stop's CENTRE at
   (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
   park on it.
-- **The square over JACK is a plain coral outline**, not a squircle and not
-  `--black`. It was near-black, which at .34 on the ground is a grey box,
-  and Jack asked for "a light red regular square" — `--accent` is a light
-  red, the 5% rule gives it a 4px line, and it keeps square corners because
-  the two squircles are the softened pair and this is not one of them. It
-  also puts a red mark directly on the name, which is where the field's
-  weight was missing on the left.
+- **The two squares over the name are a TRADE, and how that got settled is
+  the reusable part.** The 96 at x .42 is the light red hard square; the 84
+  at x .22 is the plum squircle. Jack asked for "the gray hollow box around
+  JACK" to become "a light red regular square", I changed the 84, and he was
+  looking at the 96: "it's right around the K most of the time." Both are
+  over JACK — one over the JA, one over the K — and both were hollow, and
+  the plum one reads as grey at .34 on the ground.
+  **A shape in this field is identified by where it DRIFTS, not by where its
+  def says it rests.** The 96 covers 247px of x, so "around JACK" is a
+  300px-wide answer. When a note points at a shape by position, reproduce
+  the position over a full cycle before picking a def — the envelope numbers
+  in `field-check` are exactly that.
+  So they swapped identities and kept their slots: `--accent`, hollow and
+  hard-cornered by the K; `--accent-plum`, hollow and `round: true` over the
+  JA. The field keeps three corals, its fifth hue and its two squircles, and
+  only the red and the grey change places — "the red box next to it, maybe
+  that could be gray or another color or something like that."
 - **The vocabulary is FOUR forms and must stay that way**: circle, square and
   triangle in light, jagged star in dark. **A MODIFIER ON AN EXISTING FORM
   IS NOT A FIFTH FORM**, and that is the line the squircle sits on the right
@@ -746,10 +756,28 @@ four languages whenever you size display type.**
     about the randomness." Four do: the 137 circle exits left by 61px, and
     the 61 triangle, the 113 solid and the 53 circle exit right by 121, 190
     and 134. `overflow-x: clip` on the page makes leaving free.
-  **Reach is spent on X, not Y, and that is forced rather than chosen.** The
-  nav sits at y < .092 and a shape swinging up into it is a bug, so the
-  vertical travellers are the ones resting low and the shapes that go
-  off-frame go sideways. **The 191 circle is the clearest case.** Jack
+  **Reach is spent on X for the shapes that leave the frame, and that part
+  is forced.** The nav sits at y < .092 and a shape swinging up into it is a
+  bug, so the shapes that go off-frame go sideways.
+  **But spending it ONLY on X was an over-correction**, and Jack named it:
+  "They go to the sides well. But they need to also make sure that they're
+  going to the bottoms and the tops. They don't need to always be doing it,
+  but sometimes." He was right about the cause — the four shapes with
+  `reach` above 1 were all horizontal-dominant, so everything that moved a
+  lot moved sideways. **Three shapes sweep vertically now**: the 47 on the
+  far left (aspect 2.6, y .115–.831), the 81 in the centre (2.4,
+  .188–.812) and the 68 in the seam (2.0, .448–1.074, which puts it 76px
+  below the field box, where it is still visible and `.work` paints over
+  it). Measured in the page, their vertical travel is 687 / 560 / 575px
+  against a previous maximum of about 400. Aspects now run 0.45 to 2.6 with
+  six horizontal-dominant, three strongly vertical and two near-neutral —
+  "sometimes", not always.
+  **The TOP band cannot be one of them, and that is arithmetic.** Those
+  shapes rest at y .25 with the nav at .092, which leaves 162px of room
+  including half the shape — about 114px of swing for a 96px square. So the
+  shapes that reach the top strip come UP from the middle rather than down
+  from the top band. Four now reach y .114–.139, where the nav bound is
+  .092. **The 191 circle is the clearest case.** Jack
   wanted it moving more while staying "slow and… large", and vertical was
   not available: resting at y .26 it has about 39px of headroom to the nav
   above and 30px to the full stop below before its envelope breaks a
@@ -778,10 +806,15 @@ four languages whenever you size display type.**
   field's vertical occupancy in 5% slices showed one slice at y .55–.60
   completely empty. Band two moved down and band three up, and the centre
   shape sits at .55 now, 13px clear of the marquee's top edge at 1440.
-  **The occupancy scan is the tool for this question**: walk the shapes,
-  bucket their boxes into twentieths of the field, and look for zeroes. The
-  only ones left are the nav band and the marquee itself, and both should be
-  empty — a shape on the strip is invisible anyway.
+  **The occupancy scan answers this, and it is in `field-check` now** rather
+  than being rewritten as a throwaway each time: twentieths of the field,
+  counting how many shapes can REACH each slice. Reach is the actionable
+  half — a slice no envelope covers is a part of the hero no shape ever
+  visits, and no amount of re-timing will fill it. Two slices are supposed
+  to be empty, the nav band and the marquee slab, and the line flags any
+  other slice only one shape can get to. It currently reads
+  `..466677455656555321`: the only thin slice left is the very bottom,
+  4000px above nothing anyone is looking at.
 - **The seam form** (`.work::before`) is one oversized ring at the top-right
   of #work, bleeding off the right edge, behind everything. The drifting field
   is small and moving, so its 306px overlap into #work read as leftover hero;

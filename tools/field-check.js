@@ -96,6 +96,7 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
      moves, move this with it. */
   let envFails = 0;
   const exits = [];
+  const envelopes = [];
   for (const d of all) {
     const t = (MAX - d.size) / SPAN;
     const ampX = (40 + 110 * t) * d.reach / d.aspect;
@@ -110,6 +111,7 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
        need to be going off the screen, maybe a little bit" - so it is
        counted and printed rather than flagged. The page carries
        overflow-x: clip, so a shape crossing the edge costs nothing. */
+    envelopes.push(e);
     if (e.x0 < 0) exits.push(d.size + 'L');
     if (e.x1 > 1) exits.push(d.size + 'R');
     if (hitsNav || hitsStop || restsOnMarquee) {
@@ -139,6 +141,35 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
   if (aspects < 3 || ratios < 3) {
     failures++;
     console.error('  PATHS FAIL: under three distinct values the field is back on one trajectory');
+  }
+
+  /* OCCUPANCY. CLAUDE.md has called this "the tool for this question" since
+     the white-space note; it lived in a throwaway script until Jack asked
+     it again from the other end - "no trajectories really go at the top
+     very much... they need to also make sure that they're going to the
+     bottoms and the tops."
+     Twentieths of the field, counting how many shapes can REACH each slice
+     rather than how long they spend there. Reach is the actionable half:
+     a slice no envelope covers is a part of the hero no shape ever visits,
+     and no amount of re-timing will fill it.
+     Two slices are SUPPOSED to be empty - the nav band at the top, and the
+     marquee slab, where a shape is invisible anyway. Everything else
+     reading 0, or the whole top of the field reading 1, is the thing to
+     look at. */
+  const SLICES = 20;
+  const occ = new Array(SLICES).fill(0);
+  for (const e of envelopes) {
+    for (let i = 0; i < SLICES; i++) {
+      const lo = i / SLICES, hi = (i + 1) / SLICES;
+      if (e.y1 > lo && e.y0 < hi) occ[i]++;
+    }
+  }
+  const bar = n => n === 0 ? '.' : n > 9 ? '#' : String(n);
+  console.error('  occupancy y (20ths, nav=slice 1, marquee=12-13):  ' + occ.map(bar).join(''));
+  const thin = occ.map((n, i) => [n, i]).filter(([n, i]) => n <= 1 && i > 1 && (i < 11 || i > 13));
+  if (thin.length) {
+    console.error('    thin slices (<=1 shape can reach): ' +
+      thin.map(([n, i]) => (i / SLICES).toFixed(2) + '=' + n).join(' '));
   }
 
   // 3. per budget: band balance, and NO REPEATED HUE IN A BAND
