@@ -1651,9 +1651,9 @@ if (heroShapesContainer) {
        note in createShapeEl. It was 5 on triangles and 3 on stars, the
        star exception being that a sharp star's inner radius is 14 against
        an outer 48 and a 5-unit stroke closes the notches into a blob. The
-       whole field is on the star's number now, so the exception is gone
-       and there is one outline weight on the page. */
-    poly.style.strokeWidth = '3';
+       whole field is on one number, so the exception is gone and there is
+       one outline weight on the page. */
+    poly.style.strokeWidth = '2.6';
     svg.appendChild(poly);
     return svg;
   }
@@ -1688,9 +1688,16 @@ if (heroShapesContainer) {
        the same field held outlines at 2.3% of diameter on the 132 circle and
        6.7% on a 45 square: the big shapes read as weedy wireframes next to
        the small ones, and nothing said why.
-       3% governs every outline in the field now, drawn or SVG, so there is
-       ONE outline weight on the page: 191 -> 6px, 137 -> 4, and everything
-       from 96 down lands on the 3px floor.
+       2.6% governs every outline in the field, drawn or SVG, so there is
+       ONE outline weight on the page: 191 -> 5px, 137 -> 4, and everything
+       from 84 down lands on the 2px floor.
+       It was 3% with a 3px floor for one release, and both came down again
+       on Jack naming the two shapes at either end of the range: the 191
+       circle "should probably be a little thinner as well" and the 36 amber
+       circle "even thinner". The floor is what the 36 was hitting, so the
+       percentage alone could not have moved it; 2px at .34 alpha is still a
+       line on a retina screen, which is the thing the floor exists to
+       guarantee.
        It was 5% for a release and that was too heavy. Jack, on the big
        circle: "make it less thick. Go back to things not being as thick. I
        think that's probably better, actually." At 5% that circle carried a
@@ -1703,7 +1710,7 @@ if (heroShapesContainer) {
        The floor is there because 3% of the smallest shape is barely 1px,
        which at .34 alpha on a phone is not a line, it is a rumour. */
     if (!def.filled) {
-      el.style.borderWidth = Math.max(3, Math.round(def.size * 0.03)) + 'px';
+      el.style.borderWidth = Math.max(2, Math.round(def.size * 0.026)) + 'px';
     }
     return el;
   }
@@ -1798,7 +1805,20 @@ if (heroShapesContainer) {
        and lands the field on 3 blue / 3 coral / 3 amber / 1 black / 1 plum,
        where every band gets exactly one of each three-count hue and the rule
        is a guarantee at every budget instead of something to check. */
-    { type: 'triangle', size: 61,  color: 'var(--accent-warm)', filled: false, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
+    /* THE TOP-RIGHT SWOOPER, and it is the bottom-right circle's path
+       flipped. Jack: "we should have a small shape going near the... kind
+       of opposite to the circle at the bottom right... it should kind of
+       swoop around and should kind of get near the language button and the
+       dark and light mode button."
+       This slot was already the small shape in that corner, so it is tuned
+       rather than joined by a twelfth: the field had just been asked to get
+       LESS dense in dark, and a fourth amber would also break the hue
+       arithmetic. aspect 1.3 / reach 1.6 takes it up to y .017 - which is
+       inside the nav, where the language and theme controls sit at
+       .025-.064 - and out past the right edge at 1.050, so it rises into
+       the controls and leaves sideways. The two controls gained an opaque
+       background in the same change; see the note on .theme-switch. */
+    { type: 'triangle', size: 61,  color: 'var(--accent-warm)', filled: false, keep: 2,  at: [0.90, 0.28], aspect: 1.3,  ratio: 1.35, reach: 1.6, overNav: true },
     /* CORAL ON THE LEFT, which the field did not have: every red sat right
        of .87 and Jack called it - "make sure there's also red on the left
        side". A squircle, and the smallest solid coral, so it still reads as
@@ -1834,8 +1854,12 @@ if (heroShapesContainer) {
        rounded corners. "Red, hard square, and a very light red... and then
        the red box next to it, maybe that could be gray or another color."
        Plum at .34 on the ground is what he has been calling the grey one. */
-    { type: 'square',   size: 96,  color: 'var(--accent)',      filled: false, keep: 7,  at: [0.42, 0.25], aspect: 1.0,  ratio: 0.55, reach: 1.05 },
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
+    { type: 'square',   size: 96,  color: 'var(--accent)',      filled: true,  keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 0.38, reach: 1.5, overNav: true },
+    /* dropped from y .46 to .54 - "the yellow circle that's around Murray,
+       the hollow one... it should just maybe move down more". Still inside
+       the MID band (.44-.56) and still clear of the marquee at rest, which
+       starts at .579. */
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
     { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
     /* PLUM, outlined, and a squircle - the half of the trade described
        above. It keeps the field's fifth hue and its second softened square
@@ -1875,13 +1899,24 @@ if (heroShapesContainer) {
      checked against. */
   const jaggedDefs = [
     { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80], aspect: 0.5,  ratio: 0.62, reach: 1.6 },
-    { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
+    { type: 'star', size: 65,  color: 'var(--accent)',      filled: true,  spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28], aspect: 1.3,  ratio: 1.35, reach: 1.6, overNav: true },
     { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.6,  ratio: 0.55, reach: 1.15 },
     { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26], aspect: 0.45, ratio: 0.75, reach: 1.6 },
     { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
-    { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
-    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.0,  ratio: 0.55, reach: 1.05 },
-    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
+    /* HOLLOW, and this one is measured rather than chosen. --highlight in
+       dark is #DDFF67, the brightest token on the page; filled at .62 it
+       composites to a near-lime ground, and the off-white type measures
+       2.48:1 over it where large text owes 3:1. This star's x envelope
+       reaches .713-1.047 and its y .424-.656, which overlaps the foot of
+       .hero-role in the side column - so the pairing is reachable, not
+       theoretical. As an outline it barely tints what is behind it.
+       It has been filled since the dark field was written and the resting
+       DOM walk never caught it, because a walk of resting elements cannot
+       see what a moving element will be behind. tools/field-check.js now
+       does this arithmetic for every filled shape. */
+    { type: 'star', size: 56,  color: 'var(--highlight)',   filled: false, spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
+    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: true,  spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 0.38, reach: 1.5, overNav: true },
+    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
     { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
     { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
     { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50], aspect: 2.4,  ratio: 0.68, reach: 1.2 },
@@ -1943,17 +1978,29 @@ if (heroShapesContainer) {
      throws the whole field away and starts it over. */
   const mqNarrow = window.matchMedia('(max-width: 600px)');
   const mqMobile = window.matchMedia('(max-width: 760px)');
-  function shapeBudget() {
-    if (mqNarrow.matches) return 7;
-    if (mqMobile.matches) return 9;
-    return 11;
+  /* DARK CARRIES TWO FEWER AT EVERY WIDTH. Jack: "in the dark mode, I would
+     say maybe take one or two out, that kind of looks like a lot right
+     now." It does, and the reason is not the count: a neon star at .62 on
+     near-black with a drop-shadow glow is a brighter object than a coral
+     outline at .34 on sand, so the same eleven read as more.
+     Done as an offset on the budget rather than a shorter dark array, so
+     the two themes still share SLOTS - the theme switch reveals the same
+     composition minus its two least load-bearing shapes, instead of a
+     different arrangement. The keep order already guarantees every subset
+     is a composition: 9 is 3/3/3 across the bands, 7 is 3/2/2 and 5 is
+     2/1/2, with the hue rule holding at each. */
+  const DARK_FEWER = 2;
+  function shapeBudget(isDark) {
+    const base = mqNarrow.matches ? 7 : mqMobile.matches ? 9 : 11;
+    return base - (isDark ? DARK_FEWER : 0);
   }
-  let activeBudget = shapeBudget();
+  const isDarkNow = () => document.documentElement.getAttribute('data-theme') === 'dark';
+  let activeBudget = shapeBudget(isDarkNow());
 
   function buildShapes() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const isDark = isDarkNow();
     const all = isDark ? jaggedDefs : smoothDefs;
-    activeBudget = shapeBudget();
+    activeBudget = shapeBudget(isDark);
     const defs = all.filter((d) => d.keep <= activeBudget);
     /* The size range comes from the set itself rather than from a pair of
        literals. It used to be a hardcoded (110 - size) / 76, which silently
@@ -2129,7 +2176,16 @@ if (heroShapesContainer) {
         baseY: by,
         ampX,
         ampY,
-        speed: 0.14 + 0.30 * t,
+        /* A FIFTH SLOWER than it was, which was 0.14 + 0.30t. "Make some
+           of the trajectories a little bit slower. They're going pretty
+           fast right now." Done to the whole range rather than to the
+           shapes that looked fastest, because the range IS the parallax:
+           the ratio between the slowest and fastest shape is what makes
+           the big ones read as structure and the small ones as the live
+           layer in front, and picking off the fast ones by hand would have
+           flattened exactly that. Both ends move by the same fifth, so
+           every shape is slower and none of them has changed places. */
+        speed: 0.112 + 0.24 * t,
         // the y frequency as a multiple of the x one - see the path note above
         yRate: def.ratio || 0.8,
         /* the golden angle, which is the most irrational turn there is:
@@ -2174,7 +2230,7 @@ if (heroShapesContainer) {
      a field wired only to matchMedia silently never thins there. resize is
      the coarse backstop. Belt and braces costs one comparison. */
   function rebuildIfBudgetChanged() {
-    if (shapeBudget() !== activeBudget) buildShapes();
+    if (shapeBudget(isDarkNow()) !== activeBudget) buildShapes();
   }
   mqNarrow.addEventListener('change', rebuildIfBudgetChanged);
   mqMobile.addEventListener('change', rebuildIfBudgetChanged);

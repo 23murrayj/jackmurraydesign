@@ -324,6 +324,21 @@ After any colour change, **re-run the live audit** (walk `body *`, composite
 backgrounds, compare) across light + dark × home + project overlay + about page.
 Current state: **0 failures.**
 
+**Text over a moving shape is checked by `tools/field-check.js`**, not by
+the live audit, and this was a genuine hole rather than an oversight: a walk
+of the resting DOM cannot see what a MOVING element will be behind. The
+check composites every FILLED shape over the ground at its own alpha and
+measures `--black` on it against a 3:1 bar — 3 and not 4.5 because
+everything a hero shape can reach is display type, and the small text in
+range carries an opaque background. Outlines are skipped: at 2–5px they
+cover a sliver of a glyph, where a fill composites the whole area.
+It found one the day it was written. **The filled lime star in dark measured
+2.48:1**, and it was reachable rather than theoretical — its envelope
+overlaps the foot of `.hero-role`. `--highlight` in dark is `#DDFF67`, the
+brightest token on the page, and filled at .62 it composites to a near-lime
+ground under off-white type. It is an outline now. Current numbers for the
+pairings that remain: light 6.96–10.18:1, dark 4.79–6.51:1.
+
 **Audit hover states by hand** — a walk of the resting DOM misses them, and
 this is now the source of every contrast bug this project has shipped:
 `--warn-ink` on `--highlight` sat at 3.55:1 unnoticed, then at 4.44:1 again
@@ -393,7 +408,8 @@ four languages whenever you size display type.**
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: **11 / 9 / 7 per theme** by width (see the thinning note
+- Hero shapes: **11 / 9 / 7 by width in light, 9 / 7 / 5 in dark** (see the
+  thinning note
   below), drift on **two sine terms per axis** (one sine traces a clean
   ellipse and reads as clockwork) along a **per-shape path** — see the
   trajectory note below; a shared one made the whole field look railed.
@@ -418,8 +434,14 @@ four languages whenever you size display type.**
   up the filter row on a phone instead of at the cards — the right failure,
   since the shapes are dialled back below 760 anyway.
 - **Small text and controls inside the field's reach get an opaque
-  background.** Three now: the availability badge, `#work .section-num`, and
-  the filter chips. The chips' text was never the problem (`--black` over even
+  background.** Five now: the availability badge, `#work .section-num`, the
+  filter chips, and — since the field started reaching the nav — the
+  `.lang-toggle` and the `.theme-switch`. Those two were
+  `background: transparent` with a 2px rule, which is exactly the case this
+  rule exists for. `--white`, not `--paper`: `--white` flips with the theme,
+  so it cannot bring back the pale-knob-on-a-pale-track bug, and it is the
+  colour the nav already sits on at the top of the page and once scrolled —
+  so the change is invisible and does nothing but occlude. The chips' text was never the problem (`--black` over even
   a vivid shape is 6.13:1) — a shape drifting through an outlined chip makes
   it read as busy rather than as a control, and these have to stay
   unambiguously clickable. The 2px border is what makes the occlusion read
@@ -467,8 +489,18 @@ four languages whenever you size display type.**
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
+- **Dark carries TWO FEWER at every width**, so the ladder is 11 / 9 / 7 in
+  light and 9 / 7 / 5 in dark. Jack: "in the dark mode, I would say maybe
+  take one or two out, that kind of looks like a lot right now." It does,
+  and the count is not the reason: a neon star at .62 on near-black with a
+  drop-shadow glow is a brighter object than a coral outline at .34 on sand,
+  so the same eleven read as more. It is an offset on the budget
+  (`DARK_FEWER`), not a shorter dark array, so the two themes still share
+  SLOTS — the wipe reveals the same composition minus its two least
+  load-bearing shapes rather than a different arrangement. The keep order
+  already guarantees each subset is a composition, down to 5 (bands 2/1/2).
 - **The field THINS as the screen narrows** — 11 shapes, 9 at ≤760px, 7 at
-  ≤600px — and the alphas came UP to pay for it (.33/.56 light, .50/.64
+  ≤600px, two fewer than each of those in dark — and the alphas came UP to pay for it (.33/.56 light, .50/.64
   dark, against .26/.46 and .42/.54 before). Half as many objects had taken
   the phone from busy to absent: "a bit a lot quieter on the phone now".
   Count down, alpha up — the two together land somewhere neither reaches
@@ -666,15 +698,20 @@ four languages whenever you size display type.**
   exactly 1 at and above 1392 and desktop is untouched. Measured by driving
   the real `driftAt` over a full cycle: at 375 the seven survivors are on
   screen 70–100% of the time, against 58–79% without it.
-- **Outline weight is 3% of the shape's size, not a fixed px — one number
-  for the whole field.** The SVG shapes were always proportional
+- **Outline weight is 2.6% of the shape's size, not a fixed px — one number
+  for the whole field, with a 2px floor.** The SVG shapes were always proportional
   (`stroke-width` is in viewBox units) while circles and squares took a flat
   `3px` from CSS, so the same field held outlines at 2.3% of diameter on the
   largest circle and 6.7% on the smallest square: the big shapes read as
   weedy wireframes next to the small ones and nothing said why.
-  `buildShapes` sets `border-width` to `max(3, size * 0.03)` and
-  `createSvgShape` sets `stroke-width: 3` for every type, so 191 → 6px,
-  137 → 4, and everything from 96 down lands on the 3px floor.
+  `buildShapes` sets `border-width` to `max(2, size * 0.026)` and
+  `createSvgShape` sets `stroke-width: 2.6` for every type, so 191 → 5px,
+  137 → 4, and everything from 84 down lands on the 2px floor.
+  **It went 5% → 3% → 2.6%, and the floor 3px → 2px**, each step on Jack
+  looking at it: the 191 circle "should probably be a little thinner as
+  well", the 36 amber circle "even thinner". The second of those is why the
+  floor had to move — the 36 was sitting on it, so no change to the
+  percentage could have reached it.
   **It was 5% for one release and that was too heavy.** Jack, on the big
   circle: "make it less thick. Go back to things not being as thick. I think
   that's probably better, actually." At 5% that circle carried a 10px line,
@@ -709,6 +746,14 @@ four languages whenever you size display type.**
   anything generated at runtime has to carry its own guarantee.
   Verified by rebuilding the field six times back to back: the two jittered
   shapes moved .088 and .126 in x, the other nine moved ≤.0001.
+- **Speed is `0.112 + 0.24t`, a fifth slower than it was.** "Make some of
+  the trajectories a little bit slower. They're going pretty fast right
+  now." Applied to the whole range rather than to the shapes that looked
+  fastest, because **the range IS the parallax**: the ratio between the
+  slowest and fastest shape is what makes the big ones read as structure and
+  the small ones as the live layer in front, and picking off the fast ones
+  by hand would have flattened exactly that. Both ends moved by the same
+  fifth, so everything is slower and nothing has changed places.
 - **Motion is derived from size**, also authored. `t = (maxSize - size) /
   sizeSpan` is 1 for the smallest shape and 0 for the largest, and the range
   comes from the loaded set rather than from literals — it was a hardcoded
@@ -756,9 +801,22 @@ four languages whenever you size display type.**
     about the randomness." Four do: the 137 circle exits left by 61px, and
     the 61 triangle, the 113 solid and the 53 circle exit right by 121, 190
     and 134. `overflow-x: clip` on the page makes leaving free.
-  **Reach is spent on X for the shapes that leave the frame, and that part
-  is forced.** The nav sits at y < .092 and a shape swinging up into it is a
-  bug, so the shapes that go off-frame go sideways.
+  **TWO SLOTS GO OVER THE NAV NOW, by opt-in.** The rule used to be
+  absolute and was right to be while nothing was meant to go up there; then
+  Jack asked for two things that are. The red square should "go past the top
+  line that we can see" — it reaches y −.004 at 1440, where `contain: paint`
+  on `.hero-shapes` clips it at the viewport edge, so it slides up and out
+  rather than piling against a boundary. And a small shape should "swoop…
+  near the language button and the dark and light mode button" — the amber
+  triangle reaches y 26px, which is the exact top edge of those two
+  controls. A def carries `overNav: true` and `field-check` then allows it;
+  **everything without the flag is still held out**, which is the part worth
+  keeping, because the failure that rule catches is a shape drifting up
+  there by accident after someone changes a size. The two controls gaining
+  an opaque background is the condition for allowing it at all.
+  **Reach is still spent on X for the shapes that LEAVE the frame sideways**,
+  and that part is forced: the nav is a thing to pass through, not a place
+  to exit.
   **But spending it ONLY on X was an over-correction**, and Jack named it:
   "They go to the sides well. But they need to also make sure that they're
   going to the bottoms and the tops. They don't need to always be doing it,

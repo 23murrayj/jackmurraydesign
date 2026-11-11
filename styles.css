@@ -829,10 +829,19 @@ body.is-loading { overflow: hidden; }
      --highlight on the marquee and loader). So in dark mode the track
      stayed cream while the knob inverted to cream as well: a pale blob on a
      pale blob. --black/--white flip, so the pair mirrors on its own. */
-  background: transparent;
+  /* OPAQUE, not transparent, and --white rather than --paper. The shape
+     field reaches the nav now - the top-right swooper rises to y .017,
+     where these two controls sit - and CLAUDE.md's rule for an outlined
+     control inside the field's reach is that a shape drifting through it
+     makes it read as busy rather than as a control. --white is the page
+     ground in both themes, so this is invisible: the nav is transparent
+     over the same colour at the top of the page and --white once scrolled.
+     It also cannot bring back the pale-knob-on-pale-track bug, because
+     --white flips with the theme where --paper deliberately does not. */
+  background: var(--white);
   border: 2px solid var(--black);
   cursor: pointer;
-  transition: transform .2s, box-shadow .2s, border-color .25s;
+  transition: transform .2s, box-shadow .2s, border-color .25s, background .25s;
 }
 .theme-switch-track {
   position: relative; display: block; width: 100%; height: 100%;
@@ -4026,7 +4035,8 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   /* square again: the mark stands alone, so there is nothing to sit beside */
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
-  background: transparent; border: 2px solid var(--black); color: var(--black);
+  /* opaque for the same reason as .theme-switch beside it - see that note */
+  background: var(--white); border: 2px solid var(--black); color: var(--black);
   cursor: pointer;
   font-family: var(--ff-body);
   transition: background .25s, color .25s, transform .2s;
