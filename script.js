@@ -1746,6 +1746,15 @@ if (heroShapesContainer) {
   /* NINE, down from twelve on 2026-11-11. Jack: "I don't love where we're
      at now... maybe take out a couple shapes."
 
+     THIS ARRANGEMENT WAS CHOSEN, NOT COMPOSED BY HAND. It is one of several
+     that tools/field-shuffle.js generated inside the rules, rendered on the
+     real page, and Jack picked by eye - the "bold" size profile, which
+     scales the big shapes harder than the small ones and takes the set from
+     132..36 to 191..36. That is the workflow these rules exist to support:
+     the generator guarantees the arrangement is valid, the eye decides
+     which valid one it is. Do not hand-edit a coordinate here without
+     re-running `node tools/field-check.js`.
+
      Nine is not just twelve minus three - it changes what the rules can
      guarantee. With 4 blue and 4 coral shapes across 3 bands, pigeonhole
      forced some band to hold two of one hue at full budget. At nine there
@@ -1768,32 +1777,45 @@ if (heroShapesContainer) {
      Bands come out 3/3/3, 3/2/2 and 2/2/1, hues mixed at all three.
      `node tools/field-check.js` proves it - run it after ANY edit here. */
   const smoothDefs = [
-    /* the biggest and the quietest: a 132px outline circle in the
-       bottom-right, concentric with the seam ring in styles.css. keep: 1,
-       it is the bottom-right anchor and the seam's own echo. */
-    { type: 'circle',   size: 132, color: 'var(--blue)',        filled: false, keep: 1, at: [0.90, 0.72] },
+    /* The biggest shape, and it leads the TOP band rather than anchoring a
+       corner - at 191px an outline circle beside the name is the one object
+       that can hold its own against a 12rem headline without filling in.
+       Worth knowing what this arrangement gave up: until 2026-11-11 the
+       largest shape sat bottom-right, concentric with the seam ring in
+       styles.css, and the two read as the same figure at two scales. That
+       echo is not part of this layout. It was my rationale rather than a
+       rule, and the arrangement Jack chose is better without it - but if a
+       future version wants the echo back, put the largest shape in the
+       SEAM band at a high x and the relationship returns. */
+    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 3, at: [0.586, 0.263] },
     /* FILLED, and the one that changes the character of the field.
        Everything large used to be an outline, so the whole thing read as
        line work with a few small solids dropped in. One big soft coral
-       disc gives it a mass to sit against. Jack's own suggestion, and the
-       reason TOP loses its other coral rather than this one. */
-    { type: 'circle',   size: 90,  color: 'var(--accent)',      filled: true,  keep: 2, at: [0.86, 0.24] },
-    { type: 'circle',   size: 104, color: 'var(--blue)',        filled: false, keep: 3, at: [0.60, 0.22] },
-    { type: 'circle',   size: 50,  color: 'var(--black)',       filled: true,  keep: 4, at: [0.52, 0.55] },
-    { type: 'triangle', size: 56,  color: 'var(--accent)',      filled: false, keep: 6, at: [0.31, 0.49] },
-    /* the smallest solid coral: the one object in the field allowed to look
-       like a deliberate mark rather than drift */
-    { type: 'square',   size: 45,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 5, at: [0.15, 0.76] },
-    /* HOLLOW, and the only shape sitting square over the name. Filled, it
-       stacked the warmest hue, the brightest alpha and a solid mass on the
-       one object with the least room to be loud. As a ring it marks the
-       spot without competing with the headline. Keeps vivid: a 3px amber
-       border at .38 is barely there, and the point was to quieten it, not
-       delete it. Moved .34 -> .14 when the coral square left, so the
-       top-left corner still has a resident. */
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 7, at: [0.14, 0.27] },
-    { type: 'square',   size: 72,  color: 'var(--black)',       filled: false, keep: 8, at: [0.40, 0.88] },
-    { type: 'square',   size: 70,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 9, at: [0.95, 0.52] },
+       disc gives it a mass to sit against. Jack's own suggestion.
+       It sits in the SEAM here, half off the right edge at .903, which is
+       where the seam ring in styles.css also lives - so the corner that
+       used to hold the field's largest outline now holds its largest
+       solid. */
+    { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 8, at: [0.903, 0.702] },
+    { type: 'circle',   size: 137, color: 'var(--blue)',        filled: false, keep: 1, at: [0.561, 0.873] },
+    { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  keep: 6, at: [0.459, 0.536] },
+    { type: 'triangle', size: 61,  color: 'var(--accent)',      filled: false, keep: 2, at: [0.881, 0.277] },
+    /* the smallest solid coral, and the one object in the field allowed to
+       look like a deliberate mark rather than drift. Small enough to keep
+       its vivid alpha - see the 90px ceiling in tools/field-shuffle.js. */
+    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 4, at: [0.872, 0.487] },
+    /* HOLLOW, and it stays hollow wherever it lands. Filled, this stacked
+       three maxima on one object: the warmest hue, the brightest alpha and
+       a solid mass. That was unbearable when it sat over the name - Jack:
+       "it stands out too much" - and the fix was to make it a ring rather
+       than to move it, so the reasoning survives a reshuffle. In this
+       arrangement it rests at the bottom-left of the seam instead.
+       Keeps vivid: a 3px amber border at the base alpha is barely there,
+       and the point was to quieten it, not delete it. It is also the only
+       amber left in the field, so it is the whole of the third hue. */
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 5, at: [0.096, 0.81] },
+    { type: 'square',   size: 84,  color: 'var(--black)',       filled: false, keep: 7, at: [0.208, 0.24] },
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 9, at: [0.083, 0.534] },
   ];
 
   /* Same twelve-shape budget in dark, and the neons stay neon: this half of
@@ -1816,16 +1838,16 @@ if (heroShapesContainer) {
      base .62 already, and brightening it is the one move in this field that
      would take a pair below 3:1. */
   const jaggedDefs = [
-    { type: 'star', size: 140, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 1, at: [0.90, 0.72] },
-    { type: 'star', size: 95,  color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 2, at: [0.86, 0.24] },
-    { type: 'star', size: 110, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 3, at: [0.60, 0.22] },
-    { type: 'star', size: 55,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, keep: 4, at: [0.52, 0.55] },
-    { type: 'star', size: 60,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 6, at: [0.31, 0.49] },
-    { type: 'star', size: 40,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 5, at: [0.15, 0.76] },
+    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 3, at: [0.586, 0.263] },
+    { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 8, at: [0.903, 0.702] },
+    { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1, at: [0.561, 0.873] },
+    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, keep: 6, at: [0.459, 0.536] },
+    { type: 'star', size: 67,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2, at: [0.881, 0.277] },
+    { type: 'star', size: 41,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 4, at: [0.872, 0.487] },
     /* hollow here too, matching light slot for slot */
-    { type: 'star', size: 34,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, keep: 7, at: [0.14, 0.27] },
-    { type: 'star', size: 72,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 8, at: [0.40, 0.88] },
-    { type: 'star', size: 65,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 9, at: [0.95, 0.52] },
+    { type: 'star', size: 34,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, keep: 5, at: [0.096, 0.81] },
+    { type: 'star', size: 84,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 7, at: [0.208, 0.24] },
+    { type: 'star', size: 74,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 9, at: [0.083, 0.534] },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1910,9 +1932,43 @@ if (heroShapesContainer) {
     const sizes = all.map((d) => d.size);
     const maxSize = Math.max(...sizes);
     const sizeSpan = maxSize - Math.min(...sizes) || 1;
+
+    /* SHAPES SCALE WITH THE FIELD, and this only became visible when the
+       shapes got big. The sizes in the arrays are absolute px tuned against
+       the 1392px-wide field box at 1440, but the box is 338px wide at 375 -
+       so a shape that is 9% of the field on a desktop is 39% of it on a
+       phone, and the same number means two completely different things.
+       It was survivable at 132. At 191 it is not: the largest shape covered
+       56% of a phone's field width and sat across the headline, which is a
+       worse version of the "too many shapes" complaint that started all of
+       this - one shape can crowd a screen on its own.
+       It COMPRESSES THE RANGE rather than scaling everything by one
+       factor, and the difference is not subtle. A uniform .45 tamed the
+       191 to 86 and took the 36 down to 16, which is a speck - the field
+       went from "one shape crowding the screen" straight to "nothing
+       there". What a narrow screen cannot carry is the SPREAD: a 5.3x size
+       range is drama on a desktop and noise in a 338px box. So the largest
+       shape loses the most and the smallest barely moves, which pulls the
+       set toward its middle instead of toward zero.
+       At 375 that lands the set at 86 / 76 / 43 / 34 / 27 against a
+       uniform scale's 86 / 62 / 27 / 21 / 16. Desktop is untouched: both
+       ends are 1 at and above 1392. */
+    const fieldW = heroShapesContainer.getBoundingClientRect().width || 1392;
+    const narrow = 1 - Math.max(0, Math.min(1, (fieldW - 420) / (1392 - 420)));
+    const scaleFor = (size) => {
+      const tt = (maxSize - size) / sizeSpan;            // 1 smallest, 0 largest
+      const big = 1 - 0.55 * narrow;                     // largest  -> .45 at 375
+      const small = 1 - 0.25 * narrow;                   // smallest -> .75 at 375
+      return big + (small - big) * tt;
+    };
+
     heroShapesContainer.innerHTML = '';
     shapes = defs.map((def, i) => {
-      const el = createShapeEl(def);
+      /* scaled for rendering; the RAW size still drives t below, since
+         scaling every shape by the same factor leaves their ratios - and
+         so the parallax - exactly where they were */
+      const renderSize = Math.max(14, Math.round(def.size * scaleFor(def.size)));
+      const el = createShapeEl({ ...def, size: renderSize });
       // opacity lives in CSS (.hero-shapes .shape) so the two themes can
       // differ - a neon on near-black carries at a lower alpha than a muted
       // coral on sand does - and so it is not buried in a JS string
@@ -1933,7 +1989,7 @@ if (heroShapesContainer) {
       const t = (maxSize - def.size) / sizeSpan;
       return {
         el,
-        size: def.size,
+        size: renderSize,
         baseColor: def.color,
         baseX: def.at[0],
         baseY: def.at[1],

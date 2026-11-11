@@ -437,10 +437,12 @@ four languages whenever you size display type.**
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
   fraction of the field box, and the twelve are **three bands of four**, each
   band holding a left, a centre-left, a centre-right and a right:
-  y .215/.22/.24/.27 across the top of the name, y .49/.50/.52/.55 across its
-  foot, y .72/.76/.84/.88 down in the seam. Bands two and three were .41–.47
-  and .745–.90 until 2026-11-11; both moved toward the marquee to close a
-  gap — see the white-space note below. It went 9 → 12 on 2026-11-10
+  TOP across the top of the name (y .20–.28), MID across its foot (.44–.56)
+  and SEAM down past the marquee (.70–.90). Those are the RANGES a shape may
+  rest in; the exact coordinates are not hand-chosen any more — see the
+  shuffler note below. Bands two and three used to sit at .41–.47 and
+  .745–.90 and were moved toward the marquee to close a gap — see the
+  white-space note. It went 9 → 12 on 2026-11-10
   on Jack's note that the field still wanted more; the band structure is what
   absorbed the three extra without the result reading as denser-but-random.
   Measured against the real hero at 1440,
@@ -543,10 +545,14 @@ four languages whenever you size display type.**
   of drifting thing stops being a texture and becomes a second subject.
   **Variety in this field comes from SIZE and FILL, not from new forms.**
   That is the whole lesson, and it is what "a bit more" actually wanted:
-  - **One shape is much bigger than the rest** — a 132px outline circle
-    (140px star in dark) in the bottom-right, concentric with the seam ring.
-    The sizes used to run 36–104, which is a spread, not a hierarchy: twelve
-    things all roughly of a size. The jump gives the field a top.
+  - **One shape is much bigger than the rest** — currently a 191px outline
+    circle (203px star in dark). The sizes used to run 36–104, which is a
+    spread, not a hierarchy: twelve things all roughly of a size. The jump
+    gives the field a top, and the "bold" size profile in the shuffler
+    widened it further (132–>191) at Jack's request for larger shapes.
+    It no longer sits bottom-right concentric with the seam ring; that echo
+    was real but it was my rationale, not a rule, and the arrangement Jack
+    chose is better without it.
   - **One big shape is FILLED** — the 90px coral circle, Jack's own
     suggestion. Everything large was an outline before, so the field read as
     line work with a few small solids dropped in; one soft coral disc gives
@@ -568,15 +574,39 @@ four languages whenever you size display type.**
     which nobody has complained about, because it sits at x .95 and spends
     most of its time half off the edge. A shape reads loud because of where
     it is as much as what it is.
+- **Shape sizes are px in the array but SCALE WITH THE FIELD when it gets
+  narrow**, and this only became visible once the shapes got big. The
+  numbers in the def arrays are tuned against the 1440px-wide field box; the
+  box is 375px on a phone, so a shape that is 9% of the field on a desktop
+  is 39% of it there. The same number means two different things. It was
+  survivable at 132. At 191 it was not — the largest shape covered 56% of a
+  phone's field width and sat across the headline, which is a worse version
+  of the complaint that started the thinning: one shape can crowd a screen
+  on its own.
+  **It compresses the RANGE rather than scaling everything by one factor.**
+  A uniform multiplier tamed the 191 to 86 and took the 36 down to 16, which
+  is a speck — the field went straight from "one shape crowding the screen"
+  to "nothing there". What a narrow screen cannot carry is the SPREAD: a
+  5.3× size range is drama at 1440 and noise in a 375px box. So the largest
+  shape loses the most, the smallest barely moves, and the set pulls toward
+  its middle. Measured: 191/137/113/84/81/61/53/47/36 at 1440 becomes
+  116/94/63/48/42/38/30 at 700 and 86/76/43/34/27 at 375 (seven and five of
+  them survive the thinning). **Desktop is untouched** — both ends of the
+  ramp are 1 at and above 1392.
+  The envelope checks in `tools/field-check.js` run at 1440 geometry, which
+  stays the binding case: shapes are smaller at every narrower width, so
+  their swing envelopes only shrink.
 - **Outline weight is 5% of the shape's size, not a fixed px.** The SVG
   shapes were always proportional — `stroke-width` is in viewBox units —
   while circles and squares took a flat `3px` from CSS, so the same field
-  held outlines at 2.3% of diameter on the 132 circle and 6.7% on a 45
-  square. The big shapes read as weedy wireframes next to the small ones and
+  held outlines at 2.3% of diameter on the largest circle and 6.7% on the
+  smallest square. The big shapes read as weedy wireframes next to the small ones and
   nothing said why. `buildShapes` now sets `border-width` per shape to
-  `max(3, size * 0.05)`, matching what the triangles already did: 132 → 7px,
-  104 → 5, 72 → 4, 36 → 3 via the floor. The floor matters because 5% of the
-  smallest shape is under 2px, which at .33 alpha on a phone is not a line.
+  `max(3, size * 0.05)`, matching what the triangles already did — at the
+  sizes in use that is 191 → 10px, 137 → 7, 84 → 4, 36 → 3 via the floor.
+  The floor matters because 5% of the smallest shape is under 2px, which at
+  .33 alpha on a phone is not a line. The percentages are the rule; the px
+  move whenever the size profile does.
   **Stars keep their own 3%** — a sharp star's inner radius is 14 against an
   outer 48, and a 5-unit stroke on spikes that thin closes the notches into
   a blob. The CSS `3px` is now only a fallback.
@@ -590,11 +620,14 @@ four languages whenever you size display type.**
   comes from the loaded set rather than from literals — it was a hardcoded
   `(110 - size) / 76`, which quietly stopped meaning anything the moment the
   132px circle arrived and made `t` negative, running every motion number
-  backwards off the end of its range. **Changing one shape's size changes
+  backwards off the end of its range. (That is also why the size
+  profiles are safe: `t` re-derives from whatever sizes are in the array.) **Changing one shape's size changes
   every other shape's travel**, because they all sit on the same derived
-  scale: growing the biggest to 132 pushed the 104 square's vertical
+  scale: growing the biggest to 132 once pushed the next shape's vertical
   amplitude from 39px to 57 and walked it into the nav band. Re-run the
-  envelope check after any size change, not just after a position change.
+  envelope check after any size change, not just after a position change —
+  and note the shuffler has to check BOTH themes, since dark scales from its
+  own range and is the larger of the two.
   Amplitude, speed, wobble and spin all come off `t`, so big forms barely
   move and read as structure while small ones travel far and read as the
   live layer in front — parallax done with amplitude. Random gave the right
@@ -624,8 +657,10 @@ four languages whenever you size display type.**
   one large, completely still form is the opposite register, and that contrast
   is what makes the seam read as composed. Small things drifting in front of
   one big thing holding still is depth; twelve small things drifting is
-  weather. It echoes the 132px blue outline circle in the .90/.745 slot —
-  the largest shape in the set, same shape, same corner, two scales. **`z-index: -1` is load-bearing**: #work's content
+  weather. It used to echo the field's largest outline circle, which sat in
+  the same corner at two scales; in the current arrangement that corner
+  holds the field's largest SOLID instead, a 113px coral disc half off the
+  right edge. **`z-index: -1` is load-bearing**: #work's content
   is in-flow and unpositioned, so a pseudo-element at auto or 0 paints ABOVE
   the heading and the filter text. It only works because `<html>` carries no
   background, so body's propagates to the canvas — **give html a background

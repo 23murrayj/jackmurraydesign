@@ -266,9 +266,14 @@ function apply(arr, k) {
       if (newSize) {
         /* keep the column alignment the arrays are written in: the size
            field is padded to 4 so the colour column stays put */
-        updated = updated.replace(/size: \d+,(\s*)/, (m, sp) => {
+        /* hold the colour column where it is: the replacement plus its
+           padding has to be exactly as wide as what it replaced. Measuring
+           against a fixed 'size: 000,' instead of the ACTUAL old token was
+           wrong whenever the digit count changed - a 2-digit size growing
+           to 3 came out one space too wide. */
+        updated = updated.replace(/(size: \d+,)(\s*)/, (m, oldTok, sp) => {
           const want = 'size: ' + newSize + ',';
-          const pad = Math.max(1, ('size: 000,').length + sp.length - want.length);
+          const pad = Math.max(1, oldTok.length + sp.length - want.length);
           return want + ' '.repeat(pad);
         });
         if (newSize > VIVID_MAX_SIZE) updated = updated.replace(/\s*vivid: true,/, '');
