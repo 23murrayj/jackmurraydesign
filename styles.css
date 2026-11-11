@@ -1041,13 +1041,20 @@ body.is-loading { overflow: hidden; }
   opacity: .78;
   filter: drop-shadow(0 0 10px currentColor);
 }
-/* Same twelve shapes, a third of the width: the field that reads as texture
-   behind a 1440px hero reads as clutter behind a 375px one, because density
-   is what changed, not the count. Dialled back rather than thinned out, so
-   the phone keeps the same look with less of it.
-   This is also the rule that makes shapes crossing the type acceptable at
-   the width where they cross it most - a stacked hero leaves them nowhere
-   else to go - so these alphas are not free to rise. */
+/* A third of the width, so the field that reads as texture behind a 1440px
+   hero reads as clutter behind a 375px one.
+   This rule used to be the WHOLE answer, and it said so: "dialled back
+   rather than thinned out, so the phone keeps the same look with less of
+   it". That was wrong, and a phone showed it. The field box is 338px wide
+   at 375 against 1392 at 1440, so the same twelve objects sit at nearly
+   four times the density per unit of area, and no alpha fixes density -
+   faint clutter is still clutter. script.js now drops the field to 8 shapes
+   at or below 760 and 6 at or below 600, by an authored rank, so the
+   composition survives the cut.
+   These alphas stay, because they solve the OTHER half: a stacked hero is
+   the width where shapes cross the type most, and they have nowhere else to
+   go, so what is left has to stay quiet enough to read through. Count and
+   alpha are two problems, not one. These are not free to rise. */
 @media (max-width: 760px) {
   .hero-shapes .shape { opacity: .26; }
   :root[data-theme="dark"] .hero-shapes .shape {

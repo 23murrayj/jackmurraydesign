@@ -89,6 +89,16 @@ repeatedly. Symptoms and the fix:
   measure.
 - `window.scrollTo()` fires **zero** scroll events → dispatch
   `new Event('scroll')` manually.
+- **Resizing the pane fires no `resize` event and no `matchMedia` `change`
+  event either**, which is worse than it sounds because the viewport really
+  does change: the media query starts matching and the stylesheet applies,
+  so the page LOOKS responsive while every JS listener waiting on that
+  boundary never runs. Found by thinning the shape field at 600/760 — at
+  420px `matchMedia('(max-width: 600px)').matches` was `true` and the CSS
+  opacity rule had applied, yet the field still held twelve shapes.
+  → resize the pane, then `window.dispatchEvent(new Event('resize'))` by
+  hand, the same trick as for scroll. That tests your logic end to end; the
+  browser's own event delivery is not yours to test.
 - Screenshots taken right after `location.reload()` catch the loader mid-fade
   and the reveal animations mid-flight; the hero name looks dim. Wait ~2.5s,
   and kill transitions before capturing.
@@ -382,7 +392,8 @@ four languages whenever you size display type.**
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: 12 per theme, drift on **two sine terms per axis** (one sine
+- Hero shapes: **12 / 8 / 6 per theme** by width (see the thinning note
+  below), drift on **two sine terms per axis** (one sine
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
   Behind `.hero-grid` (z 0 vs 2) and `pointer-events: none`.
@@ -448,6 +459,32 @@ four languages whenever you size display type.**
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
+- **The field THINS as the screen narrows** — 12 shapes, 8 at ≤760px, 6 at
+  ≤600px — and this reverses what the opacity rule used to claim. That rule
+  said "dialled back rather than thinned out, so the phone keeps the same
+  look with less of it". Wrong: the field box is 338px wide at 375 against
+  1392 at 1440, so the same twelve objects sit at nearly four times the
+  density per unit of area, and **no alpha fixes density** — faint clutter
+  is still clutter. Jack, on a real phone: "there's too many shapes".
+  **Count and alpha are two problems and both rules stay.** Alpha stops a
+  shape fighting the type it crosses; count stops the field reading as busy.
+  The phone had both.
+  Each def carries `keep`, 1–12, where 1 is the shape the composition can
+  least afford to lose. The ranks are chosen so **every surviving subset is
+  still a composition**, which is checkable: at 12 the three bands hold
+  4/4/4, at 8 they hold 3/2/3, at 6 exactly 2/2/2 — and all three keep the
+  full x-spread (.07–.95), both corner anchors, both shapes that bleed off
+  an edge, and something still living down in the seam. Drop by any other
+  order and the phone gets a huddle.
+  The budget is read from `matchMedia` with the **same two breakpoints the
+  CSS uses**, so they cannot drift apart. It listens to those change events
+  AND to `resize`, guarded on the budget actually changing — belt and
+  braces, because a rebuild discards the field and a single point of failure
+  here fails silently (see the pane hazard above). The guard is what makes
+  listening to `resize` safe: on a phone the address bar sliding away during
+  a scroll fires it continuously, and all those get is one integer compare.
+  `t` is derived from the FULL def list, not the filtered one, so a shape's
+  speed and travel do not change because a different shape was dropped.
   **Do the envelope arithmetic, do not eyeball it.** Every one of those rules
   was broken on a first pass and only caught in a screenshot. The reusable
   check is: reconstruct `t`, `ampX`, `ampY` and the wobble exactly as
@@ -474,6 +511,22 @@ four languages whenever you size display type.**
     line work with a few small solids dropped in; one soft coral disc gives
     it a mass to sit against. At .38 over the ground it is a wash, which is
     why the large shapes stay off the .72 vivid alpha.
+  - **The amber shape over the name is HOLLOW**, and that is the one piece
+    of the field with the least room to be loud. Filled, it stacked three
+    maxima on one object sitting square over JACK: the warmest hue, the
+    brightest alpha (.72 vivid) and a solid mass. Jack: "it stands out too
+    much". As a 3px ring it still marks the spot without competing with the
+    headline. It keeps `vivid` — a 3px amber border at .38 on this ground
+    is barely there, and the point was to quieten it, not delete it.
+    Measured, loudness (contrast from the ground x actual ink) went 343 to
+    146, and it is now 11th of 12 rather than mid-pack.
+    **That measurement is worth re-running before trusting your eye here.**
+    Asked the same question about the rest of the field, it contradicted me:
+    the amber triangle I was about to tone down came out 8th of 12, while
+    the loudest object by a distance is the 70px vivid blue square at 2455 —
+    which nobody has complained about, because it sits at x .95 and spends
+    most of its time half off the edge. A shape reads loud because of where
+    it is as much as what it is.
 - **Every SVG-drawn shape needs `transform-box: fill-box`** and
   `overflow: visible` — `.shape-triangle` has a rule and `.shape-star` has
   its own. Any NEW svg type must join one of them: leave it out and it orbits
