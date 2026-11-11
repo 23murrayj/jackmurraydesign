@@ -408,7 +408,7 @@ four languages whenever you size display type.**
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: **10 / 9 / 7 by width in light, 8 / 7 / 5 in dark** (see the
+- Hero shapes: **11 / 9 / 7 by width in light, 9 / 7 / 5 in dark** (see the
   thinning note
   below), drift on **two sine terms per axis** (one sine traces a clean
   ellipse and reads as clockwork) along a **per-shape path** — see the
@@ -461,7 +461,7 @@ four languages whenever you size display type.**
   overlap into a blob and a quadrant sits empty — and because it re-rolled on
   every load and every theme switch there was no arrangement to judge, let
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
-  fraction of the field box, and the ten sit in **three bands, 4 / 3 / 3**,
+  fraction of the field box, and the eleven sit in **three bands, 4 / 4 / 3**,
   each band running left to right across the field:
   TOP across the top of the name (y .20–.28), MID across its foot (.44–.56)
   and SEAM down past the marquee (.70–.90). Those are the RANGES a shape may
@@ -475,7 +475,7 @@ four languages whenever you size display type.**
   where the box is 1440×1026: nav ends at .092, name .184–.499, side column
   .236–.499, marquee strip .579–.640, SELECTED PROJECTS .702–.875, filters
   .914–1.002.
-  **Both themes use the SAME ten slots**, assigned biggest-to-biggest, so the
+  **Both themes use the SAME eleven slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
   to a fresh scatter mid-wipe.
@@ -494,12 +494,12 @@ four languages whenever you size display type.**
   take one or two out, that kind of looks like a lot right now." It does,
   and the count is not the reason: a neon star at .62 on near-black with a
   drop-shadow glow is a brighter object than a coral outline at .34 on sand,
-  so the same ten read as more. It is an offset on the budget
+  so the same eleven read as more. It is an offset on the budget
   (`DARK_FEWER`), not a shorter dark array, so the two themes still share
   SLOTS — the wipe reveals the same composition minus its two least
   load-bearing shapes rather than a different arrangement. The keep order
   already guarantees each subset is a composition, down to 5 (bands 2/1/2).
-- **The field THINS as the screen narrows** — 10 shapes, 9 at ≤760px, 7 at
+- **The field THINS as the screen narrows** — 11 shapes, 9 at ≤760px, 7 at
   ≤600px, two fewer than each of those in dark — and the alphas came UP to pay for it (.33/.56 light, .50/.64
   dark, against .26/.46 and .42/.54 before). Half as many objects had taken
   the phone from busy to absent: "a bit a lot quieter on the phone now".
@@ -514,14 +514,14 @@ four languages whenever you size display type.**
   against the hero's PADDING box, so the hero's 72px side padding never
   applies to it. (The 1392/338 this file and script.js used to quote was the
   content box, and was never the number in play. Measured in the page: 1440
-  at 1440, 1024 at 1024, 375 at 375.) So the same ten objects sit at
+  at 1440, 1024 at 1024, 375 at 375.) So the same eleven objects sit at
   nearly four times the
   density per unit of area, and **no alpha fixes density** — faint clutter
   is still clutter. Jack, on a real phone: "there's too many shapes".
   **Count and alpha are two problems and both rules stay.** Alpha stops a
   shape fighting the type it crosses; count stops the field reading as busy.
   The phone had both.
-  Each def carries `keep`, 1–10, where 1 is the shape the composition can
+  Each def carries `keep`, 1–11, where 1 is the shape the composition can
   least afford to lose, and the ranks answer TWO rules.
   **Bands:** every surviving subset still has to be a composition. At 11 the
   three bands hold 4/4/3, at 9 they hold 3/3/3, at 7 it is 3/2/2 — and all
@@ -620,6 +620,43 @@ four languages whenever you size display type.**
   JA. The field keeps three corals, its fifth hue and its two squircles, and
   only the red and the grey change places — "the red box next to it, maybe
   that could be gray or another color or something like that."
+- **ONE SHAPE LIVES OFF THE PAGE.** The 81px blue square rests at
+  **x −0.55** — a third of a screen beyond the left edge — and reaches
+  x .608 at the far end of a 1575px swing. Jack asked for it back after it
+  was cut, but changed: "make it so that you don't see it for a little bit,
+  but at certain times it'll move from kind of the left to the right. It'll
+  come from out of frame into frame. Slowly, and then back… it kind of
+  helps take up that negative space that we see from kind of the marquee
+  above and below it."
+  Measured in the page over 2400 seconds: **on screen 34% of the time, in
+  54-second visits with 105 seconds away**, 67px/s at its quickest, which
+  makes it the slowest thing in the field. It rests at y .535 (MID, and as
+  low as the marquee rule allows an 81px shape to rest), swings .375–.695,
+  and of its visible time 53% is clear above the strip and 47% straddling
+  it. **It never gets fully below the strip** — the band under the marquee
+  is only ~75px and the square is 81, so it cannot fit there; it straddles
+  instead. 49% of its visible time is clear of the name's box, so the
+  moments where it reads as a clean object are rarer still, which is the
+  point rather than a defect.
+  **It is `keep` 10, so it is a DESKTOP shape.** A 1575px sweep means
+  nothing in a 375px box, and the thinned 9 / 7 / 5 sets never include it.
+  **Dark does not show it either**, because dark's budget stops at 9 —
+  deliberate, since a neon star sweeping the page is a louder event than a
+  soft coral square and dark had just been thinned. Moving it into dark is
+  one number, `DARK_FEWER`.
+  **Filled but NOT vivid**, where the square it replaces was both. Vivid on
+  something 81px across is what made that one the loudest object in the
+  field; at the base alpha it measures 23 against the 45 at the top of the
+  profile.
+  **A resting x may be negative now, and both tools had to learn it.**
+  `field-check` and `field-shuffle` parsed `at: [x, y]` with `[\d.]+`,
+  which silently skips a minus sign — so the new def did not exist as far
+  as either was concerned, and the checker cheerfully reported ten shapes
+  and "ALL CHECKS PASS" on an eleven-shape array. **A parser that drops a
+  row is worse than one that throws**; if a count in that output ever looks
+  wrong, suspect the regex before the data. The shuffler also places x in
+  [0.08, 0.95], so a re-roll will pull this shape back on screen — that is
+  a known limit, not a bug to fix blind.
 - **The vocabulary is FOUR forms and must stay that way**: circle, square and
   triangle in light, jagged star in dark. **A MODIFIER ON AN EXISTING FORM
   IS NOT A FIFTH FORM**, and that is the line the squircle sits on the right
@@ -639,7 +676,7 @@ four languages whenever you size display type.**
   That is the whole lesson, and it is what "a bit more" actually wanted:
   - **One shape is much bigger than the rest** — currently a 191px outline
     circle (203px star in dark). The sizes used to run 36–104, which is a
-    spread, not a hierarchy: ten things all roughly of a size. The jump
+    spread, not a hierarchy: eleven things all roughly of a size. The jump
     gives the field a top, and the "bold" size profile in the shuffler
     widened it further (132–>191) at Jack's request for larger shapes.
     It no longer sits bottom-right concentric with the seam ring; that echo
@@ -752,7 +789,7 @@ four languages whenever you size display type.**
   get a fresh resting position on every load, ±.07 in x and ±.035 in y —
   enough to be a different picture each visit, small enough that the shape
   stays in its band and on its side, so the band balance and the hue spread
-  still hold whatever the dice do. Two of ten, so the composition it sits
+  still hold whatever the dice do. Two of eleven, so the composition it sits
   inside is still the designed one.
   **It clamps against the same three landmarks the authored positions are
   checked against** and falls back to the authored spot on a bad roll. That
@@ -788,7 +825,7 @@ four languages whenever you size display type.**
   spread attached to nothing: a 110px form could come out the fastest,
   widest-travelling thing on screen, which is the inverse of how distance
   reads. Phase steps by the golden angle (2.39996 rad) so no two of the
-  ten ever swing together, and spin direction alternates instead of being
+  eleven ever swing together, and spin direction alternates instead of being
   signed at random.
 - **EVERY SHAPE ALSO CARRIES ITS OWN PATH**, and this closes a hole that
   size-derived motion left wide open. Jack: "the ones under Jack Murray,
@@ -829,6 +866,23 @@ four languages whenever you size display type.**
   keeping, because the failure that rule catches is a shape drifting up
   there by accident after someone changes a size. The two controls gaining
   an opaque background is the condition for allowing it at all.
+  - **`tilt`** shifts the y term against the x one, and it is what decides
+    WHICH CORNER a shape heads for. Both terms share θ when `ratio` is 1,
+    and sin/cos are 90° apart, so by default a shape traces an ellipse and
+    its top coincides with its mid-x — there is no "up and to the left", only
+    "up". At `tilt: -π/2` the y term becomes sin(θ) too, so x and y reach
+    their minima together and the path becomes a diagonal. The red square
+    carries it, on Jack's "make it when it goes to the top, make it move a
+    little bit more to the left"; measured over 300s of simulated time its
+    x/y correlation is **0.99**, against −0.04 to 0.18 for every other shape.
+    Default 0.
+  - **`pace`** multiplies the whole path's rate. It exists because `tilt`
+    costs a shape its slow axis: tying x and y together means they share a
+    frequency, so a shape that was crossing slowly in y and quickly in x
+    ends up at one speed. `pace` puts the slowness back without untying
+    them — the red square runs at 0.38, which reproduces the 64-second
+    vertical it had before the coupling. It is also what lets a shape with a
+    very long reach stay slow. Default 1.
   **Reach is still spent on X for the shapes that LEAVE the frame sideways**,
   and that part is forced: the nav is a thing to pass through, not a place
   to exit.
@@ -883,7 +937,7 @@ four languages whenever you size display type.**
   Read it as a shape rather than a score: a field wants one clear top and a
   long tail, and what it does not want is its loudest object parked in the
   middle, or two tied at the top. Light currently runs
-  `113=45 96=33 53=24 47=19 191=13 137=8 84=3 61=1 36=1 68=1`.
+  `113=45 96=33 53=24 81=23 47=19 191=13 137=8 84=3 61=1 36=1 68=1`.
   **The three ambers at 1 are worth knowing about.** `--accent-warm` is
   1.94:1 on the ground, and as a 2px outline at .34 that is texture rather
   than an object — so a third of the light field is doing almost no visual
@@ -905,7 +959,7 @@ four languages whenever you size display type.**
   is small and moving, so its 306px overlap into #work read as leftover hero;
   one large, completely still form is the opposite register, and that contrast
   is what makes the seam read as composed. Small things drifting in front of
-  one big thing holding still is depth; ten small things drifting is
+  one big thing holding still is depth; eleven small things drifting is
   weather. It used to echo the field's largest outline circle, which sat in
   the same corner at two scales; in the current arrangement that corner
   holds the field's largest SOLID instead, a 113px coral disc half off the
@@ -1001,7 +1055,7 @@ four languages whenever you size display type.**
   gap is invisible normally and very visible under a view transition: the
   theme switch rebuilds the field inside the transition callback and the new
   snapshot is taken BEFORE the next frame, so without it the wipe reveals
-  ten shapes piled in the top-left corner and holds them there for 620ms.
+  eleven shapes piled in the top-left corner and holds them there for 620ms.
   **Anything JS positions must be positioned synchronously for the same
   reason.**
 - **The browser pane cannot run a view transition.** Its frozen rendering

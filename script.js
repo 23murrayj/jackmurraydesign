@@ -1607,7 +1607,7 @@ renderTickers();
 
 /* ------------------------------------------------------------------------
    SECTION 15 · HERO SHAPE FIELD
-   Ten per theme, AUTHORED positions and AUTHORED paths. Four forms only.
+   Eleven per theme, AUTHORED positions and AUTHORED paths. Four forms only.
    ------------------------------------------------------------------------ */
 // floating geometric shapes — drift + rotate slowly and ease away from the
 // cursor.
@@ -1731,7 +1731,7 @@ if (heroShapesContainer) {
      gets exactly one of each three-count hue and the no-repeated-hue rule
      is a guarantee rather than something to check.
 
-     vivid: true on TWO of the ten in light, and they are the two SMALLEST
+     vivid: true on TWO of the eleven in light, and they are the two SMALLEST
      shapes, which is what vivid is for - the third was the filled blue
      square at dead centre, cut on 2026-11-11 as the loudest object in the
      field.
@@ -1750,7 +1750,7 @@ if (heroShapesContainer) {
      hero alone, so a y of .86 is down in the band under SELECTED PROJECTS.
 
      These used to be Math.random() per shape per build, and that was the
-     whole of what made the field look unconsidered. Random ten-point
+     whole of what made the field look unconsidered. Random eleven-point
      scatter clumps: on any given load two or three shapes would overlap
      into one blob and a quadrant would be empty, and because it re-rolled
      on every load and every theme switch there was no arrangement to
@@ -1775,7 +1775,7 @@ if (heroShapesContainer) {
      there.
      That is the same "thin out across strip, heading and tags" the field
      was extended 306px for - it only actually happens if shapes LIVE down
-     there rather than wandering down by luck, which is what ten random
+     there rather than wandering down by luck, which is what eleven random
      y values gave: usually six in the hero and three nowhere useful.
 
      Two more things the slots are doing:
@@ -1857,7 +1857,7 @@ if (heroShapesContainer) {
        rounded corners. "Red, hard square, and a very light red... and then
        the red box next to it, maybe that could be gray or another color."
        Plum at .34 on the ground is what he has been calling the grey one. */
-    { type: 'square',   size: 96,  color: 'var(--accent)',      filled: true,  keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 0.38, reach: 1.5, overNav: true },
+    { type: 'square',   size: 96,  color: 'var(--accent)',      filled: true,  keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 1.0,  reach: 1.5, tilt: -1.5708, pace: 0.38, overNav: true },
     /* dropped from y .46 to .54 - "the yellow circle that's around Murray,
        the hollow one... it should just maybe move down more". Still inside
        the MID band (.44-.56) and still clear of the marquee at rest, which
@@ -1870,7 +1870,36 @@ if (heroShapesContainer) {
        square by the K needed a colour to swap with, and --black is what
        Jack reads as grey, so the field looks the way it did before except
        that the red and the grey have changed places. */
-    { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, round: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    /* THE LONG SWEEPER, and it is the one shape that lives OFF the page.
+       Jack asked for the blue square back "but instead make it so that you
+       don't see it for a little bit, but at certain times it'll move from
+       kind of the left to the right. It'll come from out of frame into
+       frame. Slowly, and then back... it kind of helps take up that
+       negative space that we see from kind of the marquee above and below
+       it."
+       So its RESTING centre is x -0.55 - a third of a screen off the left
+       edge - and it reaches x .608 at the far end of a 1575px swing. Run
+       the arithmetic on the sine and it is on screen for 34% of its cycle:
+       it drifts in from the left, gets about three-fifths of the way
+       across, and retreats the way it came. pace 0.14 makes that cycle 159
+       seconds, so it is a slow visitor rather than a shuttle - 62px/s at
+       its quickest, the slowest thing in the field.
+       It rests at y .52, which is MID, and swings to .321-.719 - across
+       the marquee strip at .579-.640, which is the white space the request
+       is actually about. It does not REST on the strip, which is the rule.
+       NOT VIVID, where the square it replaces was. That shape was cut one
+       commit ago for being the loudest object in the field, and vivid on
+       something 81px across is the thing that made it so; filled at the
+       base alpha it is a soft mass instead, measuring 23 against the 45 at
+       the top of the profile.
+       keep 10, so it is a DESKTOP shape: a 1575px sweep means nothing in a
+       375px box, and the thinned sets never see it. Dark's budget stops at
+       9, so dark does not show it either - deliberate, since a neon star
+       sweeping the page is a louder event than a coral square, and dark
+       had just been thinned. Moving it into dark is one number
+       (DARK_FEWER). */
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14 },
+    { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, round: true, keep: 11, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
   ];
 
   /* Two fewer in dark at every width - see shapeBudget - and the neons stay
@@ -1886,13 +1915,13 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
-  /* The same ten slots. Dark stays ALL STARS and keeps its neons - Jack:
+  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
      and the blues and the reds work well." The squircles are a light-mode
      softening; dark is the experimental half and its vocabulary is sharp.
      The one import is the fifth hue, as a neon violet rather than a muted
      plum, because it has to sit beside hot pink, electric blue and lime. */
-  /* The same ten slots. Dark stays ALL STARS and keeps its neons - Jack:
+  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
      and the blues and the reds work well." The squircles are a light-mode
      softening; dark is the experimental half and its vocabulary is sharp.
@@ -1918,10 +1947,11 @@ if (heroShapesContainer) {
        see what a moving element will be behind. tools/field-check.js now
        does this arithmetic for every filled shape. */
     { type: 'star', size: 56,  color: 'var(--highlight)',   filled: false, spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
-    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: true,  spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 0.38, reach: 1.5, overNav: true },
+    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: true,  spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 1.0,  reach: 1.5, tilt: -1.5708, pace: 0.38, overNav: true },
     { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
     { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
-    { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14 },
+    { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 11, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1929,7 +1959,7 @@ if (heroShapesContainer) {
      below cannot drift apart - this formula is the look of the whole field
      and it should exist once.
      Two sine terms per axis, not one. A single sine traces a clean ellipse
-     and ten ellipses read as clockwork; the faster, smaller wobble on top
+     and eleven ellipses read as clockwork; the faster, smaller wobble on top
      breaks the period so each path wanders instead. */
   function driftAt(s, time, rect) {
     return {
@@ -1937,7 +1967,16 @@ if (heroShapesContainer) {
         + Math.sin(time * s.speed + s.phase) * s.ampX
         + Math.sin(time * s.wobbleSpeed + s.phase * 1.7) * s.wobbleAmp,
       y: s.baseY * rect.height
-        + Math.cos(time * s.speed * s.yRate + s.phase) * s.ampY
+        /* s.tilt shifts the y term against the x one, which is what decides
+           WHICH CORNER a shape heads for. Both terms share theta when yRate
+           is 1, and sin/cos are 90 degrees apart, so by default a shape
+           traces an ellipse and its top coincides with its mid-x. At
+           tilt = -PI/2 the y term becomes sin(theta) as well, so x and y
+           reach their minima together and the path is a diagonal: up AND
+           left, down AND right. Jack, on the red square: "make it when it
+           goes to the top, make it move a little bit more to the left."
+           Default 0, so every other shape is untouched. */
+        + Math.cos(time * s.speed * s.yRate + s.phase + s.tilt) * s.ampY
         + Math.cos(time * s.wobbleSpeed * 0.83 + s.phase) * s.wobbleAmp,
     };
   }
@@ -1947,7 +1986,7 @@ if (heroShapesContainer) {
      That gap is normally one frame and invisible. It stops being invisible
      under a view transition: the theme switch rebuilds the field inside the
      transition callback, and the new snapshot is taken BEFORE the next frame
-     runs - so without this the wipe would reveal ten shapes piled in the
+     runs - so without this the wipe would reveal eleven shapes piled in the
      top-left corner and hold them there for the length of the animation. */
   function placeShapes() {
     const rect = heroShapesContainer.getBoundingClientRect();
@@ -1959,11 +1998,11 @@ if (heroShapesContainer) {
     });
   }
 
-  /* How many of the ten survive at this width. Thinning, not dimming -
+  /* How many of the eleven survive at this width. Thinning, not dimming -
      and that reverses what the ≤760px opacity rule says it does ("dialled
      back rather than thinned out, so the phone keeps the same look with less
      of it"). That was the wrong read: at 375 the field box is 375px wide
-     against 1440's, so ten objects are nearly four times as dense per
+     against 1440's, so eleven objects are nearly four times as dense per
      unit of area, and no alpha fixes density. Jack on a real phone:
      "there's too many shapes".
      The opacity dial-back STAYS. These are two different problems - alpha
@@ -1984,7 +2023,7 @@ if (heroShapesContainer) {
      say maybe take one or two out, that kind of looks like a lot right
      now." It does, and the reason is not the count: a neon star at .62 on
      near-black with a drop-shadow glow is a brighter object than a coral
-     outline at .34 on sand, so the same ten read as more.
+     outline at .34 on sand, so the same eleven read as more.
      Done as an offset on the budget rather than a shorter dark array, so
      the two themes still share SLOTS - the theme switch reveals the same
      composition minus its two least load-bearing shapes, instead of a
@@ -1993,7 +2032,7 @@ if (heroShapesContainer) {
      2/1/2, with the hue rule holding at each. */
   const DARK_FEWER = 2;
   function shapeBudget(isDark) {
-    const base = mqNarrow.matches ? 7 : mqMobile.matches ? 9 : 10;
+    const base = mqNarrow.matches ? 7 : mqMobile.matches ? 9 : 11;
     return base - (isDark ? DARK_FEWER : 0);
   }
   const isDarkNow = () => document.documentElement.getAttribute('data-theme') === 'dark';
@@ -2084,7 +2123,7 @@ if (heroShapesContainer) {
          motion number below is derived from it, and that is the second
          half of making this field look considered rather than generated.
          It used to be Math.random() on all six, which gave the right
-         SPREAD - shapes overtaking each other is what stops ten objects
+         SPREAD - shapes overtaking each other is what stops eleven objects
          reading as one slow field - but attached that spread to nothing,
          so a 110px form could end up the fastest, widest-travelling thing
          on screen while a 34px speck sat nearly still. That is the exact
@@ -2140,7 +2179,7 @@ if (heroShapesContainer) {
          bit of randomness", and he is reaching for something the authored
          field genuinely lost. Random placement was dropped because nine
          random points clump; this is the part of it worth keeping, applied
-         to two shapes out of ten so the composition it sits inside is
+         to two shapes out of eleven so the composition it sits inside is
          still the designed one.
          Bounded, not free. +/-.07 in x and +/-.035 in y is enough to be a
          different picture each visit and small enough that the shape stays
@@ -2187,12 +2226,19 @@ if (heroShapesContainer) {
            layer in front, and picking off the fast ones by hand would have
            flattened exactly that. Both ends move by the same fifth, so
            every shape is slower and none of them has changed places. */
-        speed: 0.112 + 0.24 * t,
+        /* def.pace is a multiplier on the whole path's rate, not on one
+           axis. It exists because tilt costs a shape its slow axis: tying x
+           and y together means they share a frequency, so a shape that was
+           crossing slowly in y and quickly in x ends up at one speed. pace
+           puts the slowness back without untying them. It is also what lets
+           a shape with a very long reach stay slow - see the 81. */
+        speed: (0.112 + 0.24 * t) * (def.pace || 1),
         // the y frequency as a multiple of the x one - see the path note above
         yRate: def.ratio || 0.8,
+        tilt: def.tilt || 0,
         /* the golden angle, which is the most irrational turn there is:
-           stepping phase by it spreads ten shapes as evenly round the
-           cycle as ten shapes can be spread, so no two are ever swinging
+           stepping phase by it spreads eleven shapes as evenly round the
+           cycle as eleven shapes can be spread, so no two are ever swinging
            together. Random phases bunch - that is what random does - and a
            bunched pair looks like the two shapes are linked. */
         phase: i * 2.39996,
@@ -2218,7 +2264,7 @@ if (heroShapesContainer) {
      back to its resting position. That is fine when the viewport crosses
      600 or 760 - someone rotating a phone or dragging a window - because
      the layout is already reflowing anyway. What is NOT acceptable is a
-     375px screen still showing ten shapes because the page was opened
+     375px screen still showing eleven shapes because the page was opened
      wide and then narrowed.
      Guarded on the budget, so it is a no-op unless the count would really
      change. That is what makes it safe to listen to resize as well as to
@@ -2284,7 +2330,7 @@ if (heroShapesContainer) {
 
       // A shape being pushed used to turn var(--green) and turn back. It was
       // cut on Jack's note, and the reasoning holds up: green belongs to the
-      // availability dot, ten shapes that each briefly become an eleventh colour
+      // availability dot, eleven shapes that each briefly become a twelfth colour
       // is a colour system with a hole in it, and the push is already legible
       // from the movement and the spin-up below. Nothing replaced it - the
       // field reacts to the cursor by MOVING, which is the whole idea.

@@ -123,7 +123,7 @@ function parseDefs(src, name) {
   const defs = lines.map((line) => {
     const g = /size: (\d+),\s*color: 'var\(--([\w-]+)\)'/.exec(line);
     const k = /keep: (\d+)/.exec(line);
-    const at = /at: \[([\d.]+), ([\d.]+)\]/.exec(line);
+    const at = /at: \[(-?[\d.]+), ([\d.]+)\]/.exec(line);
     /* the per-shape path keys travel ON the line, so a shuffle carries a
        shape's trajectory with it to whatever slot it lands in - but the
        envelope check has to know about them, because aspect 2.2 is 2.2x the
@@ -339,7 +339,7 @@ function apply(arr, k) {
       const def = defs[order[rank]];
       let updated = def.line
         .replace(/keep: \d+/, 'keep: ' + target.keep)
-        .replace(/at: \[[\d.]+, [\d.]+\]/, `at: [${target.x}, ${target.y}]`);
+        .replace(/at: \[-?[\d.]+, -?[\d.]+\]/, `at: [${target.x}, ${target.y}]`);
       const newSize = k ? ownSizes[order[rank]] : null;
       if (newSize) {
         /* keep the column alignment the arrays are written in: the size
@@ -376,7 +376,7 @@ function applyRestore(saved) {
       const def = defs[order[rank]];
       let updated = def.line
         .replace(/keep: \d+/, 'keep: ' + t.keep)
-        .replace(/at: \[[\d.]+, [\d.]+\]/, `at: [${t.x}, ${t.y}]`);
+        .replace(/at: \[-?[\d.]+, -?[\d.]+\]/, `at: [${t.x}, ${t.y}]`);
       src = src.replace(def.line, updated);
     }
   }

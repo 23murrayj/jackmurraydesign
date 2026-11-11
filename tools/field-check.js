@@ -14,7 +14,7 @@ function defs(name) {
   const b = s.indexOf('\n  ];', a);
   const body = s.slice(a, b);
   return [...body.matchAll(
-    /type: '(\w+)',\s*size: (\d+),\s*color: 'var\(--([\w-]+)\)',\s*filled: (\w+),([^}]*?)keep: (\d+),\s*at: \[([\d.]+), ([\d.]+)\]([^}]*)/g
+    /type: '(\w+)',\s*size: (\d+),\s*color: 'var\(--([\w-]+)\)',\s*filled: (\w+),([^}]*?)keep: (\d+),\s*at: \[(-?[\d.]+), ([\d.]+)\]([^}]*)/g
   )].map(m => {
     const tail = m[9] || '';
     const num = (k, dflt) => {
