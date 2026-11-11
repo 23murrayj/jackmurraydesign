@@ -28,6 +28,14 @@ never need all of it. Find your task below and read that section.
 | publish a file, or touch a photo | **Safety constraints** | read the file first |
 | measure anything in the browser | **Environment** → the pane lies | sanity-check the probe |
 
+**Before committing anything that touches more than one file**, run the two
+tools. `node tools/audit.js` is the static half — dead CSS, unused tokens and
+i18n keys, project-list agreement across four files, the WebP invariant,
+root-relative asset paths, hover/focus contrast pairs. `node
+tools/field-check.js` is the hero field. Neither replaces driving the page:
+contrast, overflow, console errors and any count that only exists after JS
+runs still need a browser.
+
 **Finding things cheaply.** Both big files carry numbered section banners:
 
 ```
@@ -544,13 +552,18 @@ four languages whenever you size display type.**
   colour stripes reads as a chart.
   **Whether the rule is even satisfiable is arithmetic, not taste.** With H
   shapes of one hue and 3 bands, pigeonhole forces a repeat once H > 3.
-  That arithmetic is what settled the colour of the 61px triangle. Making
-  the square over JACK red takes coral to four, which forces a repeat; so
-  the triangle went amber, and the field is now 3 blue / 3 coral / 3 amber
-  / 1 black / 1 plum. Every band gets exactly one of each three-count hue
-  and the rule is a guarantee at every budget rather than something to
-  check. **Amber is a third primary now, not "a little vibrancy on the two
-  smallest shapes"** — that older note no longer describes the field.
+  That arithmetic has settled two colours now. It made the 61px triangle
+  amber (turning the square over JACK red would otherwise have taken coral
+  to four), and then it moved the seam triangle to plum, because turning the
+  small circle blue took amber's only left-hand member away and left it
+  failing the both-sides rule.
+  **The counts on stage are 3 blue, 3 coral, 2 plum, 1 amber, 1 black**, and
+  with the offstage sweeper counted blue is 4 — which is exactly why
+  `offstage` exists, since at 4 the rule would switch itself off. Every band
+  gets one of each three-count hue, so the rule is a guarantee at every
+  budget rather than something to check. **Amber is down to a single shape**,
+  and the older notes calling it a pair on the two smallest, or a third
+  primary on three, both describe fields that no longer exist.
   The history is the argument for keeping the counts where they are: at
   twelve there were 4 blue and 4 coral, so a repeat was unavoidable at full
   budget and the rule could only be enforced on the thinned sets. **Ten
@@ -991,14 +1004,15 @@ four languages whenever you size display type.**
   Read it as a shape rather than a score: a field wants one clear top and a
   long tail, and what it does not want is its loudest object parked in the
   middle, or two tied at the top. Light currently runs
-  `113=45 96=33 53=24 81=23 47=19 191=13 137=8 84=3 61=1 36=1 68=1`.
-  **The three ambers at 1 are worth knowing about.** `--accent-warm` is
-  1.94:1 on the ground, and as a 2px outline at .34 that is texture rather
-  than an object — so a third of the light field is doing almost no visual
-  work, while the hue rules treat those three as full members. That is not
-  a bug and nothing should be "fixed" about it without Jack asking: every
-  step this field has taken on his eye has been quieter. It is recorded so
-  the next person does not discover it and assume it was an oversight.
+  `113=45 96=33 53=24 81=23 47=19 191=13 137=8 36=3 68=3 84=3 61=1`.
+  **The tail is very quiet and that is deliberate.** The four shapes at 3
+  and below are 2px outlines at .34, which is texture rather than object —
+  `--accent-warm` is 1.94:1 on the ground, so the amber triangle at 1 is
+  the faintest thing in the field by a distance. Nothing should be "fixed"
+  about that without Jack asking: every step this field has taken on his
+  eye has been quieter, and the outline weight came down twice on his word.
+  It is recorded so the next person does not find it and assume it was an
+  oversight.
   **The occupancy scan answers this, and it is in `field-check` now** rather
   than being rewritten as a throwaway each time: twentieths of the field,
   counting how many shapes can REACH each slice. Reach is the actionable
@@ -1404,7 +1418,13 @@ is most of the point.
   the label has to follow the device too — `.pong-footer` swaps its
   `data-i18n` key to `pong.controlsTouch` on a coarse pointer, which keeps
   working across language changes because `apply()` reads the attribute live.
-- Four languages (en/es/ja/it), **199 keys each, exact parity**. Every user-facing string goes in
+- Four languages (en/es/ja/it), **180 keys each, exact parity** — checked by
+  `node tools/audit.js`, which also catches a key nothing references. It
+  found 19 dead ones per language on 2026-11-11: translations for four
+  placeholder projects deleted long ago, two filter categories with no
+  projects behind them, two dialog labels superseded by `aria-labelledby`,
+  and `lang.name`, which the menu never used because a language name should
+  appear in its own language and so is hardcoded. Every user-facing string goes in
   `i18n.js` in all four.** `data-i18n` sets textContent; `data-i18n-html` for
   markup; `data-i18n-aria`, `data-i18n-alt`, `data-i18n-tip`.
 

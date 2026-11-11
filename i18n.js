@@ -26,7 +26,6 @@
 
     /* ---------------------------------------------------------------- EN */
     en: {
-      'lang.name': 'ENGLISH',
       'a11y.skip': 'Skip to main content',
       // {n} = image number, {title} = project title. Fallback only — real
       // per-image alt text belongs in proj.<id>.alt.<n>
@@ -36,8 +35,6 @@
       'a11y.lightbox': 'Enlarged image',
       'a11y.close': 'Close',
       'a11y.zoomHint': 'Click to enlarge',
-      'a11y.projectDialog': 'Project details',
-      'a11y.aboutDialog': 'About Jack Murray',
       'html.title': "Jack Murray · UX Designer",
       'html.description': "UX design portfolio by Jack Murray: websites, visual systems, branding, photography, motion, and digital experiments.",
 
@@ -67,18 +64,14 @@
       'footer.built': 'FOUR LANGUAGES · DARK & LIGHT · AA CONTRAST · KEYBOARD NAVIGATION · REDUCED MOTION',
       'card.cta': 'VIEW CASE STUDY',
       'filter.UX/UI': 'UX/UI',
-      'filter.BRANDING': 'BRANDING',
       'filter.GRAPHICS': 'GRAPHICS',
       'filter.PHOTOGRAPHY': 'PHOTOGRAPHY',
-      'filter.WEB': 'WEB',
       'filter.MOTION': 'MOTION',
 
       'cat.UX/UI': 'UX/UI',
       'cat.GRAPHICS': 'GRAPHICS',
       'cat.PHOTOGRAPHY': 'PHOTOGRAPHY',
       'cat.MOTION': 'MOTION',
-      'cat.WEB': 'WEB',
-      'cat.BRANDING': 'BRANDING',
 
       'proj.cat-coaching.desc': "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
       'proj.cat-coaching.type': 'Bradley University × Caterpillar',
@@ -137,18 +130,6 @@
       'proj.oasis-journey.body': "Journey to the Oasis is a 3D animated short made for a 3D animation course at Otis College of Art and Design. A lone alien, Leedo, tears through desert ruins in a low-slung ship, clears a wide gap in slow motion, and steps out in front of a gleaming city, the film ends panning off him into the sun. There's no dialogue, just wind and a short score.\n\nIt was built across Maya, Blender and ZBrush. The call that set the schedule was rendering in Cycles rather than Eevee, for the quality it gave this piece: the final pass took three full days. It closed out the course as my final project.",
       'proj.oasis-journey.alt.1': "A 3D desert city of white marble rings, columns and wide bowl-topped towers, with a pale green ship hovering above and dunes rising behind.",
       'proj.oasis-journey.alt.2': "The Journey to the Oasis poster art: a 3D desert scene with marble arches and towers, low ships in the foreground and a small alien figure standing on one of them.",
-      'proj.portfolio-website.desc': 'Personal website built to explore UX, front-end design, and visual identity.',
-      'proj.portfolio-website.type': 'Personal Project',
-      'proj.portfolio-website.role': 'Designer & Developer',
-      'proj.brand-concept.desc': 'Conceptual identity work exploring brand systems, typography, and visual direction.',
-      'proj.brand-concept.type': 'Concept Project',
-      'proj.brand-concept.role': 'Brand Designer',
-      'proj.university-redesign.desc': "Research, flows, and prototypes for rebuilding a university website.",
-      'proj.university-redesign.type': "Case Study",
-      'proj.university-redesign.role': "UX Designer",
-      'proj.editorial-system.desc': "A type and grid system carried across a publication in print and on screen.",
-      'proj.editorial-system.type': "Concept Project",
-      'proj.editorial-system.role': "Designer",
 
       'project.back': '← BACK TO WORK',
       'project.type': 'TYPE',
@@ -248,7 +229,6 @@
 
     /* ---------------------------------------------------------------- ES */
     es: {
-      'lang.name': 'ESPAÑOL',
       'a11y.skip': 'Saltar al contenido principal',
       'a11y.photoAlt': 'Foto {n} de {title}',
       'a11y.videoLabel': 'Película del proyecto',
@@ -256,8 +236,6 @@
       'a11y.lightbox': 'Imagen ampliada',
       'a11y.close': 'Cerrar',
       'a11y.zoomHint': 'Clic para ampliar',
-      'a11y.projectDialog': 'Detalles del proyecto',
-      'a11y.aboutDialog': 'Sobre Jack Murray',
       'html.title': "Jack Murray · Diseñador UX",
       'html.description': "Portafolio de diseño UX de Jack Murray: sitios web, sistemas visuales, branding, fotografía, motion y experimentos digitales.",
 
@@ -287,18 +265,14 @@
       'footer.built': 'CUATRO IDIOMAS · MODO OSCURO Y CLARO · CONTRASTE AA · NAVEGACIÓN POR TECLADO · MOVIMIENTO REDUCIDO',
       'card.cta': 'VER PROYECTO',
       'filter.UX/UI': 'UX/UI',
-      'filter.BRANDING': 'BRANDING',
       'filter.GRAPHICS': 'GRÁFICOS',
       'filter.PHOTOGRAPHY': 'FOTOGRAFÍA',
-      'filter.WEB': 'WEB',
       'filter.MOTION': 'MOTION',
 
       'cat.UX/UI': 'UX/UI',
       'cat.GRAPHICS': 'GRÁFICOS',
       'cat.PHOTOGRAPHY': 'FOTOGRAFÍA',
       'cat.MOTION': 'MOTION',
-      'cat.WEB': 'WEB',
-      'cat.BRANDING': 'BRANDING',
 
       'proj.cat-coaching.desc': "Interfaz de coaching adaptativo para operadores de maquinaria pesada, diseñada con Caterpillar.",
       'proj.cat-coaching.type': 'Bradley University × Caterpillar',
@@ -357,18 +331,6 @@
       'proj.oasis-journey.body': "Journey to the Oasis es un corto de animación 3D hecho para una asignatura de animación 3D en Otis College of Art and Design. Un alien solitario, Leedo, cruza a toda velocidad unas ruinas en el desierto con una nave baja, salva un abismo ancho a cámara lenta y baja frente a una ciudad reluciente; el corto termina alejándose de él hacia el sol. No hay diálogo, solo viento y una pieza musical breve.\n\nEstá hecho entre Maya, Blender y ZBrush. La decisión que marcó el calendario fue renderizar en Cycles y no en Eevee, por la calidad que le daba a esta pieza: la pasada final tardó tres días completos. Cerró la asignatura como mi proyecto final.",
       'proj.oasis-journey.alt.1': "Una ciudad desértica en 3D de anillos, columnas y torres de mármol blanco rematadas en forma de cuenco, con una nave verde pálido suspendida encima y dunas al fondo.",
       'proj.oasis-journey.alt.2': "La ilustración del póster de Journey to the Oasis: una escena desértica en 3D con arcos y torres de mármol, naves bajas en primer plano y una pequeña figura alienígena de pie sobre una de ellas.",
-      'proj.portfolio-website.desc': 'Sitio web personal creado para explorar UX, diseño front-end e identidad visual.',
-      'proj.portfolio-website.type': 'Proyecto personal',
-      'proj.portfolio-website.role': 'Diseñador y desarrollador',
-      'proj.brand-concept.desc': 'Trabajo de identidad conceptual que explora sistemas de marca, tipografía y dirección visual.',
-      'proj.brand-concept.type': 'Proyecto conceptual',
-      'proj.brand-concept.role': 'Diseñador de marca',
-      'proj.university-redesign.desc': "Investigación, flujos y prototipos para rediseñar el sitio web de una universidad.",
-      'proj.university-redesign.type': "Caso de estudio",
-      'proj.university-redesign.role': "Diseñador UX",
-      'proj.editorial-system.desc': "Un sistema de tipografía y retícula aplicado a una publicación en papel y en pantalla.",
-      'proj.editorial-system.type': "Proyecto conceptual",
-      'proj.editorial-system.role': "Diseñador",
 
       'project.back': '← VOLVER A PROYECTOS',
       'project.type': 'TIPO',
@@ -466,7 +428,6 @@
 
     /* ---------------------------------------------------------------- JA */
     ja: {
-      'lang.name': '日本語',
       'a11y.skip': '本文へスキップ',
       'a11y.photoAlt': '「{title}」の写真 {n}枚目',
       'a11y.videoLabel': 'プロジェクトの映像',
@@ -474,8 +435,6 @@
       'a11y.lightbox': '拡大画像',
       'a11y.close': '閉じる',
       'a11y.zoomHint': 'クリックで拡大',
-      'a11y.projectDialog': 'プロジェクトの詳細',
-      'a11y.aboutDialog': 'ジャック・マレーについて',
       'html.title': "Jack Murray · UXデザイナー",
       'html.description': "Jack MurrayのUXデザインポートフォリオ。ウェブサイト、ビジュアルシステム、ブランディング、写真、モーション、デジタル実験。",
 
@@ -505,18 +464,14 @@
       'footer.built': '4言語対応 · ダーク/ライトモード · AAコントラスト · キーボード操作 · モーション軽減',
       'card.cta': 'プロジェクトを見る',
       'filter.UX/UI': 'UX/UI',
-      'filter.BRANDING': 'ブランディング',
       'filter.GRAPHICS': 'グラフィック',
       'filter.PHOTOGRAPHY': '写真',
-      'filter.WEB': 'ウェブ',
       'filter.MOTION': 'モーション',
 
       'cat.UX/UI': 'UX/UI',
       'cat.GRAPHICS': 'グラフィック',
       'cat.PHOTOGRAPHY': '写真',
       'cat.MOTION': 'モーション',
-      'cat.WEB': 'ウェブ',
-      'cat.BRANDING': 'ブランディング',
 
       'proj.cat-coaching.desc': '建設機械オペレーター向けのアダプティブなコーチングUIを、キャタピラーと共同で設計。',
       'proj.cat-coaching.type': 'ブラッドリー大学 × キャタピラー',
@@ -575,18 +530,6 @@
       'proj.oasis-journey.body': "『Journey to the Oasis』は、オーティス・カレッジ・オブ・アート・アンド・デザインの3Dアニメーションの授業向けに制作した短編です。孤独なエイリアン、リードーが車高の低い船で砂漠の廃墟を突き抜け、広い裂け目をスローモーションで越え、輝く都市の前に降り立ちます。カメラが彼から太陽へと振り切るところで終わります。セリフはなく、風の音と短いスコアだけです。\n\nMaya、Blender、ZBrushを行き来しながらつくりました。スケジュールを決めたのはEeveeではなくCyclesでレンダリングするという判断でした。この作品にとっての質のためですが、最終パスに丸三日かかりました。授業の最終課題として締めくくりました。",
       'proj.oasis-journey.alt.1': "白い大理石のリングや円柱、椀のような屋根をもつ塔が並ぶ3Dの砂漠都市。上空には淡い緑の宇宙船が浮かび、背後には砂丘が続く。",
       'proj.oasis-journey.alt.2': "「Journey to the Oasis」のポスターアート。3Dの砂漠に大理石のアーチと塔が立ち、手前には低い宇宙船、その上に小さなエイリアンが立っている。",
-      'proj.portfolio-website.desc': 'UX、フロントエンドデザイン、ビジュアルアイデンティティを探るために制作した個人サイト。',
-      'proj.portfolio-website.type': '個人プロジェクト',
-      'proj.portfolio-website.role': 'デザイナー兼デベロッパー',
-      'proj.brand-concept.desc': 'ブランドシステム、タイポグラフィ、ビジュアルディレクションを探るコンセプトアイデンティティ。',
-      'proj.brand-concept.type': 'コンセプトプロジェクト',
-      'proj.brand-concept.role': 'ブランドデザイナー',
-      'proj.university-redesign.desc': "大学ウェブサイトの再構築に向けたリサーチ、フロー、プロトタイプ。",
-      'proj.university-redesign.type': "ケーススタディ",
-      'proj.university-redesign.role': "UXデザイナー",
-      'proj.editorial-system.desc': "紙面と画面の両方にわたって展開するタイポグラフィとグリッドのシステム。",
-      'proj.editorial-system.type': "コンセプトプロジェクト",
-      'proj.editorial-system.role': "デザイナー",
 
       'project.back': '← 作品一覧へ戻る',
       'project.type': '種別',
@@ -684,7 +627,6 @@
 
     /* ---------------------------------------------------------------- IT */
     it: {
-      'lang.name': 'ITALIANO',
       'a11y.skip': 'Vai al contenuto principale',
       'a11y.photoAlt': 'Foto {n} di {title}',
       'a11y.videoLabel': 'Filmato del progetto',
@@ -692,8 +634,6 @@
       'a11y.lightbox': 'Immagine ingrandita',
       'a11y.close': 'Chiudi',
       'a11y.zoomHint': 'Clicca per ingrandire',
-      'a11y.projectDialog': 'Dettagli del progetto',
-      'a11y.aboutDialog': 'Su Jack Murray',
       'html.title': "Jack Murray · Designer UX",
       'html.description': "Portfolio di design UX di Jack Murray: siti web, sistemi visivi, branding, fotografia, motion ed esperimenti digitali.",
 
@@ -723,18 +663,14 @@
       'footer.built': 'QUATTRO LINGUE · MODALITÀ SCURA E CHIARA · CONTRASTO AA · NAVIGAZIONE DA TASTIERA · MOVIMENTO RIDOTTO',
       'card.cta': 'VEDI PROGETTO',
       'filter.UX/UI': 'UX/UI',
-      'filter.BRANDING': 'BRANDING',
       'filter.GRAPHICS': 'GRAFICA',
       'filter.PHOTOGRAPHY': 'FOTOGRAFIA',
-      'filter.WEB': 'WEB',
       'filter.MOTION': 'MOTION',
 
       'cat.UX/UI': 'UX/UI',
       'cat.GRAPHICS': 'GRAFICA',
       'cat.PHOTOGRAPHY': 'FOTOGRAFIA',
       'cat.MOTION': 'MOTION',
-      'cat.WEB': 'WEB',
-      'cat.BRANDING': 'BRANDING',
 
       'proj.cat-coaching.desc': "Interfaccia di coaching adattivo per operatori di mezzi pesanti, progettata con Caterpillar.",
       'proj.cat-coaching.type': 'Bradley University × Caterpillar',
@@ -793,18 +729,6 @@
       'proj.oasis-journey.body': "Journey to the Oasis è un corto in animazione 3D realizzato per un corso di animazione 3D all'Otis College of Art and Design. Un alieno solitario, Leedo, sfreccia tra le rovine del deserto su una navicella bassa, supera un ampio crepaccio al rallentatore e scende davanti a una città scintillante; il film si chiude allontanandosi da lui verso il sole. Non c'è dialogo, solo vento e una breve partitura.\n\nÈ stato costruito tra Maya, Blender e ZBrush. La scelta che ha deciso i tempi è stata renderizzare in Cycles invece che in Eevee, per la resa che dava a questo pezzo: la passata finale ha richiesto tre giorni pieni. Ha chiuso il corso come mio progetto finale.",
       'proj.oasis-journey.alt.1': "Una città desertica in 3D fatta di anelli, colonne e torri di marmo bianco con sommità a coppa, una nave verde pallido sospesa in alto e dune sullo sfondo.",
       'proj.oasis-journey.alt.2': "L'illustrazione del poster di Journey to the Oasis: una scena desertica in 3D con archi e torri di marmo, navi basse in primo piano e una piccola figura aliena in piedi su una di esse.",
-      'proj.portfolio-website.desc': 'Sito web personale creato per esplorare UX, design front-end e identità visiva.',
-      'proj.portfolio-website.type': 'Progetto personale',
-      'proj.portfolio-website.role': 'Designer e sviluppatore',
-      'proj.brand-concept.desc': 'Lavoro di identità concettuale su sistemi di marca, tipografia e direzione visiva.',
-      'proj.brand-concept.type': 'Progetto concettuale',
-      'proj.brand-concept.role': 'Brand designer',
-      'proj.university-redesign.desc': "Ricerca, flussi e prototipi per la ricostruzione del sito di un'università.",
-      'proj.university-redesign.type': "Caso di studio",
-      'proj.university-redesign.role': "UX designer",
-      'proj.editorial-system.desc': "Un sistema di caratteri e griglia portato su una pubblicazione a stampa e a schermo.",
-      'proj.editorial-system.type': "Progetto concettuale",
-      'proj.editorial-system.role': "Designer",
 
       'project.back': '← TORNA AI PROGETTI',
       'project.type': 'TIPO',

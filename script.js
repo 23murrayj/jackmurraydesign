@@ -1723,13 +1723,17 @@ if (heroShapesContainer) {
      back to twelve on 2026-11-10 by adding three more shapes that actually
      read, not by reinstating the ghosts. **Do not colour a light-mode shape
      --highlight.**
-     Amber IS a third primary now, on three shapes - it used to be a pair
-     on the two smallest, "a little vibrancy". It grew when the square over
-     JACK went coral: four corals over three bands forces a hue repeat by
-     pigeonhole, so one coral had to give, and the 61px triangle took the
-     amber. 3 blue / 3 coral / 3 amber / 1 black / 1 plum means every band
-     gets exactly one of each three-count hue and the no-repeated-hue rule
-     is a guarantee rather than something to check.
+     AMBER IS DOWN TO ONE SHAPE, and it has been a pair and a trio on the
+     way here - both of those moves were forced by the hue arithmetic
+     rather than chosen. It grew to three when the square over JACK went
+     coral (four corals over three bands forces a repeat by pigeonhole, so
+     the 61px triangle took the amber), and fell back to one when the small
+     circle went blue, which took amber's only member left of centre and
+     left it failing the both-sides rule.
+     On stage the counts are 3 blue, 3 coral, 2 plum, 1 amber, 1 black, so
+     every band gets one of each three-count hue and the rule is a
+     guarantee. With the offstage sweeper counted blue is 4, which is what
+     the offstage flag is for - see tools/field-check.js.
 
      vivid: true on TWO of the eleven in light, and they are the two SMALLEST
      shapes, which is what vivid is for - the third was the filled blue
@@ -1804,10 +1808,10 @@ if (heroShapesContainer) {
     /* AMBER, not coral, and that is arithmetic rather than taste. Making the
        square below red takes coral to four shapes, and four of one hue over
        three bands forces a repeat by pigeonhole - the exact "it looks almost
-       like color coding" failure. Recolouring this one keeps coral at three
-       and lands the field on 3 blue / 3 coral / 3 amber / 1 black / 1 plum,
-       where every band gets exactly one of each three-count hue and the rule
-       is a guarantee at every budget instead of something to check. */
+       like color coding" failure. Recolouring this one keeps coral at three.
+       It is also the field's ONLY amber now: when the small circle went
+       blue, amber lost its left-hand member and had to drop to a single
+       shape to clear the both-sides rule. */
     /* THE TOP-RIGHT SWOOPER, and it is the bottom-right circle's path
        flipped. Jack: "we should have a small shape going near the... kind
        of opposite to the circle at the bottom right... it should kind of

@@ -9,7 +9,7 @@ described the card hover as `translate(-7,-14)` with an 18px shadow five days
 after Jack rejected that and it became `-4,-6` on 8px). **If a fact about how
 the site should look belongs anywhere, it belongs in CLAUDE.md, not here.**
 
-**Last updated:** 2026-11-10
+**Last updated:** 2026-11-12
 
 ---
 
@@ -18,24 +18,34 @@ the site should look belongs anywhere, it belongs in CLAUDE.md, not here.**
 Live at **jackmurraydesign.com** on Vercel. Apex + www resolve, HTTPS is good,
 redirects work.
 
-Measured on 2026-11-10, not asserted:
+Measured on 2026-11-12, not asserted. The static rows come from
+`node tools/audit.js`, the field rows from `node tools/field-check.js`, and
+the rest from driving the page:
 
 | Check | State |
 |---|---|
-| WCAG AA contrast | 0 failures, light + dark, at 1440 and 375 |
-| Horizontal overflow | none at 375 or 1440 |
+| WCAG AA contrast | 0 failures across 6 combinations — light + dark × home, project overlay, about page (93/105/155 elements light, 91/103/153 dark) |
+| Hover + focus pairs | 13 token pairs, none below 4.5:1 (lowest 4.60 light / 4.78 dark) |
+| Horizontal overflow | none at 1440, 900, 480 or 360 |
 | Console errors | none |
 | Dead CSS classes | 0 of 233 |
-| Unused CSS custom properties | 0 of 28 |
-| Uncalled functions in `script.js` | 0 of 77 |
-| Unused i18n keys | 0 of 199 |
-| i18n parity | 199 keys × 4 languages, exact |
+| Unused CSS custom properties | 0 of 29 |
+| Uncalled functions in `script.js` | 0 of 82 |
+| Unused i18n keys | 0 of 180 (19 per language removed on 2026-11-11) |
+| i18n parity | 180 keys × 4 languages, exact; all four apply with no empties |
+| Four languages render | 95 translated elements each, no overflow, role line fits |
 | Project list in sync | `projectData` / `sitemap.xml` / `llms.txt` / JSON-LD all agree on the same 6 |
+| Deep links | `/work/<id>` and `/about` open, title + canonical + og:url correct; an unknown id falls back to `/` |
 | WebP invariant | 50 inline JPEGs, 50 WebP siblings |
+| Hero field | `field-check` passes both themes at every budget |
 | `debugger` / `console.log` / TODO left in source | none |
 
 **The engineering is in good shape. The gap is content**, and that has been
 true for a while now.
+
+`tools/audit.js` and `tools/field-check.js` carry every check that used to
+be rewritten as a throwaway. If something needs checking twice, it belongs
+in one of them rather than in a scratch file.
 
 ---
 
