@@ -1579,7 +1579,7 @@ renderTickers();
 
 /* ------------------------------------------------------------------------
    SECTION 15 · HERO SHAPE FIELD
-   Twelve per theme, AUTHORED positions. Four forms only - do not add a fifth.
+   Eleven per theme, AUTHORED positions and AUTHORED paths. Four forms only.
    ------------------------------------------------------------------------ */
 // floating geometric shapes — drift + rotate slowly and ease away from the
 // cursor.
@@ -1670,7 +1670,7 @@ if (heroShapesContainer) {
     return el;
   }
 
-  /* TWELVE. It has been twelve before and the history matters, because the
+  /* ELEVEN, and it has been twelve before - the history matters, because the
      first twelve were not twelve things you could see: three of them were
      var(--highlight), which light mode resolves to stone at 1.43:1 on the
      ground, and at .38 alpha that is a shape you cannot find. So it was
@@ -1678,11 +1678,17 @@ if (heroShapesContainer) {
      back to twelve on 2026-11-10 by adding three more shapes that actually
      read, not by reinstating the ghosts. **Do not colour a light-mode shape
      --highlight.**
-     The amber pair are deliberately the two SMALLEST shapes - "a little
-     vibrancy", not a third primary.
+     Amber IS a third primary now, on three shapes - it used to be a pair
+     on the two smallest, "a little vibrancy". It grew when the square over
+     JACK went coral: four corals over three bands forces a hue repeat by
+     pigeonhole, so one coral had to give, and the 61px triangle took the
+     amber. 3 blue / 3 coral / 3 amber / 1 black / 1 plum means every band
+     gets exactly one of each three-count hue and the no-repeated-hue rule
+     is a guarantee rather than something to check.
 
-     vivid: true on FOUR of the twelve here, and two of the twelve in dark.
-     At a flat .38 the whole field read as pale, which is correct for texture
+     vivid: true on THREE of the eleven in each theme.
+     At a flat .38 (the base alpha then; .34 now) the field read as pale,
+     which is correct for texture
      and wrong as the only register the field has - "the contrast between
      restrained typography and occasional bright geometry could be really
      effective" was the note, and occasional is the operative word. The vivid
@@ -1696,18 +1702,18 @@ if (heroShapesContainer) {
      hero alone, so a y of .86 is down in the band under SELECTED PROJECTS.
 
      These used to be Math.random() per shape per build, and that was the
-     whole of what made the field look unconsidered. Random twelve-point
+     whole of what made the field look unconsidered. Random eleven-point
      scatter clumps: on any given load two or three shapes would overlap
      into one blob and a quadrant would be empty, and because it re-rolled
      on every load and every theme switch there was no arrangement to
      judge, let alone tune. Authored, the composition is a thing with
      intent that can be argued with - and it is the same one every time.
 
-     The arrangement is THREE BANDS OF THREE, and each band carries a left,
-     a centre and a right:
-         y .195 / .21  / .26    x .11  .44  .82
-         y .42  / .45  / .49    x .14  .95  .40
-         y .745 / .86  / .88    x .88  .25  .70
+     The arrangement is THREE BANDS - four, four and three at full budget -
+     and each band runs left to right across the field:
+         TOP   y .25 .25 .26 .28   x .22 .42 .65 .90
+         MID   y .47 .46 .50 .54   x .10 .30 .50 .88
+         SEAM  y .80 .76 .72       x .18 .72 .92
      Measured against the real hero at 1440, where the field box is
      1440x1026: the nav ends at y .092, the name occupies .184-.499, the
      side column .236-.499, the marquee strip .579-.640, SELECTED PROJECTS
@@ -1715,84 +1721,75 @@ if (heroShapesContainer) {
      top of the name, band two across its foot and the margins either side,
      band three down in the seam.
      Band two is NOT on the marquee, and that was a correction: at .57-.66
-     all three rested on or beside the strip, and a 50px near-black circle
-     at .38 over a near-black slab is not a shape, it is a smudge. They
-     cross it on the drift, which is fine and always was; they just do not
-     live there.
+     all three rested on or beside the strip, and a near-black circle at
+     .34 over a near-black slab is not a shape, it is a smudge. They cross
+     it on the drift, which is fine and always was; they just do not live
+     there.
      That is the same "thin out across strip, heading and tags" the field
      was extended 306px for - it only actually happens if shapes LIVE down
-     there rather than wandering down by luck, which is what twelve random
+     there rather than wandering down by luck, which is what eleven random
      y values gave: usually six in the hero and three nowhere useful.
 
      Two more things the slots are doing:
-     - The two largest forms are the corner-to-corner diagonal, .11/.195
-       and .88/.745. The name is heavy left and the column light right, so
-       the bottom-right anchor is the counterweight to the headline, and it
-       lands in the same corner as the seam ring in styles.css.
+     - The two largest forms are a diagonal: the 191 outline circle at
+       .65/.26 and the 137 at .18/.80. The name is heavy left and the
+       column light right, and the field's largest SOLID sits bottom-right
+       at .92/.72, in the same corner as the seam ring in styles.css.
      - No resting position is in the nav band or under the full stop after
        MURRAY, and both are about the SWING, not the resting point. Every
-       shape travels +/- its amplitude: the 36px amber circle swings +/-116px
-       vertically, so a rest at .17 would have put it in the nav on half of
-       every cycle, and the black 50px circle swings +/-127 horizontally, so
-       a rest at .55/.52 parked it on the full stop - which is exactly what
-       it did, and it looked like a smudge on the page's one piece of
-       punctuation-as-graphic. They rest at .26 and .40/.49 instead, and
-       the circle's x never reaches .636 where the full stop starts.
+       shape travels +/- its amplitude, and the amplitudes are no longer
+       uniform: the 36px amber circle swings +/-94px vertically, so a rest
+       at .17 would have put it in the nav on half of every cycle, and the
+       53px black circle swings +/-197px horizontally, so a rest near
+       .55/.52 would park it on the full stop - which an earlier
+       arrangement did, and it looked like a smudge on the page's one
+       piece of punctuation-as-graphic. tools/field-check.js does this
+       arithmetic per shape, at DARK's larger sizes, and it is not
+       eyeballable - see the path note further down.
      This is NOT a keep-out. Nothing clamps anything at runtime, and a shape
      is free to drift over the name, the column, the nav and the marquee -
      the build that fenced them out of measured boxes was tried and rejected
      and must not come back, see CLAUDE.md. This sets where a shape lives,
      not where it is allowed to go. */
   const smoothDefs = [
-    /* ELEVEN. Jack on the phone: "the hero looks like there's barely any on
-       mobile". Nine thinned to five at 600px, and five shapes over a hero
-       that is taller than it is wide reads as empty rather than restrained.
-       More defs lets the phone carry seven without the desktop crowding.
-
-       TWO SQUIRCLES - squares with the corners taken off. Not a fifth form:
-       it is a shape the field already has, softened, which is why it is
-       allowed where the arc, bar and cross were not. A rounded rect is the
-       dominant shape language of the last decade of software, so it reads
-       contemporary without introducing a new KIND of thing.
-
-       ONE PLUM, a fifth hue. Light had four and one of them is near-black,
-       against dark's four chromatic neons - genuinely a hue down, which is
-       part of why dark reads richer. Muted, because light is the refined
-       half of the brief.
-
-       TWO CARRY `jitter` and move on every load. See buildShapes.
-
-       THE LAYOUT ANSWERS FOUR RULES AT ONCE and none of them is optional:
-       band balance (4/4/3 here, 3/3/3 at nine, 3/2/2 at seven), no repeated
-       hue inside a band, every multi-instance hue present on BOTH sides of
-       the field, and every swing envelope clear of the nav, the full stop
-       and the marquee slab - checked at DARK's sizes, which are the larger.
-       `node tools/field-check.js` is the oracle. Hand-placing eleven shapes
-       against four rules does not work by eye; this layout failed nine
-       checks on the first attempt. */
-    { type: 'circle',   size: 137, color: 'var(--blue)',        filled: false, keep: 1,  at: [0.18, 0.80] },
-    { type: 'triangle', size: 61,  color: 'var(--accent)',      filled: false, keep: 2,  at: [0.90, 0.28] },
+    { type: 'circle',   size: 137, color: 'var(--blue)',        filled: false, keep: 1,  at: [0.18, 0.80], aspect: 0.5,  ratio: 0.62, reach: 1.6 },
+    /* AMBER, not coral, and that is arithmetic rather than taste. Making the
+       square below red takes coral to four shapes, and four of one hue over
+       three bands forces a repeat by pigeonhole - the exact "it looks almost
+       like color coding" failure. Recolouring this one keeps coral at three
+       and lands the field on 3 blue / 3 coral / 3 amber / 1 black / 1 plum,
+       where every band gets exactly one of each three-count hue and the rule
+       is a guarantee at every budget instead of something to check. */
+    { type: 'triangle', size: 61,  color: 'var(--accent-warm)', filled: false, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
     /* CORAL ON THE LEFT, which the field did not have: every red sat right
        of .87 and Jack called it - "make sure there's also red on the left
        side". A squircle, and the smallest solid coral, so it still reads as
        the one deliberate mark rather than drift. */
-    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47] },
-    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 4,  at: [0.65, 0.26] },
+    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
+    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 4,  at: [0.65, 0.26], aspect: 1.0,  ratio: 1.0,  reach: 1.0 },
     /* the field's largest SOLID, half off the right edge where the seam
-       ring in styles.css also lives */
-    { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 5,  at: [0.92, 0.72] },
-    { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  jitter: true, keep: 6,  at: [0.88, 0.54] },
+       ring in styles.css also lives - and with reach 1.5 it now goes all the
+       way off and comes back */
+    { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
+    { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
     /* PLUM, outlined, and a squircle: the new hue and the new silhouette
        arrive on the same object, so the field gains one idea rather than
        two. Centred in the top band where the eye lands first. */
-    { type: 'square',   size: 96,  color: 'var(--accent-plum)', filled: false, round: true, keep: 7,  at: [0.42, 0.25] },
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.46] },
-    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76] },
-    { type: 'square',   size: 84,  color: 'var(--black)',       filled: false, keep: 10, at: [0.22, 0.25] },
-    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50] },
+    { type: 'square',   size: 96,  color: 'var(--accent-plum)', filled: false, round: true, keep: 7,  at: [0.42, 0.25], aspect: 0.75, ratio: 1.25, reach: 1.0 },
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
+    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 1.6,  ratio: 0.7,  reach: 1.0 },
+    /* THE SQUARE OVER JACK. It was var(--black), which at .34 alpha on the
+       ground is a grey box, and Jack asked for "a light red regular square".
+       Coral outlined is exactly that: --accent is a light red, the 5% border
+       rule gives it a 4px line, and it stays a plain square - no round:true,
+       because the two squircles are the softened pair and this is not one of
+       them. It also puts a red mark directly on the name, which is where the
+       field's weight was always missing on the left. */
+    { type: 'square',   size: 84,  color: 'var(--accent)',      filled: false, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50], aspect: 1.8,  ratio: 0.68, reach: 1.0 },
   ];
 
-  /* Same twelve-shape budget in dark, and the neons stay neon: this half of
+  /* Same eleven-shape budget in dark, and the neons stay neon: this half of
      the site is the experimental one and was not the thing being toned down.
      Two vivid here rather than four, and NOT the amber: off-white text
      crossing an amber star measures 3.22:1 at the base .62 already, and
@@ -1819,17 +1816,17 @@ if (heroShapesContainer) {
      Dark's sizes run larger than light's and are what the envelopes are
      checked against. */
   const jaggedDefs = [
-    { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80] },
-    { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28] },
-    { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47] },
-    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26] },
-    { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72] },
-    { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54] },
-    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25] },
-    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.46] },
-    { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76] },
-    { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25] },
-    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50] },
+    { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80], aspect: 0.5,  ratio: 0.62, reach: 1.6 },
+    { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
+    { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
+    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26], aspect: 1.0,  ratio: 1.0,  reach: 1.0 },
+    { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
+    { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
+    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 0.75, ratio: 1.25, reach: 1.0 },
+    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.46], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
+    { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 1.6,  ratio: 0.7,  reach: 1.0 },
+    { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50], aspect: 1.8,  ratio: 0.68, reach: 1.0 },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1837,7 +1834,7 @@ if (heroShapesContainer) {
      below cannot drift apart - this formula is the look of the whole field
      and it should exist once.
      Two sine terms per axis, not one. A single sine traces a clean ellipse
-     and twelve ellipses read as clockwork; the faster, smaller wobble on top
+     and eleven ellipses read as clockwork; the faster, smaller wobble on top
      breaks the period so each path wanders instead. */
   function driftAt(s, time, rect) {
     return {
@@ -1845,7 +1842,7 @@ if (heroShapesContainer) {
         + Math.sin(time * s.speed + s.phase) * s.ampX
         + Math.sin(time * s.wobbleSpeed + s.phase * 1.7) * s.wobbleAmp,
       y: s.baseY * rect.height
-        + Math.cos(time * s.speed * 0.8 + s.phase) * s.ampY
+        + Math.cos(time * s.speed * s.yRate + s.phase) * s.ampY
         + Math.cos(time * s.wobbleSpeed * 0.83 + s.phase) * s.wobbleAmp,
     };
   }
@@ -1855,7 +1852,7 @@ if (heroShapesContainer) {
      That gap is normally one frame and invisible. It stops being invisible
      under a view transition: the theme switch rebuilds the field inside the
      transition callback, and the new snapshot is taken BEFORE the next frame
-     runs - so without this the wipe would reveal twelve shapes piled in the
+     runs - so without this the wipe would reveal eleven shapes piled in the
      top-left corner and hold them there for the length of the animation. */
   function placeShapes() {
     const rect = heroShapesContainer.getBoundingClientRect();
@@ -1867,11 +1864,11 @@ if (heroShapesContainer) {
     });
   }
 
-  /* How many of the twelve survive at this width. Thinning, not dimming -
+  /* How many of the eleven survive at this width. Thinning, not dimming -
      and that reverses what the ≤760px opacity rule says it does ("dialled
      back rather than thinned out, so the phone keeps the same look with less
-     of it"). That was the wrong read: at 375 the field box is 338px wide
-     against 1440's, so twelve objects are nearly four times as dense per
+     of it"). That was the wrong read: at 375 the field box is 375px wide
+     against 1440's, so eleven objects are nearly four times as dense per
      unit of area, and no alpha fixes density. Jack on a real phone:
      "there's too many shapes".
      The opacity dial-back STAYS. These are two different problems - alpha
@@ -1917,7 +1914,7 @@ if (heroShapesContainer) {
 
     /* SHAPES SCALE WITH THE FIELD, and this only became visible when the
        shapes got big. The sizes in the arrays are absolute px tuned against
-       the 1392px-wide field box at 1440, but the box is 338px wide at 375 -
+       the 1440px-wide field box at 1440, but the box is 375px wide at 375 -
        so a shape that is 9% of the field on a desktop is 39% of it on a
        phone, and the same number means two completely different things.
        It was survivable at 132. At 191 it is not: the largest shape covered
@@ -1929,14 +1926,16 @@ if (heroShapesContainer) {
        191 to 86 and took the 36 down to 16, which is a speck - the field
        went from "one shape crowding the screen" straight to "nothing
        there". What a narrow screen cannot carry is the SPREAD: a 5.3x size
-       range is drama on a desktop and noise in a 338px box. So the largest
+       range is drama on a desktop and noise in a 375px box. So the largest
        shape loses the most and the smallest barely moves, which pulls the
        set toward its middle instead of toward zero.
-       At 375 that lands the set at 86 / 76 / 43 / 34 / 27 against a
-       uniform scale's 86 / 62 / 27 / 21 / 16. Desktop is untouched: both
-       ends are 1 at and above 1392. */
+       Measured in the page, the eleven at 1440 come out 116/94/81/71/53/
+       48/42/38/30 at 700 and 86/76/68/61/43/38/34 at 375 - nine and seven
+       of them, the rest having been thinned away. Desktop is untouched:
+       both ends of the ramp are 1 at and above 1392, which is the ramp's
+       saturation point rather than a measured width. */
     const fieldBox = heroShapesContainer.getBoundingClientRect();
-    const rectW = fieldBox.width || 1392;
+    const rectW = fieldBox.width || 1440;
     const rectH = fieldBox.height || 1026;
     const fieldW = rectW;
     const narrow = 1 - Math.max(0, Math.min(1, (fieldW - 420) / (1392 - 420)));
@@ -1946,6 +1945,22 @@ if (heroShapesContainer) {
       const small = 1 - 0.25 * narrow;                   // smallest -> .75 at 375
       return big + (small - big) * tt;
     };
+
+    /* TRAVEL SCALES WITH THE FIELD TOO, for the same reason the sizes do:
+       an amplitude is absolute px and the box it swings inside is not. The
+       widest shapes now travel 250px, which is 18% of the field at 1440 and
+       74% of it at 375 - so a drift that reads as a shape wandering in and
+       out on a desktop takes the same shape off a phone for a large part of
+       every cycle, and the phone is the width that was just short of shapes.
+       Measured, with no scaling the three widest-travelling shapes sit on
+       screen 58-63% of the time at 375; at this floor it is 67-79%, so a
+       seven-shape budget stays close to seven shapes rather than averaging
+       five and a half.
+       DESKTOP IS UNTOUCHED - narrow is 0 at and above 1392, so this is
+       exactly 1 there, which is also what keeps tools/field-check.js
+       meaningful: it reasons at 1440 geometry, and 1440 is the widest any
+       shape ever swings. */
+    const travelScale = 0.5 + 0.5 * (1 - narrow);
 
     heroShapesContainer.innerHTML = '';
     shapes = defs.map((def, i) => {
@@ -1962,7 +1977,7 @@ if (heroShapesContainer) {
          motion number below is derived from it, and that is the second
          half of making this field look considered rather than generated.
          It used to be Math.random() on all six, which gave the right
-         SPREAD - shapes overtaking each other is what stops twelve objects
+         SPREAD - shapes overtaking each other is what stops eleven objects
          reading as one slow field - but attached that spread to nothing,
          so a 110px form could end up the fastest, widest-travelling thing
          on screen while a 34px speck sat nearly still. That is the exact
@@ -1972,6 +1987,47 @@ if (heroShapesContainer) {
          travel far and read as the live layer in front. Same idea as
          parallax, done with amplitude rather than depth. */
       const t = (maxSize - def.size) / sizeSpan;
+      /* EACH SHAPE GETS ITS OWN PATH, and this is the fix for a real
+         complaint rather than a flourish. Jack: "the ones under Jack Murray,
+         they look like they are on the same trajectory. There is like three
+         shapes that are all lined up on like the same trajectory."
+         He was describing something structural. Amplitude used to be
+         ampX = 40 + 110t and ampY = 32 + 86t, which puts ampY/ampX at .80
+         for the largest shape and .79 for the smallest - so EVERY shape in
+         the field travelled along the same 4:5 diagonal, and the y term ran
+         at a hardcoded .8 of the x frequency for all of them too. Scale and
+         phase were the only things that differed, which means eleven shapes
+         were tracing eleven copies of one Lissajous figure. Three of them
+         sitting at a similar y then read as three things on one rail,
+         because they were.
+         Three keys per shape, and all three are authored like the positions:
+           aspect - splits the amplitude between the axes. 0.5 is a flat
+                    sideways slide, 2.2 is a tall rise and fall. The set now
+                    spans ampY/ampX from .20 to 3.8 against .79 for all.
+           ratio  - the y frequency as a multiple of the x frequency, which
+                    is what decides the SHAPE of the curve rather than its
+                    size. 1.0 is an ellipse, 0.5 a two-lobed figure-eight,
+                    1.45 a tall pretzel. Was .8 everywhere.
+           reach  - scales both axes, for the few shapes meant to leave the
+                    frame and come back. Jack again: "the shapes need to be
+                    going off the screen, maybe a little bit. Some of them,
+                    can like come into the screen... that was a good thing
+                    about the randomness." Four do now - the 137 circle
+                    exits left, the 61 triangle, the 113 solid and the 53
+                    circle exit right - and the page carries overflow-x:
+                    clip, so leaving is free.
+         REACH IS SPENT ON X, NOT Y, and that is forced rather than chosen:
+         the nav sits at y < .092 and a shape that swings up into it is a
+         bug, so the vertical travellers are the ones resting low and the
+         shapes that go off-frame go sideways. */
+      const aspect = def.aspect || 1;
+      const reach = def.reach || 1;
+      // 40-150 across the set before aspect and reach, big ones at the bottom
+      const ampX = (40 + 110 * t) * reach / aspect * travelScale;
+      const ampY = (32 + 86 * t) * reach * aspect * travelScale;
+      // and a second, faster wobble so the path is not a clean ellipse
+      const wobbleAmp = (6 + 10 * t) * travelScale;
+
       /* JITTER: two shapes get a fresh resting position on every load.
          Jack asked for "a couple shapes that are fully random... a little
          bit of randomness", and he is reaching for something the authored
@@ -1995,10 +2051,15 @@ if (heroShapesContainer) {
         const jx = bx + (Math.random() - 0.5) * 0.14;
         const jy = by + (Math.random() - 0.5) * 0.07;
         const halfW = renderSize / 2 / rectW, halfH = renderSize / 2 / rectH;
-        const ampY = 32 + 86 * ((maxSize - def.size) / sizeSpan);
-        const topReach = jy - (ampY + 16) / rectH - halfH;
+        /* the rolled position has to clear the SAME three landmarks
+           field-check.js holds the authored ones to, using this shape's own
+           amplitudes - so a wide reach cannot buy itself a violation. */
+        const swingX = (ampX + wobbleAmp) / rectW + halfW;
+        const swingY = (ampY + wobbleAmp) / rectH + halfH;
+        const hitsNav = jy - swingY < 0.092;
+        const hitsStop = Math.abs(jx - 0.6555) < swingX && Math.abs(jy - 0.42) < swingY;
         const onMarquee = (jy + halfH) > 0.579 && (jy - halfH) < 0.640;
-        if (topReach > 0.092 && !onMarquee && jx > halfW && jx < 1 - halfW * 0.2) {
+        if (!hitsNav && !hitsStop && !onMarquee && jx > halfW && jx < 1 - halfW * 0.2) {
           bx = jx; by = jy;
         }
       }
@@ -2008,18 +2069,18 @@ if (heroShapesContainer) {
         baseColor: def.color,
         baseX: bx,
         baseY: by,
-        // 40-150 across the set, and the big ones are at the bottom of it
-        ampX: 40 + 110 * t,
-        ampY: 32 + 86 * t,
+        ampX,
+        ampY,
         speed: 0.14 + 0.30 * t,
+        // the y frequency as a multiple of the x one - see the path note above
+        yRate: def.ratio || 0.8,
         /* the golden angle, which is the most irrational turn there is:
-           stepping phase by it spreads twelve shapes as evenly round the
-           cycle as twelve shapes can be spread, so no two are ever swinging
+           stepping phase by it spreads eleven shapes as evenly round the
+           cycle as eleven shapes can be spread, so no two are ever swinging
            together. Random phases bunch - that is what random does - and a
            bunched pair looks like the two shapes are linked. */
         phase: i * 2.39996,
-        // and a second, faster wobble so the path is not a clean ellipse
-        wobbleAmp: 6 + 10 * t,
+        wobbleAmp,
         wobbleSpeed: 0.75 + 0.5 * ((i * 0.37) % 1),
         /* alternating, not signed at random: a field where the spin
            directions happen to agree reads as a single rotating system.
@@ -2041,7 +2102,7 @@ if (heroShapesContainer) {
      back to its resting position. That is fine when the viewport crosses
      600 or 760 - someone rotating a phone or dragging a window - because
      the layout is already reflowing anyway. What is NOT acceptable is a
-     375px screen still showing twelve shapes because the page was opened
+     375px screen still showing eleven shapes because the page was opened
      wide and then narrowed.
      Guarded on the budget, so it is a no-op unless the count would really
      change. That is what makes it safe to listen to resize as well as to
@@ -2107,7 +2168,7 @@ if (heroShapesContainer) {
 
       // A shape being pushed used to turn var(--green) and turn back. It was
       // cut on Jack's note, and the reasoning holds up: green belongs to the
-      // availability dot, twelve shapes that each briefly become a thirteenth colour
+      // availability dot, eleven shapes that each briefly become a twelfth colour
       // is a colour system with a hole in it, and the push is already legible
       // from the movement and the spin-up below. Nothing replaced it - the
       // field reacts to the cursor by MOVING, which is the whole idea.

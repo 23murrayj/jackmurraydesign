@@ -394,10 +394,13 @@ four languages whenever you size display type.**
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
 - Hero shapes: **11 / 9 / 7 per theme** by width (see the thinning note
-  below), drift on **two sine terms per axis** (one sine
-  traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
-  `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
-  Behind `.hero-grid` (z 0 vs 2) and `pointer-events: none`.
+  below), drift on **two sine terms per axis** (one sine traces a clean
+  ellipse and reads as clockwork) along a **per-shape path** — see the
+  trajectory note below; a shared one made the whole field look railed.
+  Opacity in CSS, not JS — `.34` base / `.66` vivid in light, `.62` / `.78`
+  in dark, with a `drop-shadow` glow, all four dialled to `.36`/`.62` and
+  `.50`/`.64` ≤760px. Behind `.hero-grid` (z 0 vs 2) and
+  `pointer-events: none`.
 - **The field reaches past the hero**, 306px down, to the top of the first
   card — through the heading AND the filter row, so the hero thins out across
   three bands (strip, heading, tags) rather than ending twice. Three things
@@ -436,27 +439,27 @@ four languages whenever you size display type.**
   overlap into a blob and a quadrant sits empty — and because it re-rolled on
   every load and every theme switch there was no arrangement to judge, let
   alone tune. Each def now carries `at: [x, y]`, its resting centre as a
-  fraction of the field box, and the twelve are **three bands of four**, each
-  band holding a left, a centre-left, a centre-right and a right:
+  fraction of the field box, and the eleven sit in **three bands, 4 / 4 / 3**,
+  each band running left to right across the field:
   TOP across the top of the name (y .20–.28), MID across its foot (.44–.56)
   and SEAM down past the marquee (.70–.90). Those are the RANGES a shape may
   rest in; the exact coordinates are not hand-chosen any more — see the
   shuffler note below. Bands two and three used to sit at .41–.47 and
   .745–.90 and were moved toward the marquee to close a gap — see the
-  white-space note. It went 9 → 12 on 2026-11-10
-  on Jack's note that the field still wanted more; the band structure is what
-  absorbed the three extra without the result reading as denser-but-random.
+  white-space note. It went 9 → 12 on 2026-11-10 on Jack's note that the
+  field still wanted more, then settled at 11; the band structure is what
+  absorbed the extras without the result reading as denser-but-random.
   Measured against the real hero at 1440,
   where the box is 1440×1026: nav ends at .092, name .184–.499, side column
   .236–.499, marquee strip .579–.640, SELECTED PROJECTS .702–.875, filters
   .914–1.002.
-  **Both themes use the SAME twelve slots**, assigned biggest-to-biggest, so the
+  **Both themes use the SAME eleven slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
   to a fresh scatter mid-wipe.
   **Judge a slot by its swing, not its rest.** Three rules came out of getting
   that wrong first time: nothing rests in the nav band (the 36px circle swings
-  ±116px, so a rest at .17 put it in the nav for half of every cycle),
+  ±94px, so a rest at .17 put it in the nav for half of every cycle),
   nothing rests where it can reach the full stop after MURRAY (the 50px circle
   swings ±127px, and a rest at .55/.52 parked it on the page's one piece of
   punctuation-as-graphic), and band two is off the marquee (a near-black
@@ -464,7 +467,7 @@ four languages whenever you size display type.**
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
   over the name, the column, the nav and the marquee and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
-- **The field THINS as the screen narrows** — 9 shapes, 7 at ≤760px, 5 at
+- **The field THINS as the screen narrows** — 11 shapes, 9 at ≤760px, 7 at
   ≤600px — and the alphas came UP to pay for it (.33/.56 light, .50/.64
   dark, against .26/.46 and .42/.54 before). Half as many objects had taken
   the phone from busy to absent: "a bit a lot quieter on the phone now".
@@ -473,8 +476,14 @@ four languages whenever you size display type.**
   width where shapes cross the type most.
   Thinning also reverses what the opacity rule used to claim. That rule
   said "dialled back rather than thinned out, so the phone keeps the same
-  look with less of it". Wrong: the field box is 338px wide at 375 against
-  1392 at 1440, so the same twelve objects sit at nearly four times the
+  look with less of it". Wrong: the field box is 375px wide at 375 against
+  1440 at 1440 — it is the VIEWPORT width, because `.hero-shapes` is
+  absolutely positioned with `inset: 0` left and right and that resolves
+  against the hero's PADDING box, so the hero's 72px side padding never
+  applies to it. (The 1392/338 this file and script.js used to quote was the
+  content box, and was never the number in play. Measured in the page: 1440
+  at 1440, 1024 at 1024, 375 at 375.) So the same eleven objects sit at
+  nearly four times the
   density per unit of area, and **no alpha fixes density** — faint clutter
   is still clutter. Jack, on a real phone: "there's too many shapes".
   **Count and alpha are two problems and both rules stay.** Alpha stops a
@@ -482,7 +491,7 @@ four languages whenever you size display type.**
   The phone had both.
   Each def carries `keep`, 1–11, where 1 is the shape the composition can
   least afford to lose, and the ranks answer TWO rules.
-  **Bands:** every surviving subset still has to be a composition. At 9 the
+  **Bands:** every surviving subset still has to be a composition. At 11 the
   three bands hold 4/4/3, at 9 they hold 3/3/3, at 7 it is 3/2/2 — and all
   three keep the x-spread (.10–.92 at every budget), both corner anchors and
   something still living down in the seam.
@@ -502,12 +511,20 @@ four languages whenever you size display type.**
   of drifting geometry reads as decoration; the same field in horizontal
   colour stripes reads as a chart.
   **Whether the rule is even satisfiable is arithmetic, not taste.** With H
-  shapes of one hue and 3 bands, pigeonhole forces a repeat once H > 3. At
+  shapes of one hue and 3 bands, pigeonhole forces a repeat once H > 3.
+  That arithmetic is what settled the colour of the 61px triangle. Making
+  the square over JACK red takes coral to four, which forces a repeat; so
+  the triangle went amber, and the field is now 3 blue / 3 coral / 3 amber
+  / 1 black / 1 plum. Every band gets exactly one of each three-count hue
+  and the rule is a guarantee at every budget rather than something to
+  check. **Amber is a third primary now, not "a little vibrancy on the two
+  smallest shapes"** — that older note no longer describes the field.
+  The history is the argument for keeping the counts where they are: at
   twelve there were 4 blue and 4 coral, so a repeat was unavoidable at full
-  budget and the rule could only be enforced on the thinned sets. At nine the
-  counts are 3 blue, 3 coral, 2 black, 1 amber — every band gets exactly one
-  blue and one coral, and the rule holds everywhere. That is the strongest
-  argument for nine over twelve: it turns a guideline into a guarantee.
+  budget and the rule could only be enforced on the thinned sets. **Eleven
+  works where twelve did not** — not because it is smaller, but because
+  3/3/3/1/1 puts no hue above three. Chase a fourth of any colour and the
+  guarantee goes back to being a guideline.
   The checker works this out per budget rather than being told.
   **`node tools/field-shuffle.js` proposes alternatives.** The field stopped
   being random because random scatter clumps, and Jack named what that cost:
@@ -522,6 +539,16 @@ four languages whenever you size display type.**
   that band, and the keep order; **it never varies the shapes
   themselves** — their sizes, colours and fills were argued out and are not
   up for a dice roll.
+  **It was silently dead for a while, and the failure mode is the lesson.**
+  The band capacities (three bands of three), the budgets (`[5, 7, 9]`) and
+  the keep order (a fixed nine-entry list) were literals tuned for nine
+  shapes, and all three went stale the moment the field grew to eleven — so
+  it generated ZERO arrangements on every run while still printing "all
+  passing". Fixed by deriving all three: capacities from the def count,
+  budgets from `shapeBudget()` in `script.js`, and the keep order balanced
+  as it is built. It also checks the hue-sides rule now, which it had been
+  getting away with because a 3/3/3 deal happened to satisfy it.
+  **If a tool here reports success, check that it did any work.**
   It gets the hue rule for free rather than testing for it: 3 blue, 3 coral
   and 3 others means each band must take one of each, and any subset of a
   hue-distinct set is hue-distinct.
@@ -544,6 +571,13 @@ four languages whenever you size display type.**
   against the landmarks — nav `y < .092`, and the full stop's CENTRE at
   (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
   park on it.
+- **The square over JACK is a plain coral outline**, not a squircle and not
+  `--black`. It was near-black, which at .34 on the ground is a grey box,
+  and Jack asked for "a light red regular square" — `--accent` is a light
+  red, the 5% rule gives it a 4px line, and it keeps square corners because
+  the two squircles are the softened pair and this is not one of them. It
+  also puts a red mark directly on the name, which is where the field's
+  weight was missing on the left.
 - **The vocabulary is FOUR forms and must stay that way**: circle, square and
   triangle in light, jagged star in dark. **A MODIFIER ON AN EXISTING FORM
   IS NOT A FIFTH FORM**, and that is the line the squircle sits on the right
@@ -563,7 +597,7 @@ four languages whenever you size display type.**
   That is the whole lesson, and it is what "a bit more" actually wanted:
   - **One shape is much bigger than the rest** — currently a 191px outline
     circle (203px star in dark). The sizes used to run 36–104, which is a
-    spread, not a hierarchy: twelve things all roughly of a size. The jump
+    spread, not a hierarchy: eleven things all roughly of a size. The jump
     gives the field a top, and the "bold" size profile in the shuffler
     widened it further (132–>191) at Jack's request for larger shapes.
     It no longer sits bottom-right concentric with the seam ring; that echo
@@ -605,13 +639,23 @@ four languages whenever you size display type.**
   to "nothing there". What a narrow screen cannot carry is the SPREAD: a
   5.3× size range is drama at 1440 and noise in a 375px box. So the largest
   shape loses the most, the smallest barely moves, and the set pulls toward
-  its middle. Measured: 191/137/113/84/81/61/53/47/36 at 1440 becomes
-  116/94/63/48/42/38/30 at 700 and 86/76/43/34/27 at 375 (seven and five of
-  them survive the thinning). **Desktop is untouched** — both ends of the
-  ramp are 1 at and above 1392.
+  its middle. Measured in the page: 116/94/81/71/53/48/42/38/30 at 700 and
+  86/76/68/61/43/38/34 at 375 — nine and seven of them, the rest thinned
+  away. **Desktop is untouched** — both ends of the ramp are 1 at and above
+  1392, which is the ramp's saturation point and not a measured width.
   The envelope checks in `tools/field-check.js` run at 1440 geometry, which
-  stays the binding case: shapes are smaller at every narrower width, so
-  their swing envelopes only shrink.
+  stays the binding case: shapes are smaller AND travel less at every
+  narrower width, so their swing envelopes only shrink.
+- **TRAVEL SCALES WITH THE FIELD TOO**, and for the same reason: an
+  amplitude is absolute px and the box it swings inside is not. The widest
+  travellers now cover 250px, which is 18% of the field at 1440 and 67% of
+  it at 375 — so a drift that reads as a shape wandering in and out on a
+  desktop takes that shape off a phone for a large part of every cycle, on
+  the width that was *just* short of shapes. `travelScale` is
+  `0.5 + 0.5 * (1 - narrow)`, off the same ramp the sizes use, so it is
+  exactly 1 at and above 1392 and desktop is untouched. Measured by driving
+  the real `driftAt` over a full cycle: at 375 the seven survivors are on
+  screen 70–100% of the time, against 58–79% without it.
 - **Outline weight is 5% of the shape's size, not a fixed px.** The SVG
   shapes were always proportional — `stroke-width` is in viewBox units —
   while circles and squares took a flat `3px` from CSS, so the same field
@@ -665,8 +709,48 @@ four languages whenever you size display type.**
   spread attached to nothing: a 110px form could come out the fastest,
   widest-travelling thing on screen, which is the inverse of how distance
   reads. Phase steps by the golden angle (2.39996 rad) so no two of the
-  twelve ever swing together, and spin direction alternates instead of being
+  eleven ever swing together, and spin direction alternates instead of being
   signed at random.
+- **EVERY SHAPE ALSO CARRIES ITS OWN PATH**, and this closes a hole that
+  size-derived motion left wide open. Jack: "the ones under Jack Murray,
+  they look like they're on the same trajectory. There's like three shapes
+  that are all lined up on like the same trajectory. And I don't like it."
+  He was describing something structural, not a coincidence of placement.
+  `ampX = 40 + 110t` and `ampY = 32 + 86t` put ampY/ampX at **.80 for the
+  largest shape and .79 for the smallest** — so every shape in the field
+  travelled the same 4:5 diagonal — and the y term ran at a hardcoded .8 of
+  the x frequency for all of them. Scale and phase were the only things that
+  differed, which means eleven shapes were tracing eleven copies of ONE
+  Lissajous figure. Three of them resting at a similar y then read as three
+  things on one rail, because they were.
+  Three keys per def, authored exactly like the positions:
+  - **`aspect`** splits the amplitude between the axes — `ampX * reach /
+    aspect` and `ampY * reach * aspect`. 0.5 is a flat sideways slide, 2.2 a
+    tall rise and fall. Measured over a full cycle in the page, travel
+    aspect now runs **.23 to 3.24** against .79 for everything before.
+  - **`ratio`** is the y frequency as a multiple of the x one, and it is what
+    decides the SHAPE of the curve rather than its size: 1.0 an ellipse, 0.5
+    a two-lobed figure-eight, 1.45 a tall pretzel. Was .8 everywhere.
+  - **`reach`** scales both axes, for the shapes meant to leave the frame and
+    come back — "the shapes need to be going off the screen, maybe a little
+    bit. Some of them, can like come into the screen… that was a good thing
+    about the randomness." Four do: the 137 circle exits left by 61px, and
+    the 61 triangle, the 113 solid and the 53 circle exit right by 121, 190
+    and 134. `overflow-x: clip` on the page makes leaving free.
+  **Reach is spent on X, not Y, and that is forced rather than chosen.** The
+  nav sits at y < .092 and a shape swinging up into it is a bug, so the
+  vertical travellers are the ones resting low and the shapes that go
+  off-frame go sideways. An early pass gave the 61px triangle aspect 1.9 at
+  y .28 and put it 5% into the nav band.
+  **The keys are per SLOT, mirrored in both themes**, and `field-check`
+  asserts it: the theme switch rebuilds the field inside the view-transition
+  callback, and a slot that changes trajectory as well as silhouette is a
+  shape that jumps mid-wipe.
+  **`field-check` fails if the paths flatten** — under three distinct aspects
+  or three distinct ratios. A low bar on purpose: it is there to catch a
+  regression to one trajectory, not to dictate the spread. Every individual
+  envelope was legal the whole time this bug existed, which is exactly why
+  nothing caught it.
 - **The white space around the marquee is mostly intentional, and the part
   that was not is fixed.** Jack asked whether the gap between VIEW PROJECTS,
   the marquee and SELECTED PROJECTS was deliberate. Most of it is: the
@@ -687,7 +771,7 @@ four languages whenever you size display type.**
   is small and moving, so its 306px overlap into #work read as leftover hero;
   one large, completely still form is the opposite register, and that contrast
   is what makes the seam read as composed. Small things drifting in front of
-  one big thing holding still is depth; twelve small things drifting is
+  one big thing holding still is depth; eleven small things drifting is
   weather. It used to echo the field's largest outline circle, which sat in
   the same corner at two scales; in the current arrangement that corner
   holds the field's largest SOLID instead, a 113px coral disc half off the
@@ -783,7 +867,7 @@ four languages whenever you size display type.**
   gap is invisible normally and very visible under a view transition: the
   theme switch rebuilds the field inside the transition callback and the new
   snapshot is taken BEFORE the next frame, so without it the wipe reveals
-  twelve shapes piled in the top-left corner and holds them there for 620ms.
+  eleven shapes piled in the top-left corner and holds them there for 620ms.
   **Anything JS positions must be positioned synchronously for the same
   reason.**
 - **The browser pane cannot run a view transition.** Its frozen rendering

@@ -34,17 +34,28 @@
  * an object (see CLAUDE.md). The smallest shape is a fixed point in every
  * profile; the largest grows most.
  *
- * THE HUE RULE IS NOT CHECKED, IT IS BUILT IN. Each band must hold three
- * distinct hues, and with 3 blue, 3 coral, 2 black and 1 amber that forces
- * every band to be one blue + one coral + one of black/black/amber. Since
- * any subset of a hue-distinct set is still hue-distinct, satisfying it at
- * nine satisfies it at seven and five for free - so the generator assigns
- * from those three pools and the rule cannot be broken by construction.
+ * THE HUE RULE IS NOT CHECKED, IT IS BUILT IN. No band may hold two shapes
+ * of one hue, so the generator deals each hue's shapes into DIFFERENT bands
+ * instead of placing freely and testing afterwards. That is possible exactly
+ * while no hue has more than three shapes - pigeonhole over three bands -
+ * and since any subset of a hue-distinct set is still hue-distinct, holding
+ * at eleven holds at nine and seven for free.
  *
- * Both themes are permuted together by size rank. Light and dark hold the
- * same hue pattern in size order (blue, blue, coral, black, blue, coral,
- * black, coral, amber), so one permutation keeps the two arrays consistent
- * and the theme switch keeps revealing the same composition.
+ * Nothing here is sized for a particular shape count any more. The band
+ * capacities come from the number of defs, the budgets come from
+ * shapeBudget() in script.js, and the keep order is balanced as it is built.
+ * All three were literals tuned for nine shapes, and all three went stale
+ * silently when the field grew to eleven - the tool returned zero
+ * arrangements and still reported "all passing".
+ *
+ * PATHS TRAVEL WITH THE SHAPE. aspect, ratio and reach are part of a shape's
+ * character, like its colour, so they are not rolled - but they do change
+ * where a shape can legally rest, since reach widens its swing, so the
+ * envelope check reads them.
+ *
+ * Both themes are permuted together by size rank, which is why light and
+ * dark keep sharing slots and the theme switch keeps revealing the same
+ * composition wearing different shapes.
  */
 'use strict';
 const fs = require('fs');
@@ -69,11 +80,20 @@ const BANDS = {
   MID:  { y: [0.44, 0.56] },
   SEAM: { y: [0.70, 0.90] },
 };
-/* The order bands are drawn from as keep-rank climbs. Fixed, because it is
-   what makes the thinned sets balance: cumulative counts come out 2/1/2 at
-   five, 3/2/2 at seven and 3/3/3 at nine. */
-const RANK_BAND_ORDER = ['SEAM', 'TOP', 'TOP', 'MID', 'SEAM', 'MID', 'TOP', 'SEAM', 'MID'];
-const BUDGETS = [5, 7, 9];
+/* THE BUDGETS COME FROM script.js, not from a literal here. They were
+   [5, 7, 9] long after shapeBudget() had moved to 7/9/11, and the rank
+   order below was a fixed nine-entry list - so this tool silently generated
+   ZERO arrangements for every run while still printing "all passing". A
+   generator that cannot fail loudly is worse than one that does not exist,
+   because the next person reads the reassuring line. Derived, it cannot go
+   stale again. */
+const BUDGETS = (() => {
+  const src = fs.readFileSync(SRC, 'utf8');
+  const a = src.indexOf('function shapeBudget()');
+  const body = src.slice(a, src.indexOf('}', a));
+  const n = [...body.matchAll(/return (\d+)/g)].map(m => +m[1]);
+  return [...new Set(n)].sort((x, y) => x - y);
+})();
 const MIN_X_SPREAD = 0.70;                    // widest minus narrowest, per budget
 
 /* k is how much harder the largest shape grows than the smallest. The curve
@@ -104,7 +124,16 @@ function parseDefs(src, name) {
     const g = /size: (\d+),\s*color: 'var\(--([\w-]+)\)'/.exec(line);
     const k = /keep: (\d+)/.exec(line);
     const at = /at: \[([\d.]+), ([\d.]+)\]/.exec(line);
-    return { line, size: +g[1], hue: g[2], keep: +k[1], x: +at[1], y: +at[2] };
+    /* the per-shape path keys travel ON the line, so a shuffle carries a
+       shape's trajectory with it to whatever slot it lands in - but the
+       envelope check has to know about them, because aspect 2.2 is 2.2x the
+       vertical swing the flat formula would predict. */
+    const num = (key, dflt) => {
+      const hit = new RegExp(key + ': ([0-9.]+)').exec(line);
+      return hit ? +hit[1] : dflt;
+    };
+    return { line, size: +g[1], hue: g[2], keep: +k[1], x: +at[1], y: +at[2],
+             aspect: num('aspect', 1), ratio: num('ratio', 0.8), reach: num('reach', 1) };
   });
   return { start: a, end: b, defs };
 }
@@ -123,7 +152,13 @@ function envelopeOk(d, maxSize, span) {
      size is used when no scaling profile is in play and they match. */
   const sz = d.checkSize || d.size;
   const t = (maxSize - d.size) / span;
-  const ampX = 40 + 110 * t, ampY = 32 + 86 * t, wob = 6 + 10 * t;
+  /* aspect and reach exactly as buildShapes applies them - see the path note
+     in script.js. A shape designed to sail off the right edge keeps that
+     reach when it lands in a different slot, so the envelope has to be
+     recomputed per placement rather than assumed. */
+  const ampX = (40 + 110 * t) * d.reach / d.aspect;
+  const ampY = (32 + 86 * t) * d.reach * d.aspect;
+  const wob = 6 + 10 * t;
   const x0 = d.x - (ampX + wob) / W - sz / 2 / W;
   const x1 = d.x + (ampX + wob) / W + sz / 2 / W;
   const y0 = d.y - (ampY + wob) / H - sz / 2 / H;
@@ -146,27 +181,51 @@ const shuffled = (a) => { const r = a.slice();
 function attempt(defs) {
   const maxSize = Math.max(...defs.map(d => d.size));
   const span = maxSize - Math.min(...defs.map(d => d.size)) || 1;
-
-  const byFamily = { blue: [], coral: [], neutral: [], warm: [] };
-  defs.forEach((d, i) => byFamily[family(d.hue)].push(i));
-  if (byFamily.blue.length !== 3 || byFamily.coral.length !== 3) return null;
-
-  const blues = shuffled(byFamily.blue);
-  const corals = shuffled(byFamily.coral);
-  const thirds = shuffled(byFamily.neutral.concat(byFamily.warm));
-  if (thirds.length !== 3) return null;
-
   const bandNames = ['TOP', 'MID', 'SEAM'];
-  const bandMembers = {};
-  bandNames.forEach((b, i) => { bandMembers[b] = [blues[i], corals[i], thirds[i]]; });
 
-  // place: a y inside the band, and x values kept apart so a band is not a huddle
+  /* BAND SIZES ARE DERIVED FROM THE COUNT, not hardcoded. This used to deal
+     exactly three blue, three coral and three others into three bands of
+     three, which stopped being true the moment the field went to eleven
+     shapes and five hues. Split as evenly as the count allows, and roll
+     which band takes the remainder: 11 gives 4/4/3 in some order. */
+  const n = defs.length;
+  const base = Math.floor(n / 3);
+  const caps = {};
+  const extraTo = shuffled(bandNames).slice(0, n % 3);
+  bandNames.forEach(b => { caps[b] = base + (extraTo.includes(b) ? 1 : 0); });
+
+  /* DEAL BY HUE, so the no-repeated-hue-in-a-band rule is satisfied by
+     construction rather than tested for. Every shape of one hue goes to a
+     DIFFERENT band, which is possible exactly while no hue has more than
+     three shapes - pigeonhole, and the same arithmetic field-check applies.
+     Largest hue groups first: they are the constrained ones, and placing
+     them last is how a deal paints itself into a corner. */
+  const byHue = {};
+  defs.forEach((d, i) => (byHue[d.hue] = byHue[d.hue] || []).push(i));
+  const groups = Object.values(byHue).sort((a, b) => b.length - a.length);
+  if (groups.some(g => g.length > 3)) return null;
+
+  const bandMembers = { TOP: [], MID: [], SEAM: [] };
+  for (const g of groups) {
+    const open = shuffled(bandNames.filter(b => bandMembers[b].length < caps[b]));
+    if (open.length < g.length) return null;
+    shuffled(g).forEach((idx, j) => bandMembers[open[j]].push(idx));
+  }
+
+  /* PLACE: a y inside the band, and x values kept apart so a band is not a
+     huddle. The gaps scale with how many shapes share the band - four in a
+     row cannot hold the .18 separation three could. */
   const placed = defs.map(d => ({ ...d, newSize: d.size }));
   for (const b of bandNames) {
+    const k = bandMembers[b].length;
+    if (!k) continue;
+    const minGap = k > 3 ? 0.15 : 0.18;
+    const minSpan = k > 3 ? 0.68 : k > 2 ? 0.55 : 0.40;
     let xs = null;
-    for (let tries = 0; tries < 200 && !xs; tries++) {
-      const c = [rnd(0.08, 0.95), rnd(0.08, 0.95), rnd(0.08, 0.95)].sort((p, q) => p - q);
-      if (c[1] - c[0] > 0.18 && c[2] - c[1] > 0.18 && c[2] - c[0] > 0.55) xs = shuffled(c);
+    for (let tries = 0; tries < 400 && !xs; tries++) {
+      const c = Array.from({ length: k }, () => rnd(0.08, 0.95)).sort((p, q) => p - q);
+      const gapsOk = c.every((v, i) => i === 0 || v - c[i - 1] > minGap);
+      if (gapsOk && c[k - 1] - c[0] > minSpan) xs = shuffled(c);
     }
     if (!xs) return null;
     bandMembers[b].forEach((idx, j) => {
@@ -178,19 +237,38 @@ function attempt(defs) {
 
   if (!placed.every(d => envelopeOk(d, maxSize, span))) return null;
 
-  // rank: walk RANK_BAND_ORDER, taking an unused shape from that band each time
+  /* RANK: take from whichever band is proportionally least drawn from, ties
+     broken by the dice. Balancing at every prefix is what makes the thinned
+     sets balance, so there is no fixed order to keep in step with the
+     budgets - the property is enforced rather than encoded. */
   const pool = {}; bandNames.forEach(b => pool[b] = shuffled(bandMembers[b]));
+  const taken = { TOP: 0, MID: 0, SEAM: 0 };
   const order = [];
-  for (const b of RANK_BAND_ORDER) {
-    if (!pool[b].length) return null;
-    order.push(pool[b].shift());
+  while (order.length < n) {
+    const open = bandNames.filter(b => pool[b].length);
+    const score = b => taken[b] / caps[b];
+    const best = Math.min(...open.map(score));
+    const pick = shuffled(open.filter(b => score(b) === best))[0];
+    order.push(pool[pick].shift());
+    taken[pick]++;
   }
   order.forEach((idx, i) => { placed[idx].keep = i + 1; });
 
-  // x-spread has to survive the cuts
+  /* Every rule has to survive the cuts, not just hold at full budget: the
+     x-spread, the band balance, and the hue sides - which the generator got
+     away with not checking because the 3/3/3 deal happened to satisfy it. */
   for (const budget of BUDGETS) {
-    const kept = placed.filter(d => d.keep <= budget).map(d => d.x);
-    if (Math.max(...kept) - Math.min(...kept) < MIN_X_SPREAD) return null;
+    const kept = placed.filter(d => d.keep <= budget);
+    const xs = kept.map(d => d.x);
+    if (Math.max(...xs) - Math.min(...xs) < MIN_X_SPREAD) return null;
+    const counts = bandNames.map(b => kept.filter(d => d.band === b).length);
+    if (Math.max(...counts) - Math.min(...counts) > 1) return null;
+    const sides = {};
+    kept.forEach(d => (sides[d.hue] = sides[d.hue] || []).push(d.x));
+    for (const xsOfHue of Object.values(sides)) {
+      if (xsOfHue.length < 2) continue;
+      if (!xsOfHue.some(x => x < 0.45) || !xsOfHue.some(x => x > 0.55)) return null;
+    }
   }
   return placed;
 }

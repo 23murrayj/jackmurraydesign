@@ -14,9 +14,20 @@ function defs(name) {
   const b = s.indexOf('\n  ];', a);
   const body = s.slice(a, b);
   return [...body.matchAll(
-    /type: '(\w+)',\s*size: (\d+),\s*color: 'var\(--([\w-]+)\)',\s*filled: (\w+),([^}]*?)keep: (\d+),\s*at: \[([\d.]+), ([\d.]+)\]/g
-  )].map(m => ({ type: m[1], size: +m[2], hue: m[3], filled: m[4] === 'true',
-                 vivid: /vivid/.test(m[5]), keep: +m[6], x: +m[7], y: +m[8] }));
+    /type: '(\w+)',\s*size: (\d+),\s*color: 'var\(--([\w-]+)\)',\s*filled: (\w+),([^}]*?)keep: (\d+),\s*at: \[([\d.]+), ([\d.]+)\]([^}]*)/g
+  )].map(m => {
+    const tail = m[9] || '';
+    const num = (k, dflt) => {
+      const hit = new RegExp(k + ': ([0-9.]+)').exec(tail);
+      return hit ? +hit[1] : dflt;
+    };
+    /* The per-shape path keys. The defaults are what the whole field used
+       to share, so a def carrying none of them is checked exactly as it
+       always was. */
+    return { type: m[1], size: +m[2], hue: m[3], filled: m[4] === 'true',
+             vivid: /vivid/.test(m[5]), keep: +m[6], x: +m[7], y: +m[8],
+             aspect: num('aspect', 1), ratio: num('ratio', 0.8), reach: num('reach', 1) };
+  });
 }
 
 let failures = 0;
@@ -77,15 +88,30 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
   if (!ok1) failures++;
 
   // 2. swing envelopes: nav band, the full stop's centre, resting on the marquee
+  /* The amplitudes are reconstructed EXACTLY as buildShapes derives them,
+     aspect and reach included. Get that wrong and the checker vouches for
+     an envelope nobody draws: with aspect 2.2 the real vertical swing is
+     2.2x what the old flat formula said, which is the difference between
+     clearing the nav and sitting in it. If the formula in buildShapes
+     moves, move this with it. */
   let envFails = 0;
+  const exits = [];
   for (const d of all) {
     const t = (MAX - d.size) / SPAN;
-    const ampX = 40 + 110 * t, ampY = 32 + 86 * t, wob = 6 + 10 * t;
+    const ampX = (40 + 110 * t) * d.reach / d.aspect;
+    const ampY = (32 + 86 * t) * d.reach * d.aspect;
+    const wob = 6 + 10 * t;
     const e = { x0: d.x - (ampX + wob) / W - d.size / 2 / W, x1: d.x + (ampX + wob) / W + d.size / 2 / W,
                 y0: d.y - (ampY + wob) / H - d.size / 2 / H, y1: d.y + (ampY + wob) / H + d.size / 2 / H };
     const hitsNav  = e.y0 < NAV_BOTTOM;
     const hitsStop = FS_CENTRE.x >= e.x0 && FS_CENTRE.x <= e.x1 && FS_CENTRE.y >= e.y0 && FS_CENTRE.y <= e.y1;
     const restsOnMarquee = (d.y + d.size / 2 / H) > MARQUEE.y0 && (d.y - d.size / 2 / H) < MARQUEE.y1;
+    /* Leaving the frame is the POINT, not a failure - "I think the shapes
+       need to be going off the screen, maybe a little bit" - so it is
+       counted and printed rather than flagged. The page carries
+       overflow-x: clip, so a shape crossing the edge costs nothing. */
+    if (e.x0 < 0) exits.push(d.size + 'L');
+    if (e.x1 > 1) exits.push(d.size + 'R');
     if (hitsNav || hitsStop || restsOnMarquee) {
       failures++; envFails++;
       console.error('  ENVELOPE FAIL ' + d.type + ' ' + d.size + ' @ ' + d.x + ',' + d.y + '  ' +
@@ -93,6 +119,27 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
     }
   }
   console.error('  envelopes (nav / full stop / marquee) ... ' + (envFails ? envFails + ' FAIL' : 'ok'));
+  /* THE TRAJECTORIES THEMSELVES ARE A RULE NOW. Amplitude used to be
+     ampX = 40 + 110t and ampY = 32 + 86t, which holds ampY/ampX at .79 for
+     every shape in the set, and the y frequency was a hardcoded .8 of the x
+     one for all of them - so eleven shapes traced eleven scaled copies of a
+     single Lissajous figure. Jack saw it straight away: "there is like three
+     shapes that are all lined up on like the same trajectory." Nothing here
+     would have caught that, because every individual envelope was legal.
+     Three distinct aspects and three distinct frequency ratios is a low bar
+     deliberately - it is there to catch a flattening, not to dictate the
+     spread. */
+  const aspects = [...new Set(all.map(d => d.aspect))].length;
+  const ratios = [...new Set(all.map(d => d.ratio))].length;
+  const aspMin = Math.min(...all.map(d => d.aspect));
+  const aspMax = Math.max(...all.map(d => d.aspect));
+  console.error('  paths: ' + aspects + ' aspects (' + aspMin + '-' + aspMax + ') / ' +
+    ratios + ' freq ratios,  off-frame ' +
+    (exits.length ? exits.join(' ') : 'NONE - reach keys flattened?'));
+  if (aspects < 3 || ratios < 3) {
+    failures++;
+    console.error('  PATHS FAIL: under three distinct values the field is back on one trajectory');
+  }
 
   // 3. per budget: band balance, and NO REPEATED HUE IN A BAND
   for (const budget of BUDGETS) {
@@ -119,9 +166,14 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
 }
 
 // 4. both themes use the same slots
-const a = defs('smoothDefs').map(d => d.x + ',' + d.y).sort().join('|');
-const b = defs('jaggedDefs').map(d => d.x + ',' + d.y).sort().join('|');
-console.error('\nslots identical across themes ... ' + (a === b ? 'ok' : 'FAIL'));
+/* Position AND path. The theme switch rebuilds the field inside the
+   view-transition callback, and the wipe is meant to reveal the same
+   composition wearing different shapes - a slot that changes trajectory as
+   well as silhouette is a shape that jumps mid-wipe. */
+const slot = d => [d.x, d.y, d.aspect, d.ratio, d.reach].join(',');
+const a = defs('smoothDefs').map(slot).sort().join('|');
+const b = defs('jaggedDefs').map(slot).sort().join('|');
+console.error('\nslots + paths identical across themes ... ' + (a === b ? 'ok' : 'FAIL'));
 if (a !== b) failures++;
 console.error(failures === 0 ? '\nALL CHECKS PASS' : '\n' + failures + ' FAILURE(S)');
 process.exit(failures === 0 ? 0 : 1);
