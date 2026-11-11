@@ -35,6 +35,27 @@ const BUDGETS = (() => {
 // POSSIBLE at a given budget is arithmetic, not taste: with H shapes of one
 // hue and 3 bands, pigeonhole forces a repeat once H > 3. So the rule is
 // enforced at every budget where it is satisfiable and reported elsewhere.
+/* A hue with two or more shapes must appear on BOTH sides of the field.
+   Nothing checked this until 2026-11-11 and the arrangement in use had all
+   three corals at x > .87 - Jack spotted it immediately: "make sure there's
+   also red on the left side because it doesn't look like there's much red
+   on the left side." Per-band hue mixing stops horizontal stripes; this
+   stops vertical ones, which is the same failure rotated and just as easy
+   to ship. .45/.55 rather than a hard half, so a shape sitting near the
+   centre line counts for neither side and cannot rescue a lopsided hue. */
+function hueSidesOk(kept) {
+  const bad = [];
+  const by = {};
+  kept.forEach(d => (by[d.hue] = by[d.hue] || []).push(d.x));
+  for (const [hue, xs] of Object.entries(by)) {
+    if (xs.length < 2) continue;
+    if (!xs.some(x => x < 0.45) || !xs.some(x => x > 0.55)) {
+      bad.push(hue + '[' + xs.map(x => x.toFixed(2)).join(' ') + ']');
+    }
+  }
+  return bad;
+}
+
 function hueRuleSatisfiable(kept) {
   const counts = {};
   kept.forEach(d => counts[d.hue] = (counts[d.hue] || 0) + 1);
@@ -87,10 +108,13 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
     }
     const enforce = hueRuleSatisfiable(kept);
     if (hueProblem && enforce) failures++;
+    const sides = hueSidesOk(kept);
+    if (sides.length) failures++;
     console.error('  budget ' + String(budget).padStart(2) + ': bands ' + counts +
       '  x ' + xs[0].toFixed(2) + '-' + xs[xs.length - 1].toFixed(2) +
       '  hues ' + (hueProblem ? (enforce ? 'FAIL repeated:' : 'repeated, unavoidable here:') + hueProblem : 'all mixed') +
-      '  fills ' + kept.filter(d => d.filled).length + 'f/' + kept.filter(d => !d.filled).length + 'o');
+      '  fills ' + kept.filter(d => d.filled).length + 'f/' + kept.filter(d => !d.filled).length + 'o' +
+      (sides.length ? '\n           SIDES FAIL, hue stuck on one side: ' + sides.join(' ') : '  sides ok'));
   }
 }
 

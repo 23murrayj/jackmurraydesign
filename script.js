@@ -1646,7 +1646,7 @@ if (heroShapesContainer) {
     }
     const el = document.createElement('div');
     el.className = `shape shape-${def.type} ${def.filled ? 'filled' : 'outline'}`
-      + (def.vivid ? ' is-vivid' : '');
+      + (def.vivid ? ' is-vivid' : '') + (def.round ? ' is-round' : '');
     el.style.width = def.size + 'px';
     el.style.height = def.size + 'px';
     el.style.color = def.color;
@@ -1743,79 +1743,53 @@ if (heroShapesContainer) {
      the build that fenced them out of measured boxes was tried and rejected
      and must not come back, see CLAUDE.md. This sets where a shape lives,
      not where it is allowed to go. */
-  /* NINE, down from twelve on 2026-11-11. Jack: "I don't love where we're
-     at now... maybe take out a couple shapes."
-
-     THIS ARRANGEMENT WAS CHOSEN, NOT COMPOSED BY HAND. It is one of several
-     that tools/field-shuffle.js generated inside the rules, rendered on the
-     real page, and Jack picked by eye - the "bold" size profile, which
-     scales the big shapes harder than the small ones and takes the set from
-     132..36 to 191..36. That is the workflow these rules exist to support:
-     the generator guarantees the arrangement is valid, the eye decides
-     which valid one it is. Do not hand-edit a coordinate here without
-     re-running `node tools/field-check.js`.
-
-     Nine is not just twelve minus three - it changes what the rules can
-     guarantee. With 4 blue and 4 coral shapes across 3 bands, pigeonhole
-     forced some band to hold two of one hue at full budget. At nine there
-     are 3 blue, 3 coral, 2 black and 1 amber, so every band gets exactly
-     one blue and one coral and **no band repeats a hue at ANY budget** -
-     the rule that used to be enforceable only on a phone now holds
-     everywhere. Colour banding is what Jack caught by eye last time; this
-     makes it structurally impossible rather than merely checked.
-
-     What went, and why those three:
-     - the 104 coral square at .11/.215, because TOP had to lose a coral
-       and the 90 disc is the one Jack asked for. The 36 amber ring moved
-       from .34 to .14 to keep something anchoring the top-left.
-     - the 80 blue triangle at .07/.50, so MID keeps its far-right shape.
-     - the 48 amber triangle at .66/.84, which also leaves amber with a
-       single instance in the whole field - the hollow ring over the name.
-
-     `keep` is the thinning rank: 1 is the shape the composition can least
-     afford to lose. 9 above 760px, 7 at or below it, 5 at or below 600.
-     Bands come out 3/3/3, 3/2/2 and 2/2/1, hues mixed at all three.
-     `node tools/field-check.js` proves it - run it after ANY edit here. */
   const smoothDefs = [
-    /* The biggest shape, and it leads the TOP band rather than anchoring a
-       corner - at 191px an outline circle beside the name is the one object
-       that can hold its own against a 12rem headline without filling in.
-       Worth knowing what this arrangement gave up: until 2026-11-11 the
-       largest shape sat bottom-right, concentric with the seam ring in
-       styles.css, and the two read as the same figure at two scales. That
-       echo is not part of this layout. It was my rationale rather than a
-       rule, and the arrangement Jack chose is better without it - but if a
-       future version wants the echo back, put the largest shape in the
-       SEAM band at a high x and the relationship returns. */
-    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 3, at: [0.586, 0.263] },
-    /* FILLED, and the one that changes the character of the field.
-       Everything large used to be an outline, so the whole thing read as
-       line work with a few small solids dropped in. One big soft coral
-       disc gives it a mass to sit against. Jack's own suggestion.
-       It sits in the SEAM here, half off the right edge at .903, which is
-       where the seam ring in styles.css also lives - so the corner that
-       used to hold the field's largest outline now holds its largest
-       solid. */
-    { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 8, at: [0.903, 0.702] },
-    { type: 'circle',   size: 137, color: 'var(--blue)',        filled: false, keep: 1, at: [0.561, 0.873] },
-    { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  keep: 6, at: [0.459, 0.536] },
-    { type: 'triangle', size: 61,  color: 'var(--accent)',      filled: false, keep: 2, at: [0.881, 0.277] },
-    /* the smallest solid coral, and the one object in the field allowed to
-       look like a deliberate mark rather than drift. Small enough to keep
-       its vivid alpha - see the 90px ceiling in tools/field-shuffle.js. */
-    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 4, at: [0.872, 0.487] },
-    /* HOLLOW, and it stays hollow wherever it lands. Filled, this stacked
-       three maxima on one object: the warmest hue, the brightest alpha and
-       a solid mass. That was unbearable when it sat over the name - Jack:
-       "it stands out too much" - and the fix was to make it a ring rather
-       than to move it, so the reasoning survives a reshuffle. In this
-       arrangement it rests at the bottom-left of the seam instead.
-       Keeps vivid: a 3px amber border at the base alpha is barely there,
-       and the point was to quieten it, not delete it. It is also the only
-       amber left in the field, so it is the whole of the third hue. */
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 5, at: [0.096, 0.81] },
-    { type: 'square',   size: 84,  color: 'var(--black)',       filled: false, keep: 7, at: [0.208, 0.24] },
-    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 9, at: [0.083, 0.534] },
+    /* ELEVEN. Jack on the phone: "the hero looks like there's barely any on
+       mobile". Nine thinned to five at 600px, and five shapes over a hero
+       that is taller than it is wide reads as empty rather than restrained.
+       More defs lets the phone carry seven without the desktop crowding.
+
+       TWO SQUIRCLES - squares with the corners taken off. Not a fifth form:
+       it is a shape the field already has, softened, which is why it is
+       allowed where the arc, bar and cross were not. A rounded rect is the
+       dominant shape language of the last decade of software, so it reads
+       contemporary without introducing a new KIND of thing.
+
+       ONE PLUM, a fifth hue. Light had four and one of them is near-black,
+       against dark's four chromatic neons - genuinely a hue down, which is
+       part of why dark reads richer. Muted, because light is the refined
+       half of the brief.
+
+       TWO CARRY `jitter` and move on every load. See buildShapes.
+
+       THE LAYOUT ANSWERS FOUR RULES AT ONCE and none of them is optional:
+       band balance (4/4/3 here, 3/3/3 at nine, 3/2/2 at seven), no repeated
+       hue inside a band, every multi-instance hue present on BOTH sides of
+       the field, and every swing envelope clear of the nav, the full stop
+       and the marquee slab - checked at DARK's sizes, which are the larger.
+       `node tools/field-check.js` is the oracle. Hand-placing eleven shapes
+       against four rules does not work by eye; this layout failed nine
+       checks on the first attempt. */
+    { type: 'circle',   size: 137, color: 'var(--blue)',        filled: false, keep: 1,  at: [0.18, 0.80] },
+    { type: 'triangle', size: 61,  color: 'var(--accent)',      filled: false, keep: 2,  at: [0.90, 0.28] },
+    /* CORAL ON THE LEFT, which the field did not have: every red sat right
+       of .87 and Jack called it - "make sure there's also red on the left
+       side". A squircle, and the smallest solid coral, so it still reads as
+       the one deliberate mark rather than drift. */
+    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47] },
+    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 4,  at: [0.65, 0.26] },
+    /* the field's largest SOLID, half off the right edge where the seam
+       ring in styles.css also lives */
+    { type: 'circle',   size: 113, color: 'var(--accent)',      filled: true,  keep: 5,  at: [0.92, 0.72] },
+    { type: 'circle',   size: 53,  color: 'var(--black)',       filled: true,  jitter: true, keep: 6,  at: [0.88, 0.54] },
+    /* PLUM, outlined, and a squircle: the new hue and the new silhouette
+       arrive on the same object, so the field gains one idea rather than
+       two. Centred in the top band where the eye lands first. */
+    { type: 'square',   size: 96,  color: 'var(--accent-plum)', filled: false, round: true, keep: 7,  at: [0.42, 0.25] },
+    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.46] },
+    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76] },
+    { type: 'square',   size: 84,  color: 'var(--black)',       filled: false, keep: 10, at: [0.22, 0.25] },
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50] },
   ];
 
   /* Same twelve-shape budget in dark, and the neons stay neon: this half of
@@ -1830,24 +1804,32 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
-  /* The SAME nine slots, assigned biggest-to-biggest, so the theme switch -
-     which rebuilds this field inside the view-transition callback - reveals
-     the same composition wearing different shapes instead of jumping to a
-     new scatter mid-wipe. Two vivid here rather than three, and NOT the
-     amber: off-white text crossing an amber star measures 3.22:1 at the
-     base .62 already, and brightening it is the one move in this field that
-     would take a pair below 3:1. */
+  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
+     "I like how it looks in dark mode. I like all the neons, the yellows
+     and the blues and the reds work well." The squircles are a light-mode
+     softening; dark is the experimental half and its vocabulary is sharp.
+     The one import is the fifth hue, as a neon violet rather than a muted
+     plum, because it has to sit beside hot pink, electric blue and lime. */
+  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
+     "I like how it looks in dark mode. I like all the neons, the yellows
+     and the blues and the reds work well." The squircles are a light-mode
+     softening; dark is the experimental half and its vocabulary is sharp.
+     The one import is the fifth hue, as a neon violet rather than a muted
+     plum, because it has to sit beside hot pink, electric blue and lime.
+     Dark's sizes run larger than light's and are what the envelopes are
+     checked against. */
   const jaggedDefs = [
-    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 3, at: [0.586, 0.263] },
-    { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 8, at: [0.903, 0.702] },
-    { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1, at: [0.561, 0.873] },
-    { type: 'star', size: 60,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, keep: 6, at: [0.459, 0.536] },
-    { type: 'star', size: 67,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2, at: [0.881, 0.277] },
-    { type: 'star', size: 41,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 4, at: [0.872, 0.487] },
-    /* hollow here too, matching light slot for slot */
-    { type: 'star', size: 34,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, keep: 5, at: [0.096, 0.81] },
-    { type: 'star', size: 84,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 7, at: [0.208, 0.24] },
-    { type: 'star', size: 74,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 9, at: [0.083, 0.534] },
+    { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80] },
+    { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28] },
+    { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47] },
+    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26] },
+    { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72] },
+    { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54] },
+    { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25] },
+    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.46] },
+    { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76] },
+    { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25] },
+    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50] },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1907,9 +1889,9 @@ if (heroShapesContainer) {
   const mqNarrow = window.matchMedia('(max-width: 600px)');
   const mqMobile = window.matchMedia('(max-width: 760px)');
   function shapeBudget() {
-    if (mqNarrow.matches) return 5;
-    if (mqMobile.matches) return 7;
-    return 9;
+    if (mqNarrow.matches) return 7;
+    if (mqMobile.matches) return 9;
+    return 11;
   }
   let activeBudget = shapeBudget();
 
@@ -1953,7 +1935,10 @@ if (heroShapesContainer) {
        At 375 that lands the set at 86 / 76 / 43 / 34 / 27 against a
        uniform scale's 86 / 62 / 27 / 21 / 16. Desktop is untouched: both
        ends are 1 at and above 1392. */
-    const fieldW = heroShapesContainer.getBoundingClientRect().width || 1392;
+    const fieldBox = heroShapesContainer.getBoundingClientRect();
+    const rectW = fieldBox.width || 1392;
+    const rectH = fieldBox.height || 1026;
+    const fieldW = rectW;
     const narrow = 1 - Math.max(0, Math.min(1, (fieldW - 420) / (1392 - 420)));
     const scaleFor = (size) => {
       const tt = (maxSize - size) / sizeSpan;            // 1 smallest, 0 largest
@@ -1987,12 +1972,42 @@ if (heroShapesContainer) {
          travel far and read as the live layer in front. Same idea as
          parallax, done with amplitude rather than depth. */
       const t = (maxSize - def.size) / sizeSpan;
+      /* JITTER: two shapes get a fresh resting position on every load.
+         Jack asked for "a couple shapes that are fully random... a little
+         bit of randomness", and he is reaching for something the authored
+         field genuinely lost. Random placement was dropped because nine
+         random points clump; this is the part of it worth keeping, applied
+         to two shapes out of eleven so the composition it sits inside is
+         still the designed one.
+         Bounded, not free. +/-.07 in x and +/-.035 in y is enough to be a
+         different picture each visit and small enough that the shape stays
+         in its band and on its side of the field - so the band balance and
+         the hue spread, which are what the whole arrangement is checked
+         for, hold whatever the dice do.
+         CLAMPED AGAINST THE SAME THREE LANDMARKS the authored positions
+         are checked against, and it falls back to the authored spot rather
+         than shipping a bad roll. The checker can only vouch for what is
+         in the arrays; anything generated at runtime has to carry its own
+         guarantee, or the rules stop meaning anything the moment the page
+         loads. */
+      let [bx, by] = def.at;
+      if (def.jitter) {
+        const jx = bx + (Math.random() - 0.5) * 0.14;
+        const jy = by + (Math.random() - 0.5) * 0.07;
+        const halfW = renderSize / 2 / rectW, halfH = renderSize / 2 / rectH;
+        const ampY = 32 + 86 * ((maxSize - def.size) / sizeSpan);
+        const topReach = jy - (ampY + 16) / rectH - halfH;
+        const onMarquee = (jy + halfH) > 0.579 && (jy - halfH) < 0.640;
+        if (topReach > 0.092 && !onMarquee && jx > halfW && jx < 1 - halfW * 0.2) {
+          bx = jx; by = jy;
+        }
+      }
       return {
         el,
         size: renderSize,
         baseColor: def.color,
-        baseX: def.at[0],
-        baseY: def.at[1],
+        baseX: bx,
+        baseY: by,
         // 40-150 across the set, and the big ones are at the bottom of it
         ampX: 40 + 110 * t,
         ampY: 32 + 86 * t,

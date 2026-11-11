@@ -189,6 +189,7 @@ colour there, not at call sites.**
 | `--highlight` | `#CBC4B4` stone | `#DDFF67` lime | Tertiary / hover fills |
 | `--blue` | `#657FB9` dusty | `#8190FF` electric | Secondary |
 | `--accent-warm` | `#D9A227` amber | `#FFC847` | **Graphic only** — two hero shapes |
+| `--accent-plum` | `#6E4E6B` muted plum | `#B98CFF` violet | **Graphic only** — one hero shape |
 | `--green` | `#1F8F4D` | `#3DE88A` | Availability dot |
 | `--muted` | `#6A6861` | `#9C9AA3` | Secondary text |
 | `--line` | `#CBC4B4` | `#33333D` | Light dividers |
@@ -392,7 +393,7 @@ four languages whenever you size display type.**
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
 - Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
   duration from content width), so resizing the type doesn't change its speed.
-- Hero shapes: **9 / 7 / 5 per theme** by width (see the thinning note
+- Hero shapes: **11 / 9 / 7 per theme** by width (see the thinning note
   below), drift on **two sine terms per axis** (one sine
   traces a clean ellipse and reads as clockwork). Opacity in CSS, not JS —
   `.38` light / `.62` dark with a `drop-shadow` glow, both dialled back ≤760px.
@@ -479,12 +480,20 @@ four languages whenever you size display type.**
   **Count and alpha are two problems and both rules stay.** Alpha stops a
   shape fighting the type it crosses; count stops the field reading as busy.
   The phone had both.
-  Each def carries `keep`, 1–9, where 1 is the shape the composition can
+  Each def carries `keep`, 1–11, where 1 is the shape the composition can
   least afford to lose, and the ranks answer TWO rules.
   **Bands:** every surviving subset still has to be a composition. At 9 the
-  three bands hold 3/3/3, at 7 they hold 3/2/2, at 5 it is 2/1/2 — and all
-  three keep the x-spread (.15–.90 even at five), both corner anchors and
+  three bands hold 4/4/3, at 9 they hold 3/3/3, at 7 it is 3/2/2 — and all
+  three keep the x-spread (.10–.92 at every budget), both corner anchors and
   something still living down in the seam.
+  **Sides: a hue with two or more shapes must appear on BOTH sides of the
+  field.** Nothing checked this until 2026-11-11, and the arrangement in use
+  had all three corals at x > .87 — Jack spotted it instantly: "make sure
+  there's also red on the left side". Per-band hue mixing stops horizontal
+  stripes; this stops vertical ones, which is the same failure rotated and
+  just as easy to ship. The check uses .45/.55 rather than a hard half, so a
+  shape near the centre line counts for neither side and cannot rescue a
+  lopsided hue.
   **Hue: no band may hold two shapes of the same colour, at any budget.**
   An earlier ranking satisfied the band rule and failed this one, because
   ranking by structural importance happened to rank by colour too: it put two
@@ -510,7 +519,7 @@ four languages whenever you size display type.**
   emits already passes bands, hues, spread and envelopes and choosing is
   purely taste. `--n 5` to list, `--apply N --from <file>` to try one,
   `--apply 0` to restore. It varies which shape sits in which band, where in
-  that band, and the keep order; **it never varies the nine shapes
+  that band, and the keep order; **it never varies the shapes
   themselves** — their sizes, colours and fills were argued out and are not
   up for a dice roll.
   It gets the hue rule for free rather than testing for it: 3 blue, 3 coral
@@ -536,7 +545,14 @@ four languages whenever you size display type.**
   (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
   park on it.
 - **The vocabulary is FOUR forms and must stay that way**: circle, square and
-  triangle in light, jagged star in dark. An arc, a flat bar and a cross were
+  triangle in light, jagged star in dark. **A MODIFIER ON AN EXISTING FORM
+  IS NOT A FIFTH FORM**, and that is the line the squircle sits on the right
+  side of. Two light squares carry `round: true` and get `border-radius:
+  28%` — a rounded rect, the dominant shape language of the last decade of
+  software, which is the contemporary register Jack asked for. It adds no
+  new KIND of thing to the field, which is exactly what sank the arc, bar
+  and cross. Dark stays all stars: it is the experimental half and its
+  vocabulary is sharp, and Jack is happy with it as it is. An arc, a flat bar and a cross were
   added on 2026-11-10 to give the field more to look at and cut the same day
   — "I don't like the new shapes; they dont fit." They were not bad shapes;
   they were wrong here. This page already carries a lot of distinct geometry
@@ -615,6 +631,21 @@ four languages whenever you size display type.**
   its own. Any NEW svg type must join one of them: leave it out and it orbits
   instead of spinning, which reads as a bug in the drift rather than a wrong
   rotation origin.
+- **TWO SHAPES ARE GENUINELY RANDOM**, and that is a deliberate recovery of
+  something the authored field lost. Jack: "maybe have a couple shapes that
+  are fully random... a little bit of randomness." Defs carrying `jitter`
+  get a fresh resting position on every load, ±.07 in x and ±.035 in y —
+  enough to be a different picture each visit, small enough that the shape
+  stays in its band and on its side, so the band balance and the hue spread
+  still hold whatever the dice do. Two of eleven, so the composition it sits
+  inside is still the designed one.
+  **It clamps against the same three landmarks the authored positions are
+  checked against** and falls back to the authored spot on a bad roll. That
+  is not belt-and-braces, it is the only thing making the rules mean
+  anything: `field-check` can only vouch for what is in the arrays, so
+  anything generated at runtime has to carry its own guarantee.
+  Verified by rebuilding the field six times back to back: the two jittered
+  shapes moved .088 and .126 in x, the other nine moved ≤.0001.
 - **Motion is derived from size**, also authored. `t = (maxSize - size) /
   sizeSpan` is 1 for the smallest shape and 0 for the largest, and the range
   comes from the loaded set rather than from literals — it was a hardcoded

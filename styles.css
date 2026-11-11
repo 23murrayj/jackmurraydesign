@@ -181,6 +181,21 @@ picture { display: contents; }
      "lively but controlled". The ink on it is 7.37:1 if it ever has to
      become a fill with a label on top. */
   --accent-warm: #D9A227;
+  /* A FIFTH HUE, and like --accent-warm it is GRAPHIC ONLY - it colours
+     hero shapes and appears nowhere else, so it never has to carry text.
+     Light mode had four visible hues against dark's four, except one of
+     light's is near-black: coral, dusty blue, amber and ink. Dark gets
+     pink, electric blue, lime and amber, all of them chromatic. So light
+     was genuinely a hue down, which is part of why dark reads richer.
+     Muted plum rather than another bright: the brief says light is the
+     refined half, "warm neutrals with lively but controlled colors", and a
+     fifth saturated accent would push it the wrong way. This is desaturated
+     enough to sit behind type as texture and dark enough to still be there
+     at the field's .38 alpha, which is where --highlight fails in light -
+     stone is 1.43:1 and simply vanishes. 6.00:1 on the ground at full
+     strength, so it would even pass as small text; it will not be used that
+     way, but it means it never disappears. */
+  --accent-plum: #6E4E6B;
   --green: #1F8F4D;   /* availability dot - 3.49:1 on the ground, a non-text UI mark */
   /* Chip fills for the about-page skill tags. These have to be tokens: the
      overlay's background is var(--white), which flips with the theme, so a
@@ -301,6 +316,10 @@ picture { display: contents; }
      other, and does it silently. That is exactly how six hero shapes kept
      pointing at var(--yellow) for a release after the rename. */
   --accent-warm: #FFC847;
+  /* dark's plum is a neon violet rather than a muted one: it has to live
+     beside hot pink, electric blue and lime without looking like a smudge,
+     and violet is the one gap in that set */
+  --accent-plum: #B98CFF;
   --green: #3DE88A;
   /* --ink flips now (see the note in :root). Dark's value is the ground
      itself, so the marquee, the about slab and the footer stay part of the
@@ -1009,7 +1028,14 @@ body.is-loading { overflow: hidden; }
    7px blur paints out to about 3 sigma, so a 110px star measures 150px.
    Nothing depends on that now, but it is the reason a shape looks closer to
    the type than its size suggests. */
-.hero-shapes .shape { opacity: .38; }
+/* .34, down from .38. Light is the refined half of the brief and it just
+   gained two shapes and a fifth hue; holding the alpha while the count goes
+   up would have made it louder, which is the opposite of what Jack asked
+   for - "in light mode, we definitely want it to be toned down a little
+   bit". Dark is untouched at .62 on his explicit say-so.
+   More shapes at a lower alpha is not a wash: count buys presence across
+   the field, alpha buys it per object, and only one of them crowds type. */
+.hero-shapes .shape { opacity: .34; }
 :root[data-theme="dark"] .hero-shapes .shape {
   opacity: .62;
   filter: drop-shadow(0 0 7px currentColor);
@@ -1036,7 +1062,7 @@ body.is-loading { overflow: hidden; }
    its own - the "01 / PROJECTS" eyebrow, which the field passes behind.
    It gets the same treatment the availability badge got for the same reason;
    see #work .section-num below. */
-.hero-shapes .shape.is-vivid { opacity: .72; }
+.hero-shapes .shape.is-vivid { opacity: .66; }
 :root[data-theme="dark"] .hero-shapes .shape.is-vivid {
   opacity: .78;
   filter: drop-shadow(0 0 10px currentColor);
@@ -1063,7 +1089,14 @@ body.is-loading { overflow: hidden; }
      land somewhere neither could reach alone.
      Still well under the desktop .38 / .62, and deliberately so: this is
      the width where shapes cross the type most. */
-  .hero-shapes .shape { opacity: .33; }
+  /* .36, slightly ABOVE light's desktop .34, which inverts the usual
+     relationship on purpose. The dial-back exists for density, and density
+     is handled by the count now - the phone draws 7 of 11. What it was left
+     with was a field Jack could barely see: "the hero looks like there's
+     barely any on mobile... or at least make them more noticeable". A phone
+     is also held closer and in worse light than a desktop, so equal alpha
+     is not equal presence. */
+  .hero-shapes .shape { opacity: .36; }
   :root[data-theme="dark"] .hero-shapes .shape {
     opacity: .50;
     filter: drop-shadow(0 0 5px currentColor);
@@ -1072,7 +1105,7 @@ body.is-loading { overflow: hidden; }
      further: a stacked hero is where shapes cross the type most, so the one
      register that is allowed to be bright on a desktop is the first thing to
      give way here */
-  .hero-shapes .shape.is-vivid { opacity: .56; }
+  .hero-shapes .shape.is-vivid { opacity: .62; }
   :root[data-theme="dark"] .hero-shapes .shape.is-vivid {
     opacity: .64;
     filter: drop-shadow(0 0 7px currentColor);
@@ -1102,6 +1135,18 @@ body.is-loading { overflow: hidden; }
   border: none;
 }
 .shape-circle { border-radius: 50%; }
+/* THE SQUIRCLE. Not a fifth form - a square with its corners taken off, so
+   it belongs to a shape the field already has. That distinction is the
+   whole reason it is allowed: the arc, bar and cross were cut because six
+   kinds of drifting thing stopped being a texture and became a second
+   subject, and this adds no new kind. It reads contemporary because a
+   rounded rect is the dominant shape language of the last decade of
+   software, which is exactly the register Jack asked for.
+   The radius comes from JS as a percentage of the size, so it scales with
+   the shape instead of going slack on a big one and swallowing a small
+   one. 28% is a squircle; 50% would just be a circle and the field has
+   plenty of those. */
+.shape-square.is-round { border-radius: 28%; }
 /* transform-box: fill-box makes the JS rotate() turn the shape about its
    own ink rather than about whatever origin an <svg> box would otherwise
    give, and overflow: visible stops a stroke being clipped at the viewBox
