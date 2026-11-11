@@ -666,6 +666,13 @@ body.is-loading { overflow: hidden; }
   background: var(--white);
   border-bottom: 2px solid var(--black);
 }
+/* The hero is a focus target for the JM logo and BACK TO TOP, which used to
+   be #top fragments - see SECTION 07 in script.js. No ring: this is a whole
+   page region rather than a control, and a 1440px outline round the hero is
+   noise. The scroll is the feedback, and the next Tab lands in the nav,
+   which does show its focus. */
+.hero:focus { outline: none; }
+
 .nav-logo {
   font-family: var(--ff-display); font-size: 1.4rem; letter-spacing: 1px;
 }
@@ -1467,19 +1474,29 @@ body.is-loading { overflow: hidden; }
 /* scaleY lengthens the shaft, scaleX broadens the head. Both have to live
    inside the keyframes: the animation drives `transform`, so a static
    transform on the element would simply be overridden every frame.
-   1.3 on X, against the 1.55 already on Y. "\2193" is drawn narrow - a thin
-   stem under a shallow chevron - and at 15.2px the head was reading as a
-   tick rather than an arrow. Widening it spreads the chevron and thickens
-   the stem in the same pass, which is what makes it read as a drawn mark
-   beside a 700-weight label instead of a piece of punctuation. Kept under
-   the 1.55 on Y on purpose: at equal scales the glyph just gets bigger,
-   and the point is a broader arrow, not a louder one. */
+   1.3 on X, against 1.85 on Y. "\2193" is drawn narrow - a thin stem under
+   a shallow chevron - and at 15.2px the head was reading as a tick rather
+   than an arrow. Widening it spreads the chevron and thickens the stem in
+   the same pass, which is what makes it read as a drawn mark beside a
+   700-weight label instead of a piece of punctuation. X stays well under Y
+   on purpose: at equal scales the glyph just gets bigger, and the point is
+   a broader arrow, not a louder one.
+   Y WENT 1.55 -> 1.85 on Jack asking for it "a little bit longer... but
+   keep like the width and the thickness the same", and a glyph transform
+   turns out to give exactly that. Measured by rasterising the glyph at ten
+   times size and scanning the ink: total height 16.8px -> 19.9px, of which
+   the SHAFT takes 10.1 -> 12.1 and the head only 6.7 -> 7.8 - about a pixel
+   at the size it actually renders. The head WIDTH is 11.0px at both, and
+   the stem width 1.8px at both, because scaling Y cannot touch either.
+   Re-measure the same way before moving this again; the head is a third of
+   the glyph, so there is a point where lengthening starts stretching it
+   into a spike. */
 @keyframes cta-drift {
-  0%, 100% { transform: translateY(-2px) scale(1.3, 1.55); }
-  50%      { transform: translateY(2px) scale(1.3, 1.55); }
+  0%, 100% { transform: translateY(-2px) scale(1.3, 1.85); }
+  50%      { transform: translateY(2px) scale(1.3, 1.85); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn-block::after { animation: none; transform: scale(1.3, 1.55); }
+  .btn-block::after { animation: none; transform: scale(1.3, 1.85); }
 }
 
 /* HERO — when the two columns stop being two columns.

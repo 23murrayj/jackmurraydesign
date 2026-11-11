@@ -999,6 +999,34 @@ document.addEventListener('click', (e) => {
   e.preventDefault();
   navigate({ kind: 'project', id: card.dataset.project });
 });
+/* HOME LINKS - the JM logo and BACK TO TOP. Both were href="#top", which
+   works but leaves "/#top" in the address bar, and Jack's point about that
+   is a sharing point rather than a tidiness one: "when I reload the site
+   with jackmurraydesign.com, it goes to the top... if someone copies the
+   link for the page and they're at the very top, then that might be good."
+   A URL with a stale anchor on it is a worse thing to paste than the bare
+   domain, and the anchor buys nothing, because landing on "/" already puts
+   you at the top.
+   Routed rather than special-cased: they are href="/" links, so they are
+   copyable and crawlable like the cards, and a plain click goes through
+   navigate() exactly as CLAUDE.md requires - nothing here calls a UI
+   function and the history API in the same breath. Modified clicks fall
+   through to the browser, so cmd-click still opens a new tab. */
+document.addEventListener('click', (e) => {
+  const home = e.target.closest?.('.nav-logo, .back-top');
+  if (!home || !isPlainClick(e)) return;
+  e.preventDefault();
+  navigate({ kind: 'home' });
+  /* navigate() only pushes when the PATHNAME differs, and a hash is not
+     part of the pathname - so arriving from an old /#top link and clicking
+     home would otherwise leave the hash sitting there. */
+  if (location.hash) history.replaceState(history.state, '', pathForRoute({ kind: 'home' }));
+  const hero = document.getElementById('top');
+  // focus first, scroll second: focus() would do its own instant jump
+  hero?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+});
+
 projectBack.addEventListener('click', leaveOverlay);
 
 // full about page overlay — opened from the nav link, the about section
@@ -1618,11 +1646,14 @@ if (heroShapesContainer) {
     poly.setAttribute('points', points);
     poly.style.fill = def.filled ? 'currentColor' : 'none';
     poly.style.stroke = 'currentColor';
-    /* viewBox units, so these ARE percentages of the rendered size and
-       scale for free. Stars stay at 3 where smooth shapes get 5: a sharp
-       star's inner radius is 14 against an outer 48, and a 5-unit stroke
-       on spikes that thin closes the notches up into a blob. */
-    poly.style.strokeWidth = def.type === 'star' ? '3' : '5';
+    /* viewBox units, so this IS a percentage of the rendered size and
+       scales for free. 3 everywhere, matching the divs - see the outline
+       note in createShapeEl. It was 5 on triangles and 3 on stars, the
+       star exception being that a sharp star's inner radius is 14 against
+       an outer 48 and a 5-unit stroke closes the notches into a blob. The
+       whole field is on the star's number now, so the exception is gone
+       and there is one outline weight on the page. */
+    poly.style.strokeWidth = '3';
     svg.appendChild(poly);
     return svg;
   }
@@ -1657,15 +1688,22 @@ if (heroShapesContainer) {
        the same field held outlines at 2.3% of diameter on the 132 circle and
        6.7% on a 45 square: the big shapes read as weedy wireframes next to
        the small ones, and nothing said why.
-       5% matches what the triangles already do, so one weight now governs
-       every smooth outline: 132 -> 7px, 104 -> 5, 72 -> 4, 36 -> 3 via the
-       floor. The floor exists because 5% of the smallest shape is under 2px,
-       which at .33 alpha on a phone is not a line, it is a rumour.
-       Jack asked for "a little bit thicker"; what it actually needed was
-       consistent, and consistent happens to be thicker everywhere it was
-       thin. Stars keep their own 3% - see createSvgShape. */
+       3% governs every outline in the field now, drawn or SVG, so there is
+       ONE outline weight on the page: 191 -> 6px, 137 -> 4, and everything
+       from 96 down lands on the 3px floor.
+       It was 5% for a release and that was too heavy. Jack, on the big
+       circle: "make it less thick. Go back to things not being as thick. I
+       think that's probably better, actually." At 5% that circle carried a
+       10px line, which on an outline that large stops being a drawn edge
+       and becomes a band - and since the field had just grown its largest
+       shape from 132 to 191, the rule got louder without anyone changing
+       it. At 3% only the two biggest shapes carry any extra weight at all,
+       which is the entire reason the proportional rule exists; the rest
+       read exactly as they did under the old flat 3px.
+       The floor is there because 3% of the smallest shape is barely 1px,
+       which at .34 alpha on a phone is not a line, it is a rumour. */
     if (!def.filled) {
-      el.style.borderWidth = Math.max(3, Math.round(def.size * 0.05)) + 'px';
+      el.style.borderWidth = Math.max(3, Math.round(def.size * 0.03)) + 'px';
     }
     return el;
   }
@@ -1766,7 +1804,19 @@ if (heroShapesContainer) {
        side". A squircle, and the smallest solid coral, so it still reads as
        the one deliberate mark rather than drift. */
     { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
-    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 4,  at: [0.65, 0.26], aspect: 1.0,  ratio: 1.0,  reach: 1.0 },
+    /* THE BIG CIRCLE TRAVELS SIDEWAYS, and the direction is forced rather
+       than chosen. Jack wanted "a little bit more of a trajectory... but I
+       like that it's slow and that it is large", and vertical is simply not
+       available to it: it rests at y .26 with the nav at .092 above and the
+       full stop after MURRAY at y .42 just under its reach, which leaves
+       about 39px of headroom up and 30 down before the envelope breaks a
+       landmark. Sideways there is nothing in the way.
+       aspect .45 with reach 1.6 gives it 284px of horizontal travel against
+       80 before. It stays slow for free: it is the largest shape, so t is 0
+       and its speed sits at the bottom of the range - 20px/s at peak, which
+       is a slow sweep across a fifth of the screen rather than a faster
+       shape or a bigger one. */
+    { type: 'circle',   size: 191, color: 'var(--blue)',        filled: false, keep: 4,  at: [0.65, 0.26], aspect: 0.45, ratio: 0.75, reach: 1.6 },
     /* the field's largest SOLID, half off the right edge where the seam
        ring in styles.css also lives - and with reach 1.5 it now goes all the
        way off and comes back */
@@ -1819,7 +1869,7 @@ if (heroShapesContainer) {
     { type: 'star', size: 145, color: 'var(--blue)',        filled: false, spikes: 7, sharp: true, keep: 1,  at: [0.18, 0.80], aspect: 0.5,  ratio: 0.62, reach: 1.6 },
     { type: 'star', size: 65,  color: 'var(--accent)',      filled: false, spikes: 6, sharp: true, keep: 2,  at: [0.90, 0.28], aspect: 0.6,  ratio: 1.35, reach: 1.0 },
     { type: 'star', size: 50,  color: 'var(--accent)',      filled: true,  spikes: 5, sharp: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.2,  ratio: 0.55, reach: 1.0 },
-    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26], aspect: 1.0,  ratio: 1.0,  reach: 1.0 },
+    { type: 'star', size: 203, color: 'var(--blue)',        filled: false, spikes: 6, sharp: true, keep: 4,  at: [0.65, 0.26], aspect: 0.45, ratio: 0.75, reach: 1.6 },
     { type: 'star', size: 120, color: 'var(--accent)',      filled: true,  spikes: 7, sharp: true, keep: 5,  at: [0.92, 0.72], aspect: 0.6,  ratio: 0.78, reach: 1.5 },
     { type: 'star', size: 56,  color: 'var(--highlight)',   filled: true,  spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
     { type: 'star', size: 101, color: 'var(--accent-plum)', filled: false, spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 0.75, ratio: 1.25, reach: 1.0 },
@@ -2497,6 +2547,7 @@ const stickerTrash = document.getElementById('stickerTrash');
 
 function setEggMenu(open) {
   eggMenu?.classList.toggle('open', open);
+  setInert(eggMenu, !open);
   eggTrigger?.setAttribute('aria-expanded', open ? 'true' : 'false');
   armMenuScrollDismiss();
 }
@@ -2652,10 +2703,18 @@ let chaosScrambleTargets = [];
 let chaosScrambleOriginals = [];
 let chaosJitterTargets = [];
 const chaosStopBtn = document.getElementById('chaosStopBtn');
+const chaosWorkCover = document.getElementById('chaosWorkCover');
 const chaosCountdownEl = document.getElementById('chaosCountdown');
 const CHAOS_DURATION = 30; // seconds
 
 function endChaosMode() {
+  /* back out of the page for anything reading it - see the EASTER EGGS
+     banner in index.html. CSS alone hides these from a person; it does not
+     stop a crawler or a screen reader finding a PLAY PONG button sitting
+     between the hero and SELECTED PROJECTS, which is exactly what was
+     being reported back. */
+  setInert(chaosWorkCover, true);
+  setInert(chaosStopBtn, true);
   clearTimeout(chaosTimeoutId);
   clearInterval(chaosCountdownId);
   clearInterval(chaosScrambleId);
@@ -2673,6 +2732,8 @@ function endChaosMode() {
 function startChaosMode() {
   if (document.body.classList.contains('chaos-mode')) return; // already running
   document.body.classList.add('chaos-mode');
+  setInert(chaosWorkCover, false);
+  setInert(chaosStopBtn, false);
   window.chaosBoost = 6; // also amplifies hero shapes + magnetic letter scatter
 
   // text scramble on the section headings and the magnetic typography
@@ -2920,6 +2981,7 @@ if (pongCanvas) {
 
   function openPong() {
     pongWindow.classList.add('open');
+    setInert(pongWindow, false);
     startPongGame();
     // belt-and-suspenders: the window is fixed-position so it's already
     // always in the viewport, but scroll it into view explicitly in
@@ -2932,6 +2994,7 @@ if (pongCanvas) {
   }
   function closePong() {
     pongWindow.classList.remove('open');
+    setInert(pongWindow, true);
     pongRunning = false;
   }
   /* DRAG TO PLAY. This was keyboard-only, which on a phone meant the egg
@@ -3056,10 +3119,15 @@ T.onChange(() => {
    removes focusability on its own — they need nothing here.)
    ========================================================================== */
 
+/* inert AND aria-hidden together, so one call states the whole fact. inert
+   already implies aria-hidden in a current browser, but the explicit
+   attribute is what a crawler, a parser or an older AT actually reads - and
+   the easter eggs lean on exactly that: they are in the DOM from the start
+   and must not be reported as part of the page until someone opens them. */
 function setInert(el, on) {
   if (!el) return;
-  if (on) el.setAttribute('inert', '');
-  else el.removeAttribute('inert');
+  if (on) { el.setAttribute('inert', ''); el.setAttribute('aria-hidden', 'true'); }
+  else { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
 }
 
 // visible + focusable descendants, in DOM order

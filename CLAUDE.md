@@ -656,20 +656,29 @@ four languages whenever you size display type.**
   exactly 1 at and above 1392 and desktop is untouched. Measured by driving
   the real `driftAt` over a full cycle: at 375 the seven survivors are on
   screen 70–100% of the time, against 58–79% without it.
-- **Outline weight is 5% of the shape's size, not a fixed px.** The SVG
-  shapes were always proportional — `stroke-width` is in viewBox units —
-  while circles and squares took a flat `3px` from CSS, so the same field
-  held outlines at 2.3% of diameter on the largest circle and 6.7% on the
-  smallest square. The big shapes read as weedy wireframes next to the small ones and
-  nothing said why. `buildShapes` now sets `border-width` per shape to
-  `max(3, size * 0.05)`, matching what the triangles already did — at the
-  sizes in use that is 191 → 10px, 137 → 7, 84 → 4, 36 → 3 via the floor.
-  The floor matters because 5% of the smallest shape is under 2px, which at
-  .33 alpha on a phone is not a line. The percentages are the rule; the px
-  move whenever the size profile does.
-  **Stars keep their own 3%** — a sharp star's inner radius is 14 against an
-  outer 48, and a 5-unit stroke on spikes that thin closes the notches into
-  a blob. The CSS `3px` is now only a fallback.
+- **Outline weight is 3% of the shape's size, not a fixed px — one number
+  for the whole field.** The SVG shapes were always proportional
+  (`stroke-width` is in viewBox units) while circles and squares took a flat
+  `3px` from CSS, so the same field held outlines at 2.3% of diameter on the
+  largest circle and 6.7% on the smallest square: the big shapes read as
+  weedy wireframes next to the small ones and nothing said why.
+  `buildShapes` sets `border-width` to `max(3, size * 0.03)` and
+  `createSvgShape` sets `stroke-width: 3` for every type, so 191 → 6px,
+  137 → 4, and everything from 96 down lands on the 3px floor.
+  **It was 5% for one release and that was too heavy.** Jack, on the big
+  circle: "make it less thick. Go back to things not being as thick. I think
+  that's probably better, actually." At 5% that circle carried a 10px line,
+  which on an outline that large stops being a drawn edge and becomes a
+  band — and the rule got louder without anyone touching it when the largest
+  shape went 132 → 191. At 3% only the two biggest shapes carry extra weight
+  at all, which is the whole reason the proportional rule exists; the rest
+  look exactly as they did under the old flat 3px.
+  **The star exception is gone with it.** Stars were already 3% because a
+  sharp star's inner radius is 14 against an outer 48 and a 5-unit stroke
+  closes the notches into a blob; the whole field is on the star's number
+  now. The floor exists because 3% of the smallest shape is barely 1px,
+  which at .34 alpha on a phone is not a line. The percentage is the rule;
+  the px move whenever the size profile does.
 - **Every SVG-drawn shape needs `transform-box: fill-box`** and
   `overflow: visible` — `.shape-triangle` has a rule and `.shape-star` has
   its own. Any NEW svg type must join one of them: leave it out and it orbits
@@ -740,7 +749,14 @@ four languages whenever you size display type.**
   **Reach is spent on X, not Y, and that is forced rather than chosen.** The
   nav sits at y < .092 and a shape swinging up into it is a bug, so the
   vertical travellers are the ones resting low and the shapes that go
-  off-frame go sideways. An early pass gave the 61px triangle aspect 1.9 at
+  off-frame go sideways. **The 191 circle is the clearest case.** Jack
+  wanted it moving more while staying "slow and… large", and vertical was
+  not available: resting at y .26 it has about 39px of headroom to the nav
+  above and 30px to the full stop below before its envelope breaks a
+  landmark. Sideways there is nothing in the way, so aspect .45 / reach 1.6
+  gives it 284px of horizontal travel against 80 before. It stays slow for
+  free — it is the largest shape, so `t` is 0 and its speed sits at the
+  bottom of the range, 20px/s at peak. An early pass gave the 61px triangle aspect 1.9 at
   y .28 and put it 5% into the nav band.
   **The keys are per SLOT, mirrored in both themes**, and `field-check`
   asserts it: the theme switch rebuilds the field inside the view-transition
@@ -951,6 +967,23 @@ set by `applyRouteMeta`, and re-run on language change. Without the canonical
 Google reads the six project URLs as duplicates of `/` and collapses them
 back into one page, which would undo the whole exercise.
 
+**The JM logo and BACK TO TOP are `<a href="/">`**, not `#top` fragments.
+They were, and a fragment leaves `/#top` in the address bar — so anyone who
+clicks home and then copies the URL shares a link with a stale anchor on it.
+Jack's framing was the sharing one: "when I reload the site with
+jackmurraydesign.com, it goes to the top… if someone copies the link for the
+page and they're at the very top, then that might be good." The anchor buys
+nothing, because landing on `/` already puts you at the top.
+They route through `navigate()` like everything else, then scroll and move
+focus; `navigate()` only pushes when the PATHNAME differs, so clicking home
+while already home adds no history entry, and a lingering hash is cleared
+with `replaceState` because a hash is not part of the pathname. **The hero
+keeps `id="top"`** so links already in the wild still work, and gained
+`tabindex="-1"` so the home links can move focus there the way the fragment
+used to — otherwise a keyboard user is scrolled to the top with focus left at
+the bottom. `.hero:focus` has no outline on purpose: it is a page region,
+not a control, and a 1440px ring round the hero is noise.
+
 **Cards are `<a href="/work/…">`**, not `<article role="button">`. That is
 what makes the URL copyable, middle-clickable and crawlable; the role,
 `tabindex` and keydown handler all went away because a link supplies them.
@@ -1039,12 +1072,21 @@ is most of the point.
   shadow to its resting spot so only the button rises off it. The dark
   override replaces `box-shadow` wholesale, so it has to restate the offset
   block alongside its neon bloom or dark loses the effect entirely.
-- **The CTA arrow is `scale(1.3, 1.55)`** — wider as well as longer. `\2193`
+- **The CTA arrow is `scale(1.3, 1.85)`** — wider as well as longer. `\2193`
   is drawn narrow, a thin stem under a shallow chevron, and at 15.2px the head
-  read as a tick. X stays under Y deliberately: at equal scales the glyph just
-  gets bigger, and the point is a broader arrow, not a louder one. Both scales
-  live inside the keyframes, because the animation drives `transform` and a
-  static one on the element is overridden every frame.
+  read as a tick. X stays well under Y deliberately: at equal scales the glyph
+  just gets bigger, and the point is a broader arrow, not a louder one. Both
+  scales live inside the keyframes, because the animation drives `transform`
+  and a static one on the element is overridden every frame.
+  **Y went 1.55 → 1.85** on Jack asking for it "a little bit longer… but keep
+  like the width and the thickness the same", and a glyph transform happens
+  to give exactly that. Measured by rasterising the glyph at ten times size
+  and scanning the ink: total height 16.8px → 19.9px, of which the **shaft**
+  takes 10.1 → 12.1 and the head only 6.7 → 7.8, about a pixel at the size it
+  renders. Head width is 11.0px at both and stem width 1.8px at both, because
+  scaling Y cannot touch either. **Re-measure the same way before moving it
+  again** — the head is a third of the glyph, so there is a point where
+  lengthening starts stretching it into a spike.
 - **The two red dots are one mark at two sizes.** The full stop after MURRAY
   and the dot in the JM wordmark are both `--accent`, and keeping them the
   same red meant replacing the nav one's `\25CF` glyph with a drawn
@@ -1198,8 +1240,30 @@ Rules for both:
 - The llms.txt deliberately **omits the email** and points at the contact
   section instead. The address is already on the page; there is no reason to
   hand it to scrapers in a second, more convenient format.
-- The easter-egg code in `script.js` carries a comment saying what it is, for
-  anything reading the source rather than the page.
+- **The easter eggs are kept out of the page for machine readers, in three
+  layers, and all three have to stay true.** Saying "they are easter eggs"
+  in llms.txt was not enough: summaries kept reporting a **Play Pong button
+  next to the project list**, because `.chaos-work-cover` really does sit
+  between the hero and SELECTED PROJECTS in document order and was hidden by
+  CSS alone. CSS hides things from a person, not from a parser.
+  1. **`inert` and `aria-hidden="true"` in the markup**, removed only when
+     the egg is opened. `setInert()` sets both — `inert` already implies
+     `aria-hidden` in a current browser, but the explicit attribute is what
+     a crawler or an older AT actually reads. Six blocks carry it:
+     `#chaosWorkCover`, `#eggMenu`, `#stickerTray`, `#stickerTrash`,
+     `#chaosStopBtn`, `#pongWindow`.
+  2. **The visible strings are not in `index.html`.** Every egg label is
+     supplied by `i18n.js` through `data-i18n`, so a fetch of the HTML
+     without JavaScript — which is what most crawlers do — contains no
+     "PLAY PONG", "CHAOS MODE" or "PONG.EXE" text at all. Check with
+     `curl -s <url> | grep "PLAY PONG"`: the only hit should be inside the
+     explanatory comment.
+  3. **A banner comment** at the egg block in `index.html` says plainly
+     what they are, addressed to whoever is reading the source.
+  **Layer 2 is the exact opposite of the counters rule below, deliberately.**
+  The counters are content, so the markup holds the truth; the eggs are not
+  content, so the markup holds nothing. The test is whether a reader who
+  never runs the JS should know the thing exists.
 
 **Anything animated from a placeholder is invisible to a machine reader.** The
 about-section counters are the worked example: the markup now carries `4`,
