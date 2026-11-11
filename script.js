@@ -1607,7 +1607,7 @@ renderTickers();
 
 /* ------------------------------------------------------------------------
    SECTION 15 · HERO SHAPE FIELD
-   Eleven per theme, AUTHORED positions and AUTHORED paths. Four forms only.
+   Ten per theme, AUTHORED positions and AUTHORED paths. Four forms only.
    ------------------------------------------------------------------------ */
 // floating geometric shapes — drift + rotate slowly and ease away from the
 // cursor.
@@ -1731,7 +1731,10 @@ if (heroShapesContainer) {
      gets exactly one of each three-count hue and the no-repeated-hue rule
      is a guarantee rather than something to check.
 
-     vivid: true on THREE of the eleven in each theme.
+     vivid: true on TWO of the ten in light, and they are the two SMALLEST
+     shapes, which is what vivid is for - the third was the filled blue
+     square at dead centre, cut on 2026-11-11 as the loudest object in the
+     field.
      At a flat .38 (the base alpha then; .34 now) the field read as pale,
      which is correct for texture
      and wrong as the only register the field has - "the contrast between
@@ -1747,7 +1750,7 @@ if (heroShapesContainer) {
      hero alone, so a y of .86 is down in the band under SELECTED PROJECTS.
 
      These used to be Math.random() per shape per build, and that was the
-     whole of what made the field look unconsidered. Random eleven-point
+     whole of what made the field look unconsidered. Random ten-point
      scatter clumps: on any given load two or three shapes would overlap
      into one blob and a quadrant would be empty, and because it re-rolled
      on every load and every theme switch there was no arrangement to
@@ -1772,7 +1775,7 @@ if (heroShapesContainer) {
      there.
      That is the same "thin out across strip, heading and tags" the field
      was extended 306px for - it only actually happens if shapes LIVE down
-     there rather than wandering down by luck, which is what eleven random
+     there rather than wandering down by luck, which is what ten random
      y values gave: usually six in the hero and three nowhere useful.
 
      Two more things the slots are doing:
@@ -1868,10 +1871,10 @@ if (heroShapesContainer) {
        Jack reads as grey, so the field looks the way it did before except
        that the red and the grey have changed places. */
     { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, round: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
-    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  vivid: true, keep: 11, at: [0.50, 0.50], aspect: 2.4,  ratio: 0.68, reach: 1.2 },
   ];
 
-  /* Same eleven-shape budget in dark, and the neons stay neon: this half of
+  /* Two fewer in dark at every width - see shapeBudget - and the neons stay
+     neon: this half of
      the site is the experimental one and was not the thing being toned down.
      Two vivid here rather than four, and NOT the amber: off-white text
      crossing an amber star measures 3.22:1 at the base .62 already, and
@@ -1883,13 +1886,13 @@ if (heroShapesContainer) {
      size was a speck. The --green star became the amber one: green still has
      a job on this page as the availability dot, and reading it as decoration
      anywhere else blunts that. */
-  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
+  /* The same ten slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
      and the blues and the reds work well." The squircles are a light-mode
      softening; dark is the experimental half and its vocabulary is sharp.
      The one import is the fifth hue, as a neon violet rather than a muted
      plum, because it has to sit beside hot pink, electric blue and lime. */
-  /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
+  /* The same ten slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
      and the blues and the reds work well." The squircles are a light-mode
      softening; dark is the experimental half and its vocabulary is sharp.
@@ -1919,7 +1922,6 @@ if (heroShapesContainer) {
     { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
     { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
     { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 10, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
-    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, vivid: true, keep: 11, at: [0.50, 0.50], aspect: 2.4,  ratio: 0.68, reach: 1.2 },
   ];
 
   /* Where a shape sits at a given moment, with no cursor and no chaos in it.
@@ -1927,7 +1929,7 @@ if (heroShapesContainer) {
      below cannot drift apart - this formula is the look of the whole field
      and it should exist once.
      Two sine terms per axis, not one. A single sine traces a clean ellipse
-     and eleven ellipses read as clockwork; the faster, smaller wobble on top
+     and ten ellipses read as clockwork; the faster, smaller wobble on top
      breaks the period so each path wanders instead. */
   function driftAt(s, time, rect) {
     return {
@@ -1945,7 +1947,7 @@ if (heroShapesContainer) {
      That gap is normally one frame and invisible. It stops being invisible
      under a view transition: the theme switch rebuilds the field inside the
      transition callback, and the new snapshot is taken BEFORE the next frame
-     runs - so without this the wipe would reveal eleven shapes piled in the
+     runs - so without this the wipe would reveal ten shapes piled in the
      top-left corner and hold them there for the length of the animation. */
   function placeShapes() {
     const rect = heroShapesContainer.getBoundingClientRect();
@@ -1957,11 +1959,11 @@ if (heroShapesContainer) {
     });
   }
 
-  /* How many of the eleven survive at this width. Thinning, not dimming -
+  /* How many of the ten survive at this width. Thinning, not dimming -
      and that reverses what the ≤760px opacity rule says it does ("dialled
      back rather than thinned out, so the phone keeps the same look with less
      of it"). That was the wrong read: at 375 the field box is 375px wide
-     against 1440's, so eleven objects are nearly four times as dense per
+     against 1440's, so ten objects are nearly four times as dense per
      unit of area, and no alpha fixes density. Jack on a real phone:
      "there's too many shapes".
      The opacity dial-back STAYS. These are two different problems - alpha
@@ -1982,7 +1984,7 @@ if (heroShapesContainer) {
      say maybe take one or two out, that kind of looks like a lot right
      now." It does, and the reason is not the count: a neon star at .62 on
      near-black with a drop-shadow glow is a brighter object than a coral
-     outline at .34 on sand, so the same eleven read as more.
+     outline at .34 on sand, so the same ten read as more.
      Done as an offset on the budget rather than a shorter dark array, so
      the two themes still share SLOTS - the theme switch reveals the same
      composition minus its two least load-bearing shapes, instead of a
@@ -1991,7 +1993,7 @@ if (heroShapesContainer) {
      2/1/2, with the hue rule holding at each. */
   const DARK_FEWER = 2;
   function shapeBudget(isDark) {
-    const base = mqNarrow.matches ? 7 : mqMobile.matches ? 9 : 11;
+    const base = mqNarrow.matches ? 7 : mqMobile.matches ? 9 : 10;
     return base - (isDark ? DARK_FEWER : 0);
   }
   const isDarkNow = () => document.documentElement.getAttribute('data-theme') === 'dark';
@@ -2034,7 +2036,7 @@ if (heroShapesContainer) {
        range is drama on a desktop and noise in a 375px box. So the largest
        shape loses the most and the smallest barely moves, which pulls the
        set toward its middle instead of toward zero.
-       Measured in the page, the eleven at 1440 come out 116/94/81/71/53/
+       Measured in the page, the set at 1440 comes out 116/94/81/71/53/
        48/42/38/30 at 700 and 86/76/68/61/43/38/34 at 375 - nine and seven
        of them, the rest having been thinned away. Desktop is untouched:
        both ends of the ramp are 1 at and above 1392, which is the ramp's
@@ -2082,7 +2084,7 @@ if (heroShapesContainer) {
          motion number below is derived from it, and that is the second
          half of making this field look considered rather than generated.
          It used to be Math.random() on all six, which gave the right
-         SPREAD - shapes overtaking each other is what stops eleven objects
+         SPREAD - shapes overtaking each other is what stops ten objects
          reading as one slow field - but attached that spread to nothing,
          so a 110px form could end up the fastest, widest-travelling thing
          on screen while a 34px speck sat nearly still. That is the exact
@@ -2138,7 +2140,7 @@ if (heroShapesContainer) {
          bit of randomness", and he is reaching for something the authored
          field genuinely lost. Random placement was dropped because nine
          random points clump; this is the part of it worth keeping, applied
-         to two shapes out of eleven so the composition it sits inside is
+         to two shapes out of ten so the composition it sits inside is
          still the designed one.
          Bounded, not free. +/-.07 in x and +/-.035 in y is enough to be a
          different picture each visit and small enough that the shape stays
@@ -2189,8 +2191,8 @@ if (heroShapesContainer) {
         // the y frequency as a multiple of the x one - see the path note above
         yRate: def.ratio || 0.8,
         /* the golden angle, which is the most irrational turn there is:
-           stepping phase by it spreads eleven shapes as evenly round the
-           cycle as eleven shapes can be spread, so no two are ever swinging
+           stepping phase by it spreads ten shapes as evenly round the
+           cycle as ten shapes can be spread, so no two are ever swinging
            together. Random phases bunch - that is what random does - and a
            bunched pair looks like the two shapes are linked. */
         phase: i * 2.39996,
@@ -2216,7 +2218,7 @@ if (heroShapesContainer) {
      back to its resting position. That is fine when the viewport crosses
      600 or 760 - someone rotating a phone or dragging a window - because
      the layout is already reflowing anyway. What is NOT acceptable is a
-     375px screen still showing eleven shapes because the page was opened
+     375px screen still showing ten shapes because the page was opened
      wide and then narrowed.
      Guarded on the budget, so it is a no-op unless the count would really
      change. That is what makes it safe to listen to resize as well as to
@@ -2282,7 +2284,7 @@ if (heroShapesContainer) {
 
       // A shape being pushed used to turn var(--green) and turn back. It was
       // cut on Jack's note, and the reasoning holds up: green belongs to the
-      // availability dot, eleven shapes that each briefly become a twelfth colour
+      // availability dot, ten shapes that each briefly become an eleventh colour
       // is a colour system with a hole in it, and the push is already legible
       // from the movement and the spin-up below. Nothing replaced it - the
       // field reacts to the cursor by MOVING, which is the whole idea.

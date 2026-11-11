@@ -247,6 +247,33 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
     console.error('  text over a filled shape (bar ' + TEXT_BAR + ':1) ... ' +
       (bad.length ? 'FAIL ' + bad.join(', ') : 'ok'));
   }
+  /* LOUDNESS. How far a shape's composited colour sits from the ground,
+     times how much ink it actually puts down - a fill inks its whole area,
+     an outline only its perimeter times the stroke. CLAUDE.md has quoted
+     this measurement for a while and it lived in a throwaway script, which
+     is the same trap the occupancy scan was in.
+     It is here because it has contradicted the eye twice. It said the amber
+     triangle I was about to tone down was mid-pack, and it found the real
+     loudest object sitting at x .95 where nobody had noticed it. Most
+     recently it settled which shape to cut: the vivid filled blue square
+     was the loudest thing in the light field by 29% AND sat at dead centre,
+     x .50 y .50, the one position with no edge or landmark to answer to.
+     Read it as a profile, not a score. A field wants a clear top and a long
+     tail; what it does not want is its loudest object parked in the middle,
+     or two objects tied at the top. */
+  if (ground && ink) {
+    const loud = all.map(d => {
+      const a = d.vivid ? ALPHA[theme].vivid : ALPHA[theme].base;
+      const hex = T[d.hue];
+      if (!hex) return null;
+      const col = mix(hex2rgb(hex), ground, a);
+      const stroke = Math.max(2, Math.round(d.size * 0.026));
+      const inkArea = d.filled ? Math.PI * (d.size / 2) ** 2 : Math.PI * d.size * stroke;
+      return { d, v: Math.round((contrast(col, ground) - 1) * inkArea / 100) };
+    }).filter(Boolean).sort((p, q) => q.v - p.v);
+    console.error('  loudness (ink x contrast from the ground, loudest first):');
+    console.error('    ' + loud.map(l => l.d.size + '=' + l.v).join('  '));
+  }
   console.error('  occupancy y (20ths, nav=slice 1, marquee=12-13):  ' + occ.map(bar).join(''));
   const thin = occ.map((n, i) => [n, i]).filter(([n, i]) => n <= 1 && i > 1 && (i < 11 || i > 13));
   if (thin.length) {
