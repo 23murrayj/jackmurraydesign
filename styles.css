@@ -1151,18 +1151,18 @@ body.is-loading { overflow: hidden; }
   border: none;
 }
 .shape-circle { border-radius: 50%; }
-/* THE SQUIRCLE. Not a fifth form - a square with its corners taken off, so
-   it belongs to a shape the field already has. That distinction is the
-   whole reason it is allowed: the arc, bar and cross were cut because six
-   kinds of drifting thing stopped being a texture and became a second
-   subject, and this adds no new kind. It reads contemporary because a
-   rounded rect is the dominant shape language of the last decade of
-   software, which is exactly the register Jack asked for.
-   The radius comes from JS as a percentage of the size, so it scales with
-   the shape instead of going slack on a big one and swallowing a small
-   one. 28% is a squircle; 50% would just be a circle and the field has
-   plenty of those. */
-.shape-square.is-round { border-radius: 28%; }
+/* THE SQUIRCLE WAS HERE AND IS GONE - do not rebuild it. Two squares
+   carried border-radius: 28% for a few releases, argued for on the grounds
+   that a rounded rect is not a fifth FORM (it is a square with its corners
+   taken off) and that it reads contemporary. Both halves of that were true
+   and it still did not last: Jack, 2026-11-11, "I don't love the rounded
+   squares anymore... can you just make sure that those are regular squares
+   again?"
+   Worth knowing WHY the argument did not save it. The reasoning was about
+   what a squircle is not - not a new kind of object, not an arc or a bar -
+   and a field of hard-edged geometry does not need a reason to reject a
+   soft edge beyond not wanting one. The vocabulary is circle, square,
+   triangle and jagged star, and it is sharper for having no exceptions. */
 /* transform-box: fill-box makes the JS rotate() turn the shape about its
    own ink rather than about whatever origin an <svg> box would otherwise
    give, and overflow: visible stops a stroke being clipped at the viewBox

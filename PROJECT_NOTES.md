@@ -101,6 +101,10 @@ true for a while now.
   collapsed the field into one corner on a phone. See CLAUDE.md → Animation.
 - **A fifth hero shape form.** Arc, bar and cross were built and cut the same
   day. Variety there comes from size and fill. See CLAUDE.md.
+- **The squircle.** Two hero squares carried a 28% corner radius for a few
+  releases, on the argument that a modifier is not a new form. Cut
+  2026-11-11 — "I don't love the rounded squares anymore". The vocabulary
+  is four hard-edged forms with no exceptions.
 
 ---
 

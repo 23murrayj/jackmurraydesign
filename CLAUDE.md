@@ -581,6 +581,13 @@ four languages whenever you size display type.**
   as it is built. It also checks the hue-sides rule now, which it had been
   getting away with because a 3/3/3 deal happened to satisfy it.
   **If a tool here reports success, check that it did any work.**
+  **It went stale the same way a second time**, which is the part worth
+  reading twice: when `shapeBudget()` gained an `isDark` argument it stopped
+  returning literals, the "return N" regex matched nothing, and the budget
+  list came back EMPTY - so every per-budget check passed by looping over
+  nothing. It throws on an empty list now rather than reporting ok. It also
+  skips `offstage` defs when dealing hues and leaves their coordinates
+  alone, the same exclusion field-check makes.
   It gets the hue rule for free rather than testing for it: 3 blue, 3 coral
   and 3 others means each band must take one of each, and any subset of a
   hue-distinct set is hue-distinct.
@@ -605,7 +612,7 @@ four languages whenever you size display type.**
   park on it.
 - **The two squares over the name are a TRADE, and how that got settled is
   the reusable part.** The 96 at x .42 is the light red hard square; the 84
-  at x .22 is the plum squircle. Jack asked for "the gray hollow box around
+  at x .22 is the plum square. Jack asked for "the gray hollow box around
   JACK" to become "a light red regular square", I changed the 84, and he was
   looking at the 96: "it's right around the K most of the time." Both are
   over JACK — one over the JA, one over the K — and both were hollow, and
@@ -617,9 +624,29 @@ four languages whenever you size display type.**
   in `field-check` are exactly that.
   So they swapped identities and kept their slots: `--accent`, hollow and
   hard-cornered by the K; `--accent-plum`, hollow and `round: true` over the
-  JA. The field keeps three corals, its fifth hue and its two squircles, and
+  JA. The field keeps three corals and its fifth hue (the squircles have
+  since been squared off — see the vocabulary note), and
   only the red and the grey change places — "the red box next to it, maybe
   that could be gray or another color or something like that."
+- **`offstage` keeps the hue rule ON, and that is the point of it.** The
+  sweeper below rests outside the frame, and a def carrying
+  `offstage: true` is excluded from the band-hue and both-sides rules while
+  staying in every other check — envelopes, band balance, x-spread, the
+  text-contrast check, the loudness profile. The reasoning is that those two
+  rules exist to stop the field reading as colour-coded stripes, and that
+  failure is about the arrangement a visitor sees laid out; a shape that
+  rests off the page is not in that arrangement, it is a visitor crossing
+  it. **It is not a loophole for a difficult shape — it is what keeps the
+  rule enforced.** With the sweeper counted, light has four blues, and four
+  of one hue over three bands makes a repeat unavoidable by pigeonhole — at
+  which point `hueRuleSatisfiable()` switches the rule off for the WHOLE
+  band set and stops checking the other nine shapes too. Excluding the one
+  shape that rests off-page keeps blue at three on stage and the rule live
+  everywhere it means something. The per-budget line says so:
+  `(1 offstage, hues not counted)`.
+  **Measured, the two blues are both on screen 34% of the time and within
+  400px of each other 20%** — recorded rather than hidden, because that is
+  the number to argue with if the field ever does start reading as coded.
 - **ONE SHAPE LIVES OFF THE PAGE.** The 81px blue square rests at
   **x −0.55** — a third of a screen beyond the left edge — and reaches
   x .608 at the far end of a 1575px swing. Jack asked for it back after it
@@ -658,14 +685,22 @@ four languages whenever you size display type.**
   [0.08, 0.95], so a re-roll will pull this shape back on screen — that is
   a known limit, not a bug to fix blind.
 - **The vocabulary is FOUR forms and must stay that way**: circle, square and
-  triangle in light, jagged star in dark. **A MODIFIER ON AN EXISTING FORM
-  IS NOT A FIFTH FORM**, and that is the line the squircle sits on the right
-  side of. Two light squares carry `round: true` and get `border-radius:
-  28%` — a rounded rect, the dominant shape language of the last decade of
-  software, which is the contemporary register Jack asked for. It adds no
-  new KIND of thing to the field, which is exactly what sank the arc, bar
-  and cross. Dark stays all stars: it is the experimental half and its
-  vocabulary is sharp, and Jack is happy with it as it is. An arc, a flat bar and a cross were
+  triangle in light, jagged star in dark. **No modifiers either, now.**
+  Two light squares carried `round: true` for a few releases — a 28% radius,
+  argued for on the grounds that a rounded rect is not a fifth FORM (it is a
+  square with its corners taken off) and that it reads contemporary. Both
+  halves of that were true and it still did not last: "I don't love the
+  rounded squares anymore… can you just make sure that those are regular
+  squares again?" **Do not rebuild it.**
+  Worth knowing why the argument did not save it. The reasoning was about
+  what a squircle is *not* — not a new kind of object, not an arc or a bar —
+  and a field of hard-edged geometry does not need a reason to reject a soft
+  edge beyond not wanting one. The vocabulary is sharper for having no
+  exceptions at all. The `round` key and the `.shape-square.is-round` rule
+  are both gone rather than left idle, because this project holds itself to
+  zero dead CSS classes.
+  Dark stays all stars: it is the experimental half and its vocabulary is
+  sharp, and Jack is happy with it as it is. An arc, a flat bar and a cross were
   added on 2026-11-10 to give the field more to look at and cut the same day
   — "I don't like the new shapes; they dont fit." They were not bad shapes;
   they were wrong here. This page already carries a lot of distinct geometry
@@ -718,6 +753,25 @@ four languages whenever you size display type.**
     which nobody has complained about, because it sits at x .95 and spends
     most of its time half off the edge. A shape reads loud because of where
     it is as much as what it is.
+- **The small circle is blue and reaches SELECTED PROJECTS.** "Change that
+  to blue. And have it — I like its trajectory, but it should go all the way
+  down to selected works. I think that movement of down helps." The
+  trajectory is kept rather than redesigned: `reach` goes 1.0 → 2.4 and
+  `aspect` 0.8 → 0.9, so it is the same curve scaled up and pulled 12% off
+  its horizontal bias. It swings y .237–.845 and spends **19% of its cycle
+  behind the heading**.
+  **Measure that heading rather than trusting the .702 this file quotes for
+  SELECTED PROJECTS** — .702 is the top of the section HEAD including its
+  padding, and the h2's ink starts about 80px further down. A reach of 2.0
+  satisfied the .702 figure on paper and landed the circle 47px short of
+  anything you can see.
+  Turning it blue cost amber its only member left of centre, which left
+  amber failing the both-sides rule with two shapes at x > .7. **So the
+  seam triangle went plum**: amber had to drop to a single shape, the 61 is
+  the top-right swooper and reads as the warm accent up there, and plum was
+  the only hue that fit — black would have put two on the right, and coral
+  and blue were already in that band. A hue change can force a second one;
+  run `field-check` before assuming it cannot.
 - **Shape sizes are px in the array but SCALE WITH THE FIELD when it gets
   narrow**, and this only became visible once the shapes got big. The
   numbers in the def arrays are tuned against the 1440px-wide field box; the

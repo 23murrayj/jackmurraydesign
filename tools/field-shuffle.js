@@ -87,12 +87,21 @@ const BANDS = {
    generator that cannot fail loudly is worse than one that does not exist,
    because the next person reads the reassuring line. Derived, it cannot go
    stale again. */
+/* Read from shapeBudget() in script.js, never repeated here - and read the
+   way field-check reads it, off the ternary rather than off "return N".
+   This went stale twice: once when the budgets moved, and again when
+   shapeBudget gained an isDark argument and stopped returning literals, at
+   which point this quietly produced an EMPTY list and every per-budget
+   check below passed by looping over nothing. An empty budget list is a
+   silent pass, so it throws now instead. */
 const BUDGETS = (() => {
   const src = fs.readFileSync(SRC, 'utf8');
-  const a = src.indexOf('function shapeBudget()');
-  const body = src.slice(a, src.indexOf('}', a));
-  const n = [...body.matchAll(/return (\d+)/g)].map(m => +m[1]);
-  return [...new Set(n)].sort((x, y) => x - y);
+  const a = src.indexOf('function shapeBudget(');
+  const body = src.slice(a, src.indexOf('\n  }', a));
+  const n = [...body.matchAll(/[?:]\s*(\d+)/g)].map(m => +m[1]);
+  const out = [...new Set(n)].sort((x, y) => x - y);
+  if (!out.length) throw new Error('cannot read the budgets from shapeBudget() - has it changed shape?');
+  return out;
 })();
 const MIN_X_SPREAD = 0.70;                    // widest minus narrowest, per budget
 
@@ -133,6 +142,7 @@ function parseDefs(src, name) {
       return hit ? +hit[1] : dflt;
     };
     return { line, size: +g[1], hue: g[2], keep: +k[1], x: +at[1], y: +at[2],
+             offstage: /offstage/.test(line),
              aspect: num('aspect', 1), ratio: num('ratio', 0.8), reach: num('reach', 1) };
   });
   return { start: a, end: b, defs };
@@ -171,6 +181,7 @@ function envelopeOk(d, maxSize, span) {
   return true;
 }
 
+const band = y => y < 0.35 ? 'TOP' : y < 0.62 ? 'MID' : 'SEAM';
 const rnd = (lo, hi) => lo + Math.random() * (hi - lo);
 const shuffled = (a) => { const r = a.slice();
   for (let i = r.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0;
@@ -188,7 +199,17 @@ function attempt(defs) {
      three, which stopped being true the moment the field went to eleven
      shapes and five hues. Split as evenly as the count allows, and roll
      which band takes the remainder: 11 gives 4/4/3 in some order. */
-  const n = defs.length;
+  /* AN OFFSTAGE SHAPE IS NOT DEALT. Its resting position is outside the
+     frame and that is the whole of its design, so the shuffler neither
+     re-places it nor counts it for the hue rules - the same exclusion
+     field-check makes, and for the same reason. It keeps its coordinates
+     and takes the last keep rank, which is also correct: a shape that is
+     off screen two thirds of the time is the first one a narrow budget
+     should drop. */
+  const offstage = defs.map((d, i) => i).filter(i => defs[i].offstage);
+  const stage = defs.map((d, i) => i).filter(i => !defs[i].offstage);
+
+  const n = stage.length;
   const base = Math.floor(n / 3);
   const caps = {};
   const extraTo = shuffled(bandNames).slice(0, n % 3);
@@ -201,7 +222,7 @@ function attempt(defs) {
      Largest hue groups first: they are the constrained ones, and placing
      them last is how a deal paints itself into a corner. */
   const byHue = {};
-  defs.forEach((d, i) => (byHue[d.hue] = byHue[d.hue] || []).push(i));
+  stage.forEach(i => (byHue[defs[i].hue] = byHue[defs[i].hue] || []).push(i));
   const groups = Object.values(byHue).sort((a, b) => b.length - a.length);
   if (groups.some(g => g.length > 3)) return null;
 
@@ -253,18 +274,21 @@ function attempt(defs) {
     taken[pick]++;
   }
   order.forEach((idx, i) => { placed[idx].keep = i + 1; });
+  offstage.forEach((idx, i) => { placed[idx].keep = order.length + i + 1; placed[idx].band = band(placed[idx].y); });
 
   /* Every rule has to survive the cuts, not just hold at full budget: the
      x-spread, the band balance, and the hue sides - which the generator got
      away with not checking because the 3/3/3 deal happened to satisfy it. */
   for (const budget of BUDGETS) {
     const kept = placed.filter(d => d.keep <= budget);
-    const xs = kept.map(d => d.x);
+    const staged = kept.filter(d => !d.offstage);
+    const xs = staged.map(d => d.x);
+    if (!xs.length) continue;
     if (Math.max(...xs) - Math.min(...xs) < MIN_X_SPREAD) return null;
-    const counts = bandNames.map(b => kept.filter(d => d.band === b).length);
+    const counts = bandNames.map(b => staged.filter(d => d.band === b).length);
     if (Math.max(...counts) - Math.min(...counts) > 1) return null;
     const sides = {};
-    kept.forEach(d => (sides[d.hue] = sides[d.hue] || []).push(d.x));
+    staged.forEach(d => (sides[d.hue] = sides[d.hue] || []).push(d.x));
     for (const xsOfHue of Object.values(sides)) {
       if (xsOfHue.length < 2) continue;
       if (!xsOfHue.some(x => x < 0.45) || !xsOfHue.some(x => x > 0.55)) return null;

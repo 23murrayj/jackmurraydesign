@@ -1677,7 +1677,7 @@ if (heroShapesContainer) {
     }
     const el = document.createElement('div');
     el.className = `shape shape-${def.type} ${def.filled ? 'filled' : 'outline'}`
-      + (def.vivid ? ' is-vivid' : '') + (def.round ? ' is-round' : '');
+      + (def.vivid ? ' is-vivid' : '');
     el.style.width = def.size + 'px';
     el.style.height = def.size + 'px';
     el.style.color = def.color;
@@ -1824,9 +1824,10 @@ if (heroShapesContainer) {
     { type: 'triangle', size: 61,  color: 'var(--accent-warm)', filled: false, keep: 2,  at: [0.90, 0.28], aspect: 1.3,  ratio: 1.35, reach: 1.6, overNav: true },
     /* CORAL ON THE LEFT, which the field did not have: every red sat right
        of .87 and Jack called it - "make sure there's also red on the left
-       side". A squircle, and the smallest solid coral, so it still reads as
-       the one deliberate mark rather than drift. */
-    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  round: true, vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.6,  ratio: 0.55, reach: 1.15 },
+       side". The smallest solid coral, so it still reads as the one
+       deliberate mark rather than drift. It was a squircle until the
+       rounded corners were cut - see the vocabulary note in CLAUDE.md. */
+    { type: 'square',   size: 47,  color: 'var(--accent)',      filled: true,  vivid: true, keep: 3,  at: [0.10, 0.47], aspect: 2.6,  ratio: 0.55, reach: 1.15 },
     /* THE BIG CIRCLE TRAVELS SIDEWAYS, and the direction is forced rather
        than chosen. Jack wanted "a little bit more of a trajectory... but I
        like that it's slow and that it is large", and vertical is simply not
@@ -1862,10 +1863,35 @@ if (heroShapesContainer) {
        the hollow one... it should just maybe move down more". Still inside
        the MID band (.44-.56) and still clear of the marquee at rest, which
        starts at .579. */
-    { type: 'circle',   size: 36,  color: 'var(--accent-warm)', filled: false, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
-    { type: 'triangle', size: 68,  color: 'var(--accent-warm)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
-    /* PLUM, outlined, and a squircle - the half of the trade described
-       above. It keeps the field's fifth hue and its second softened square
+    /* BLUE, and it reaches SELECTED PROJECTS. "For the little yellow hollow
+       circle, change that to blue. And have it - I like its trajectory, but
+       it should go all the way down to selected works. I think that
+       movement of down helps."
+       The trajectory is kept rather than redesigned: aspect and ratio are
+       untouched, so the SHAPE of the path is the one he likes; reach goes
+       1.0 -> 2.4 and aspect 0.8 -> 0.9, which is the same curve scaled up
+       and pulled 12% off its horizontal bias. It swings y .237-.845, and
+       the SELECTED PROJECTS heading measures .803-.881 in the live page -
+       so the circle now passes BEHIND the heading at the bottom of every
+       cycle, which is what "all the way down to selected works" asks for.
+       Measure that one rather than trusting the .702 this file used to
+       quote for the section: .702 is the top of the section HEAD including
+       its padding, and the h2 ink starts 80px further down. Reach 2.0 put
+       the circle 47px short of it and looked right on paper.
+       pace .45 is what stops this being a different request: scaling the
+       reach on the SMALLEST shape, which is also the fastest, would have
+       put it at 137px/s. At this pace it is 63, on a 40-second cycle. */
+    { type: 'circle',   size: 36,  color: 'var(--blue)',        filled: false, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.9,  ratio: 1.45, reach: 2.4, pace: 0.45 },
+    /* PLUM, not amber, and this one is a CONSEQUENCE rather than a choice.
+       The 36 was amber's only member left of centre; turning it blue left
+       amber with two shapes both at x > .7, which fails the rule that a hue
+       with two or more has to appear on both sides. Amber had to drop to a
+       single shape, and of the two candidates this is the one that can move
+       hue - the 61 is the top-right swooper and reads as the warm accent up
+       there. Plum is the only hue that fits: black would put two on the
+       right, and coral and blue are already in this band. */
+    { type: 'triangle', size: 68,  color: 'var(--accent-plum)', filled: false, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
+    /* PLUM, outlined - the half of the trade described above. It keeps the field's fifth hue and its second softened square
        alive, now over the JA instead of the K. It was --black until the
        square by the K needed a colour to swap with, and --black is what
        Jack reads as grey, so the field looks the way it did before except
@@ -1898,8 +1924,8 @@ if (heroShapesContainer) {
        sweeping the page is a louder event than a coral square, and dark
        had just been thinned. Moving it into dark is one number
        (DARK_FEWER). */
-    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14 },
-    { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, round: true, keep: 11, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
+    { type: 'square',   size: 81,  color: 'var(--blue)',        filled: true,  keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14, offstage: true },
+    { type: 'square',   size: 84,  color: 'var(--accent-plum)', filled: false, keep: 11, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
   ];
 
   /* Two fewer in dark at every width - see shapeBudget - and the neons stay
@@ -1917,14 +1943,16 @@ if (heroShapesContainer) {
      anywhere else blunts that. */
   /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
-     and the blues and the reds work well." The squircles are a light-mode
-     softening; dark is the experimental half and its vocabulary is sharp.
+     and the blues and the reds work well." Dark is the experimental half
+     and its vocabulary is sharp - it never carried the rounded corners
+     that light wore briefly, and light does not either now.
      The one import is the fifth hue, as a neon violet rather than a muted
      plum, because it has to sit beside hot pink, electric blue and lime. */
   /* The same eleven slots. Dark stays ALL STARS and keeps its neons - Jack:
      "I like how it looks in dark mode. I like all the neons, the yellows
-     and the blues and the reds work well." The squircles are a light-mode
-     softening; dark is the experimental half and its vocabulary is sharp.
+     and the blues and the reds work well." Dark is the experimental half
+     and its vocabulary is sharp - it never carried the rounded corners
+     that light wore briefly, and light does not either now.
      The one import is the fifth hue, as a neon violet rather than a muted
      plum, because it has to sit beside hot pink, electric blue and lime.
      Dark's sizes run larger than light's and are what the envelopes are
@@ -1948,9 +1976,9 @@ if (heroShapesContainer) {
        does this arithmetic for every filled shape. */
     { type: 'star', size: 56,  color: 'var(--highlight)',   filled: false, spikes: 5, sharp: true, jitter: true, keep: 6,  at: [0.88, 0.54], aspect: 0.7,  ratio: 1.5,  reach: 1.0 },
     { type: 'star', size: 101, color: 'var(--accent-plum)', filled: true,  spikes: 8, sharp: true, keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 1.0,  reach: 1.5, tilt: -1.5708, pace: 0.38, overNav: true },
-    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.8,  ratio: 1.45, reach: 1.0 },
+    { type: 'star', size: 38,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, vivid: true, keep: 8,  at: [0.30, 0.54], aspect: 0.9,  ratio: 1.45, reach: 2.4, pace: 0.45 },
     { type: 'star', size: 72,  color: 'var(--accent-warm)', filled: false, spikes: 6, sharp: true, jitter: true, keep: 9,  at: [0.72, 0.76], aspect: 2.0,  ratio: 0.7,  reach: 1.25 },
-    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14 },
+    { type: 'star', size: 86,  color: 'var(--blue)',        filled: true,  spikes: 5, sharp: true, keep: 10, at: [-0.55, 0.535], aspect: 0.30, ratio: 1.6,  reach: 4.0, pace: 0.14, offstage: true },
     { type: 'star', size: 89,  color: 'var(--highlight)',   filled: false, spikes: 8, sharp: true, keep: 11, at: [0.22, 0.25], aspect: 0.9,  ratio: 0.5,  reach: 1.0 },
   ];
 
