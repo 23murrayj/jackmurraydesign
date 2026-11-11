@@ -24,3 +24,6 @@ scratchpad/
 /docs/
 /backup_*/
 /option-*/
+
+# scratch written by tools/field-shuffle.js
+tools/.field-before-shuffle.json

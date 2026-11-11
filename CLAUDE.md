@@ -498,6 +498,22 @@ four languages whenever you size display type.**
   blue and one coral, and the rule holds everywhere. That is the strongest
   argument for nine over twelve: it turns a guideline into a guarantee.
   The checker works this out per budget rather than being told.
+  **`node tools/field-shuffle.js` proposes alternatives.** The field stopped
+  being random because random scatter clumps, and Jack named what that cost:
+  "the good thing about random was that it was always random, so you could
+  get ones you like and ones you didn't love. But I think this is probably
+  smarter." Both halves are true — random had variety with no floor on
+  quality, authored has quality but exactly one answer. The shuffler is the
+  synthesis: it rolls the dice inside the rules, so every arrangement it
+  emits already passes bands, hues, spread and envelopes and choosing is
+  purely taste. `--n 5` to list, `--apply N --from <file>` to try one,
+  `--apply 0` to restore. It varies which shape sits in which band, where in
+  that band, and the keep order; **it never varies the nine shapes
+  themselves** — their sizes, colours and fills were argued out and are not
+  up for a dice roll.
+  It gets the hue rule for free rather than testing for it: 3 blue, 3 coral
+  and 3 others means each band must take one of each, and any subset of a
+  hue-distinct set is hue-distinct.
   **`node tools/field-check.js` checks all of it** — ranks, envelopes, band
   balance and hue mixing at every budget. Run it after ANY change to those
   arrays. Every one of these failures is invisible at desktop width.
