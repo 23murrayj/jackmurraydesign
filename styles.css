@@ -571,12 +571,17 @@ a { color: inherit; text-decoration: none; }
   --sk-role: clamp(1.45rem, 10.6cqw, 2.35rem);
 }
 /* The badge and the CTA are fixed-size controls - they do not scale with the
-   viewport or the column - so these two stay measured: 295.4 x 35.5 and
-   226.2 x 61.5 at 1440 in English, and the same at every other width. (The
-   badge was 296.4 until the availability dot became a square; Japanese runs
-   38 and 65 tall, and Spanish takes the badge to 323.) The percentage is
-   only an overflow guard for a very narrow phone. */
-.sk-badge { height: 36px; width: min(96%, 295px); margin-bottom: calc(var(--sk-role) * 0.8); }
+   viewport or the column - so these two stay measured: 126.6 x 35.5 and
+   226.2 x 61.5 at 1440 in English, and the same at every other width.
+   The badge was 295.4 until its label went from OPEN TO PROJECTS & DESIGN
+   WORK to LET'S TALK, which is most of this file's history of that number in
+   one line: it has also been 296.4, before the availability dot became a
+   square. Across the four languages it now runs 124.6 (es) to 137.5 (it),
+   where it used to run 292 to 323 - a 13px spread instead of a 31px one, so
+   one English measurement covers the others better than it used to.
+   Japanese is still the tall one, 38 against 35.5, and takes the CTA to 65.
+   The percentage is only an overflow guard for a very narrow phone. */
+.sk-badge { height: 36px; width: min(96%, 127px); margin-bottom: calc(var(--sk-role) * 0.8); }
 /* Two lines at line-height 1.1, so the height is exactly 2.2 x --role-size -
    not the 83 / 79 pair this used to carry, which were the same number
    measured twice. The width is the role line's ink, 7.94x the size, the same
@@ -585,22 +590,24 @@ a { color: inherit; text-decoration: none; }
    and Italian, the widest, 323.7. */
 .sk-line  { height: calc(var(--sk-role) * 2.2); width: min(96%, calc(var(--sk-role) * 7.94)); margin-bottom: calc(var(--sk-role) * 1.3); }
 .sk-cta   { height: 62px; width: 226px; }
-/* THE BAND BETWEEN THE BREAKPOINT AND A USABLE COLUMN, 1281 to ~1373, where
-   the hero is two columns but the side one is narrower than the controls in
-   it, so the real badge and the real button WRAP. 1366 x 768 lives in here,
-   which is reason enough to get it right.
-   Container queries rather than viewport ones, because that is literally the
-   condition: the badge wraps when its column is narrower than its 295px of
-   content, and the button when the column is under its 226. Measured at
-   1366, 1300 and 1281 - the wrapped badge is 51 tall and the wrapped button
-   81, both stretched to the full column. Without these the skeleton drew a
-   one-line badge where the page draws two, and the whole column landed 14.5
-   to 34px off.
-   English, like the rest of these: Spanish is 28px wider and starts wrapping
-   a little sooner. A skeleton is drawn before i18n has run and can only be
-   one language. */
-@container (max-width: 295px) { .sk-badge { height: 51px; width: 100%; } }
-@container (max-width: 226px) { .sk-cta   { height: 81px; width: 100%; } }
+/* THE BAND BETWEEN THE BREAKPOINT AND A USABLE COLUMN, where the hero is two
+   columns but the side one is narrower than a control in it, so that control
+   WRAPS and the skeleton has to wrap with it.
+   A container query rather than a viewport one, because that is literally the
+   condition: the button wraps when the column is narrower than its 226px of
+   content, and measured at 1281 the wrapped button is 81 tall and stretched
+   to the full column. Without it the skeleton drew a one-line button where
+   the page draws two.
+   THE BADGE USED TO BE IN HERE TOO, at 295px, and the band was 1281 to ~1373
+   because of it - 1366 x 768 sat right in the middle. Shortening the label to
+   LET'S TALK took the badge to 126.6, and the side column is never narrower
+   than 213 while the hero is two columns (0.9vw - 939.9 at vw 1281), so the
+   badge cannot wrap at any width any more and the rule was not merely idle,
+   it was wrong: it would have drawn a 51px two-line badge over a real one
+   that stays 35.5. The band is now 1281 to ~1296, the button alone.
+   English, like the rest of these. A skeleton is drawn before i18n has run
+   and can only be one language. */
+@container (max-width: 226px) { .sk-cta { height: 81px; width: 100%; } }
 
 /* The strip pulls 1px into the grid's border, exactly as the marquee does -
    and like the marquee it is FULL BLEED and 38px tall. It was 80px tall and
@@ -1369,7 +1376,7 @@ body.is-loading { overflow: hidden; }
   display: flex; flex-direction: column;
   /* Stretch, but only the role line actually takes it. A previous pass had
      the CTA take it too, to square the column off against a ragged right
-     edge (badge 296, role 336, button 230 at 1440). Jack's verdict on that
+     edge (badge 295, role 336, button 230 at the time). Jack's verdict on that
      was the strongest note in the round: a 356px button with the label at
      one end and the arrow at the other is a bar, not a button, and the gap
      in the middle is what you notice. The ragged edge was the smaller

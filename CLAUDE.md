@@ -1171,18 +1171,28 @@ correct when someone wrote it down.
   at the cap; **44 never was — the real gap is 48.88** — and because the
   column is bottom-aligned on a desktop that 5px pushed the badge and the role
   line 4px up from where the page then drew them.
-- **Only the fixed-size controls are still measured**: the badge at 295.4 ×
-  35.5 and the CTA at 226.2 × 61.5, both in English at every width. (The badge
-  was 296.4 until the availability dot became a square. Japanese runs 38 and
-  65 tall; Spanish takes the badge to 323.) A skeleton is drawn before i18n
+- **Only the fixed-size controls are still measured**: the badge at 126.6 ×
+  35.5 and the CTA at 226.2 × 61.5, both in English at every width. That badge
+  number has moved three times and the history is the warning — 296.4, then
+  295.4 when the availability dot became a square, then **126.6 when the label
+  went from OPEN TO PROJECTS & DESIGN WORK to LET'S TALK**. A copy change is a
+  skeleton change. Across the four languages it now runs 124.6 (es) to 137.5
+  (it), where it used to run 292 to 323 — a 13px spread instead of 31, so one
+  English measurement covers the others better than it did. Japanese is still
+  the tall one at 38, and takes the CTA to 65. A skeleton is drawn before i18n
   has run, so it can only ever be one language, and English is the default.
-- **1281 to ~1373 is its own problem**, and 1366 × 768 lives in it. The hero
-  is two columns there but the side column is narrower than the controls in
-  it, so the real badge and button WRAP — 51px and 81px tall, stretched to the
-  column. Two **container** queries say exactly that (`@container (max-width:
-  295px)` and `226px`), because the condition really is about the column and
-  not the viewport. Without them the column landed 14.5 to 34px off through
-  that whole band.
+- **1281 to ~1296 is its own problem.** The hero is two columns there but the
+  side column is narrower than the BUTTON, so the real button wraps — 81px
+  tall, stretched to the column — and the skeleton has to wrap with it. One
+  **container** query says exactly that (`@container (max-width: 226px)`),
+  because the condition really is about the column and not the viewport.
+  **It used to be 1281 to ~1373, with 1366 × 768 right in the middle of it**,
+  because the badge wrapped too and a second query at 295px handled that.
+  LET'S TALK took the badge to 126.6, and the side column is never narrower
+  than 213 while the hero is two columns (0.9vw − 939.9 at vw 1281), so the
+  badge cannot wrap at any width now. That rule was not left idle, it was
+  **removed** — it would have drawn a 51px two-line badge over a real one that
+  stays 35.5, which is the same class of bug it was written to fix.
 - **The nav is three children, not two.** `.nav` is `space-between` with
   wordmark, links and controls, so the links bar has to be a child of
   `.sk-nav` too — nested inside the right-hand group it drew at x984 against
@@ -1432,11 +1442,21 @@ is most of the point.
   and CTA, and the three vertical whites between and inside them each run
   about 1.75× the one above — measured ink to ink at 1440, where the role
   sets 37.6px: 15.0 between the role's own two lines (line-height 1.1), 26.6
-  badge-to-role, 45.7 role-to-CTA. A column saying three things — a status,
+  badge-to-role, 45.7 role-to-CTA. A column saying three things — an opening,
   a statement, an action — has to answer "which of these belong together"
   before anything else, and it answers with white: one consistent step makes
   the badge read as a label ON the statement and the button as the separate
-  thing you do about it. It was 30px and 44px flat, which came out 26.5 and
+  thing you do about it.
+  **The badge was a STATUS and is now an invitation**: it read OPEN TO
+  PROJECTS & DESIGN WORK and now reads LET'S TALK, on Jack's word. Worth
+  knowing what that costs, because the spacing argument above was built on it
+  being a status: the hero now carries two things to click, the badge to
+  /#contact and the button to /#work, where it used to carry one action and
+  one fact. It still works because the two are different sizes doing different
+  jobs — a 12px tracked tag against a 62px filled button — and because the
+  badge has always been a link to the contact section, so the label now says
+  what it does. But if the hero ever reads as nagging, this is where it
+  started. It was 30px and 44px flat, which came out 26.5 and
   40.9 optically, a ratio of 1.54 against the inner leading's 1.76 — close
   enough to look almost deliberate, which is the worst place for a gap to be.
   **The margins are multiples of `--role-size`, not pixels**, and that is the
