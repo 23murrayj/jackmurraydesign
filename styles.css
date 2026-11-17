@@ -1744,7 +1744,27 @@ body.is-loading { overflow: hidden; }
    what makes this free in four languages - it replaced twelve i18n keys
    with none. */
 .section-marks {
-  display: flex; gap: 7px; flex: none;
+  --mark-w: 10px;
+  display: flex;
+  /* The gap IS the mark's width, so the row reads as one even rhythm -
+     mark, space, mark, space, mark, all 10 - rather than three things that
+     happen to be 7 apart. One number instead of two, and the row is five
+     equal units wide. */
+  gap: var(--mark-w);
+  flex: none;
+  /* Centred on the heading, NOT on its baseline. .section-head is
+     align-items: baseline, which hung the marks off the first baseline and
+     left them 20px below the heading's optical centre - and on a phone,
+     where SELECTED PROJECTS wraps, it pinned them to the first line while
+     the heading grew downward past them.
+     Centring on the h2's BOX is correct here and it is not a coincidence:
+     measured through the font's own metrics at 1280, the cap band of
+     SELECTED PROJECTS runs 904.5 to 959.3 for a centre of 931.9, and the
+     box runs 892.2 to 972.2 for a centre of 932.2. Those agree to 0.3px
+     because the heading is all caps with no descenders, so the ink sits
+     where the box does. A lowercase heading would not, and would need the
+     measurement again. */
+  align-self: center;
   /* the padding is the opaque patch #work needs (see below); carried on all
      three so the marks sit at the same height against every heading */
   padding: 4px 6px;
@@ -1752,27 +1772,62 @@ body.is-loading { overflow: hidden; }
 }
 .section-marks span {
   display: block;
-  width: 10px; height: 9.4px;
+  /* the wordmark's 1.065, so the mark stays the full stop's proportion at
+     whatever width --mark-w is set to */
+  width: var(--mark-w); height: calc(var(--mark-w) / 1.065);
   background: var(--mark-off);
 }
 .section-marks .is-here { background: var(--mark-on); }
 
-/* One rule for all three surfaces: the UNLIT marks are the section's own
-   foreground at about a fifth, and the LIT one is --accent. Derived rather
-   than picked, so it cannot fail contrast - these are decorative, and both
-   halves come from a value already checked on that ground - and it tracks
-   the theme for free: --black at 20% composites to a warm grey on the sand
-   ground and to a near-black charcoal on the dark one, which is where --line
-   lands in both themes anyway.
+/* The unlit marks are the section's own foreground, dimmed; the lit one is
+   --accent, except on .contact whose background IS --accent and which takes
+   the ink the section already writes in.
    Unlit in NEUTRAL and not in dimmed accent, which was the first try. Pale
    coral squares read as one faded thing; a grey pair beside a coral one
    reads as off and on, which is what they are for.
-   .contact is the exception on the lit colour, because its background IS
-   --accent: there the lit mark takes the ink the section already writes in,
-   and the unlit pair is that same ink, dimmed the same way. */
-#work    { --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--black) 20%, transparent); }
-.about   { --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--paper) 26%, transparent); }
-.contact { --mark-on: var(--ink);    --mark-off: color-mix(in srgb, var(--ink) 26%, transparent); }
+   THE ALPHA IS PER SURFACE AND MEASURED, not one number applied to three
+   grounds - that was the bug Jack saw ("they look a bit off on the different
+   backgrounds"). The same 26% ink is a different amount of CONTRAST on sand,
+   on a near-black slab and on coral, so the three marks did not read as the
+   same mark: measured against their own grounds the unlit pairs ran 1.51,
+   2.23 and 1.50 to one in light and 1.77, 2.20 and 1.59 in dark, with the
+   ink slab half again as loud as the other two in both themes.
+   Tuned to 1.8:1 on every ground instead, which lands them at 1.81 / 1.82 /
+   1.78 in light and 1.79 / 1.78 / 1.84 in dark - a 2% spread where it was
+   49%. 1.8 because it is the step where the mark is unmistakably present
+   and unmistakably not the lit one; below about 1.5 it starts reading as a
+   printing fault.
+   THE LIT MARK IS NOT EQUALISED THE SAME WAY, and that is deliberate. It
+   measures 3.21:1 on the sand ground against 4.60 on the other two, and the
+   fix would be --accent-ink, the token that exists for exactly this case
+   (4.71 there). It stays --accent anyway: the nav is fixed, so the JM
+   wordmark's coral mark is on screen at the same time as these, and being
+   that same mark again is this one's whole point. Two different reds in one
+   view is the bug recorded under "one black" and under the two red dots - a
+   near-miss rather than a repeat. The three lit marks are never co-visible
+   with EACH OTHER, so the hue matters more than the parity does. */
+#work    { --mark-dim: 28%; --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--black) var(--mark-dim), transparent); }
+.about   { --mark-dim: 20%; --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--paper) var(--mark-dim), transparent); }
+.contact { --mark-dim: 37%; --mark-on: var(--ink);    --mark-off: color-mix(in srgb, var(--ink)   var(--mark-dim), transparent); }
+/* Dark moves two of the three. #work and .about sit on DIFFERENT tokens that
+   resolve to the SAME colour in dark - --white is #111117 and --ink is
+   #111117 - so a single alpha is not optional there, it is the only way the
+   two can look alike, and 28% on one ground with 20% on an identical one is
+   exactly the kind of "off" this pass is fixing. Coral is a lighter ground
+   in dark than in light, so it needs less ink to reach the same step. */
+:root[data-theme="dark"] #work    { --mark-dim: 20%; }
+:root[data-theme="dark"] .contact { --mark-dim: 33%; }
+
+/* The about section's marks go to the PANEL edge, not to the text measure.
+   They were at the inset, 804 against a panel starting at 860, which left
+   them stranded 56px short in a row whose own rule, and the stats row below
+   it, both run all the way to the photo - so the one section with a second
+   right edge was the one where they looked like they had been dropped
+   somewhere rather than aligned to anything. The stats row already does this
+   with the same number; it is the same alignment, now from the same token.
+   --about-gap is 0 below 800px, where the panel rejoins the flow and the
+   section has only one right edge, so this collapses to the base -6px. */
+.about .section-marks { margin-right: calc(-6px - var(--about-gap)); }
 
 /* Opaque, and only in #work. The hero's shape field reaches 306px past the
    hero, which lands it here, and this is the case the opaque-patch rule
@@ -3067,8 +3122,11 @@ body.is-loading { overflow: hidden; }
    shape - the crop is now effectively nothing. Being absolutely positioned,
    it also costs the section no height: 726px here against 762px before. */
 .about { position: relative; --about-panel: 420px; }
-/* panel + the gap between it and the copy, so the text never runs under it */
-.about { --about-inset: calc(var(--about-panel) + 56px); }
+/* panel + the gap between it and the copy, so the text never runs under it.
+   The gap is its own token because the section has TWO right edges and things
+   have to pick one: prose stops at the inset, and anything structural - the
+   stats row, the section marks - runs the extra 56 and lands on the panel. */
+.about { --about-gap: 56px; --about-inset: calc(var(--about-panel) + var(--about-gap)); }
 .about-panel {
   position: absolute; top: 0; right: 0; bottom: 0;
   width: var(--about-panel);
@@ -3296,7 +3354,7 @@ body.is-loading { overflow: hidden; }
      width at 4:5 - the one place a crop is the better trade, because it is
      the only way the photo lines up with everything above it. 4:5 is 52vh,
      which still leaves the copy on screen first. */
-  .about { --about-panel: 0px; --about-inset: 5vw; }
+  .about { --about-panel: 0px; --about-gap: 0px; --about-inset: 5vw; }
   /* The section's one column becomes two for the bottom half: the platform
      photo on the left, the three-continents sentence and the button stacked
      beside it. Full width the photo was 55% of a phone screen on its own and

@@ -1339,12 +1339,49 @@ is most of the point.
   One lit, two not. **A little bigger than the badge's 8**, because it
   answers a 73.6px heading across the width of the page rather than sitting
   inside a 12px label.
-  **Unlit is the section's own foreground at a fifth, lit is `--accent`** —
-  derived, so it tracks the theme and cannot fail contrast. Dimmed ACCENT
-  was the first try and was wrong: three pale coral squares read as one
-  faded thing, where a grey pair beside a coral one reads as off and on.
-  `.contact` is the exception, because its background IS `--accent`: there
-  the lit mark is `--ink`, the colour the section already writes in.
+  **Unlit is the section's own foreground, dimmed; lit is `--accent`.**
+  Dimmed ACCENT was the first try and was wrong: three pale coral squares
+  read as one faded thing, where a grey pair beside a coral one reads as
+  off and on. `.contact` is the exception, because its background IS
+  `--accent`: there the lit mark is `--ink`, the colour the section already
+  writes in.
+  **THE ALPHA IS PER SURFACE AND MEASURED.** One number across three grounds
+  was the second thing Jack caught — "they look a bit off on the different
+  backgrounds" — and he was reading real numbers: the same 26% ink gave
+  **1.51, 2.23 and 1.50** to one in light and 1.77, 2.20 and 1.59 in dark,
+  so the ink slab's pair was half again as loud as the other two in both
+  themes. Tuned to **1.8:1 on every ground** instead — `--mark-dim` is 28%
+  on sand, 20% on the slab, 37% on coral, and 20 / 20 / 33 in dark — which
+  lands them at 1.81 / 1.83 / 1.79 light and 1.77 / 1.78 / 1.81 dark. **A 2%
+  spread where it was 49%.**
+  Dark gives `#work` and `.about` the SAME alpha and must: `--white` and
+  `--ink` are both `#111117` there, so the two grounds are literally the
+  same colour and two different alphas on them is the bug, not the fix.
+  **The LIT mark is deliberately NOT equalised.** It is 3.21:1 on sand
+  against 4.60 on the other two, and `--accent-ink` would fix it (4.71). It
+  stays `--accent` because the nav is fixed: the JM wordmark's coral mark is
+  on screen at the same time as these, and being that same mark again is the
+  whole point. Two reds in one view is the near-miss bug. The three lit
+  marks are never co-visible with **each other**, so hue beats parity.
+  **Vertically they are centred on the heading, not hung off its baseline.**
+  `.section-head` is `align-items: baseline`, which left them 20px below the
+  heading's optical centre and, on a phone where SELECTED PROJECTS wraps,
+  pinned to the first line while the heading grew past them. `align-self:
+  center` fixes both, and centring on the h2's BOX is right here for a
+  reason worth keeping: measured through the font's own metrics at 1280, the
+  cap band runs 904.5–959.3 (centre 931.9) and the box 892.2–972.2 (centre
+  932.2). **They agree to 0.3px because the heading is all caps with no
+  descenders.** A lowercase heading would not, and would need measuring
+  again.
+  **The gap IS the mark's width**, so the row is five equal units and reads
+  as one rhythm rather than three things that happen to be 7 apart.
+  **On `.about` they go to the PANEL edge, not the text measure.** That
+  section has two right edges — prose stops at `--about-inset`, structure
+  (the stats row, these marks) runs the extra 56px and lands on the photo
+  panel. They sat at 804 against a panel at 860, stranded in a row whose own
+  rule and whose stats row both run all the way across. That 56 is
+  `--about-gap` now rather than a literal in two places, and it is 0 below
+  800px where the panel rejoins the flow and the section has one edge again.
   **They are NOT links.** They look like pagination and the pull to wire
   them up is strong, but PROJECTS / ABOUT / CONTACT is in the nav on every
   screen, so three marks × three sections is nine controls doing what three
