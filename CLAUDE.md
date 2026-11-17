@@ -198,7 +198,6 @@ colour there, not at call sites.**
 | `--blue` | `#657FB9` dusty | `#8190FF` electric | Secondary |
 | `--accent-warm` | `#D9A227` amber | `#FFC847` | **Graphic only** — two hero shapes |
 | `--accent-plum` | `#6E4E6B` muted plum | `#B98CFF` violet | **Graphic only** — one hero shape |
-| `--green` | `#1F8F4D` | `#3DE88A` | Availability dot |
 | `--muted` | `#6A6861` | `#9C9AA3` | Secondary text |
 | `--line` | `#CBC4B4` | `#33333D` | Light dividers |
 
@@ -1327,16 +1326,43 @@ is most of the point.
   scaling Y cannot touch either. **Re-measure the same way before moving it
   again** — the head is a third of the glyph, so there is a point where
   lengthening starts stretching it into a spike.
-- **The two red dots are one mark at two sizes.** The full stop after MURRAY
-  and the dot in the JM wordmark are both `--accent`, and keeping them the
-  same red meant replacing the nav one's `\25CF` glyph with a drawn
-  `border-radius` circle. As TEXT at 22.4px/400 it sat just under the
-  large-text threshold and owed the full 4.5:1, which coral cannot give on the
-  ground (3.21:1) — that is why it used to be the darker `--accent-ink`, and
-  why it read as a near-miss rather than a repeat. Drawn, it is non-text
-  content, the bar is 3:1, and 3.21 passes. The span is empty and
-  `aria-hidden`; the glyph was being announced as "black circle" after the J
-  and the M. In dark both tokens are the same neon, so nothing changes there.
+- **The red mark appears THREE times and is one mark at three sizes.** The
+  full stop after MURRAY, the mark in the JM wordmark, and — since
+  2026-11-17 — the availability dot in the hero badge. All three are
+  `--accent`, and all three are the same SQUARE, because that is what
+  Archivo Black's full stop is: a very slightly wide rectangle, 42.4 × 39.8
+  measured at 200px, ratio 1.065. The nav mark is 0.34em × 0.319em
+  (7.6 × 7.1px) and the badge mark 0.667em × 0.625em of its own 0.75rem
+  (8 × 7.5px, ratio 1.067).
+  Getting the nav one there meant dropping its `\25CF` glyph. As TEXT at
+  22.4px/400 it sat just under the large-text threshold and owed the full
+  4.5:1, which coral cannot give on the ground (3.21:1) — that is why it used
+  to be the darker `--accent-ink`, and why it read as a near-miss rather than
+  a repeat. Drawn, it is non-text content, the bar is 3:1, and 3.21 passes.
+  Both spans are empty; the nav one is `aria-hidden` because the glyph was
+  being announced as "black circle" after the J and the M. In dark all three
+  are the same neon, so nothing changes there.
+  **The badge dot was a pulsing green circle until Jack called it out**: "it
+  looks cool but like AI". He was right about what it was — a green dot that
+  breathes is the status indicator every SaaS dashboard ships, and it meant
+  "service up" rather than "Jack Murray". Making it the same square as the
+  wordmark costs nothing and stops the hero carrying a fourth kind of object.
+  It is 8 × 7.5 and not 9 × 9 because a square carries more optical weight in
+  the same box as a circle — the favicon note below records the same trade.
+  **The green took `--green` with it**, which was the only thing using the
+  token. It also took a contrast failure nobody had seen: at rest green
+  measured 3.49:1 light and 11.74:1 dark, but the badge fills with
+  `--black` on hover, and in dark that is `#F4F2F5` — neon green on it is
+  **1.44:1**. Coral/pink gives 4.60:1 and 3.28:1 on the same fills. One more
+  for the pile of bugs that only live in `:hover`.
+  **Dark's bloom on that mark has to be declared twice**, in the keyframes
+  AND in the rule, and it is not a mistake. A running animation outranks any
+  non-`!important` declaration for the property it animates, so the old
+  static `box-shadow` glow was invisible on every normal load and appeared
+  only under `prefers-reduced-motion`, where the global block collapses the
+  animation and the declaration takes over. It was a reduced-motion-only
+  feature by accident. Keyframes cover the animated case, the declaration
+  covers the finished one.
 - **The four icon files are the same mark again**, and they were the last
   place the superseded palette survived: `favicon.svg` was still
   `#1e1c17` / `#e6e3db` / `#ff3b30` and `site.webmanifest` still

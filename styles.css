@@ -196,7 +196,6 @@ picture { display: contents; }
      strength, so it would even pass as small text; it will not be used that
      way, but it means it never disappears. */
   --accent-plum: #6E4E6B;
-  --green: #1F8F4D;   /* availability dot - 3.49:1 on the ground, a non-text UI mark */
   /* Chip fills for the about-page skill tags. These have to be tokens: the
      overlay's background is var(--white), which flips with the theme, so a
      hardcoded dark tint vanished completely in dark mode. */
@@ -320,7 +319,6 @@ picture { display: contents; }
      beside hot pink, electric blue and lime without looking like a smudge,
      and violet is the one gap in that set */
   --accent-plum: #B98CFF;
-  --green: #3DE88A;
   /* --ink flips now (see the note in :root). Dark's value is the ground
      itself, so the marquee, the about slab and the footer stay part of the
      page instead of becoming panels sitting on it. Without this line dark
@@ -1222,20 +1220,45 @@ body.is-loading { overflow: hidden; }
     background: var(--black); color: var(--white);
   }
 }
+/* THE SAME MARK AGAIN, at a third size. This was a 9px --green circle, and
+   a green dot that breathes is the status indicator every SaaS dashboard
+   ships - Jack read it as generic: "looks cool but like AI". The page
+   already owns a mark that means "Jack Murray" rather than "service up":
+   the full stop after MURRAY, which Archivo Black draws as a very slightly
+   wide rectangle (42.4 x 39.8 at 200px, ratio 1.065) and which .nav-logo
+   .dot already repeats. So the availability mark becomes the third instance
+   of that one mark rather than a fourth kind of object on the page.
+   8 x 7.5px, not 9 x 9. The ratio is the glyph's 1.065 (8/7.5 = 1.067), and
+   the size is DOWN from the circle's diameter because a square carries more
+   optical weight in the same box - the favicon note records the same trade,
+   a 14.6 square against a 16.4 circle. Sized in em off the badge's own
+   0.75rem so it tracks the label beside it.
+   No border-radius, so the expanding box-shadow ring pulses as a hard
+   square too. That is the house shadow - hard, unblurred - and it reads as
+   the mark stamping itself rather than as a signal-strength meter.
+   --accent, because that is what the other two instances are. It is non-text
+   content either way (the span is empty), so the bar is 3:1: coral gives
+   3.21:1 on the ground and 4.60:1 on the --black hover fill, dark's pink
+   5.16:1 and 3.28:1.
+   The green it replaces was fine at rest (3.49:1 light, 11.74:1 dark) and
+   failed where nothing was looking: on the badge's dark-mode hover, which
+   fills with --black (#F4F2F5 there), neon green measured 1.44:1. A walk of
+   the resting DOM never visits :hover, which is how every contrast bug this
+   project has shipped got in. */
 .badge-dot {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: var(--green);
-  /* was a literal rgba() matching only the light-mode green — silently
-     wrong (a muted olive glow) once dark mode's brighter neon green
-     took over; color-mix keeps the pulse tracking whichever --green
-     the current theme actually uses */
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 60%, transparent);
+  width: 0.667em; height: 0.625em;
+  background: var(--accent);
+  /* color-mix rather than a literal rgba(): the token is coral in light and
+     hot pink in dark, and a literal can only ever match one of them. */
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
   animation: badge-pulse 1.8s ease-out infinite;
 }
+/* 8px of spread, not the circle's 9: the ring is square now, so the same
+   number puts noticeably more ink on the page at the same distance out. */
 @keyframes badge-pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent); }
-  70% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--green) 0%, transparent); }
-  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 0%, transparent); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  70% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
 }
 .hero-name {
   font-family: var(--ff-display);
@@ -3898,7 +3921,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
    ------------------------------------------------------------------------ */
 /* DARK MODE INTENSITY — heavier, more aggressive personality:
    neon glow on accent text, harsher hover shadows. Colors themselves
-   already shift via the --accent/--highlight/--blue/--green overrides above. */
+   already shift via the --accent/--highlight/--blue overrides above. */
 /* The strip is painted in fixed --ink so it stays dark in both themes. In
    dark mode that put it 1.04:1 from the warm page black: a hue shift with
    no brightness step, which read as a smudge rather than a band. Drop it to
@@ -3934,8 +3957,27 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 :root[data-theme="dark"] .stat-num {
   text-shadow: 0 0 14px currentColor;
 }
+/* Dark's neon bloom on the mark. It has to be stated TWICE, and the
+   duplication is the fix rather than an oversight.
+   The element has a running animation on box-shadow, and an animation
+   outranks any non-!important declaration for the property it animates - so
+   the rule that used to be here (a 10px glow, in --green) was invisible on
+   every normal load, and showed up only under prefers-reduced-motion, where
+   the global block collapses the duration to 0.001ms and one iteration and
+   the animated value falls back to the declaration. The glow was a
+   reduced-motion-only feature by accident.
+   So the keyframes carry the bloom alongside the ring, for the animated
+   case, and the declaration carries it too, for the finished-animation case.
+   Both are --accent now, which is what the mark is. */
 :root[data-theme="dark"] .badge-dot {
-  box-shadow: 0 0 10px 2px var(--green);
+  box-shadow: 0 0 10px 2px var(--accent),
+              0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
+  animation-name: badge-pulse-dark;
+}
+@keyframes badge-pulse-dark {
+  0% { box-shadow: 0 0 10px 2px var(--accent), 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  70% { box-shadow: 0 0 10px 2px var(--accent), 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+  100% { box-shadow: 0 0 10px 2px var(--accent), 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
 }
 @media (hover: hover) {
   /* tracks the base rule's offset - this one is more specific and declared
