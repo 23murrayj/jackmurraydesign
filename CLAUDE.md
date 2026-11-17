@@ -1171,28 +1171,40 @@ correct when someone wrote it down.
   at the cap; **44 never was — the real gap is 48.88** — and because the
   column is bottom-aligned on a desktop that 5px pushed the badge and the role
   line 4px up from where the page then drew them.
-- **Only the fixed-size controls are still measured**: the badge at 126.6 ×
-  35.5 and the CTA at 226.2 × 61.5, both in English at every width. That badge
-  number has moved three times and the history is the warning — 296.4, then
-  295.4 when the availability dot became a square, then **126.6 when the label
-  went from OPEN TO PROJECTS & DESIGN WORK to LET'S TALK**. A copy change is a
-  skeleton change. Across the four languages it now runs 124.6 (es) to 137.5
-  (it), where it used to run 292 to 323 — a 13px spread instead of 31, so one
-  English measurement covers the others better than it did. Japanese is still
-  the tall one at 38, and takes the CTA to 65. A skeleton is drawn before i18n
-  has run, so it can only ever be one language, and English is the default.
-- **1281 to ~1296 is its own problem.** The hero is two columns there but the
-  side column is narrower than the BUTTON, so the real button wraps — 81px
-  tall, stretched to the column — and the skeleton has to wrap with it. One
-  **container** query says exactly that (`@container (max-width: 226px)`),
-  because the condition really is about the column and not the viewport.
-  **It used to be 1281 to ~1373, with 1366 × 768 right in the middle of it**,
-  because the badge wrapped too and a second query at 295px handled that.
-  LET'S TALK took the badge to 126.6, and the side column is never narrower
-  than 213 while the hero is two columns (0.9vw − 939.9 at vw 1281), so the
-  badge cannot wrap at any width now. That rule was not left idle, it was
-  **removed** — it would have drawn a 51px two-line badge over a real one that
-  stays 35.5, which is the same class of bug it was written to fix.
+- **Only the fixed-size controls are still measured**: the badge at 222.1 ×
+  35.5 and the CTA at 226.2 × 61.5, both in English at every width. **That
+  badge number has moved four times** and the list is the warning — 296.4,
+  then 295.4 when the availability dot became a square, then 126.6 for LET'S
+  TALK, now **222.1 for LET'S MAKE SOMETHING**, plus 2 for the mark growing
+  8 → 10 and 4 for the gap going 10 → 14. **A copy change is a skeleton
+  change, and so is a spacing change.** Across the four languages it runs
+  150.5 (ja) to 222.8 (es), and English at 222.1 is within 0.7 of the widest
+  Latin one. Japanese is the tall one at 37.5, and takes the CTA to 65. A
+  skeleton is drawn before i18n has run, so it can only ever be one language,
+  and English is the default.
+  **The overflow guard on `.sk-badge` is `min(100%, …)` and not 96%**, which
+  cost a 5.5px error for one commit: at a column of 225.6 the container query
+  below has just stopped firing, and 96% of 225.6 is 216.6 against a real
+  badge of 222.1. Everything narrower than the badge is already handled by
+  that query, so the percentage only has to not clip — 96 bought nothing and
+  broke the one width where the two rules meet.
+- **1281 to ~1296 is its own problem**, and both controls are in it. The hero
+  is two columns there but the side column is narrower than the badge and the
+  button, so both wrap — 51px and 81px tall, stretched to the column — and the
+  skeleton has to wrap with them. Two **container** queries say exactly that
+  (`@container (max-width: 222px)` and `226px`), because the condition really
+  is about the column and not the viewport. Measured at 1281 (column 213) and
+  1288 (219.3) the badge wraps; at 1295 (225.6) it does not, which is where
+  the 222 comes from — the badge's own width. The badge band is 1281 to ~1291
+  and the button's 1281 to ~1296.
+  **That badge rule has been deleted and reinstated once**, and that is the
+  part to read twice. At 295px of label the band was 1281 to ~1373 with
+  1366 × 768 in the middle of it. LET'S TALK took the badge to 126.6 —
+  narrower than the column ever gets in two-column mode — so the rule could
+  not fire and was removed rather than left idle. LET'S MAKE SOMETHING took it
+  back to 222.1 and the rule had to come back. Neither call was wrong: the
+  point is that **this threshold is a function of the LABEL**, so it has to be
+  re-derived whenever the copy moves, in both directions.
 - **The nav is three children, not two.** `.nav` is `space-between` with
   wordmark, links and controls, so the links bar has to be a child of
   `.sk-nav` too — nested inside the right-hand group it drew at x984 against
@@ -1448,7 +1460,11 @@ is most of the point.
   the badge read as a label ON the statement and the button as the separate
   thing you do about it.
   **The badge was a STATUS and is now an invitation**: it read OPEN TO
-  PROJECTS & DESIGN WORK and now reads LET'S TALK, on Jack's word. Worth
+  PROJECTS & DESIGN WORK, then LET'S TALK, and now **LET'S MAKE SOMETHING**,
+  which is the magnetic headline's own words — so the page opens and closes on
+  the same phrase, and the badge is a small preview of the section it links
+  to. The translations are `magnetic.rows` joined up, so this is already
+  Jack's approved copy in four languages rather than new wording. Worth
   knowing what that costs, because the spacing argument above was built on it
   being a status: the hero now carries two things to click, the badge to
   /#contact and the button to /#work, where it used to carry one action and
@@ -1567,15 +1583,29 @@ is most of the point.
   8px side fits one 6px cycle and you get a square with broken corners.
   Dotted is 1× and 1×, so the same side takes four — the perforated look the
   reference actually shows. Going to 2px to make it heavier doubles the cycle
-  and makes it worse. If it reads too small on a real screen, **size is the
-  lever, not weight**: the mark is 8 × 7.5 to sit beside 12px caps and the
-  whole gesture is 13px wide in a badge 36px tall.
-  **5 × −4 of displacement**, about two thirds of the mark's own size — far
+  and makes it worse. That is why **size is the lever, not weight** — and the
+  mark took it: 8 × 7.5 → **10 × 9.4** on Jack asking for it bigger, four dots
+  a side becoming five, and the same 10 the section marks use. The 1.065 ratio
+  is the full stop's and does not move.
+  **6 × −5 of displacement**, about two thirds of the mark's own size — far
   enough to read as displaced rather than as a misprint, near enough that the
-  two still read as one object. Up and RIGHT because the 10px gap to the label
-  is the only slack around it; the same move left would eat the 14px padding
-  and crowd the border. The mark is absolutely positioned, so **the badge's
-  126.6px width does not change** and the skeleton number stays put.
+  two still read as one object. Up and RIGHT because the gap to the label is
+  the only slack around it; the same move left would eat the padding and crowd
+  the border. The mark is absolutely positioned, so it costs the badge's width
+  nothing.
+  **THE BADGE HAS ONE MEASURE NOW, 14, USED THREE TIMES**: border to mark,
+  mark to label, label to border. It was 10 against a 14 padding, which is the
+  near-miss that looks almost deliberate — and at 10 a 6px displacement would
+  have left the square 4px off the L, which reads as a collision rather than
+  as a thing out of place. At 14 it leaves 8, or 0.67em. Measured in all four
+  languages, the three distances come out **14.00 / 14.00 / 14.00**.
+  The word space in this type is **4.55px** (3.05 glyph + 1.5 tracking, through
+  the font's own metrics), so the CTA's comment calling its own 14 'a word
+  space' was wrong about the arithmetic and right about the number.
+  **A 1.5px correction for the trailing letter-space was tried and reverted**:
+  `letter-spacing` does add its 1.5 after the last glyph, but `Range`'s ink box
+  already excludes it, so the right side measured 14.00 without help and the
+  correction took it to 12.50. The probe caught it; the eye would not have.
   **`--knob-ease`, the theme switch's curve**, which overshoots slightly. The
   note there applies word for word: a thing that slides to a hard stop reads
   as a value being set, one that arrives with weight reads as a switch being

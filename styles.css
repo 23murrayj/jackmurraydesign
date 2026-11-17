@@ -571,17 +571,24 @@ a { color: inherit; text-decoration: none; }
   --sk-role: clamp(1.45rem, 10.6cqw, 2.35rem);
 }
 /* The badge and the CTA are fixed-size controls - they do not scale with the
-   viewport or the column - so these two stay measured: 126.6 x 35.5 and
+   viewport or the column - so these two stay measured: 222.1 x 35.5 and
    226.2 x 61.5 at 1440 in English, and the same at every other width.
-   The badge was 295.4 until its label went from OPEN TO PROJECTS & DESIGN
-   WORK to LET'S TALK, which is most of this file's history of that number in
-   one line: it has also been 296.4, before the availability dot became a
-   square. Across the four languages it now runs 124.6 (es) to 137.5 (it),
-   where it used to run 292 to 323 - a 13px spread instead of a 31px one, so
-   one English measurement covers the others better than it used to.
-   Japanese is still the tall one, 38 against 35.5, and takes the CTA to 65.
-   The percentage is only an overflow guard for a very narrow phone. */
-.sk-badge { height: 36px; width: min(96%, 127px); margin-bottom: calc(var(--sk-role) * 0.8); }
+   THAT BADGE NUMBER HAS MOVED FOUR TIMES and the list is the warning: 296.4,
+   then 295.4 when the availability dot became a square, then 126.6 for LET'S
+   TALK, now 222.1 for LET'S MAKE SOMETHING - plus 2 for the mark growing from
+   8 to 10 and 4 for the gap going from 10 to 14. A copy change is a skeleton
+   change, and so is a spacing change.
+   Across the four languages it runs 150.5 (ja) to 222.8 (es), and English at
+   222.1 is within 0.7 of the widest Latin one. Japanese is the tall one, 37.5
+   against 35.5, and takes the CTA to 65.
+   THE GUARD IS 100% AND NOT 96%, which cost a 5.5px error for one commit.
+   At a column of 225.6 (vw 1295) the container query below has just stopped
+   firing, so this rule draws the bar - and 96% of 225.6 is 216.6 against a
+   real badge of 222.1. The percentage only has to stop the bar overflowing a
+   column narrower than the badge, and everything narrower than the badge is
+   already handled by the container query, so 96 was buying nothing and
+   breaking the one width where the two rules meet. */
+.sk-badge { height: 36px; width: min(100%, 222px); margin-bottom: calc(var(--sk-role) * 0.8); }
 /* Two lines at line-height 1.1, so the height is exactly 2.2 x --role-size -
    not the 83 / 79 pair this used to carry, which were the same number
    measured twice. The width is the role line's ink, 7.94x the size, the same
@@ -591,23 +598,27 @@ a { color: inherit; text-decoration: none; }
 .sk-line  { height: calc(var(--sk-role) * 2.2); width: min(96%, calc(var(--sk-role) * 7.94)); margin-bottom: calc(var(--sk-role) * 1.3); }
 .sk-cta   { height: 62px; width: 226px; }
 /* THE BAND BETWEEN THE BREAKPOINT AND A USABLE COLUMN, where the hero is two
-   columns but the side one is narrower than a control in it, so that control
-   WRAPS and the skeleton has to wrap with it.
-   A container query rather than a viewport one, because that is literally the
-   condition: the button wraps when the column is narrower than its 226px of
-   content, and measured at 1281 the wrapped button is 81 tall and stretched
-   to the full column. Without it the skeleton drew a one-line button where
-   the page draws two.
-   THE BADGE USED TO BE IN HERE TOO, at 295px, and the band was 1281 to ~1373
-   because of it - 1366 x 768 sat right in the middle. Shortening the label to
-   LET'S TALK took the badge to 126.6, and the side column is never narrower
-   than 213 while the hero is two columns (0.9vw - 939.9 at vw 1281), so the
-   badge cannot wrap at any width any more and the rule was not merely idle,
-   it was wrong: it would have drawn a 51px two-line badge over a real one
-   that stays 35.5. The band is now 1281 to ~1296, the button alone.
+   columns but the side one is narrower than the controls in it, so they WRAP
+   and the skeleton has to wrap with them.
+   Container queries rather than viewport ones, because that is literally the
+   condition: each control wraps when the column is narrower than its own
+   content. Measured at 1281, where the column is 213: the wrapped badge is 51
+   tall and the wrapped button 81, both stretched to the full column. Measured
+   at 1288 (column 219.3) the badge still wraps, and at 1295 (column 225.6) it
+   does not - which is where the 222 comes from, the badge's own width.
+   THE BADGE RULE HAS BEEN DELETED AND REINSTATED ONCE, which is the thing to
+   read twice. At 295px of label the band was 1281 to ~1373 and 1366 x 768 sat
+   in the middle of it. LET'S TALK took the badge to 126.6 - narrower than the
+   column ever gets in two-column mode - so the rule could not fire and was
+   removed rather than left idle. LET'S MAKE SOMETHING took it back to 222.1
+   and the rule had to come back. The lesson is not that the rule was wrong
+   either time: it is that this one is a function of the LABEL, so it has to
+   be re-derived whenever the copy moves, in both directions.
+   The badge band is now 1281 to ~1291 and the button's 1281 to ~1296.
    English, like the rest of these. A skeleton is drawn before i18n has run
    and can only be one language. */
-@container (max-width: 226px) { .sk-cta { height: 81px; width: 100%; } }
+@container (max-width: 222px) { .sk-badge { height: 51px; width: 100%; } }
+@container (max-width: 226px) { .sk-cta   { height: 81px; width: 100%; } }
 
 /* The strip pulls 1px into the grid's border, exactly as the marquee does -
    and like the marquee it is FULL BLEED and 38px tall. It was 80px tall and
@@ -1268,8 +1279,20 @@ body.is-loading { overflow: hidden; }
   background: var(--ink);
 }
 
+/* ONE NUMBER FOR THE BADGE'S INTERNAL RHYTHM. The side padding and the gap
+   between the mark and the label are the same 14, so the three distances
+   across the badge - border to mark, mark to label, label to border - are
+   equal and the mark reads as set in its own well rather than shoved against
+   the type. It was a flat 10 against a 14 padding, which is the kind of
+   near-miss that looks almost deliberate.
+   The ACTUAL word space in this type is 4.55px (3.05 glyph + 1.5 tracking,
+   measured through the font's own metrics), which is far too tight for a
+   square mark - so the CTA's comment calling its own 14 'a word space' was
+   wrong about the arithmetic and right about the number. What 14 really is
+   here is the badge's one measure, used three times. */
 .badge-available {
-  display: inline-flex; align-items: center; gap: 10px;
+  --badge-pad: 14px;
+  display: inline-flex; align-items: center; gap: var(--badge-pad);
   width: fit-content;
   border: 2px solid var(--black);
   /* opaque, not transparent. The hero shapes sit behind this column and in
@@ -1277,7 +1300,7 @@ body.is-loading { overflow: hidden; }
      words of 12px tracked caps made them hard to read. The page colour
      keeps the badge looking unfilled while giving the text a clean ground. */
   background: var(--white);
-  padding: 8px 14px;
+  padding: 8px var(--badge-pad);
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
@@ -1316,7 +1339,7 @@ body.is-loading { overflow: hidden; }
    project has shipped got in. */
 .badge-dot {
   position: relative;
-  width: 0.667em; height: 0.625em;
+  width: 0.833em; height: 0.782em;
   /* THE EMPTY SLOT. The mark is not in it at rest - see ::after.
      DOTTED, NOT DASHED, and that is arithmetic rather than preference. Chrome
      draws a dashed border with the dash and the gap both at 3x the border
@@ -1328,9 +1351,11 @@ body.is-loading { overflow: hidden; }
      currentColor so it inverts with the badge on hover without a second
      declaration, at 70% so it reads as a ghost of the mark rather than as a
      second mark - it is a 1px line and it cannot afford to be much fainter.
-     IF THIS READS TOO SMALL ON A REAL SCREEN, size is the lever, not weight:
-     the mark is 8 x 7.5 to sit beside 12px caps and the whole gesture is 13px
-     wide, where the badge is 36 tall and has room for more. */
+     IT WENT 8 x 7.5 -> 10 x 9.4 on Jack asking for it bigger, which is the
+     lever this comment already named: a 1px rule cannot be made heavier
+     without losing the perforation, so the box has to grow instead. Four dots
+     a side becomes five, and the mark is now the same 10 as .section-marks.
+     The 1.065 ratio is the full stop's and does not move. */
   border: 1px dotted color-mix(in srgb, currentColor 70%, transparent);
 }
 /* THE MARK ITSELF, drawn as a pseudo-element so the slot can stay in the flex
@@ -1351,16 +1376,19 @@ body.is-loading { overflow: hidden; }
 }
 
 /* OUT OF PLACE AT REST, HOME ON HOVER. Jack's idea, and his words for it were
-   "like it's not complete" - the badge shows a dashed socket with the mark
+   "like it's not complete" - the badge shows a dotted socket with the mark
    sitting up and to the right of it, and pointing at the badge snaps the mark
    into the socket and starts it pulsing.
-   5 x -4 against an 8 x 7.5 mark is about two thirds of its own size, which
+   6 x -5 against a 10 x 9.4 mark is about two thirds of its own size, which
    is far enough to read as displaced rather than as a misprint and near
    enough that the two still read as one object. It goes up and RIGHT because
-   the badge's 10px gap to the label is the only slack around it: 5px right
-   leaves 5px to the L of LET'S, where the same move left would eat into the
-   14px padding and crowd the border instead. Nothing clips - the badge has
-   no overflow, and 4px up puts the mark level with the top of the label.
+   the gap to the label is the only slack around it, and the gap is what had
+   to move when the mark grew: at the old 10 a 6px shift left the square 4px
+   off the L, and a solid square 4px off a cap reads as a collision rather
+   than as a thing out of place. At 14 it leaves 8, which is 0.67em and
+   comfortable. The same move LEFT would eat into the padding and crowd the
+   border instead. Nothing clips - the badge has no overflow - and 5px up
+   puts the mark level with the top of the label.
    --knob-ease, the theme switch's curve, which overshoots slightly. The note
    there applies word for word: a thing that slides to a hard stop reads as a
    value being set, one that arrives with weight reads as a switch being
@@ -1374,7 +1402,7 @@ body.is-loading { overflow: hidden; }
    way to fix it. They get the completed badge, static - which is exactly
    what this was before today. */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .badge-dot::after { transform: translate(5px, -4px); }
+  .badge-dot::after { transform: translate(6px, -5px); }
   .badge-available:hover .badge-dot::after {
     transform: translate(0, 0);
     animation: badge-pulse 1.8s ease-out infinite var(--knob-dur);

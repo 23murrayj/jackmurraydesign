@@ -46,7 +46,7 @@
       'nav.aria.language': 'Choose language',
 
 
-      'hero.badge': "LET'S TALK",
+      'hero.badge': "LET'S MAKE SOMETHING",
       'hero.cta': 'VIEW PROJECTS',
       'hero.role': 'UX DESIGNER &<br>DIGITAL CREATIVE',
       'marquee.items': ['UX/UI', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
@@ -243,7 +243,7 @@
       'nav.aria.language': 'Elegir idioma',
 
 
-      'hero.badge': 'HABLEMOS',
+      'hero.badge': 'HAGAMOS ALGO JUNTOS',
       'hero.cta': 'VER PROYECTOS',
       'hero.role': 'DISEÑADOR UX &<br>CREATIVO DIGITAL',
       'marquee.items': ['UX/UI', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
@@ -438,7 +438,7 @@
       'nav.aria.language': '言語を選択',
 
 
-      'hero.badge': '話しましょう',
+      'hero.badge': 'なにかつくろう',
       'hero.cta': 'プロジェクトを見る',
       'hero.role': 'UXデザイナー &<br>デジタルクリエイティブ',
       'marquee.items': ['UX/UI', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
@@ -633,7 +633,7 @@
       'nav.aria.language': 'Scegli la lingua',
 
 
-      'hero.badge': 'PARLIAMONE',
+      'hero.badge': 'CREIAMO QUALCOSA',
       'hero.cta': 'GUARDA I PROGETTI',
       'hero.role': 'DESIGNER UX &<br>CREATIVO DIGITALE',
       'marquee.items': ['UX/UI', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
