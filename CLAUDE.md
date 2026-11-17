@@ -441,7 +441,7 @@ four languages whenever you size display type.**
   up the filter row on a phone instead of at the cards — the right failure,
   since the shapes are dialled back below 760 anyway.
 - **Small text and controls inside the field's reach get an opaque
-  background.** Five now: the availability badge, `#work .section-num`, the
+  background.** Five now: the availability badge, `#work .section-marks`, the
   filter chips, and — since the field started reaching the nav — the
   `.lang-toggle` and the `.theme-switch`. Those two were
   `background: transparent` with a 2px rule, which is exactly the case this
@@ -1324,6 +1324,39 @@ is most of the point.
   becomes a highlighted phrase, and the two rows read as two voices rather
   than one line that happens to break. **Colour around the letterform reads as
   light; colour inside it reads as a change of subject.**
+- **THE SECTION EYEBROWS ARE GONE AND THEIR SLOT IS THREE MARKS.** It held
+  "01 / PROJECTS" beside a heading already reading SELECTED PROJECTS, and
+  "02 / ABOUT" beside ABOUT. Jack: uppercase numbered eyebrows "look too
+  AI" — and he is describing something real, not a mood. A tracked-out
+  all-caps label restating the heading next to it is the house style of
+  every template, and the brief asks for exactly its deletion: *avoiding
+  unnecessary descriptions*, prose that restates what the work already
+  shows. The number was the only part carrying anything the heading did
+  not, and a number is better drawn than spelled.
+  So `.section-marks` is three of the page's own mark — the same slightly
+  wide rectangle as the full stop after MURRAY, the JM wordmark and the
+  availability dot, now at a fourth size, 10 × 9.4 for the glyph's 1.065.
+  One lit, two not. **A little bigger than the badge's 8**, because it
+  answers a 73.6px heading across the width of the page rather than sitting
+  inside a 12px label.
+  **Unlit is the section's own foreground at a fifth, lit is `--accent`** —
+  derived, so it tracks the theme and cannot fail contrast. Dimmed ACCENT
+  was the first try and was wrong: three pale coral squares read as one
+  faded thing, where a grey pair beside a coral one reads as off and on.
+  `.contact` is the exception, because its background IS `--accent`: there
+  the lit mark is `--ink`, the colour the section already writes in.
+  **They are NOT links.** They look like pagination and the pull to wire
+  them up is strong, but PROJECTS / ABOUT / CONTACT is in the nav on every
+  screen, so three marks × three sections is nine controls doing what three
+  already do — and at 10px they are under half a touch target. They are an
+  indicator; the nav is the control. `aria-hidden` follows from the same
+  thing: the heading beside them already says which section this is. That is
+  also why this was free in four languages — **it replaced twelve i18n keys
+  with none.**
+  `#work`'s row keeps the opaque patch the eyebrow had, with one extra
+  reason: the hero field is made of drifting squares in `--accent` and
+  `--blue`, so three small static squares inside its reach can read as four
+  more of them.
 - **The stats are all one colour, `--accent`.** This row has been three
   things: all `--highlight` (stone in light — four grey numbers, dead), then a
   hue per cell (fixed the greyness, broke something worse — four figures in

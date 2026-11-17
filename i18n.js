@@ -52,7 +52,6 @@
       'marquee.items': ['UX/UI', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
 
       'work.title': 'SELECTED PROJECTS',
-      'work.num': '01 / PROJECTS',
       'filter.ALL': 'ALL',
       'e404.heading': "This page doesn't exist.",
       'e404.body': 'The link may be out of date, or the address might have a typo in it.',
@@ -137,7 +136,6 @@
       'project.role': 'ROLE',
 
       'about.title': 'ABOUT',
-      'about.num': '02 / ABOUT',
       'about.statement': "I'm a UX designer studying at Bradley University. The goal is making things <b>for others</b>. It's not about being ostentatious, it's about using <b>research</b> to create <b>verifiably successful designs</b>.",
       'about.hook': "I’ve lived on three continents.<br>So I learned that perspective and culture are crucial for design.",
       'about.stat.nowValue': "Milan",
@@ -191,7 +189,6 @@
       'magnetic.aria': "Let's make something.",
 
       'contact.title': 'CONTACT',
-      'contact.num': "03 / LET'S TALK",
       'contact.statement': "GOT AN IDEA?<br>LET'S TALK!",
       'contact.copy': 'COPY',
       'contact.resume': 'RESUME',
@@ -253,7 +250,6 @@
       'marquee.items': ['UX/UI', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
 
       'work.title': 'PROYECTOS SELECCIONADOS',
-      'work.num': '01 / PROYECTOS',
       'filter.ALL': 'TODOS',
       'e404.heading': 'Esta página no existe.',
       'e404.body': 'El enlace puede estar desactualizado, o la dirección puede tener un error.',
@@ -338,7 +334,6 @@
       'project.role': 'ROL',
 
       'about.title': 'SOBRE MÍ',
-      'about.num': '02 / SOBRE MÍ',
       'about.statement': "Soy diseñador UX y estudio en Bradley University. El objetivo es hacer cosas <b>para otros</b>. No se trata de ser ostentoso, sino de usar la <b>investigación</b> para crear <b>diseños verificablemente exitosos</b>.",
       'about.hook': "He vivido en tres continentes.<br>Así que aprendí que la perspectiva y la cultura son cruciales para el diseño.",
       'about.stat.nowValue': "Milán",
@@ -392,7 +387,6 @@
       'magnetic.aria': 'Hagamos algo juntos.',
 
       'contact.title': 'CONTACTO',
-      'contact.num': '03 / HABLEMOS',
       'contact.statement': '¿TIENES UNA IDEA?<br>¡HABLEMOS!',
       'contact.copy': 'COPIAR',
       'contact.resume': 'CV',
@@ -452,7 +446,6 @@
       'marquee.items': ['UX/UI', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
 
       'work.title': '選りすぐりのプロジェクト',
-      'work.num': '01 / プロジェクト',
       'filter.ALL': 'すべて',
       'e404.heading': 'このページは存在しません。',
       'e404.body': 'リンクが古いか、アドレスに誤りがあるかもしれません。',
@@ -537,7 +530,6 @@
       'project.role': '役割',
 
       'about.title': 'プロフィール',
-      'about.num': '02 / プロフィール',
       'about.statement': "ブラッドリー大学で学ぶUXデザイナーです。目指すのは、<b>他者のため</b>にものをつくること。誇示するためではなく、<b>リサーチ</b>によって<b>成功を検証できるデザイン</b>をつくるためのものです。",
       'about.hook': "3つの大陸で暮らしてきました。<br>だから、視点と文化はデザインに欠かせないと学びました。",
       'about.stat.nowValue': "ミラノ",
@@ -591,7 +583,6 @@
       'magnetic.aria': 'なにかつくろう。',
 
       'contact.title': 'お問い合わせ',
-      'contact.num': '03 / 話しましょう',
       'contact.statement': 'アイデアがありますか？<br>話しましょう！',
       'contact.copy': 'コピー',
       'contact.resume': '履歴書',
@@ -651,7 +642,6 @@
       'marquee.items': ['UX/UI', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
 
       'work.title': 'PROGETTI SELEZIONATI',
-      'work.num': '01 / PROGETTI',
       'filter.ALL': 'TUTTI',
       'e404.heading': 'Questa pagina non esiste.',
       'e404.body': "Il link potrebbe essere obsoleto, o l'indirizzo potrebbe contenere un errore.",
@@ -736,7 +726,6 @@
       'project.role': 'RUOLO',
 
       'about.title': 'CHI SONO',
-      'about.num': '02 / CHI SONO',
       'about.statement': "Sono un UX designer e studio alla Bradley University. L'obiettivo è fare cose <b>per gli altri</b>. Non si tratta di essere ostentati, ma di usare la <b>ricerca</b> per creare <b>progetti verificabilmente riusciti</b>.",
       'about.hook': "Ho vissuto in tre continenti.<br>Così ho imparato quanto contano prospettiva e cultura nel design.",
       'about.stat.nowValue': "Milano",
@@ -790,7 +779,6 @@
       'magnetic.aria': 'Creiamo qualcosa.',
 
       'contact.title': 'CONTATTI',
-      'contact.num': '03 / PARLIAMONE',
       'contact.statement': 'HAI UN’IDEA?<br>PARLIAMONE!',
       'contact.copy': 'COPIA',
       'contact.resume': 'CV',

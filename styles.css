@@ -1137,7 +1137,7 @@ body.is-loading { overflow: hidden; }
    One piece of small text sits inside the field's reach with no surface of
    its own - the "01 / PROJECTS" eyebrow, which the field passes behind.
    It gets the same treatment the availability badge got for the same reason;
-   see #work .section-num below. */
+   see #work .section-marks below. */
 .hero-shapes .shape.is-vivid { opacity: .66; }
 :root[data-theme="dark"] .hero-shapes .shape.is-vivid {
   opacity: .78;
@@ -1718,28 +1718,73 @@ body.is-loading { overflow: hidden; }
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
   letter-spacing: -0.02em;
 }
-/* was opacity:.6 on the inherited (themed) text color everywhere —
-   fine over neutral white/black surfaces, but on .contact's saturated
-   red background an alpha-blended black reads as a muddy rust-brown
-   rather than a clean grey. Split into a deliberate color per surface
-   instead of one opacity value applied blindly to three different
-   background contexts. */
-.section-num { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: var(--muted); }
-/* Opaque, and only in #work. This is the one piece of 12.8px text the hero's
-   shape field reaches, and --muted over a shape is 3.0:1 at the field's base
-   alpha and 1.97:1 under a vivid one - a badge-shaped problem, so it takes the
-   badge's answer: paint the page ground behind the glyphs. Invisible on an
-   empty stretch of page, and the only thing it does is stop a shape passing
-   between the eyebrow and the reader. The padding keeps the patch off the
-   type's own sidebearings. */
-#work .section-num {
-  position: relative;
-  background: var(--white);
-  padding: 2px 6px;
+/* THREE MARKS, ONE LIT - which of the three chapters you are in.
+   This slot used to hold an eyebrow: "01 / PROJECTS" beside a heading
+   already reading SELECTED PROJECTS, "02 / ABOUT" beside ABOUT. Jack's
+   verdict was that uppercase numbered eyebrows "look too AI", and he is
+   describing a real thing: a tracked-out all-caps label that restates the
+   heading next to it is the house style of every template, and the brief
+   calls for exactly its deletion - "avoiding unnecessary descriptions...
+   prose that restates what the work already shows is the thing to delete".
+   The number was the only part carrying information the heading did not,
+   and a number is better drawn than spelled.
+   So the words go and the position stays, as the page's OWN mark: the same
+   slightly-wide rectangle as the full stop after MURRAY, the JM wordmark
+   and the availability dot, now at a fourth size. Three of them, one lit.
+   10 x 9.4 is the glyph's 1.065 ratio (10/9.4 = 1.064), a little bigger
+   than the badge's 8 because it is answering a 73.6px heading across the
+   width of the page rather than sitting inside a 12px label.
+   NOT links, deliberately. They look like pagination and the pull to make
+   them clickable is strong, but PROJECTS / ABOUT / CONTACT is already in
+   the nav on every screen, so three marks x three sections is nine controls
+   that do what three already do - and at 10px they are too small to be a
+   touch target anyway. They are an indicator, and the nav is the control.
+   aria-hidden for the same reason: the heading beside them says which
+   section this is, so read aloud they would only repeat it. That is also
+   what makes this free in four languages - it replaced twelve i18n keys
+   with none. */
+.section-marks {
+  display: flex; gap: 7px; flex: none;
+  /* the padding is the opaque patch #work needs (see below); carried on all
+     three so the marks sit at the same height against every heading */
+  padding: 4px 6px;
   margin-right: -6px;
 }
-.about .section-num { color: var(--muted-ink); }
-.contact .section-num { color: var(--ink); }
+.section-marks span {
+  display: block;
+  width: 10px; height: 9.4px;
+  background: var(--mark-off);
+}
+.section-marks .is-here { background: var(--mark-on); }
+
+/* One rule for all three surfaces: the UNLIT marks are the section's own
+   foreground at about a fifth, and the LIT one is --accent. Derived rather
+   than picked, so it cannot fail contrast - these are decorative, and both
+   halves come from a value already checked on that ground - and it tracks
+   the theme for free: --black at 20% composites to a warm grey on the sand
+   ground and to a near-black charcoal on the dark one, which is where --line
+   lands in both themes anyway.
+   Unlit in NEUTRAL and not in dimmed accent, which was the first try. Pale
+   coral squares read as one faded thing; a grey pair beside a coral one
+   reads as off and on, which is what they are for.
+   .contact is the exception on the lit colour, because its background IS
+   --accent: there the lit mark takes the ink the section already writes in,
+   and the unlit pair is that same ink, dimmed the same way. */
+#work    { --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--black) 20%, transparent); }
+.about   { --mark-on: var(--accent); --mark-off: color-mix(in srgb, var(--paper) 26%, transparent); }
+.contact { --mark-on: var(--ink);    --mark-off: color-mix(in srgb, var(--ink) 26%, transparent); }
+
+/* Opaque, and only in #work. The hero's shape field reaches 306px past the
+   hero, which lands it here, and this is the case the opaque-patch rule
+   exists for - with one extra reason the eyebrow did not have: the field is
+   made of drifting squares in --accent and --blue, so three small static
+   squares inside it can read as four more of them. The patch is the page
+   ground, so it shows as nothing at all on an empty stretch of page and as
+   a clean edge when a shape passes behind. */
+#work .section-marks {
+  position: relative;
+  background: var(--white);
+}
 
 /* ------------------------------------------------------------------------
    SECTION 10 · WORK / GALLERY
@@ -1802,7 +1847,7 @@ body.is-loading { overflow: hidden; }
      it passes behind. Measured: the stroke composites to rgb(221,221,219)
      over the ground, and SELECTED PROJECTS across it is 12.78:1 against
      14.77:1 on open page - the bar for 73.6px display type is 3, so there
-     is an order of magnitude of room. #work .section-num is unaffected
+     is an order of magnitude of room. #work .section-marks is unaffected
      either way; it paints its own opaque patch and sits above this.
      Push it past ~.25 and it stops being the background of the section
      and starts being a thing in the section. */
