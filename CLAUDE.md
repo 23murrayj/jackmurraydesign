@@ -1694,6 +1694,43 @@ is most of the point.
   mark reads `#FF2D55` for a square and the background colour for a circle,
   and the ink extents of the rendered image should match what fontTools
   reports (4.60–43.07 horizontally) to within the raster's quantisation.
+- **EVERY LIFTING CONTROL CARRIES A HOVER PAD, and without it they all
+  flicker.** Thirteen controls translate up-and-left on hover. A transform
+  does not move an element's layout but it **does** move its hit testing, so
+  a control can lift out from under the pointer: pointer outside → lift off →
+  control lands back under the pointer → lift on → round again. Jack found
+  it — *"there's this sort of space where if you put your cursor on it, it'll
+  kind of glitch a little bit back and forth to getting bigger and smaller"* —
+  and it was every one of them, along a strip the width of the lift down the
+  right edge and the height of the lift along the bottom.
+  **The fix is a pad, not a smaller lift**: a `:hover::before` gives the hit
+  area back exactly what the lift took, so the hovered hit region is the union
+  of where the control IS and where it WAS. It exists only while hovered, and
+  never reaches past the control's own resting footprint, so it cannot steal a
+  neighbour's hover. `::before` because four of these already use `::after`.
+  **The lift is `--lift-x` / `--lift-y` and every hover rule reads them**, so
+  the pad cannot drift from the thing it compensates. That also made the
+  site's three lift sizes visible as three sizes rather than thirteen numbers:
+  2/2 for the small chrome, 3/3 for the mid buttons, 4/4 for the hero CTA, and
+  4/6 for the card.
+  **Two things caught me out, both measurable, neither visible.** First,
+  `inset` on an absolutely positioned child is measured from the **padding**
+  box, so a pad at `-2px` on a control with a 2px border gives back nothing —
+  the first version measured 82 × 38 inside an 84 × 40 switch and every probe
+  still failed. Hence `--lift-edge`, 2px everywhere and 3px on the card.
+  Second, `.card` had `overflow: hidden`, which swallowed its pad. That clip
+  was doing nothing: the only thing that can escape a card is the photo under
+  its hover zoom, and measured, the zoomed image runs **19.1px past
+  `.card-media`**, which clips it itself. The card never saw it.
+  **How to test it, because the obvious test is wrong.** A point "flickers"
+  iff hovering it **at rest** targets the control (so the lift turns on) but
+  the **lifted** state no longer does (so it turns off). Testing only the
+  lifted state reports false failures: the cards overlap by 3px (`margin:
+  -1.5px`), so a card's bottom strip belongs to the next card **at rest too**,
+  and hover there simply goes to the neighbour and stays. Drive the two states
+  with `elementFromPoint` over a grid across the resting box and compare.
+  Current state: a 15 × 15 grid over 12 of the 13 shows **no flickering
+  point** (`.about-readmore-btn` was not reachable in the state tested).
 - **The card hover is small on purpose.** `translate(-4px, -6px)` and an 8px
   shadow. It was `-7px, -14px` on an 18px shadow and Jack rejected it: a card
   that lifts 14px stops being part of its row, which is a lot of movement to

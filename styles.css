@@ -123,6 +123,102 @@ picture { display: contents; }
 }
 
 /* ------------------------------------------------------------------------
+   SECTION 02b · THE HOVER LIFT, AND THE PAD THAT STOPS IT FLICKERING
+   ------------------------------------------------------------------------ */
+/* Thirteen controls lift up and to the left on hover and cast a hard block
+   where they were. A transform does not move an element's LAYOUT but it does
+   move its hit testing, so a control that lifts away from the pointer can
+   leave it behind - and then the pointer is outside, the lift comes off, the
+   control lands back under the pointer, the lift goes on again. Jack found
+   it: "there's this sort of space where if you put your cursor on it, it'll
+   kind of glitch a little bit back and forth to getting bigger and smaller".
+   It is every one of them, along a strip the width of the lift down the right
+   edge and the height of the lift along the bottom. Hit-tested before the
+   fix: a point 1.5px inside the bottom-right corner of .theme-switch,
+   .badge-available, .btn-block and .lang-toggle stopped returning the control
+   the moment the lift was applied - all three probes, bottom, right and
+   corner, came back LOST.
+   THE FIX IS A PAD, not a smaller lift. A :hover::before gives the hit area
+   back exactly what the lift took: the element has moved up-left, so the pad
+   reaches the same distance down and right, and the hovered hit region
+   becomes the union of where the control IS and where it WAS. Nothing can
+   oscillate, because the pointer cannot be inside the resting box and outside
+   the hovered one.
+   It exists only while hovered, so at rest nothing overlaps a neighbour, and
+   it never reaches beyond the control's own resting footprint, so it cannot
+   steal a neighbour's hover either. ::before and not ::after because four of
+   these already use ::after for a tooltip or an arrow. It is the first child,
+   so it hit-tests UNDER the control's own content and a card's inner links
+   still win where they should.
+   THE LIFT IS A PAIR OF CUSTOM PROPERTIES so the pad cannot drift from it.
+   Every hover rule reads --lift-x / --lift-y rather than naming pixels, which
+   is also the first time the site's three lift sizes have been visible as
+   three sizes rather than as thirteen numbers. If a new control lifts and
+   forgets the pair, the pad computes to a 0x0 box - no worse than today, and
+   it will show up in this probe. */
+.theme-switch, .lang-toggle, .filter-btn, .copy-email-btn, .lightbox-close {
+  --lift-x: 2px; --lift-y: 2px;
+}
+.badge-available, .project-back, .about-back,
+.about-readmore-btn, .cv-btn, .form-submit {
+  --lift-x: 3px; --lift-y: 3px;
+}
+.btn-block { --lift-x: 4px; --lift-y: 4px; }
+/* the card is the one that also ROTATES, -0.4deg about its centre, which
+   swings a corner of a 643x671 card about 2.3px out of true. The pad rotates
+   with the card, so the resting box's far corners can fall outside it - hence
+   --lift-skew, sized by hit-testing a grid across the whole resting box
+   rather than its corners alone. */
+.card { --lift-x: 4px; --lift-y: 6px; --lift-skew: 4px; }
+
+/* AND THE BORDER, which is the part that caught me out. `inset` on an
+   absolutely positioned child is measured from the PADDING box, so a pad at
+   -2px on a control with a 2px border reaches exactly the control's own
+   border edge and gives back nothing at all - the first version of this rule
+   measured 82 x 38 inside an 84 x 40 switch and every probe still came back
+   LOST. Every one of these has a 2px border; the card has 3. */
+.theme-switch, .lang-toggle, .badge-available, .btn-block, .filter-btn,
+.project-back, .about-back, .about-readmore-btn, .cv-btn, .copy-email-btn,
+.form-submit, .lightbox-close { --lift-edge: 2px; }
+.card { --lift-edge: 3px; }
+
+/* The seven that were position: static. The other six are already positioned
+   (two relative for their tooltips, the card relative, two sticky, one
+   absolute) and must keep what they have - overriding .project-back's sticky
+   here would unpin it from the top of the overlay. */
+.badge-available, .btn-block, .filter-btn,
+.about-readmore-btn, .cv-btn, .copy-email-btn, .form-submit { position: relative; }
+
+@media (hover: hover) {
+  .theme-switch:hover::before,
+  .lang-toggle:hover::before,
+  .badge-available:hover::before,
+  .btn-block:hover::before,
+  .filter-btn:hover::before,
+  .card:hover::before,
+  .project-back:hover::before,
+  .about-back:hover::before,
+  .about-readmore-btn:hover::before,
+  .cv-btn:hover::before,
+  .copy-email-btn:hover::before,
+  .form-submit:hover::before,
+  .lightbox-close:hover::before {
+    content: '';
+    position: absolute;
+    /* right and bottom only: the control moved up and left, so that is the
+       only side the pointer can be stranded on, and a pad that also reached
+       up and left would hold the hover after the pointer had genuinely gone.
+       Three terms, each meaning one thing: what the control MOVED, the
+       border that `inset` does not count, and the rotation allowance the
+       card alone needs. */
+    inset: 0
+           calc(-1 * (var(--lift-x, 0px) + var(--lift-edge, 0px) + var(--lift-skew, 0px)))
+           calc(-1 * (var(--lift-y, 0px) + var(--lift-edge, 0px) + var(--lift-skew, 0px)))
+           0;
+  }
+}
+
+/* ------------------------------------------------------------------------
    SECTION 03 · TOKENS — the palette lives HERE, not at call sites
    Change colour in this block. Dark overrides follow immediately after.
    ------------------------------------------------------------------------ */
@@ -970,7 +1066,7 @@ body.is-loading { overflow: hidden; }
 :root[data-theme="dark"] .theme-switch .is-sun  { color: var(--black); opacity: .55; }
 :root[data-theme="dark"] .theme-switch .is-moon { color: var(--white); opacity: 1; }
 @media (hover: hover) {
-  .theme-switch:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+  .theme-switch:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 4px 4px 0 var(--black); }
 }
 .theme-switch:active { transform: translate(0,0); box-shadow: none; }
 .theme-switch:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
@@ -1307,7 +1403,7 @@ body.is-loading { overflow: hidden; }
 }
 @media (hover: hover) {
   .badge-available:hover {
-    transform: translate(-3px, -3px);
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
     box-shadow: 5px 5px 0 var(--accent);
     background: var(--black); color: var(--white);
   }
@@ -1654,7 +1750,7 @@ body.is-loading { overflow: hidden; }
      into 6, .badge-available 3 into 5. The button rises and the block it
      casts reaches a little further than it did - that is what the gesture
      is miming, now that there is nothing on the page to hold still. */
-  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 7px 7px 0 var(--accent); }
+  .btn-block:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 7px 7px 0 var(--accent); }
 }
 .btn-block:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 /* The arrow drifts, to say there is more below without shouting it. Pulled
@@ -2058,7 +2154,7 @@ body.is-loading { overflow: hidden; }
   transition: background .25s, color .25s, transform .2s;
 }
 @media (hover: hover) {
-  .filter-btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+  .filter-btn:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 4px 4px 0 var(--black); }
 }
 .filter-btn.active { background: var(--black); color: var(--white); }
 
@@ -2073,7 +2169,12 @@ body.is-loading { overflow: hidden; }
   position: relative;
   border: 3px solid var(--black);
   margin: -1.5px;
-  overflow: hidden;
+  /* NO overflow: hidden. It carried one and it was doing nothing: the only
+     thing that can escape this box is the photo under its hover zoom, and
+     .card-media clips that itself - measured, the zoomed image runs 19.1px
+     past .card-media, which clips it, and .card never saw it. What the clip
+     WAS doing was swallowing the hover pad below, which has to reach past
+     the card's own edge to work. */
   cursor: pointer;
   background: var(--white);
   /* a column, so the action bar can be pinned to the foot of the card.
@@ -2094,7 +2195,7 @@ body.is-loading { overflow: hidden; }
        Still slightly less sideways than up: the gallery is full-bleed, so a
        card in the left column that travels far sideways runs past the
        viewport edge and is clipped there. */
-    transform: translate(-4px, -6px) rotate(-0.4deg);
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))) rotate(-0.4deg);
     /* 8, not 12. The lift came down a round ago and the shadow did not, so
        the block was casting further than the card had actually moved - a
        4/6px lift under a 12px shadow reads as a sticker laid on the page
@@ -2269,7 +2370,7 @@ body.is-loading { overflow: hidden; }
   box-shadow: 4px 4px 0 var(--accent);
 }
 @media (hover: hover) {
-  .project-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+  .project-back:hover { background: var(--white); color: var(--black); transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 5px 5px 0 var(--accent); }
 }
 
 .project-media { margin-bottom: 40px; }
@@ -2701,7 +2802,7 @@ body.is-loading { overflow: hidden; }
   box-shadow: 4px 4px 0 var(--accent);
 }
 @media (hover: hover) {
-  .about-back:hover { background: var(--white); color: var(--black); transform: translate(-3px,-3px); box-shadow: 5px 5px 0 var(--accent); }
+  .about-back:hover { background: var(--white); color: var(--black); transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 5px 5px 0 var(--accent); }
 }
 
 .about-page-top {
@@ -3107,7 +3208,7 @@ body.is-loading { overflow: hidden; }
 @media (hover: hover) {
   .about-readmore-btn:hover {
     background: var(--paper); color: var(--ink);
-    transform: translate(-3px, -3px);
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
     box-shadow: 5px 5px 0 var(--highlight);
   }
 }
@@ -3209,7 +3310,7 @@ body.is-loading { overflow: hidden; }
 @media (hover: hover) {
   .cv-btn:hover {
     background: transparent; color: var(--accent-ink);
-    transform: translate(-3px, -3px);
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
     box-shadow: 5px 5px 0 var(--highlight);
   }
 }
@@ -3663,7 +3764,7 @@ body.is-loading { overflow: hidden; }
   transition: background .2s, color .2s, transform .2s;
 }
 @media (hover: hover) {
-  .copy-email-btn:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
+  .copy-email-btn:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 3px 3px 0 var(--ink); }
 }
 .copy-email-btn.copied { background: var(--ink); color: var(--paper); }
 /* 29px tall was well under the 44px touch-target guideline — pad it out
@@ -3773,7 +3874,7 @@ body.is-loading { overflow: hidden; }
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
 @media (hover: hover) {
-  .form-submit:hover { background: var(--paper); color: var(--ink); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--paper); }
+  .form-submit:hover { background: var(--paper); color: var(--ink); transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 6px 6px 0 var(--paper); }
 }
 .form-submit:disabled { cursor: default; opacity: 0.7; }
 .form-status {
@@ -4388,7 +4489,7 @@ body.chaos-mode .chaos-work-cover { display: flex; }
   transition: background .25s, color .25s, transform .2s;
 }
 @media (hover: hover) {
-  .lang-toggle:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--black); }
+  .lang-toggle:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 4px 4px 0 var(--black); }
 }
 /* The nav chrome goes to the 44px touch minimum on phones. This has to live
    here rather than with the matching rule for .nav-toggle much
@@ -4668,7 +4769,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 @media (hover: hover) {
   .lightbox-close:hover {
     background: var(--paper); color: var(--ink);
-    transform: translate(-2px, -2px);
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
     box-shadow: 4px 4px 0 var(--accent);
   }
 }
