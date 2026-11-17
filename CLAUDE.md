@@ -1617,19 +1617,35 @@ is most of the point.
   a reduced-motion visitor never sees the snap, so for them a displaced mark
   is not a tease, it is a mark that looks broken with no way to fix it. They
   get the completed badge, static, which is exactly what this was before.
-  **Dark's bloom on that mark is still declared twice**, in the keyframes AND
-  in the rule, and it is still not a mistake — though the two cases have
-  swapped round now that the pulse only runs on hover. An animation outranks
-  any non-`!important` declaration for the property it animates, so the
-  DECLARATION is the resting state, which is now most of this mark's life: a
-  lit square sitting out of its socket with no pulse. The KEYFRAMES take over
-  on hover and have to carry the bloom themselves, or the mark loses its glow
-  at the moment it is being looked at. Getting this wrong has history: the
-  rule was once a 10px glow in `--green` under a permanently running
-  animation, so it was invisible on every normal load and showed up only
-  under `prefers-reduced-motion`, where the global block collapses the
-  animation and the declaration takes over — a reduced-motion-only feature by
-  accident.
+  **DARK HAS NO GLOW AT REST.** It carried the 10px bloom standing still —
+  dark mode doing what dark mode does — and Jack's read was that it took too
+  much of your attention for what it is: *"maybe it's taking up a bit too much
+  priority… can we try it where there's no glow and it's just that pink red
+  color"*. So the resting mark is a flat square in **both** themes now, and
+  dark's whole character here arrives with the pointer: snap, glow, pulse.
+  That also makes the two themes agree about what REST means, which they did
+  not before — light was flat and dark was lit, and the difference bought
+  nothing once the pulse had already moved to hover.
+  **The bloom is declared on `:hover` rather than only in the keyframes so it
+  can TRANSITION.** The pulse is delayed by the snap's duration, so with the
+  glow living only in the keyframes it would have popped on 0.52s after the
+  mark landed; declared on hover it fades up over the same 0.52s the mark is
+  travelling, and the keyframes take over from the identical value so the
+  handover is invisible. Measured through a hover: 6.35px of blur at 220ms,
+  9.66 at 440, and the full `10px 2px` with the mark home at 660.
+  `box-shadow` is in the `::after` transition for this, on plain `ease` and
+  not `--knob-ease` — the overshoot is right for a thing arriving at a
+  position and wrong for a glow, which would brighten past its target and come
+  back.
+  That is now the only reason the bloom value appears twice. The duplication
+  used to cover rest versus animation; it covers transition versus animation.
+  Getting it wrong has history: this rule was once a 10px glow in `--green`
+  under a permanently running animation, so it was invisible on every normal
+  load and showed up only under `prefers-reduced-motion`, where the global
+  block collapses the animation and the declaration takes over — a
+  reduced-motion-only feature by accident.
+  Touch and reduced motion get the flat square, like light. **The glow is part
+  of the hover reward now, not part of the resting badge.**
 - **The four icon files are the same mark again**, and they were the last
   place the superseded palette survived: `favicon.svg` was still
   `#1e1c17` / `#e6e3db` / `#ff3b30` and `site.webmanifest` still

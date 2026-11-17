@@ -1372,7 +1372,13 @@ body.is-loading { overflow: hidden; }
   /* color-mix rather than a literal rgba(): the token is coral in light and
      hot pink in dark, and a literal can only ever match one of them. */
   box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
-  transition: transform var(--knob-dur) var(--knob-ease);
+  /* box-shadow rides along so dark's bloom FADES UP as the mark travels
+     rather than appearing the instant the pulse starts. Plain ease and not
+     --knob-ease: the overshoot is right for a thing arriving at a position
+     and wrong for a glow, which would brighten past its target and come back.
+     Same duration, so the mark lands lit. */
+  transition: transform var(--knob-dur) var(--knob-ease),
+              box-shadow var(--knob-dur) ease;
 }
 
 /* OUT OF PLACE AT REST, HOME ON HOVER. Jack's idea, and his words for it were
@@ -4236,27 +4242,34 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 :root[data-theme="dark"] .stat-num {
   text-shadow: 0 0 14px currentColor;
 }
-/* Dark's neon bloom on the mark, still stated TWICE, and the duplication is
-   still the fix rather than an oversight - though the two cases it covers
-   have swapped round now that the pulse only runs on hover.
-   An animation outranks any non-!important declaration for the property it
-   animates, so whatever is running owns box-shadow outright. The DECLARATION
-   is therefore the resting state, which is now most of this mark's life: a
-   lit square sitting out of its socket, glowing, with no pulse. The KEYFRAMES
-   take over while the pointer is on the badge and have to carry the bloom
-   themselves, or the mark would lose its glow at exactly the moment it is
-   being looked at.
-   Getting this wrong has history: the rule here was once a 10px glow in
-   --green under a permanently running animation, so it was invisible on every
-   normal load and showed up only under prefers-reduced-motion, where the
-   global block collapses the animation and the declaration takes over. The
-   glow was a reduced-motion-only feature by accident. */
-:root[data-theme="dark"] .badge-dot::after {
-  box-shadow: 0 0 10px 2px var(--accent),
-              0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
-}
+/* DARK HAS NO GLOW AT REST. It carried the 10px bloom standing still, which
+   was dark mode doing what dark mode does - and Jack's read was that it takes
+   too much of your attention for what it is: "maybe it's taking up a bit too
+   much priority... can we try it where there's no glow and it's just that
+   pink red color". So the resting mark is a flat square in both themes now,
+   and dark's whole character here arrives with the pointer: snap, glow, pulse.
+   That also makes the two themes agree about what REST means, which they did
+   not before - light was flat and dark was lit, and the difference was not
+   buying anything once the pulse had already moved to hover.
+   The bloom is declared on :hover rather than only in the keyframes so it can
+   TRANSITION. The pulse is delayed by the snap's duration, so with the glow
+   living only in the keyframes it would have popped on 0.52s after the mark
+   landed; declared here it fades up over the same 0.52s the mark is
+   travelling, and the keyframes then take over from the identical value and
+   the handover is invisible. That is the only reason this value appears
+   twice - the duplication used to cover rest versus animation, and now it
+   covers transition versus animation.
+   Getting the duplication wrong has history: this rule was once a 10px glow
+   in --green under a permanently running animation, so it was invisible on
+   every normal load and showed up only under prefers-reduced-motion, where
+   the global block collapses the animation and the declaration takes over.
+   The glow was a reduced-motion-only feature by accident.
+   Touch and reduced motion get the flat square, like light - the glow is part
+   of the hover reward now, not part of the resting badge. */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   :root[data-theme="dark"] .badge-available:hover .badge-dot::after {
+    box-shadow: 0 0 10px 2px var(--accent),
+                0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
     animation-name: badge-pulse-dark;
   }
 }
