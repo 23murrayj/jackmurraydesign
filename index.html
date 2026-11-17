@@ -275,13 +275,18 @@
      aria-hidden and inert: it is scaffolding. A screen reader announcing a
      stack of empty boxes is noise, and nothing in here is reachable. -->
 <div class="loader" id="loader" aria-hidden="true" inert>
+  <!-- Three children, because .nav is space-between with three children:
+       wordmark, links, controls. The links bar used to live inside the right
+       group, which put it 447px right of where the page draws it. -->
   <div class="sk-nav">
     <div class="sk sk-logo"></div>
+    <div class="sk sk-links"></div>
+    <!-- language button, theme switch, hamburger. The switch is a TRACK, 84
+         wide against the button's 40 - three equal squares here drew a
+         control the page does not have and put the other two 14px off. -->
     <div class="sk-nav-right">
-      <div class="sk sk-links"></div>
       <div class="sk sk-sq"></div>
-      <div class="sk sk-sq"></div>
-      <div class="sk sk-sq"></div>
+      <div class="sk sk-switch"></div>
       <div class="sk sk-sq sk-burger"></div>
     </div>
   </div>

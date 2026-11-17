@@ -435,6 +435,25 @@ a { color: inherit; text-decoration: none; }
    title bars against real 50px ones, which is what "a little off" looks like:
    every landmark in roughly the right order and none of them in the right
    place. */
+
+/* THE HEADLINE IS DERIVED FROM ONE NUMBER, and that number is .hero-name's
+   own font-size, copied clamp for clamp - including the mobile one, at ITS
+   OWN breakpoint.
+   Both title bars take both their height AND their width from it, because
+   both really are multiples of it. Height is the 0.84 line-height. Width is
+   the ink, and the ink of one word in one typeface is a fixed multiple of the
+   size: measured at 1440, 1280, 1024, 900, 760, 600 and 375, JACK comes out
+   2.852x the font-size and MURRAY. 4.687x, to three decimals, every time.
+   This replaced four percentage caps that could not track anything. They were
+   percentages of a COLUMN, and the column keeps widening after the headline
+   has hit its 12rem cap, so the bars said nothing about the ink: at 1024 the
+   second bar drew 860px of MURRAY. against a real 719.9, and at 900 the pair
+   were 161px and 137px too wide. The mobile clamp was mirrored at 760 while
+   the real rule sits at 900, so between those two every bar was a line-height
+   too tall as well. */
+.loader { --sk-name: clamp(4.6rem, 15vw, 12rem); }
+@media (max-width: 900px) { .loader { --sk-name: clamp(3.4rem, 16vw, 8rem); } }
+
 /* Absolute, because .nav is fixed and sits OVER the hero rather than above
    it. In flow it pushed the whole skeleton hero down by its own height, and
    every landmark inherited the error. */
@@ -446,11 +465,24 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 2px solid transparent;
   display: flex; align-items: center; justify-content: space-between;
 }
-.sk-logo { width: 53px; height: 26px; }
+/* the wordmark, 47.9 x 24 measured. It does not scale with the viewport. */
+.sk-logo { width: 48px; height: 24px; }
+/* The three nav links as one bar, 271.8 x 21.5 measured. It is the MIDDLE
+   child of .sk-nav, because .nav is space-between with three children and
+   the links are the middle one. Nested inside the right-hand group - which
+   is where this bar used to live - it drew at x984 against a real x537, so
+   the one row the visitor is already looking at moved 447px at the
+   handover. */
+.sk-links { width: 272px; height: 21px; }
 .sk-nav-right { display: flex; align-items: center; gap: 18px; }
+/* the language button */
 .sk-sq { width: 40px; height: 40px; flex: none; }
-/* the three nav links, which collapse into the drawer on a phone */
-.sk-links { width: 210px; height: 14px; }
+/* The theme switch, which is a TRACK and not a button: 84 x 40, measured.
+   It used to be drawn as a third 40px square, which invented a control the
+   page does not have and made the cluster 156 wide against a real 142. Both
+   are flex-end, so the right edges still lined up and the whole error landed
+   on the inside: the language button sat 14px left of its real position. */
+.sk-switch { width: 84px; height: 40px; flex: none; }
 /* the hamburger, which only exists on a phone */
 .sk-burger { display: none; }
 
@@ -473,7 +505,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* .hero-grid is two columns on a desktop - headline left, and a narrow stack
-   of badge, tagline and button on the right - and one column below 900px.
+   of badge, tagline and button on the right - and one column below 1280px.
    The skeleton was built to the phone's stacked version and kept it at every
    width, so on a laptop it drew the right blocks in the wrong places: the
    headline 124px too high and the badge 208px too low. It mirrors both now.
@@ -481,18 +513,15 @@ a { color: inherit; text-decoration: none; }
    The columns are NOT the real rule's 1.4fr : 1fr, because that rule does not
    describe the result. The h1's min-content is the word MURRAY. set at the
    headline's own size, which is wider than its 1.4fr track - so the headline
-   pushes its column out and the right-hand one takes whatever is left.
-
-   That width is a constant multiple of the font-size, because it is one word
-   in one typeface: 720px at a 153.6px font (1024 viewport), 900px at 192px
-   (1440) - 4.69 both times. So the first track is the headline's own clamp()
-   times 4.69, and it tracks the real split at every width, including past
-   ~1280 where the clamp caps at 12rem and the headline stops growing while
-   the grid keeps widening. A fixed fraction could not: it was 123px out at
-   1440 for exactly that reason. */
+   pushes its column out and the right-hand one takes whatever is left. That
+   width is the same 4.687 multiple of the font-size the title bar uses, so
+   the track and the bar inside it are one number and cannot drift apart. A
+   fixed fraction could not do this: it was 123px out at 1440, because past
+   ~1280 the clamp caps at 12rem and the headline stops growing while the
+   grid keeps widening. */
 .sk-hero-grid {
   display: grid;
-  grid-template-columns: calc(clamp(4.6rem, 15vw, 12rem) * 4.69) 1fr;
+  grid-template-columns: calc(var(--sk-name) * 4.687) 1fr;
   align-items: end;
   gap: 40px;
   border-bottom: 6px solid var(--ink);
@@ -502,37 +531,76 @@ a { color: inherit; text-decoration: none; }
   padding-bottom: 86px;
 }
 .sk-name { display: flex; flex-direction: column; }
-/* one line of .hero-name: its clamp() x its 0.84 line-height, less a 6px gap
-   so the two bars read as two lines instead of fusing into one L-shape */
+/* one line of .hero-name: its font-size x its 0.84 line-height, less a 6px
+   gap so the two bars read as two lines instead of fusing into one L-shape.
+   The width is JACK's ink, 2.852x the font-size. */
 .sk-title {
-  height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84 - 6px);
-  /* 61%, measured: the two lines are JACK and MURRAY., and the h1's box is
-     the width of the longer one. At 1440 the ink runs 548 and 900, so the
-     first bar is 548/900 of the second. 72% drew JACK 100px too wide. */
-  width: 61%;
+  height: calc(var(--sk-name) * 0.84 - 6px);
+  width: min(100%, calc(var(--sk-name) * 2.852));
   margin-bottom: 6px;
 }
 /* full height on the second bar: the 6px gap is taken out of the first one's
    height and given back as its margin, so the pair still measures exactly two
-   lines of .hero-name rather than two lines minus 6px */
+   lines of .hero-name rather than two lines minus 6px. MURRAY. is the longer
+   word and sets the h1's own width, so this bar and the grid track above are
+   the same 4.687. */
 .sk-title-2 {
-  height: calc(clamp(4.6rem, 15vw, 12rem) * 0.84);
-  width: 100%; margin-bottom: 0;
+  height: calc(var(--sk-name) * 0.84);
+  width: min(100%, calc(var(--sk-name) * 4.687));
+  margin-bottom: 0;
 }
 
-/* Margins, not a flat gap: the real column steps 30 then 44, and a single
-   gap cannot say that - with 22px the loader put the CTA 36px above where
-   the page then drew it. padding-bottom mirrors .hero-side's baseline nudge. */
-.sk-side { display: flex; flex-direction: column; padding-bottom: 16px; }
-/* Measured off the real controls at 1440, in the widest language, since
-   these do not scale with the viewport: badge 36x296 (Spanish is the long
-   one at 324), role line 83 high and 336 wide (Italian), CTA 62x230. The old
-   67/50/71 were left over from the cycling one-line tagline and were out by
-   31px on the badge alone, which is the kind of handover jump this whole
-   skeleton exists to avoid. */
-.sk-badge { height: 36px; width: min(83%, 296px); margin-bottom: 30px; }
-.sk-line  { height: 83px; width: min(96%, 336px); margin-bottom: 44px; }
-.sk-cta   { height: 62px; width: 226px; }  /* the real button, measured at 1440 */
+/* THE RIGHT COLUMN IS DERIVED FROM ONE NUMBER TOO, --role-size, exactly as
+   the real column is. .hero-side declares clamp(1.45rem, 10.6cqw, 2.35rem)
+   and its children spend it: badge margin 0.8x, role margin 1.3x. Mirroring
+   that needs the container query as well as the clamp, because cqw resolves
+   against the query container of the element that USES it - so the custom
+   property is declared here and read only by the children, never by this
+   element. Same rule as .hero-side.
+   It replaces a flat 30 / 44. Thirty happened to be right at the cap (0.8 x
+   37.6 = 30.08); 44 never was - the real gap is 48.88 - and because the
+   column is bottom-aligned on a desktop that 5px pushed the badge and the
+   role line 4px UP from where the page then drew them. Both numbers were
+   also wrong on a phone, where the clamp comes off its cap: at 375 the real
+   steps are 28.6 and 46.5. */
+.sk-side {
+  display: flex; flex-direction: column;
+  /* mirrors .hero-side's baseline nudge, which only exists two-column */
+  padding-bottom: 16px;
+  container-type: inline-size;
+  --sk-role: clamp(1.45rem, 10.6cqw, 2.35rem);
+}
+/* The badge and the CTA are fixed-size controls - they do not scale with the
+   viewport or the column - so these two stay measured: 295.4 x 35.5 and
+   226.2 x 61.5 at 1440 in English, and the same at every other width. (The
+   badge was 296.4 until the availability dot became a square; Japanese runs
+   38 and 65 tall, and Spanish takes the badge to 323.) The percentage is
+   only an overflow guard for a very narrow phone. */
+.sk-badge { height: 36px; width: min(96%, 295px); margin-bottom: calc(var(--sk-role) * 0.8); }
+/* Two lines at line-height 1.1, so the height is exactly 2.2 x --role-size -
+   not the 83 / 79 pair this used to carry, which were the same number
+   measured twice. The width is the role line's ink, 7.94x the size, the same
+   way the title bars work: 298.6 at 1440 and 284.2 at 375, both tracked.
+   It was a flat 336, which is not any language's ink - English runs 298.6
+   and Italian, the widest, 323.7. */
+.sk-line  { height: calc(var(--sk-role) * 2.2); width: min(96%, calc(var(--sk-role) * 7.94)); margin-bottom: calc(var(--sk-role) * 1.3); }
+.sk-cta   { height: 62px; width: 226px; }
+/* THE BAND BETWEEN THE BREAKPOINT AND A USABLE COLUMN, 1281 to ~1373, where
+   the hero is two columns but the side one is narrower than the controls in
+   it, so the real badge and the real button WRAP. 1366 x 768 lives in here,
+   which is reason enough to get it right.
+   Container queries rather than viewport ones, because that is literally the
+   condition: the badge wraps when its column is narrower than its 295px of
+   content, and the button when the column is under its 226. Measured at
+   1366, 1300 and 1281 - the wrapped badge is 51 tall and the wrapped button
+   81, both stretched to the full column. Without these the skeleton drew a
+   one-line badge where the page draws two, and the whole column landed 14.5
+   to 34px off.
+   English, like the rest of these: Spanish is 28px wider and starts wrapping
+   a little sooner. A skeleton is drawn before i18n has run and can only be
+   one language. */
+@container (max-width: 295px) { .sk-badge { height: 51px; width: 100%; } }
+@container (max-width: 226px) { .sk-cta   { height: 81px; width: 100%; } }
 
 /* The strip pulls 1px into the grid's border, exactly as the marquee does -
    and like the marquee it is FULL BLEED and 38px tall. It was 80px tall and
@@ -549,7 +617,9 @@ a { color: inherit; text-decoration: none; }
 /* Tracks .hero-grid's stacking breakpoint, which moved to 1280 when the
    standing role line made a 162px side column unusable. If these two drift
    apart the loader shows a two-column hero and the page then renders a
-   stacked one, so the layout visibly jumps at the handover. */
+   stacked one, so the layout visibly jumps at the handover.
+   Only the GRID changes here now. The bars inside it size themselves off
+   --sk-name and --sk-role, which carry on working in one column. */
 @media (max-width: 1280px) {
   /* .hero-grid's own stacked settings - 64, not 40: it tracks the real
      rule, which opened up with the marquee seam. */
@@ -560,28 +630,20 @@ a { color: inherit; text-decoration: none; }
     padding-bottom: 64px;
   }
   .sk-side { padding-bottom: 0; }
-  .sk-title { width: min(62%, 560px); }
-  .sk-title-2 { width: min(94%, 860px); }
-  /* Width caps so three bars don't stretch across a 922px column they never
-     fill, and the role line's own height, which DOES change stacked: it is
-     sized in cqw off its column, so two lines come out 83px at 1440 and 79
-     at 375. The badge and the CTA are fixed-size and keep their heights.
-     Measured at 375: badge 296, role 286 wide and 79 high, CTA 226 - the
-     CTA is 226 at every width now that it is shrink-wrapped rather than
-     filling the column, so the old 264 cap drew it 17px too wide here. */
-  .sk-badge { width: min(88%, 296px); }
-  .sk-line  { width: min(95%, 286px); height: 79px; }
-  .sk-cta   { width: 226px; }
 }
+/* The nav's own phone breakpoint. NOT the headline's - that is at 900, and
+   conflating the two is what made the title bars wrong between 761 and 900. */
 @media (max-width: 760px) {
-  /* .hero-name's own mobile clamp */
-  .sk-title { height: calc(clamp(3.4rem, 16vw, 8rem) * 0.84 - 6px); }
-  .sk-title-2 { height: calc(clamp(3.4rem, 16vw, 8rem) * 0.84); }
   .sk-links { display: none; }
   .sk-burger { display: block; margin-left: 14px; }
+  /* nav chrome goes to the 44px touch target */
   .sk-sq { width: 44px; height: 44px; }
+  .sk-switch { height: 44px; }
 }
-@media (max-width: 480px) {
+/* 360, mirroring .nav's own rule. This block used to be at 480, where the
+   page changes nothing: between 361 and 480 the skeleton drew a nav 12px
+   shallower than the real one with its logo 4px in from where it lands. */
+@media (max-width: 360px) {
   .sk-nav { padding: 20px 4vw; }
   .sk-nav-right { gap: 10px; }
 }

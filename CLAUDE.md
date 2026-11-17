@@ -1134,24 +1134,85 @@ four languages whenever you size display type.**
 ## The loading skeleton
 
 It exists to make the handover invisible, so **it is only as good as its last
-measurement** — and it has drifted badly twice. Re-measure it against the
-real hero whenever the hero changes, at 1440 AND at 375.
+measurement** — and it drifted badly three times before the numbers were
+taken out of it. **Prefer deriving a bar from the rule it stands in for over
+measuring it**, because a measurement is right at the width it was taken at
+and nowhere else. Three of the four sweeps below found a value that had been
+correct when someone wrote it down.
 
 - **`.sk-hero` must mirror `.hero`'s `min-height: 80vh`, not `flex: 1`.**
   The loader is a fixed full-viewport box, so `flex: 1` made the skeleton
   hero 900px tall at a 900px window against the real 720. Both centre their
   group inside themselves, and centring the same content in 900 instead of
   720 put every landmark **87px low**. This was by far the biggest jump.
-- Everything else is mirrored by hand and therefore goes stale: the grid's
-  `padding-bottom` (86 desktop / 64 stacked), the strip's height (38, and
-  full-bleed by the marquee's own `calc(50% - 50vw)`), the CTA's width (226
-  at every width now it is shrink-wrapped), the role line's height (83
-  desktop, 79 stacked — it is sized in `cqw` off its column, so it really
-  does change), and the first name bar's width (61%, because the ink runs
-  548 against MURRAY.'s 900).
-- The way to check is to capture the skeleton's boxes before it is removed,
-  then the real ones after, and diff them. Current state: exact at 1440 on
-  grid/CTA/strip, within 2px at 375, within 4px at 1024.
+- **The headline comes off ONE custom property, `--sk-name`**, which is
+  `.hero-name`'s own font-size copied clamp for clamp — including the mobile
+  one, **at its own breakpoint, which is 900 and not 760**. Both title bars
+  take both height and width from it: height is the 0.84 line-height, and
+  width is the ink, which for one word in one typeface is a fixed multiple of
+  the size. **JACK is 2.852× the font-size and MURRAY. is 4.687×**, measured
+  identical to three decimals at 1440, 1280, 1024, 900, 760, 600 and 375. The
+  grid's first track is the same 4.687, so the track and the bar inside it
+  cannot drift apart.
+  This replaced four percentage caps, and percentages were the wrong tool:
+  they were percentages of a COLUMN, and the column keeps widening after the
+  headline has hit its 12rem cap. At 1024 the second bar drew **860px of
+  MURRAY. against a real 719.9**, and at 900 the pair were 161px and 137px
+  too wide. Mirroring the mobile clamp at 760 instead of 900 made every bar a
+  line-height too tall between those two widths as well.
+- **The right column comes off `--sk-role`** the same way, and mirroring it
+  needs the container query as well as the clamp: `.sk-side` carries
+  `container-type: inline-size` and declares
+  `clamp(1.45rem, 10.6cqw, 2.35rem)`, and only its CHILDREN read it — same
+  rule as `.hero-side`, for the same reason. Badge margin `0.8×`, role margin
+  `1.3×`, role height `2.2×` (two lines at line-height 1.1) and role width
+  `7.94×` (the ink of DIGITAL CREATIVE).
+  It replaced a flat 30 / 44 and an 83 / 79 pair. Thirty happened to be right
+  at the cap; **44 never was — the real gap is 48.88** — and because the
+  column is bottom-aligned on a desktop that 5px pushed the badge and the role
+  line 4px up from where the page then drew them.
+- **Only the fixed-size controls are still measured**: the badge at 295.4 ×
+  35.5 and the CTA at 226.2 × 61.5, both in English at every width. (The badge
+  was 296.4 until the availability dot became a square. Japanese runs 38 and
+  65 tall; Spanish takes the badge to 323.) A skeleton is drawn before i18n
+  has run, so it can only ever be one language, and English is the default.
+- **1281 to ~1373 is its own problem**, and 1366 × 768 lives in it. The hero
+  is two columns there but the side column is narrower than the controls in
+  it, so the real badge and button WRAP — 51px and 81px tall, stretched to the
+  column. Two **container** queries say exactly that (`@container (max-width:
+  295px)` and `226px`), because the condition really is about the column and
+  not the viewport. Without them the column landed 14.5 to 34px off through
+  that whole band.
+- **The nav is three children, not two.** `.nav` is `space-between` with
+  wordmark, links and controls, so the links bar has to be a child of
+  `.sk-nav` too — nested inside the right-hand group it drew at x984 against
+  a real x537, a **447px** jump in the one row the visitor is already looking
+  at. The right cluster is a 40px button and an **84px switch**, not three
+  equal squares: both are flex-end, so that error kept the right edges lined
+  up and put all of itself on the inside. And the nav's narrow-phone
+  override is at **360**, mirroring `.nav`'s own rule — it sat at 480, where
+  the page changes nothing.
+- **The breakpoints are not interchangeable and mixing them up is the
+  recurring bug.** The grid stacks at **1280**, the nav goes to a drawer and
+  44px targets at **760**, the headline changes clamp at **900**, and the nav
+  tightens at **360**. Three of those four were wrong in here at once.
+- **How to check it.** The loader removes itself 600ms after load, so do not
+  race it: inject a second copy instead. `fetch('/')`, pull `.loader` out of
+  the parsed document, give it a new id and `visibility: hidden`, append it to
+  `body`, and diff its boxes against the real ones in the same frame — the
+  clone is the same markup under the same stylesheet, and `visibility: hidden`
+  still lays out. Compare the title and role bars against the text's INK
+  (`Range.getBoundingClientRect`), not the element box, because those elements
+  are blocks that fill their column. Drop the `visibility` and outline the
+  bars to see it over the live page. **In the browser pane use `setTimeout`,
+  never `requestAnimationFrame`** — a hidden pane never fires one and the
+  probe simply hangs.
+  **Current state: every landmark within 1px of the real one at 320, 360,
+  361, 375, 393, 430, 480, 600, 700, 760, 768, 820, 900, 901, 1024, 1180,
+  1280, 1281, 1366, 1440 and 1600.** The one deliberate exception is the
+  first title bar, which is 6px short because that gap is taken out of its
+  height and given back as its margin, so the pair measures exactly two
+  lines.
 
 ## Routing
 
