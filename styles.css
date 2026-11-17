@@ -1823,16 +1823,26 @@ body.is-loading { overflow: hidden; }
 :root[data-theme="dark"] #work    { --mark-dim: 20%; }
 :root[data-theme="dark"] .contact { --mark-dim: 33%; }
 
-/* The about section's marks go to the PANEL edge, not to the text measure.
-   They were at the inset, 804 against a panel starting at 860, which left
-   them stranded 56px short in a row whose own rule, and the stats row below
-   it, both run all the way to the photo - so the one section with a second
-   right edge was the one where they looked like they had been dropped
-   somewhere rather than aligned to anything. The stats row already does this
-   with the same number; it is the same alignment, now from the same token.
-   --about-gap is 0 below 800px, where the panel rejoins the flow and the
-   section has only one right edge, so this collapses to the base -6px. */
-.about .section-marks { margin-right: calc(-6px - var(--about-gap)); }
+/* THE ABOUT MARKS STAY ON THE TEXT MEASURE, and this is the second answer to
+   that question rather than the first. They were pushed out to the panel edge
+   so they would line up with the stats row and the heading's own rule, both of
+   which run the full width to the photo. Jack, on a Mac: "the three marks on
+   the about section is clipping in the photo." Measured, the third mark's
+   right edge and the panel's left edge were the same number to three decimals
+   - 1092.000 at 1512 - so the mark was flush against the panel's bright 4px
+   border with nothing between them, and at a width where the panel resolves
+   to a fraction (34vw below 1100) half a device pixel of rounding is enough
+   to put ink over the rule.
+   Flush is right for the stats row and wrong here, and the difference is size,
+   not alignment: a filled band meeting a panel reads as two planes abutting,
+   while a 10px square touching a bright rule reads as a collision. The
+   favicon note records the same thing - a circle got away with reaching that
+   far because only its tangent point did; a square does not.
+   So they sit on the text measure, with --about-gap's 56px of air between
+   them and the photo, aligned with the paragraph directly below them and with
+   the heading's own column. That is a real alignment, where the panel edge
+   needed them to clear something they could not clear. If this looks
+   stranded to you: it was tried, and it clipped. */
 
 /* Opaque, and only in #work. The hero's shape field reaches 306px past the
    hero, which lands it here, and this is the case the opaque-patch rule

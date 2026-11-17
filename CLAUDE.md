@@ -1375,13 +1375,26 @@ is most of the point.
   again.
   **The gap IS the mark's width**, so the row is five equal units and reads
   as one rhythm rather than three things that happen to be 7 apart.
-  **On `.about` they go to the PANEL edge, not the text measure.** That
-  section has two right edges — prose stops at `--about-inset`, structure
-  (the stats row, these marks) runs the extra 56px and lands on the photo
-  panel. They sat at 804 against a panel at 860, stranded in a row whose own
-  rule and whose stats row both run all the way across. That 56 is
-  `--about-gap` now rather than a literal in two places, and it is 0 below
-  800px where the panel rejoins the flow and the section has one edge again.
+  **On `.about` they stay on the TEXT measure, and that was settled the hard
+  way.** That section has two right edges: prose stops at `--about-inset`,
+  while structure — the stats band, the heading's own rule — runs the extra
+  56px and lands on the photo panel. The marks were pushed out to the panel
+  edge so the row would line up with the band below it. Jack, on a Mac: "the
+  three marks on the about section is clipping in the photo." Measured, the
+  third mark's right edge and the panel's left edge were **the same number to
+  three decimals** — 1092.000 at 1512 — so the mark was flush against the
+  panel's bright 4px border, and in the 800–1100 band where the panel is
+  `34vw` both resolve to fractions, where half a device pixel of rounding is
+  enough to put ink over the rule.
+  **Flush is right for the band and wrong for the mark, and the difference is
+  SIZE, not alignment.** A filled band meeting a panel reads as two planes
+  abutting; a 10px square touching a bright rule reads as a collision. The
+  favicon note records the identical thing — a circle got away with reaching
+  that far because only its tangent point did, and a square did not.
+  So they sit on the measure, aligned with the paragraph directly below them,
+  with `--about-gap`'s 56px between them and the photo — verified at 56.000px
+  of clearance at 901, 1000, 1024, 1100, 1366, 1512, 1728 and 1920. **If this
+  ever looks stranded to you: it was tried, and it clipped.**
   **They are NOT links.** They look like pagination and the pull to wire
   them up is strong, but PROJECTS / ABOUT / CONTACT is in the nav on every
   screen, so three marks × three sections is nine controls doing what three
