@@ -1442,17 +1442,39 @@ is most of the point.
   edge and 3.1px below its bottom, so a box gap always reads a few px more
   generous than it measures. Tune on the optical numbers, not the declared
   ones.
-- **The hero CTA carries a resting offset block**, 4px, hard and unblurred
-  like every other shadow here. It had none: flat black-on-sand with a 2px
-  border is a label until you hover it, and on a phone there is no hover at
-  all, so it stayed a label for the whole visit. **4 at rest and 8 on hover is
-  a pair, not two numbers.** A box-shadow offset is measured from the element,
-  so when the button lifts `translate(-4px, -4px)` the shadow travels with it;
-  at the old 7 the block ended up 3px from where it had been sitting and the
-  page it was supposedly casting onto appeared to move. 4 + 4 = 8 pins the
-  shadow to its resting spot so only the button rises off it. The dark
-  override replaces `box-shadow` wholesale, so it has to restate the offset
-  block alongside its neon bloom or dark loses the effect entirely.
+- **THE HERO CTA CASTS NOTHING AT REST.** It carried a 4px coral block for a
+  few releases, argued for on the grounds that a flat button is a label until
+  you hover it and that a phone never hovers. Jack: too loud standing still,
+  "make it like it was before and only see the red background rectangle when
+  you hover over it like other buttons". **Reverted, and the argument it
+  replaced was wrong twice over.**
+  First, the button is not flat — it is a filled near-black rectangle with
+  white type on a sand ground, which is already unmistakably a control. The
+  block was emphasis on the one element in the hero that needed none.
+  Second, **"like other buttons" is literally true**: `.form-submit` lifts 3
+  into a 6px block, `.badge-available` 3 into 5, the cards 4/6 into 8, and
+  every one of them casts on hover and nothing before. The resting block made
+  this the only control on the site wearing its shadow at rest — and a button
+  that is already raised when you arrive has nowhere to go when you point at
+  it.
+  **Hover is 4px lift into a 7px block**, back to the number it had before.
+  The 8 existed only to PIN the resting block: a shadow offset is measured
+  from the element, so a `translate(-4px, -4px)` lift carries the shadow with
+  it, and 4 + 4 held the block on the exact spot it had been occupying. With
+  no resting block there is nothing to pin and the number is free, so it goes
+  back to the house proportion — 3px past the resting silhouette, the same as
+  `.form-submit`.
+  **Dark loses the block at rest and keeps the bloom**, which is what the
+  comment in `styles.css` had claimed all along while the code did something
+  else. Light's button is flat until pointed at; dark's is flat and lit,
+  because a glow is what every other accent thing in dark mode does. The dark
+  override replaces `box-shadow` wholesale, so its hover has to restate the
+  block alongside the bloom and track the base rule's offset — a stale number
+  there cancels the press in dark mode only.
+  **On touch the button never casts**, since the hover rules sit inside
+  `@media (hover: hover)`. That is the trade the resting block was bought to
+  avoid, and it is the same trade every other control on the site already
+  makes.
 - **The CTA arrow is `scale(1.3, 1.85)`** — wider as well as longer. `\2193`
   is drawn narrow, a thin stem under a shallow chevron, and at 15.2px the head
   read as a tick. X stays well under Y deliberately: at equal scales the glyph

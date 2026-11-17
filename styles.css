@@ -1527,30 +1527,35 @@ body.is-loading { overflow: hidden; }
   background: var(--black); color: var(--white);
   padding: 19px 30px; font-weight: 700; font-size: 0.95rem; letter-spacing: 1.8px;
   width: fit-content; border: 2px solid var(--black);
-  /* A resting offset block, so the button looks pressable before anyone
-     has pointed at it. It had NO resting shadow: flat black-on-sand with a
-     2px border is a label until you hover it, and on a phone - where there
-     is no hover at all - it stayed a label for the whole visit. This is the
-     one control the hero is built to send you to, so it should read as
-     raised standing still.
-     Hard, no blur, per the house rule: this is a printed offset, not a
-     light source. 4px, which is the smallest offset that still reads as two
-     planes rather than as a misprint at this 2px border weight.
-     4 at rest and 8 on hover is not an arbitrary pair - see the hover rule. */
-  box-shadow: 4px 4px 0 var(--accent);
+  /* NO RESTING SHADOW. It carried a 4px coral block for a few releases, on
+     the argument that a flat button is a label until you hover it and that
+     a phone never hovers. Jack's verdict: it is too loud standing still, and
+     he is right about the part that argument missed - this button is not
+     flat, it is a filled near-black rectangle with white type on a sand
+     ground, which is already unmistakably a control. The block was adding
+     emphasis to the one element in the hero that needed none.
+     It also made this the only control on the site that wears its shadow at
+     rest. .form-submit lifts 3 into a 6px block, .badge-available 3 into 5,
+     the cards 4/6 into 8 - every one of them casts on hover and nothing
+     before. A button that is already raised when you arrive has nowhere to
+     go when you point at it. */
   transition: background .25s, color .25s, transform .25s, box-shadow .25s;
 }
 @media (hover: hover) {
   /* lifts OUT of the page and casts the block, then :active drops it back
      flush - the gesture reads as press, and the fill never changes, so the
      label never changes contrast mid-gesture */
-  /* 8, not the 7 it was. The shadow offset is measured from the element, so
-     when the button lifts translate(-4,-4) the shadow travels with it: at 7
-     the block ended up 3px from where it had been sitting, and the page it
-     was supposedly casting onto appeared to move. 4 + 4 = 8 pins it - the
-     shadow holds its exact resting position on the page and only the button
-     rises off it, which is the thing the gesture is miming. */
-  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--accent); }
+  /* 7 again, not the 8 it became. The 8 existed only to PIN the resting
+     block: a shadow offset is measured from the element, so when the button
+     lifts translate(-4,-4) the shadow travels with it, and 4 + 4 held the
+     block on the exact spot it had been occupying. With no resting block
+     there is nothing to pin, and the number is free again.
+     7 against a 4px lift puts the block 3px past the resting silhouette,
+     which is the proportion the rest of the site uses: .form-submit is 3
+     into 6, .badge-available 3 into 5. The button rises and the block it
+     casts reaches a little further than it did - that is what the gesture
+     is miming, now that there is nothing on the page to hold still. */
+  .btn-block:hover { transform: translate(-4px, -4px); box-shadow: 7px 7px 0 var(--accent); }
 }
 .btn-block:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 /* The arrow drifts, to say there is more below without shouting it. Pulled
@@ -4160,20 +4165,25 @@ body.chaos-mode .chaos-work-cover { display: flex; }
     box-shadow: 8px 8px 0 var(--black), 0 0 30px color-mix(in srgb, var(--accent) 42%, transparent);
   }
 }
-/* Dark keeps the neon bloom at rest and loses the hard offset block with
-   light: the two modes are supposed to differ in kind, and a bloom with no
-   offset is a glow around a flat button, not a drop shadow under it. Rest
-   is declared outside @media (hover: hover) so a touch device in dark mode
-   still gets the glow - the hover states are what has to be gated.
+/* Dark loses the resting offset block with light and keeps the bloom, which
+   is what this comment claimed before the code drifted away from it. The
+   two modes are meant to differ in kind rather than in value: light's
+   button is flat until you point at it, and dark's is flat and lit, because
+   a glow is what every other accent thing in dark mode does. What dark does
+   NOT get back is a pink rectangle sitting under the button before anyone
+   has touched it - that is the thing being removed, and it was there in
+   both themes.
+   Rest is declared outside @media (hover: hover) so a touch device in dark
+   mode still gets the glow - the hover states are what has to be gated.
    The offsets have to track the base rule rather than restate old ones:
    this selector is more specific and declared later, so a stale value here
    would quietly cancel the press in dark mode only. */
 :root[data-theme="dark"] .btn-block {
-  box-shadow: 4px 4px 0 var(--accent), 0 0 26px color-mix(in srgb, var(--accent) 34%, transparent);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 34%, transparent);
 }
 @media (hover: hover) {
   :root[data-theme="dark"] .btn-block:hover {
-    box-shadow: 8px 8px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow: 7px 7px 0 var(--accent), 0 0 30px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 }
 :root[data-theme="dark"] .btn-block:active {
