@@ -1552,14 +1552,54 @@ is most of the point.
   `--black` on hover, and in dark that is `#F4F2F5` — neon green on it is
   **1.44:1**. Coral/pink gives 4.60:1 and 3.28:1 on the same fills. One more
   for the pile of bugs that only live in `:hover`.
-  **Dark's bloom on that mark has to be declared twice**, in the keyframes
-  AND in the rule, and it is not a mistake. A running animation outranks any
-  non-`!important` declaration for the property it animates, so the old
-  static `box-shadow` glow was invisible on every normal load and appeared
-  only under `prefers-reduced-motion`, where the global block collapses the
-  animation and the declaration takes over. It was a reduced-motion-only
-  feature by accident. Keyframes cover the animated case, the declaration
-  covers the finished one.
+  **THE BADGE MARK IS OUT OF ITS SLOT UNTIL YOU POINT AT THE BADGE.** Jack's
+  idea, and his words for it: "like it's not complete". The badge shows a
+  dotted socket with the mark sitting up and to the right of it; hovering the
+  badge snaps the mark home and starts it pulsing. The pulse used to run all
+  the time and now it is the reward.
+  **Built as `.badge-dot` (the socket) plus `.badge-dot::after` (the mark)**,
+  so the socket stays in the flex row and holds the badge's width while the
+  mark moves independently of it. `inset: -1px` makes the mark exactly the
+  socket's border box, so landing covers the dotted rule completely — the
+  point is that the mark COMPLETES the shape, not that it sits on top of it.
+  **DOTTED, not dashed, and that is arithmetic.** Chrome draws a dashed
+  border with dash and gap both at 3× the border width, so 1px dashed on an
+  8px side fits one 6px cycle and you get a square with broken corners.
+  Dotted is 1× and 1×, so the same side takes four — the perforated look the
+  reference actually shows. Going to 2px to make it heavier doubles the cycle
+  and makes it worse. If it reads too small on a real screen, **size is the
+  lever, not weight**: the mark is 8 × 7.5 to sit beside 12px caps and the
+  whole gesture is 13px wide in a badge 36px tall.
+  **5 × −4 of displacement**, about two thirds of the mark's own size — far
+  enough to read as displaced rather than as a misprint, near enough that the
+  two still read as one object. Up and RIGHT because the 10px gap to the label
+  is the only slack around it; the same move left would eat the 14px padding
+  and crowd the border. The mark is absolutely positioned, so **the badge's
+  126.6px width does not change** and the skeleton number stays put.
+  **`--knob-ease`, the theme switch's curve**, which overshoots slightly. The
+  note there applies word for word: a thing that slides to a hard stop reads
+  as a value being set, one that arrives with weight reads as a switch being
+  thrown. The pulse is **delayed by the snap's own duration** so it starts
+  once the mark has landed — run together they read as two effects on one
+  object, sequenced they read as cause and effect.
+  **Both halves are gated on `(hover: hover)` AND
+  `(prefers-reduced-motion: no-preference)`.** A touch device never hovers and
+  a reduced-motion visitor never sees the snap, so for them a displaced mark
+  is not a tease, it is a mark that looks broken with no way to fix it. They
+  get the completed badge, static, which is exactly what this was before.
+  **Dark's bloom on that mark is still declared twice**, in the keyframes AND
+  in the rule, and it is still not a mistake — though the two cases have
+  swapped round now that the pulse only runs on hover. An animation outranks
+  any non-`!important` declaration for the property it animates, so the
+  DECLARATION is the resting state, which is now most of this mark's life: a
+  lit square sitting out of its socket with no pulse. The KEYFRAMES take over
+  on hover and have to carry the bloom themselves, or the mark loses its glow
+  at the moment it is being looked at. Getting this wrong has history: the
+  rule was once a 10px glow in `--green` under a permanently running
+  animation, so it was invisible on every normal load and showed up only
+  under `prefers-reduced-motion`, where the global block collapses the
+  animation and the declaration takes over — a reduced-motion-only feature by
+  accident.
 - **The four icon files are the same mark again**, and they were the last
   place the superseded palette survived: `favicon.svg` was still
   `#1e1c17` / `#e6e3db` / `#ff3b30` and `site.webmanifest` still

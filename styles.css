@@ -1315,12 +1315,70 @@ body.is-loading { overflow: hidden; }
    the resting DOM never visits :hover, which is how every contrast bug this
    project has shipped got in. */
 .badge-dot {
+  position: relative;
   width: 0.667em; height: 0.625em;
+  /* THE EMPTY SLOT. The mark is not in it at rest - see ::after.
+     DOTTED, NOT DASHED, and that is arithmetic rather than preference. Chrome
+     draws a dashed border with the dash and the gap both at 3x the border
+     width, so 1px dashed on an 8px side is a 6px cycle in 8px of room - it
+     fits one, and what you get is a square with broken corners rather than a
+     dashed outline. Dotted is 1x and 1x, so the same side takes four, which
+     is the perforated look the reference image actually shows. Going to 2px
+     to make it heavier makes it worse on both counts: the cycle doubles.
+     currentColor so it inverts with the badge on hover without a second
+     declaration, at 70% so it reads as a ghost of the mark rather than as a
+     second mark - it is a 1px line and it cannot afford to be much fainter.
+     IF THIS READS TOO SMALL ON A REAL SCREEN, size is the lever, not weight:
+     the mark is 8 x 7.5 to sit beside 12px caps and the whole gesture is 13px
+     wide, where the badge is 36 tall and has room for more. */
+  border: 1px dotted color-mix(in srgb, currentColor 70%, transparent);
+}
+/* THE MARK ITSELF, drawn as a pseudo-element so the slot can stay in the flex
+   row and hold the badge's width while the square moves independently of it.
+   inset: -1px makes it exactly the slot's BORDER box, so when it lands it
+   covers the dashed rule completely rather than leaving a hairline showing
+   round the edge - the point of the gesture is that the mark completes the
+   shape, not that it sits on top of it. */
+.badge-dot::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
   background: var(--accent);
   /* color-mix rather than a literal rgba(): the token is coral in light and
      hot pink in dark, and a literal can only ever match one of them. */
   box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
-  animation: badge-pulse 1.8s ease-out infinite;
+  transition: transform var(--knob-dur) var(--knob-ease);
+}
+
+/* OUT OF PLACE AT REST, HOME ON HOVER. Jack's idea, and his words for it were
+   "like it's not complete" - the badge shows a dashed socket with the mark
+   sitting up and to the right of it, and pointing at the badge snaps the mark
+   into the socket and starts it pulsing.
+   5 x -4 against an 8 x 7.5 mark is about two thirds of its own size, which
+   is far enough to read as displaced rather than as a misprint and near
+   enough that the two still read as one object. It goes up and RIGHT because
+   the badge's 10px gap to the label is the only slack around it: 5px right
+   leaves 5px to the L of LET'S, where the same move left would eat into the
+   14px padding and crowd the border instead. Nothing clips - the badge has
+   no overflow, and 4px up puts the mark level with the top of the label.
+   --knob-ease, the theme switch's curve, which overshoots slightly. The note
+   there applies word for word: a thing that slides to a hard stop reads as a
+   value being set, one that arrives with weight reads as a switch being
+   thrown. This wants to be thrown.
+   The pulse is DELAYED by the snap's own duration so it starts once the mark
+   has landed. Running them together reads as two effects on one object;
+   sequenced it reads as cause and effect.
+   BOTH halves are gated on hover AND on motion being welcome. A touch device
+   never hovers and a reduced-motion visitor never sees the snap, so for them
+   the displaced state is not a tease, it is a mark that looks broken with no
+   way to fix it. They get the completed badge, static - which is exactly
+   what this was before today. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .badge-dot::after { transform: translate(5px, -4px); }
+  .badge-available:hover .badge-dot::after {
+    transform: translate(0, 0);
+    animation: badge-pulse 1.8s ease-out infinite var(--knob-dur);
+  }
 }
 /* 8px of spread, not the circle's 9: the ring is square now, so the same
    number puts noticeably more ink on the page at the same distance out. */
@@ -4150,22 +4208,29 @@ body.chaos-mode .chaos-work-cover { display: flex; }
 :root[data-theme="dark"] .stat-num {
   text-shadow: 0 0 14px currentColor;
 }
-/* Dark's neon bloom on the mark. It has to be stated TWICE, and the
-   duplication is the fix rather than an oversight.
-   The element has a running animation on box-shadow, and an animation
-   outranks any non-!important declaration for the property it animates - so
-   the rule that used to be here (a 10px glow, in --green) was invisible on
-   every normal load, and showed up only under prefers-reduced-motion, where
-   the global block collapses the duration to 0.001ms and one iteration and
-   the animated value falls back to the declaration. The glow was a
-   reduced-motion-only feature by accident.
-   So the keyframes carry the bloom alongside the ring, for the animated
-   case, and the declaration carries it too, for the finished-animation case.
-   Both are --accent now, which is what the mark is. */
-:root[data-theme="dark"] .badge-dot {
+/* Dark's neon bloom on the mark, still stated TWICE, and the duplication is
+   still the fix rather than an oversight - though the two cases it covers
+   have swapped round now that the pulse only runs on hover.
+   An animation outranks any non-!important declaration for the property it
+   animates, so whatever is running owns box-shadow outright. The DECLARATION
+   is therefore the resting state, which is now most of this mark's life: a
+   lit square sitting out of its socket, glowing, with no pulse. The KEYFRAMES
+   take over while the pointer is on the badge and have to carry the bloom
+   themselves, or the mark would lose its glow at exactly the moment it is
+   being looked at.
+   Getting this wrong has history: the rule here was once a 10px glow in
+   --green under a permanently running animation, so it was invisible on every
+   normal load and showed up only under prefers-reduced-motion, where the
+   global block collapses the animation and the declaration takes over. The
+   glow was a reduced-motion-only feature by accident. */
+:root[data-theme="dark"] .badge-dot::after {
   box-shadow: 0 0 10px 2px var(--accent),
               0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
-  animation-name: badge-pulse-dark;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :root[data-theme="dark"] .badge-available:hover .badge-dot::after {
+    animation-name: badge-pulse-dark;
+  }
 }
 @keyframes badge-pulse-dark {
   0% { box-shadow: 0 0 10px 2px var(--accent), 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
