@@ -2629,10 +2629,16 @@ body.is-loading { overflow: hidden; }
   }
   .about-photos .wide { flex: none; width: 100%; }
 }
+/* No top margin. It was 14px, which was the gap to an "ABOUT JACK" chip
+   sitting above a heading reading HI, I’M JACK. - the same restatement the
+   section eyebrows were cut for, so the chip went too. With nothing above
+   it the 14 was an orphan, and it cost the layout its one alignment: the
+   heading now starts on the same line as the top of the portrait, which is
+   what an editorial two-column opening is for. */
 .about-page-intro h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.2rem, 5vw, 3.6rem);
-  letter-spacing: -0.02em; margin: 14px 0 22px;
+  letter-spacing: -0.02em; margin: 0 0 22px;
 }
 .about-page-intro p {
   font-size: 1.05rem; line-height: 1.65; max-width: 620px; margin-bottom: 18px;

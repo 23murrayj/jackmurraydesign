@@ -1357,6 +1357,17 @@ is most of the point.
   reason: the hero field is made of drifting squares in `--accent` and
   `--blue`, so three small static squares inside its reach can read as four
   more of them.
+  **The about overlay's "ABOUT JACK" chip went with them**, for the same
+  reason and nothing else: it sat above a heading reading HI, I'M JACK. The
+  heading's 14px top margin went too — it was the gap to that chip, and with
+  nothing above it the margin was an orphan costing the layout its one
+  alignment. `.about-page-intro h2` now starts on the same line as the top of
+  the portrait frame, measured 0px apart in both themes and in Japanese.
+  **The project overlay's `.project-cat` STAYS**, and the distinction is the
+  point: the same element there is filled with the project's own category by
+  `openProject`. A tag that tells you what kind of work this is carries
+  something the title does not; a tag that repeats the title does not. Cut by
+  what a label SAYS, not by how it is set.
 - **The stats are all one colour, `--accent`.** This row has been three
   things: all `--highlight` (stone in light — four grey numbers, dead), then a
   hue per cell (fixed the greyness, broke something worse — four figures in
