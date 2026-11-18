@@ -1441,12 +1441,39 @@ correct when someone wrote it down.
   bars to see it over the live page. **In the browser pane use `setTimeout`,
   never `requestAnimationFrame`** — a hidden pane never fires one and the
   probe simply hangs.
-  **Current state: every landmark within 1px of the real one at 320, 360,
-  361, 375, 393, 430, 480, 600, 700, 760, 768, 820, 900, 901, 1024, 1180,
-  1280, 1281, 1366, 1440 and 1600.** The one deliberate exception is the
-  first title bar, which is 6px short because that gap is taken out of its
-  height and given back as its margin, so the pair measures exactly two
-  lines.
+  **THREE WAYS TO WRITE THIS PROBE WRONG, all of which report a drift that
+  is not there.** It took three passes on 2026-11-18 to get a clean answer,
+  and every false alarm looked like a real regression:
+  1. **Comparing the role bar's WIDTH against the element box.** `.hero-role`
+     is a block that fills its column, so the box is 201px wider than the
+     text at 1600 and the error grows with the viewport. Width goes against
+     `Range.getBoundingClientRect`; Y and HEIGHT go against the box, because
+     a Range returns the FONT box (ascent + descent), not the ink — on the
+     headline that is 54px taller than the line box and sits 24px off.
+  2. **Testing `visibility` or `opacity` to decide what is shown.** The clone
+     is `visibility: hidden` on purpose, and that inherits, so the check
+     calls every bar in the skeleton invisible and reports fourteen
+     mismatches at once.
+  3. **Measuring straight after a resize.** The phone nav drawer needs a
+     moment to settle; at 150ms it reported as on-screen at 760 and 390 but
+     not at 320, which is the kind of inconsistency that means the probe and
+     not the page. 600ms is enough.
+  **Use geometry for "is it shown": `display !== 'none'` plus a rect that
+  overlaps the viewport.** That last part is not pedantry — at ≤760 the real
+  `.nav-links` is a fixed drawer parked with its left edge exactly at the
+  viewport's right edge, so `display` alone calls it visible while the
+  skeleton correctly draws a burger instead.
+  **Current state: all 14 landmarks clean at 320×568, 360×740, 390×844,
+  600×900, 760×800, 768×1024, 820×1180, 900×800, 901×800, 1024×768,
+  1280×800, 1281×800, 1285×800, 1290×800, 1296×800, 1366×768, 1440×620,
+  1440×900, 1440×1200 and 1600×900.** **Heights are in that list now and
+  belong there**: `min-height: 66vh` means the hero's height is a function
+  of the viewport, and 1440×620 is the case where the content is taller than
+  66vh so the hero is content-bound rather than height-bound — a different
+  code path that the skeleton has to track too.
+  The one deliberate exception is the first title bar, which is 6px short
+  because that gap is taken out of its height and given back as its margin,
+  so the pair measures exactly two lines.
 
 ## Routing
 
