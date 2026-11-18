@@ -187,7 +187,7 @@
       'magnetic.aria': "Let's make something.",
 
       'contact.title': 'CONTACT',
-      'contact.statement': "GOT AN IDEA?<br>LET'S TALK!",
+      'contact.statement': 'Say Hello!',
       'contact.copy': 'COPY',
       'contact.resume': 'RESUME',
       'contact.copied': 'COPIED ✓',
@@ -383,7 +383,7 @@
       'magnetic.aria': 'Hagamos algo juntos.',
 
       'contact.title': 'CONTACTO',
-      'contact.statement': '¿TIENES UNA IDEA?<br>¡HABLEMOS!',
+      'contact.statement': '¡Saluda!',
       'contact.copy': 'COPIAR',
       'contact.resume': 'CV',
       'contact.copied': 'COPIADO ✓',
@@ -577,7 +577,7 @@
       'magnetic.aria': 'なにかつくろう。',
 
       'contact.title': 'お問い合わせ',
-      'contact.statement': 'アイデアがありますか？<br>話しましょう！',
+      'contact.statement': 'こんにちは！',
       'contact.copy': 'コピー',
       'contact.resume': '履歴書',
       'contact.copied': 'コピーしました ✓',
@@ -771,7 +771,7 @@
       'magnetic.aria': 'Creiamo qualcosa.',
 
       'contact.title': 'CONTATTI',
-      'contact.statement': 'HAI UN’IDEA?<br>PARLIAMONE!',
+      'contact.statement': 'Salutami!',
       'contact.copy': 'COPIA',
       'contact.resume': 'CV',
       'contact.copied': 'COPIATO ✓',

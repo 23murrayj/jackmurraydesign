@@ -1553,6 +1553,25 @@ is most of the point.
   becomes a highlighted phrase, and the two rows read as two voices rather
   than one line that happens to break. **Colour around the letterform reads as
   light; colour inside it reads as a change of subject.**
+- **The contact statement is "Say Hello!", and it is the one display line on
+  the page that is NOT set in caps.** It read "GOT AN IDEA? / LET'S TALK!"
+  across two lines, which is the register of a pitch; the `text-transform:
+  uppercase` is gone from `.contact-statement` rather than overridden, so
+  the four translations are set exactly as `i18n.js` writes them —
+  "¡Saluda!", 「こんにちは！」, "Salutami!". Shouting a greeting would undo
+  the point of making it one.
+  **It also fixes a repetition nobody had named.** The badge says LET'S MAKE
+  SOMETHING, the magnetic headline says LET'S MAKE / SOMETHING., and the
+  contact heading used to say LET'S TALK — three variations on one register,
+  and that register is the generated default. The big one keeps the phrase;
+  this one has a different job now.
+  Measured on the coral ground at 57.6px/700: **4.6:1**, where display type
+  owes 3.
+- **The social list is LinkedIn, Instagram, Resume, GitHub, in that order.**
+  Resume moved above GitHub on 2026-11-18. The list is read top down and the
+  resume is the thing an employer came for, where GitHub is supporting
+  evidence; it had been last of four, under three social profiles, which is
+  a ranking nobody intended.
 - **THE SECTION EYEBROWS ARE GONE AND THEIR SLOT IS THREE MARKS.** It held
   "01 / PROJECTS" beside a heading already reading SELECTED PROJECTS, and
   "02 / ABOUT" beside ABOUT. Jack: uppercase numbered eyebrows "look too
