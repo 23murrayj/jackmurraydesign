@@ -155,6 +155,14 @@ repeatedly. Symptoms and the fix:
   → resize the pane, then `window.dispatchEvent(new Event('resize'))` by
   hand, the same trick as for scroll. That tests your logic end to end; the
   browser's own event delivery is not yours to test.
+- **The pane never runs `loading="lazy"`.** A lazy image is not fetched at
+  any scroll position — I walked the whole page in 400px steps and all four
+  lazy card images stayed `complete: false`, `naturalWidth: 0`. It is not
+  that they are slow; the request is never made. The way to tell this from a
+  real bug is to flip the attribute: set `img.loading = 'eager'` and they all
+  complete at 720px wide within a second, which proves the files, the paths
+  and the `<picture>` are fine. **Never diagnose image loading in the pane
+  without that flip.**
 - **The pane does not deliver the page's own `IntersectionObserver`
   callbacks on load.** Every `.reveal` stays at opacity 0 for as long as you
   care to wait — measured 0 of 19 at 1.5s, 3s and 5s. An observer you create
@@ -1648,7 +1656,38 @@ is most of the point.
   **The first two cards also load `eager` with `fetchpriority="high"`.** Two,
   because the grid is two columns on a desktop and one on a phone, so two
   covers the first row either way. An image the visitor can already see has
-  no business being lazy.
+  no business being lazy. **The other four are flipped to `eager` 400ms
+  after `load`**, which costs first paint nothing because it has already
+  happened, and makes the rest deterministic rather than leaving it to
+  Chrome's own lazy distance — that distance is generous but it NARROWS on a
+  slow connection, which is exactly when a blank card is most likely.
+- **THE SCROLL TRIGGER IS A DISTANCE, NOT A FRACTION OF THE ELEMENT**, and
+  that was the same mistake as the load case in a different place. It was
+  "reveal once 15% of it is on screen", so the taller a block is, the longer
+  it waits. Measured at 1440×900, how far you had to scroll PAST a block's
+  top edge before it would even begin to appear:
+  | block | height | scrolled past before it starts |
+  |---|---|---|
+  | `.about-panel` | 747 | **112px** |
+  | `.card` | 714 | **107px** |
+  | `.contact-form` | 526 | 79px |
+  | `.section-head` | 154 | 23px |
+  | `.filters` | 90 | 14px |
+  | `.contact-bottom` | 23 | 3px |
+  **Exactly backwards.** The big photo-carrying blocks — the ones that are
+  obviously there and obviously blank — waited longest, while a 23px strip
+  appeared instantly. The 40px offset and the 0.8s fade then ran on top, so a
+  card was blank for 107px of scroll and still arriving for most of a second
+  after. Jack: *"the user, I feel like, should always know that there's
+  something under."*
+  It is `rootMargin: '0px 0px 20% 0px'` with no threshold now — 180px at
+  900 — so every block starts its fade while still below the fold whatever
+  its size, and is part-way through before any of it shows. At a normal
+  600px/s that is 300ms of head start on a 0.8s fade. **If it still feels
+  slow, the remaining lever is that 0.8s**, not the margin.
+  Verified on a clean load: 4 revealed (all genuinely on screen), 15 still
+  waiting with the nearest 688px below the fold, and all six card images
+  ready without scrolling.
   Verified on a cold load: at 1440×900 the first two cards carry `.in-view`
   with opacity 1 and 63.5px showing, cards 3–6 still at 0; at 390×844 the
   first card is revealed with 24.5px showing and everything below the fold

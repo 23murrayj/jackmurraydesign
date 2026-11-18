@@ -591,6 +591,29 @@ function renderGallery() {
 }
 renderGallery();
 
+/* THE REST OF THE GALLERY IS FETCHED AFTER load, NOT ON SCROLL.
+   The first two cards are eager because they are above the fold; the other
+   four are lazy, which keeps them out of the critical path - right for first
+   paint, and it leaves the browser to decide when. Chrome's own lazy
+   distance is generous and usually gets there first, but "usually" is doing
+   real work in that sentence: it narrows on a slow connection, which is
+   exactly when a blank card is most likely and most annoying.
+   Flipping them to eager once load has fired costs the first paint nothing
+   - it has already happened - and makes the rest deterministic. The 400ms
+   is so this queues behind anything load itself kicked off.
+   Verified in the pane that the flip does fetch: all four went from
+   complete:false to complete:true with naturalWidth 720. (The pane never
+   runs lazy-loading on its own, so that flip is also the only way to see
+   these images arrive in it at all - do not read a blank card there as a
+   bug in the page.) */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.card img[loading="lazy"]').forEach((img) => {
+      img.loading = 'eager';
+    });
+  }, 400);
+});
+
 // portfolio filtering
 const filterBtns = document.querySelectorAll('.filter-btn');
 // re-queried on each click rather than captured once: the cards are
@@ -1218,16 +1241,37 @@ function showReveal(el) {
   requestAnimationFrame(() => el.classList.add('in-view'));
   setTimeout(() => el.classList.add('in-view'), 300);
 }
+/* THE TRIGGER IS A DISTANCE, NOT A FRACTION, and that is the whole point.
+   It was "once 15% of the element is on screen", which is a share of the
+   ELEMENT - so the taller a block is, the longer it waits. Measured at
+   1440x900 that is how far you had to scroll PAST a block's top edge before
+   it would even begin to appear:
+     .about-panel 747px tall -> 112px      .section-head 154 ->  23px
+     .card        714px tall -> 107px      .filters       90 ->  14px
+     .contact-form 526       ->  79px      .contact-bottom 23 ->   3px
+   Exactly backwards. The big photo-carrying blocks - the ones that are
+   obviously there and obviously blank - waited longest, while a 23px strip
+   appeared instantly. Then the 40px offset and the 0.8s fade ran on top, so
+   a card was blank for 107px of scroll and still arriving for most of a
+   second after that. Jack: "the user, I feel like, should always know that
+   there's something under."
+   A margin on the root fixes the kind, not just the degree: 20% of the
+   viewport (180px at 900) means every block starts its fade while it is
+   still below the fold, whatever size it is, and is already part-way
+   through by the time any of it is visible. At a normal 600px/s that is
+   300ms of head start on a 0.8s fade.
+   No threshold, so "intersecting" means intersecting the EXPANDED root -
+   one rule, size-independent. */
 const onScrollObserver = new IntersectionObserver(
   (entries, obs) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting && entry.intersectionRatio >= 0.15) {
+      if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
         obs.unobserve(entry.target);
       }
     });
   },
-  { threshold: [0, 0.15] }
+  { rootMargin: '0px 0px 20% 0px' }
 );
 function routeReveal(el) {
   if (el.classList.contains('in-view')) return;
