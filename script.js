@@ -453,7 +453,7 @@ function resolveAlt(entry, projectId, index, projectTitle) {
 }
 
 // Returns an <img> for a path, or passes inline markup straight through.
-function mediaTag(entry, projectId, index, projectTitle) {
+function mediaTag(entry, projectId, index, projectTitle, eager) {
   if (!entry) return '';
   // Inline SVG (the hand-drawn card art) is decorative — the card already
   // carries its title as real text, so a screen reader announcing the graphic
@@ -524,8 +524,16 @@ function mediaTag(entry, projectId, index, projectTitle) {
     ? `${escapeAttr(webpSmall)} 800w, ${escapeAttr(webp)} ${entry.w}w`
     : escapeAttr(webp);
   const webpSizes = (webpSmall && entry.w) ? ` sizes="(max-width: 800px) 100vw, 50vw"` : '';
+  /* The first gallery row is above the fold now that .hero is 66vh, and an
+     image the visitor can already see has no business being lazy - lazy is
+     for what is coming, and the browser's own margin is generous but it is
+     still a decision taken after layout. fetchpriority high puts them in
+     front of the rest of the gallery rather than behind it. Two, because the
+     grid is two columns on a desktop and one on a phone, so two covers the
+     first row either way and costs a phone one image it will want next. */
+  const loadAttrs = eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"';
   const img = `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${srcset}${track}${full}${exif}` +
-              ` loading="lazy" decoding="async">`;
+              `${loadAttrs} decoding="async">`;
   return src.endsWith('.jpg')
     ? `<picture><source type="image/webp" srcset="${webpSet}"${webpSizes}>${img}</picture>`
     : img;
@@ -546,7 +554,7 @@ function renderGallery() {
   const gallery = document.getElementById('gallery');
   if (!gallery) return;
 
-  gallery.innerHTML = Object.entries(projectData).map(([id, p]) => {
+  gallery.innerHTML = Object.entries(projectData).map(([id, p], cardIndex) => {
     // `thumb` is the card image; falls back to whatever hero art the entry
     // already has so existing placeholder projects still render
     const thumb = p.thumb || p.svg || p.heroSvg ||
@@ -558,7 +566,7 @@ function renderGallery() {
       ` style="--bg:${escapeAttr(p.bg || '#111')};"` +
       ` aria-label="${escapeAttr(p.title)}">
       <div class="card-media">${mediaTag(thumb, id,
-        (thumb && thumb.altIndex ? thumb.altIndex - 1 : 0), p.title)}</div>
+        (thumb && thumb.altIndex ? thumb.altIndex - 1 : 0), p.title, cardIndex < 2)}</div>
       <div class="card-info">
         <h3>${escapeAttr(p.title)}</h3>
         <p data-i18n="proj.${escapeAttr(id)}.desc">${escapeAttr(p.desc)}</p>
@@ -1177,20 +1185,71 @@ if (window.matchMedia('(pointer: fine)').matches) {
   document.addEventListener('mouseout', (e) => cursorEdge(e, false));
 }
 
-// scroll reveal
+/* SCROLL REVEAL, AND WHY WHAT IS ALREADY ON SCREEN DOES NOT GO THROUGH THE
+   OBSERVER AT ALL.
+   A .reveal element starts at opacity 0 AND 40px down, and the observer said
+   "show it once 15% of it is on screen". That is a fraction of the ELEMENT,
+   so what it means in pixels depends entirely on how tall the element is:
+   15% of a 32px heading is 5px, and 15% of a 714px project card is 107px.
+   Once .hero came up to 66vh so the cards would break the fold, the first
+   row peeked 63.5px over it at 1440x900 - ratio 0.089, under the bar - so
+   the cards sat at opacity 0 and the thing the shorter hero exists to show
+   was invisible until you scrolled. Jack: "they're not loading
+   automatically... you can't see them unless you scroll down."
+   RAISING THE THRESHOLD IS NOT ENOUGH, and the phone is what proves it. The
+   40px offset is part of the resting state, so an unrevealed card sits 40px
+   lower than where it will end up: at 390x844 the settled card clears the
+   fold by 24.5px while the unrevealed one is 15.5px BELOW it. Observing it
+   at any threshold cannot work, because the element is only on screen once
+   it has been revealed and it is only revealed once it is on screen.
+   So the load case does not use an observer. It takes the element's own
+   transform back out of its rect to find where it will SETTLE, and reveals
+   it outright if that lands in the viewport. Everything below the fold keeps
+   the 15% rule, which is where it has always been right.
+   The class goes on in a rAF so the browser paints the resting state first
+   and the transition actually runs - set it synchronously and the element
+   snaps in. The setTimeout behind it is not belt and braces for its own
+   sake: a rAF never fires in a background tab, and an element that is
+   invisible until a frame is painted is one bad assumption away from
+   content that never appears. Both paths are idempotent. */
 const revealEls = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(
-  (entries) => {
+function showReveal(el) {
+  if (el.classList.contains('in-view')) return;
+  requestAnimationFrame(() => el.classList.add('in-view'));
+  setTimeout(() => el.classList.add('in-view'), 300);
+}
+const onScrollObserver = new IntersectionObserver(
+  (entries, obs) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.15) {
         entry.target.classList.add('in-view');
-        observer.unobserve(entry.target);
+        obs.unobserve(entry.target);
       }
     });
   },
-  { threshold: 0.15 }
+  { threshold: [0, 0.15] }
 );
-revealEls.forEach((el) => observer.observe(el));
+function routeReveal(el) {
+  if (el.classList.contains('in-view')) return;
+  const r = el.getBoundingClientRect();
+  // where it will be once .in-view takes the offset off, read from the
+  // element's own computed transform rather than hardcoding the 40
+  const shift = new DOMMatrixReadOnly(getComputedStyle(el).transform).m42;
+  if (r.top - shift < window.innerHeight && r.bottom - shift > 0) showReveal(el);
+  else onScrollObserver.observe(el);
+}
+revealEls.forEach(routeReveal);
+/* AND AGAIN ON load, because the routing above reads a rect from a layout
+   that is not final yet: this file runs at the end of body, before webfonts
+   have swapped. An element that was 10px below the fold at parse time and
+   10px above it once Archivo Black arrives would have gone to the scroll
+   observer and sat there. Re-routing is free - anything already revealed is
+   skipped, and re-observing with the same observer is a no-op. */
+window.addEventListener('load', () => {
+  revealEls.forEach((el) => {
+    if (!el.classList.contains('in-view')) routeReveal(el);
+  });
+});
 
 // animated stat counters
 function animateCounter(el) {

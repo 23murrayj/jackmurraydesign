@@ -155,6 +155,15 @@ repeatedly. Symptoms and the fix:
   → resize the pane, then `window.dispatchEvent(new Event('resize'))` by
   hand, the same trick as for scroll. That tests your logic end to end; the
   browser's own event delivery is not yours to test.
+- **The pane does not deliver the page's own `IntersectionObserver`
+  callbacks on load.** Every `.reveal` stays at opacity 0 for as long as you
+  care to wait — measured 0 of 19 at 1.5s, 3s and 5s. An observer you create
+  yourself from a probe fires normally, which is what makes this so
+  misleading: the API works, the page's use of it does not. It cost a whole
+  cycle here, and the only reason it did not cost a wrong fix is that the
+  same check against the PREVIOUS commit also returned 0 of 19 — so it was
+  the pane, not the change. **Before believing a reveal is broken, run the
+  same measurement against `git stash` or the committed file.**
 - Screenshots taken right after `location.reload()` catch the loader mid-fade
   and the reveal animations mid-flight; the hero name looks dim. Wait ~2.5s,
   and kill transitions before capturing.
@@ -1531,6 +1540,43 @@ is most of the point.
   `role="radio"`: radio is the tighter match for "exactly one at a time" but
   commits to arrow-key navigation between the options, and a
   half-implemented radiogroup is worse than honest toggle buttons.
+- **WHAT IS ON SCREEN WHEN THE PAGE LOADS IS REVEALED OUTRIGHT; ONLY WHAT IS
+  BELOW THE FOLD WAITS FOR THE OBSERVER.** The scroll reveal used one rule,
+  "show it once 15% of it is on screen", and 15% is a fraction of the
+  ELEMENT — so what it means in pixels depends entirely on how tall that
+  element is. 15% of a 32px heading is 5px; 15% of a 714px project card is
+  107px. That was invisible until `.hero` came up to 66vh so the cards would
+  break the fold: the first row peeks 63.5px at 1440×900, which is **ratio
+  0.089**, under the bar — so the cards sat at opacity 0 and the thing the
+  shorter hero exists to show could not be seen. Jack: *"they're not loading
+  automatically… you can't see them unless you scroll down."*
+  **Raising the threshold would not have fixed it, and the phone is the
+  proof.** The 40px offset is part of the resting state, so an unrevealed
+  element sits 40px lower than where it ends up: at 390×844 the settled card
+  clears the fold by 24.5px while the unrevealed one is 15.5px **below** it.
+  No threshold can help, because the element is only on screen once revealed
+  and only revealed once on screen.
+  So the load case does not use an observer at all. It takes the element's
+  own transform back out of its rect — `DOMMatrixReadOnly(…).m42`, read from
+  computed style rather than hardcoding the 40 — to find where it will
+  SETTLE, and reveals it outright if that lands in the viewport. Everything
+  else keeps the 15%, which is where it has always been right.
+  **The class goes on in a `requestAnimationFrame` with a `setTimeout`
+  behind it.** The rAF is so the browser paints the resting state first and
+  the transition runs; set it synchronously and the element snaps in. The
+  timeout is not belt-and-braces for its own sake — a rAF never fires in a
+  background tab, and content that is invisible until a frame is painted is
+  one bad assumption away from never appearing. Both paths are idempotent.
+  The routing runs again on `load`, because the first pass reads a layout
+  taken before webfonts have swapped.
+  **The first two cards also load `eager` with `fetchpriority="high"`.** Two,
+  because the grid is two columns on a desktop and one on a phone, so two
+  covers the first row either way. An image the visitor can already see has
+  no business being lazy.
+  Verified on a cold load: at 1440×900 the first two cards carry `.in-view`
+  with opacity 1 and 63.5px showing, cards 3–6 still at 0; at 390×844 the
+  first card is revealed with 24.5px showing and everything below the fold
+  still hidden.
 - **A visual-only change needs saying out loud.** Filtering takes the grid
   from six cards to one with no sound at all, so `#filterStatus`
   (`role="status"`, `.sr-only`) announces the count. Singular and plural are
