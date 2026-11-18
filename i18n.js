@@ -35,6 +35,7 @@
       'a11y.lightbox': 'Enlarged image',
       'a11y.close': 'Close',
       'a11y.zoomHint': 'Click to enlarge',
+      'a11y.eggTrigger': 'Hidden extras',
       'html.title': "Jack Murray · UX Designer",
       'html.description': "UX design portfolio by Jack Murray: websites, visual systems, branding, photography, motion, and digital experiments.",
 
@@ -232,6 +233,7 @@
       'a11y.lightbox': 'Imagen ampliada',
       'a11y.close': 'Cerrar',
       'a11y.zoomHint': 'Clic para ampliar',
+      'a11y.eggTrigger': 'Extras ocultos',
       'html.title': "Jack Murray · Diseñador UX",
       'html.description': "Portafolio de diseño UX de Jack Murray: sitios web, sistemas visuales, branding, fotografía, motion y experimentos digitales.",
 
@@ -427,6 +429,7 @@
       'a11y.lightbox': '拡大画像',
       'a11y.close': '閉じる',
       'a11y.zoomHint': 'クリックで拡大',
+      'a11y.eggTrigger': '隠れたおまけ',
       'html.title': "Jack Murray · UXデザイナー",
       'html.description': "Jack MurrayのUXデザインポートフォリオ。ウェブサイト、ビジュアルシステム、ブランディング、写真、モーション、デジタル実験。",
 
@@ -622,6 +625,7 @@
       'a11y.lightbox': 'Immagine ingrandita',
       'a11y.close': 'Chiudi',
       'a11y.zoomHint': 'Clicca per ingrandire',
+      'a11y.eggTrigger': 'Extra nascosti',
       'html.title': "Jack Murray · Designer UX",
       'html.description': "Portfolio di design UX di Jack Murray: siti web, sistemi visivi, branding, fotografia, motion ed esperimenti digitali.",
 

@@ -5,19 +5,20 @@
    MAP - `grep -n "SECTION " styles.css` prints this list with live line
    numbers, which is the cheap way to find anything in here.
 
-     01  FONTS                        14  MAGNETIC TYPOGRAPHY
-     02  RESET & GLOBAL INVARIANTS    15  CONTACT
-     03  TOKENS (the palette)         16  FOOTER
-     04  PAGE BASE & SCROLL           17  CHAOS MODE
-     05  LOADER & SKELETON            18  STICKER PACK
-     06  SCROLL PROGRESS & NOISE      19  DARK MODE INTENSITY
-     07  NAV CONTROLS                 20  LANGUAGE SWITCHER
-     08  DARK / LIGHT SWITCH          21  JAPANESE TYPOGRAPHY
-     09  HERO                         22  SKIP LINK
-     10  WORK / GALLERY               23  REAL MEDIA
-     11  PROJECT DETAIL OVERLAY       24  LIGHTBOX
-     12  FULL ABOUT PAGE OVERLAY      25  THE THEME SWITCH, AS ONE MOVE
-     13  ABOUT SECTION
+     01  FONTS                        13  ABOUT SECTION
+     02  RESET & GLOBAL INVARIANTS    14  MAGNETIC TYPOGRAPHY
+     02b HOVER LIFT & ITS PAD         15  CONTACT
+     02c 44px TOUCH TARGETS           16  FOOTER
+     03  TOKENS (the palette)         17  CHAOS MODE
+     04  PAGE BASE & SCROLL           18  STICKER PACK
+     05  LOADER & SKELETON            19  DARK MODE INTENSITY
+     06  SCROLL PROGRESS & NOISE      20  LANGUAGE SWITCHER
+     07  NAV CONTROLS                 21  JAPANESE TYPOGRAPHY
+     08  DARK / LIGHT SWITCH          22  SKIP LINK
+     09  HERO                         23  REAL MEDIA
+     10  WORK / GALLERY               24  LIGHTBOX
+     11  PROJECT DETAIL OVERLAY       25  THE THEME SWITCH, AS ONE MOVE
+     12  FULL ABOUT PAGE OVERLAY
 
    TWO RULES THAT ARE NOT OBVIOUS FROM READING A RULE IN ISOLATION:
    - Colour changes go in SECTION 03, never at a call site. A hardcoded hex
@@ -215,6 +216,58 @@ picture { display: contents; }
            calc(-1 * (var(--lift-x, 0px) + var(--lift-edge, 0px) + var(--lift-skew, 0px)))
            calc(-1 * (var(--lift-y, 0px) + var(--lift-edge, 0px) + var(--lift-skew, 0px)))
            0;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   SECTION 02c · THE FOUR CONTROLS THAT MISSED THE 44px TOUCH TARGET
+   ------------------------------------------------------------------------ */
+/* Measured at 375: .nav-logo 47.9 x 24, .badge-available 222.1 x 35.5,
+   .filter-btn 66.5 x 40 and #aboutTitle 141.5 x 40 - all wide enough and all
+   short. The nav logo is the one that reads as an oversight rather than a
+   near miss: the three controls beside it in the same row (.nav-toggle,
+   .lang-toggle, .theme-switch) are all taken to 44 at <=760px and it was
+   left at 24.
+   Extended with a pseudo-element rather than by inflating the control, which
+   is the house rule, and for a specific reason here: the badge's height is
+   mirrored by .sk-badge in the loading skeleton and the chip's height is one
+   of the three things the hero shape field's 306px reach is measured
+   through, so growing either is a two-file change for nothing a visitor can
+   see.
+   HEIGHT, NOT INSET, so one rule covers all four and every language. A
+   centred 44px box is exactly 44 whatever the control measures - Japanese
+   takes the badge to 37.5 and #aboutTitle is 72.5 at 1024 - and where the
+   control is already taller the box sits inside it and adds nothing, since a
+   pseudo-element can only ever grow a hit area, never shrink one.
+   GATED ON (hover: none), which is the condition that makes this safe rather
+   than just the condition that makes it relevant. Every lift and every hover
+   pad in SECTION 02b lives in (hover: hover), so the two can never both
+   apply: a permanent halo on a control that lifts would reintroduce exactly
+   the flicker that section exists to kill - the halo travels with the
+   transform, so a point in its bottom edge loses coverage the moment the
+   control rises. A touch device has no hover state and nothing lifts, so
+   there is nothing to strand a finger against. For a mouse 24px still clears
+   WCAG 2.5.8's 24 x 24 minimum; 44 is the touch guideline.
+   Verified with elementFromPoint at 375 that the strip each one claims is
+   inert container and not another control: .nav (the logo's 44px box is
+   26-70 inside a bar that runs 0-98), .hero-grid and .hero-side, #filters,
+   and .section-head. The chip row wraps at 375 with a 12px flex gap, so a
+   row-one chip's box ends 8px clear of the row below it. */
+@media (hover: none) {
+  /* the two that were position: static. The badge and the chip are already
+     relative, from the hover-pad block above. */
+  .nav-logo, #aboutTitle { position: relative; }
+  .nav-logo::after,
+  .badge-available::after,
+  .filter-btn::after,
+  #aboutTitle::after {
+    content: '';
+    position: absolute;
+    /* left/right and top resolve against the PADDING box, which is centred
+       inside the border box while the borders match - so 50% is the control's
+       own centre line. Horizontal stays at 0: all four already clear 44 wide. */
+    left: 0; right: 0;
+    top: 50%; height: 44px; margin-top: -22px;
   }
 }
 

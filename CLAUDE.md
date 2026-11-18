@@ -1743,8 +1743,42 @@ is most of the point.
   `role="switch"` + `aria-checked`.
 - Menus close on outside click, Escape, and scrolling away (40px threshold).
   Read the element's own class, never the caller's flag.
-- Touch targets ≥44px. Use an invisible `::before` to extend a hit area rather
-  than inflating a control.
+- **Touch targets ≥44px, extended with a pseudo-element rather than by
+  inflating the control.** Four missed it and were fixed on 2026-11-18 —
+  measured at 375, `.nav-logo` 47.9 × 24, `.badge-available` 222.1 × 35.5,
+  `.filter-btn` 66.5 × 40 and `#aboutTitle` 141.5 × 40. All four are wide
+  enough and all four are short, so the extender only works vertically.
+  **The nav logo is the one that read as an oversight** rather than a near
+  miss: the three controls beside it in the same row are all taken to 44 at
+  ≤760px and it was left at 24.
+  **Not inflated, because two of them are load-bearing elsewhere.** The
+  badge's height is mirrored by `.sk-badge` in the loading skeleton, and the
+  chip's height is one of the three things the hero field's 306px reach is
+  measured through — so `min-height: 44px` on either is a two-file change
+  for nothing a visitor can see. The pseudo costs no layout at all.
+  **It sets a HEIGHT, not an inset**, which is what lets one rule cover four
+  controls in four languages: a centred 44px box is exactly 44 whatever the
+  control measures — Japanese takes the badge to 37.5, and `#aboutTitle` is
+  72.5 at 1024 — and where the control is already taller the box sits inside
+  it and adds nothing, because a pseudo-element can only grow a hit area,
+  never shrink one.
+  **It is `::after` and it is gated on `(hover: none)`, and the gate is the
+  load-bearing part.** `::before` is taken by the hover pad, and more than
+  that: a PERMANENT halo on a control that lifts would rebuild the exact
+  flicker the pad exists to kill, because the halo travels with the transform
+  and a point in its bottom edge loses coverage the moment the control rises.
+  Every lift and every pad lives in `(hover: hover)`, so gating the extender
+  on `(hover: none)` makes the two systems disjoint by construction rather
+  than by measurement. Verified both ways: with a mouse all four report
+  `content: none` while the badge's pad reads `0 -5px -5px 0` under a real
+  hover; under touch emulation all four hit-test to exactly 44.
+  For a mouse 24px still clears WCAG 2.5.8's 24 × 24; **44 is the touch
+  guideline, so the touch query is the honest condition** — not a width.
+  Checked with `elementFromPoint` that the strip each one claims is inert
+  container and not another control: `.nav` (the logo's box runs 26–70 inside
+  a bar that runs 0–98), `.hero-grid` and `.hero-side`, `#filters`, and
+  `.section-head`. The chip row wraps at 375 on a 12px flex gap, so a row-one
+  chip ends 8px clear of the row beneath it.
 - **A theme change must not change layout.** It did: `.hero-grid`'s 6px
   bottom border was zeroed in dark instead of just hiding the bar its
   `::after` draws, so the hero was 6px shorter in dark and the marquee and
@@ -1764,7 +1798,7 @@ is most of the point.
   the label has to follow the device too — `.pong-footer` swaps its
   `data-i18n` key to `pong.controlsTouch` on a coarse pointer, which keeps
   working across language changes because `apply()` reads the attribute live.
-- Four languages (en/es/ja/it), **180 keys each, exact parity** — checked by
+- Four languages (en/es/ja/it), **177 keys each, exact parity** — checked by
   `node tools/audit.js`, which also catches a key nothing references. It
   found 19 dead ones per language on 2026-11-11: translations for four
   placeholder projects deleted long ago, two filter categories with no
@@ -1788,6 +1822,35 @@ Checked by driving the page, not by reading the markup — and two things that
   exact card. Testing with a programmatic `.click()` shows focus going to
   `<body>` instead, because a scripted click never focuses the element —
   that is the test being wrong, not the page.
+- **Decoration beside a label gets `aria-hidden`, and the misses are always
+  the glyphs.** Three were fixed on 2026-11-18 and all three were a character
+  being read out by its Unicode name:
+  - The four `.social-link-arrow` spans announced "LINKEDIN, north east
+    arrow" on every row. The sibling `.social-icon` SVG was already hidden,
+    so this was an oversight rather than a pattern.
+  - **The marquee's `✦` separators** turned the strip into "UX/UI, black
+    four-pointed star, WEBSITES, black four-pointed star…". The item text is
+    content and stays readable; each separator is now its own
+    `aria-hidden` span. **`renderTickers()` in `script.js` rebuilds that
+    same structure on every language change, so the markup and the function
+    have to stay in step** — the HTML is only the no-JS fallback, and it had
+    already drifted (it still said UX DESIGN where all four languages say
+    UX/UI). Hidden in the DOM rather than drawn in CSS because Chrome puts
+    generated content in the accessibility tree too. **Splitting one text run
+    into spans costs the strip nothing**: letter-spacing applies per
+    character, so the group measured 825.40 against 825.38 for the single
+    run, and the 55px/s duration is unchanged (3496px track, 31.78s, which
+    is 874 × 2 / 55 exactly).
+  - **The easter-egg trigger said `aria-label="???"`**, so the one control
+    that is permanently in the tree announced as "question mark question mark
+    question mark, button". It carries `data-i18n-aria="a11y.eggTrigger"`
+    now — "Hidden extras", 隠れたおまけ, "Extras ocultos", "Extra nascosti" —
+    **and carries no static `aria-label`, deliberately.** An aria-label is a
+    user-facing string, so a hardcoded one would break layer 2 of the
+    three-layer egg rule below, which exists so that a fetch of the HTML
+    contains no egg text at all. Without JavaScript the menu does not open,
+    so there is nothing for a label to name. `curl | grep` still finds the
+    egg strings only inside the explanatory comment.
 - Overlays are `inert` while closed, `aria-modal`, scroll-locked while open.
 - 16 `prefers-reduced-motion` blocks; every hover behind `@media (hover: hover)`.
 - The honeypot is `aria-hidden`, `tabindex="-1"` and parked at -9999px.
@@ -1845,8 +1908,11 @@ Rules for both:
      `#chaosWorkCover`, `#eggMenu`, `#stickerTray`, `#stickerTrash`,
      `#chaosStopBtn`, `#pongWindow`.
   2. **The visible strings are not in `index.html`.** Every egg label is
-     supplied by `i18n.js` through `data-i18n`, so a fetch of the HTML
-     without JavaScript — which is what most crawlers do — contains no
+     supplied by `i18n.js` through `data-i18n` — **and `data-i18n-aria`,
+     because an accessible name is a visible string for this purpose**: the
+     trigger's own label is `a11y.eggTrigger` with nothing hardcoded beside
+     it. A fetch of the HTML without JavaScript — which is what most
+     crawlers do — contains no
      "PLAY PONG", "CHAOS MODE" or "PONG.EXE" text at all. Check with
      `curl -s <url> | grep "PLAY PONG"`: the only hit should be inside the
      explanatory comment.

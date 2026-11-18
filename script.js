@@ -1574,13 +1574,29 @@ function renderTickers() {
     const items = T.list('marquee.items');
     if (items.length) {
       const SEP = '\u00A0\u00A0\u2726\u00A0\u00A0';
-      // non-breaking spaces inside an item keep multi-word entries
-      // ("BRAND SYSTEMS") from breaking across the scroll
-      const text = items.map((s) => s.replace(/ /g, '\u00A0')).join(SEP) + SEP;
       mTrack.querySelectorAll('.marquee-group').forEach((g) => {
         if (g.classList.contains('clone')) { g.remove(); return; }
+        // querySelector('span') is the OUTER span: it is first in tree order,
+        // so this keeps finding the same wrapper on every re-render.
         const span = g.querySelector('span');
-        if (span) span.textContent = text;
+        if (!span) return;
+        span.textContent = '';
+        items.forEach((s) => {
+          const item = document.createElement('span');
+          // non-breaking spaces inside an item keep multi-word entries
+          // ("BRAND SYSTEMS") from breaking across the scroll
+          item.textContent = s.replace(/ /g, '\u00A0');
+          // The separator is decoration and must not be announced - the glyph's
+          // Unicode name ("black four-pointed star") was being read between
+          // every pair of items. Hidden here rather than drawn in CSS because
+          // Chrome puts generated content in the accessibility tree too.
+          // letter-spacing applies per character, so splitting the run into
+          // spans changes neither the strip's width nor its 55px/s duration.
+          const sep = document.createElement('span');
+          sep.setAttribute('aria-hidden', 'true');
+          sep.textContent = SEP;
+          span.append(item, sep);
+        });
       });
     }
   }
