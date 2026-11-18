@@ -68,7 +68,7 @@ const BACKUP = path.join(__dirname, '.field-before-shuffle.json');
    fraction of it. */
 const W = 1440, H = 1026;
 const NAV_BOTTOM = 0.092;
-const FS_CENTRE = { x: 0.6554, y: 0.4381 };     // the full stop after MURRAY
+const FS_CENTRE = { x: 0.6554, y: 0.4829 };     // the full stop after MURRAY
 
 /* Where a band may place a shape. Deliberately narrow: these ranges are the
    part of the composition that was designed, and the roll happens inside

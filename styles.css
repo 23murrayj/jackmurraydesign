@@ -678,29 +678,17 @@ a { color: inherit; text-decoration: none; }
   grid-template-columns: calc(var(--sk-name) * 4.687) 1fr;
   align-items: end;
   gap: 40px;
-  /* Mirrors .hero-grid exactly: a transparent border holding the layout and
-     a full-bleed ::after painting the bar. It was a plain
-     "border-bottom: 6px solid var(--ink)" and that was wrong in two ways at
-     once, both of which the marquee hid until it came out on 2026-11-18.
-     It was 1296px against the page's 1440 at this width, because a border is
-     bounded by its element and the element sits inside .hero's 5vw padding -
-     the strip underneath used to supply the full-bleed edges, so the mass
-     looked right. And --ink IS the dark ground, so in dark the skeleton's
-     bar was invisible; that agreed with the page only because the page's own
-     bar was display: none in dark while the strip drew its own rules.
-     Both halves have to track .hero-grid now, colour included. */
-  border-bottom: 6px solid transparent;
-  /* 86, mirroring .hero-grid. It was 50 from before the marquee was opened
-     up into a seam, which put the strip 36px high of where the page then
-     drew it. */
-  padding-bottom: 86px;
-}
-.sk-hero-grid::after {
-  content: '';
-  position: absolute;
-  left: calc(50% - 50vw); width: 100vw;
-  bottom: -6px; height: 6px;
-  background: var(--black);
+  /* NO BOTTOM EDGE, mirroring .hero-grid. It drew one for as long as the
+     page did, and it drew it wrong twice over while the marquee hid the
+     evidence: a plain "border-bottom: 6px solid var(--ink)" is bounded by
+     its element, so it came out 1296px against the page's 1440 at this
+     width, and --ink IS the dark ground, so in dark it was invisible. Both
+     were only ever masked by the strip underneath. The rule is gone from
+     both now, which settles it in the only way that cannot drift. */
+  /* 0, mirroring .hero-grid. It was 86 while there was a rule to clear and
+     50 before the marquee was opened up into a seam; with no rule there is
+     nothing under the content to hold space for. */
+  padding-bottom: 0;
 }
 .sk-name { display: flex; flex-direction: column; }
 /* one line of .hero-name: its font-size x its 0.84 line-height, less a 6px
@@ -799,14 +787,14 @@ a { color: inherit; text-decoration: none; }
    Only the GRID changes here now. The bars inside it size themselves off
    --sk-name and --sk-role, which carry on working in one column. */
 @media (max-width: 1280px) {
-  /* .hero-grid's own stacked settings - 64, not 40: it tracks the real
-     rule, which opened up when the marquee was made a seam and kept the
-     room after the strip came out. */
+  /* .hero-grid's own stacked settings. The padding was 64 and tracked the
+     real rule's air under the marquee; both are 0 now the strip and the
+     rule beneath it are gone. */
   .sk-hero-grid {
     grid-template-columns: 1fr;
     align-items: start;
     gap: 30px;
-    padding-bottom: 64px;
+    padding-bottom: 0;
   }
   .sk-side { padding-bottom: 0; }
 }
@@ -1242,12 +1230,24 @@ body.is-loading { overflow: hidden; }
 .hero-shapes {
   position: absolute;
   /* Down to the top of the first card, not to the hero's own foot.
-     Measured at 1440: the first card's top edge sits 307px below the hero's
-     box, so -306px stops the field 1px short of it. That 307 is the card
-     BEFORE its .reveal settles, which is where it sits on first paint and
-     the state this was tuned in; once revealed it rises 40px and the last
-     40px of the field tuck behind it, which is fine - the cards cover the
-     field, they do not clip it. It used to stop at the
+     It stopped 1px short of the first card when it was set - the card's top
+     edge sat 307px below the hero's box, measured before its .reveal
+     settles. The heading has since moved up 24px (#work .section-head went
+     64 -> 40 when the marquee came out), so the card now sits 282.5px down
+     and the field runs 23.5px past its top edge.
+     THAT IS DELIBERATE, and the reason is that this number is not only a
+     reach - IT IS THE FIELD'S COORDINATE SPACE. Every shape's resting y is
+     a fraction of hero-height + this, so changing it rescales the entire
+     composition: 1026 -> 1001 at 1440x900, every shape lifted 2.4%, and
+     every landmark field-check.js holds them to moved with it. The
+     arrangement in the def arrays is one Jack chose from the shuffler, and
+     chasing 24px of card position is not worth re-authoring it for an
+     overshoot nobody can see - the cards are opaque and paint over the
+     field, so the last 23.5px is simply behind them.
+     Keeping it also leaves two of the three enforced landmarks exactly as
+     authored: the nav bound at .0916 and the hero's own foot at .7018 are
+     unchanged, because the box is still hero-height + 306 and the hero is
+     still 80vh. The full stop did move - see FS_CENTRE in field-check.js. It used to stop at the
      heading's rule, 218px down, which made that rule a hard line the field
      died at; carrying it through the filter row instead lets the hero thin
      out across three bands - seam, heading, tags - rather than ending
@@ -1428,35 +1428,22 @@ body.is-loading { overflow: hidden; }
   grid-template-columns: 1.4fr 1fr;
   align-items: end;
   gap: 40px;
-  /* THE HERO'S SEAM, and since the marquee came out it is the only one.
-     It is FULL BLEED, which it had to be when it was the top edge of a
-     black mass with the strip: not bleeding left a 51px step at each end
-     and the band looked clipped. That is still the right answer on its
-     own - a rule that stops inside the hero's 5vw padding reads as an
-     underline on the content rather than as the end of a section.
-     The border stays for layout and goes transparent; the bar is drawn by
-     ::after at 100vw. Painting it as a border is not an option: a border is
-     bounded by the element, and the element is inside that padding. */
-  border-bottom: 6px solid transparent;
-  /* air between the content and the rule. Opened from 50 to 86 when the
-     marquee was given room to read as its own band; kept at 86 with the
-     strip gone, because what it buys now is the rule reading as the hero's
-     own bottom edge rather than as an underline under the CTA. */
-  padding-bottom: 86px;
-}
-/* --black rather than --ink, and the difference only shows in dark. In
-   light the two are the same #1A1A18 - the page has one black - so nothing
-   moves. In dark --ink is #111117, which IS the page ground, so an ink bar
-   is invisible; that was fine while the marquee sat under it drawing its own
-   2px rules, and with the strip gone it would have left dark mode with no
-   seam at all. --black is off-white there, and 6px of it is the same rule
-   the section heads already draw at 4. */
-.hero-grid::after {
-  content: '';
-  position: absolute;
-  left: calc(50% - 50vw); width: 100vw;
-  bottom: -6px; height: 6px;
-  background: var(--black);
+  /* NO BOTTOM EDGE, and no padding holding one open. This carried a 6px
+     full-bleed bar drawn by ::after, which was the top of one black mass
+     with the marquee under it. When the strip came out the bar was left
+     standing on its own and Jack's read was that a single line is not what
+     taking the band out meant: "don't just put like a singular line there.
+     We want like take it out... and then fill the space."
+     He is right, and the reason is that the bar was never doing the
+     dividing on its own - it was the lid of a 44px black object. Alone
+     above 160px of white it reads as a leftover underline rather than as
+     the end of a section. #work already carries its own 4px rule under
+     SELECTED PROJECTS, so the page is not short of a divider; what the
+     hero needed was to stop and let the next section start.
+     The 86px went with it. That was air between the content and the rule,
+     opened from 50 when the marquee was given room to read as its own band,
+     and with no rule beneath it there is nothing for it to clear - it was
+     pure hole, and closing it is most of what "fill the space" asks for. */
 }
 
 /* ONE NUMBER FOR THE BADGE'S INTERNAL RHYTHM. The side padding and the gap
@@ -1896,7 +1883,10 @@ body.is-loading { overflow: hidden; }
     grid-template-columns: 1fr;
     align-items: start;
     gap: 30px;
-    padding-bottom: 64px;
+    /* 0, matching the base rule. This was 64 - the stacked layout's share of
+       the air the marquee needed above it - and with no strip and no rule
+       there is nothing beneath the content to hold space for. */
+    padding-bottom: 0;
   }
   /* the 1.2rem was optical alignment against the name's baseline in the
      two-column layout; stacked, it's just a stray gap.
@@ -1939,19 +1929,23 @@ body.is-loading { overflow: hidden; }
    strip that the hero had no ending, just a band and then the next thing.
    64px is the middle, and the 26px it adds is what Jack asked for ("another
    20-30px").
-   IT STAYS AT 64 now the strip is gone, and that is a deliberate
-   non-change. The hero centres its whole group inside 80vh, so losing a
-   38px strip from the bottom of that group moved the seam down 18px by
-   itself and opened the gap from the seam to this heading from 143px to
-   162px with nothing touched. Going to the house 70 would move the first
-   card and put .hero-shapes' 306px inset out by 6 - real work for six
-   pixels nobody can see.
+   NOW 40, and the number that was rejected is the reason this one works.
+   38 failed because the heading "arrived so soon after the strip that the
+   hero had no ending, just a band and then the next thing" - the objection
+   was to the BAND, not to the distance. With the strip gone and the 6px
+   rule gone with it, the hero's ending IS its white space, and bringing the
+   heading up is what stops that white reading as a hole. Jack asked for
+   exactly this half: "maybe selected projects can move slightly up".
+   40 rather than 38 only so the rejected value is not quoted back at him;
+   at this size the two are the same picture. It also brings #work's own 4px
+   rule onto the first screen at 1440x900, which gives the hero an ending
+   again without putting a line inside it.
    The anchor offset is unaffected: scroll-padding-top clears the
    nav against the SECTION edge, and the heading only ever moves down from
    it, never above. The hero's shape field reaches past the hero to land
    just under this heading's rule, so its inset tracks this number - see
    .hero-shapes. */
-#work .section-head { padding-top: 64px; }
+#work .section-head { padding-top: 40px; }
 .section-head h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
@@ -3088,7 +3082,6 @@ body.is-loading { overflow: hidden; }
   0%        { opacity: 0; }
   12%       { opacity: 0.6; }
   55%, 100% { opacity: 0; }
-}
 }
 
 /* the first and last entries stop the line at their dot rather than running

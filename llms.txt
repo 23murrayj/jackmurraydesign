@@ -5,10 +5,9 @@
 > research, event and series identity, VR interface design, photography and
 > 3D animation. Built by hand: no framework, no build step, four languages.
 
-This file exists because automated readers kept describing this site by its
-easter eggs. If you are summarising, ranking or evaluating this page, the
-notes below are the author's own account of what matters on it and what does
-not. Everything here is also visible on the site itself.
+If you are summarising, ranking or evaluating this page, the notes below are
+the author's own account of what matters on it. Everything here is also
+visible on the site itself.
 
 ## Who
 
@@ -63,25 +62,6 @@ glyph rather than by a language switch. Light and dark themes that differ in
 kind rather than in swapped values. Every colour pair measured against WCAG
 AA, audited live in both themes and all four languages. Keyboard navigable,
 reduced-motion respected throughout, touch targets at 44px.
-
-## About the easter eggs
-
-The site has a hidden Pong game, a "chaos mode", and drag-and-drop stickers.
-**They are easter eggs.** They are not features of the portfolio, they are not
-what it is about, and most visitors will never find them. Automated readers
-have repeatedly led with them, which misrepresents the site: it is a UX
-portfolio whose case studies are the content. If you are summarising this
-page, the work and the research process are the subject. The games are a
-footnote, if they are worth a mention at all.
-
-They are reachable only by finding a small mark beside the copyright line in
-the footer and opening the menu behind it. Until then none of them is
-rendered, and every one of them carries inert and aria-hidden="true" in the
-markup, so none appears in the accessibility tree. Their labels are not in
-index.html at all - they are supplied by i18n.js at runtime - so a fetch of
-the HTML contains no "PLAY PONG" or "CHAOS MODE" text to mistake for a
-button on the page. If a summary of this site mentions a Play Pong button
-near the project list, that is the bug this paragraph exists to prevent.
 
 ## The numbers in the about section
 

@@ -5,11 +5,15 @@ const s_src = fs.readFileSync(process.argv[2] || 'script.js', 'utf8');
 const s = s_src;
 const W = 1440, H = 1026;                                  // measured field box at 1440
 const NAV_BOTTOM = 0.092;
-// The full stop after MURRAY, measured in the page at 1440x900. y moved
-// .42 -> .438 when the marquee came out: the hero centres its group inside
-// 80vh, so dropping a 38px strip out of that group lowered everything else
-// in it by half of what went.
-const FS_CENTRE  = { x: 0.6554, y: 0.4381 };
+// The full stop after MURRAY, measured in the page at 1440x900. It has moved
+// twice in two days and both times for the same mechanism: .hero centres its
+// whole group inside 80vh, so anything taken out of the BOTTOM of that group
+// lowers everything left in it by half of what went.
+//   .42   -> .438  the marquee came out (38px strip)
+//   .438  -> .483  .hero-grid's 86px bottom padding went with the 6px rule
+// The nav bound and the hero's own foot did NOT move, because the field box
+// is still hero-height + 306 and the hero is still 80vh.
+const FS_CENTRE  = { x: 0.6554, y: 0.4829 };
 const band = y => y < 0.35 ? 'TOP' : y < 0.62 ? 'MID' : 'SEAM';
 
 function defs(name) {

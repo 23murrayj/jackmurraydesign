@@ -10,33 +10,69 @@ copy both count as part of the product.
 
 ---
 
-## START HERE — where to look, and what you can skip
+## START HERE
 
-This file is long because the reasoning is the valuable part. You almost
-never need all of it. Find your task below and read that section.
+**What this is.** Jack Murray's portfolio, at jackmurraydesign.com. Static:
+`index.html` + `styles.css` + `script.js` + `i18n.js`, served as-is. No
+framework, no build step, no dependencies, and it stays that way.
+
+**Run it:** `preview_start {name: "static"}` (port 8080). Never a server via
+Bash. **Git:** `/Library/Developer/CommandLineTools/usr/bin/git` — the plain
+`git` is an Xcode shim that refuses. Both are explained under *Environment*.
+
+**Check it:** `node tools/audit.js` and `node tools/field-check.js`, before
+any commit touching more than one file. Neither replaces driving the page.
+
+**Three things that will bite you**, each with a section of its own below:
+the in-app browser lies about animation and `getComputedStyle` goes stale
+(*Environment*); every number in this file is a measurement, so fix it in the
+same commit as the change (*About this file*); and the loading skeleton has
+to mirror the hero exactly, so moving anything in the hero is a two-file job
+(*The loading skeleton*).
+
+### Find your task
 
 | If you are about to… | Read | And check |
 |---|---|---|
 | change any colour | **Palette** | the contrast rules at the end of it |
-| touch the hero shapes | **Animation** → the field | `node tools/field-check.js` |
+| touch the hero shapes | **Animation** → the field (five subsections) | `node tools/field-check.js` |
 | move anything in the hero | **Layout**, **The loading skeleton** | re-measure the skeleton |
-| touch the theme switch | **Animation** → the switch | the browser-pane warning |
-| add / rename / remove a project | **Routing** (last line) | `assets/README.md` — it is a 7-step checklist, not 3 |
-| add any user-facing string | **UX rules** (last line) | all four languages, exact parity |
+| change the hero's vertical rhythm | **Layout** → the marquee note | `.hero` centres its group: half of what you remove comes back as space above |
+| touch the theme switch | **Animation** → The theme switch | the browser-pane warning |
+| add / rename / remove a project | **Routing** (last line) | `assets/README.md` — a 7-step checklist, not 3 |
+| add any user-facing string | **UX rules** → four languages | all four, exact parity, `audit.js` checks it |
 | add an image | **Performance** | every inline jpg needs a webp sibling |
-| write anything a crawler reads | **Machine readers are an audience** | — |
+| touch a button, card or chip | **UX rules** → Hover, lift and touch targets | the hover pad, and 44px on touch |
+| write anything a crawler reads | **Machine readers are an audience** | the eggs stay unnamed there |
+| touch the easter eggs | **Machine readers** → the three layers | `curl` the page and grep for their names |
 | publish a file, or touch a photo | **Safety constraints** | read the file first |
-| measure anything in the browser | **Environment** → the pane lies | sanity-check the probe |
+| measure anything in the browser | **Environment** → the pane lies | sanity-check the probe first |
 
-**Before committing anything that touches more than one file**, run the two
-tools. `node tools/audit.js` is the static half — dead CSS, unused tokens and
-i18n keys, project-list agreement across four files, the WebP invariant,
-root-relative asset paths, hover/focus contrast pairs. `node
-tools/field-check.js` is the hero field. Neither replaces driving the page:
-contrast, overflow, console errors and any count that only exists after JS
-runs still need a browser.
+### What is in here
 
-**Finding things cheaply.** Both big files carry numbered section banners:
+`grep -n "^## \|^### " CLAUDE.md` prints this with live line numbers.
+
+| Section | What it covers |
+|---|---|
+| **Environment** | the Xcode git gate, and five ways the in-app browser lies |
+| **The brief** | Jack's own statement of direction. It outranks every rule below |
+| **Visual direction** | neo-brutalist, hard shadows, the headline is untouchable |
+| **Palette** | the tokens, which ones flip, the ground's four settings, contrast |
+| **Typography** | three faces, the Japanese weight trap, CJK sizing |
+| **Layout** | the hero's proportions, the marquee's removal, breakpoints |
+| **Animation** | hover gating, the hero shape field (the longest thing here), the seam ring, the theme switch |
+| **The loading skeleton** | every bar derived from the rule it stands in for, and how to diff it |
+| **Routing** | real URLs for overlays, and the three things that break them |
+| **UX rules** | state, copy, the red mark, the hover pad, touch targets, i18n |
+| **Accessibility** | what is already right, and two things that only looked broken |
+| **Machine readers** | llms.txt, JSON-LD, and keeping the eggs out of both |
+| **Performance** | WebP, lazy overlays, cache headers, what was measured and rejected |
+| **Coding conventions** | comments carry their measurement; tokens over literals |
+| **Safety constraints** | the resume, the photos, the blocked client work |
+
+### Finding things in the code
+
+Both big files carry numbered section banners:
 
 ```
 grep -n "SECTION " styles.css      # 25 sections, 4.4k lines
@@ -46,16 +82,24 @@ grep -n "SECTION " script.js       # 19 sections, 3.1k lines
 One grep gives the whole table of contents with live line numbers. Use it
 instead of reading either file top to bottom.
 
-**Where facts live, so they stop contradicting each other:**
+### Where facts live, so they stop contradicting each other
 
 - **CLAUDE.md** (this file) — rules, and why. What not to break.
 - **PROJECT_NOTES.md** — state. What is live, what is open, ranked.
 - **assets/README.md** — how to add images and projects. Export specs.
+- **docs/** — gitignored, local only. Restore notes for things that were
+  removed: `hero-marquee.html`, `about-skills-marquee.html`. If you take a
+  feature out, leave one of these behind.
 - Anything describing *how the site should look* goes here, not in the other
   two. That separation exists because the status doc and this file drifted
   into contradicting each other about the card hover.
 
-**Two standing rules about this file itself:**
+### About this file
+
+It is long because the reasoning is the valuable part — most of it is a
+record of something that was tried, measured and rejected, which is the
+expensive half to rediscover. You almost never need all of it: the table
+above is the index, and the subsection headers are the fine-grained one.
 
 1. **Numbers in it are measurements, not decoration.** When one stops being
    true, fix it in the same commit as the change. A 2026-11-10 audit found
@@ -67,6 +111,10 @@ instead of reading either file top to bottom.
    correct claim: `.reveal` is on 19 elements at runtime but only 16 in the
    markup, because `renderGallery` adds the rest. `grep` would have made
    that worse.
+3. **If a tool reports success, check that it did any work.**
+   `field-shuffle.js` printed "all passing" while generating zero
+   arrangements, twice, for two different reasons. An empty loop passes
+   every test in it.
 
 ---
 
@@ -402,26 +450,56 @@ four languages whenever you size display type.**
   padding-bottom, not `#work .section-head`'s 64px, not `min-height: 80vh`.
   The loading skeleton tracked it on its own for the same reason, and
   measures within 1px at 1440, 1024, 900, 760 and 390.
-  **Two things did have to change.** `.hero-grid::after` went from
-  `var(--ink)` to `var(--black)` — identical in light, where the page has one
-  black, but in dark `--ink` IS the ground, so an ink bar is invisible. That
-  was fine while the strip underneath drew its own 2px rules; without it dark
-  would have had no seam at all. And `field-check.js` lost its `MARQUEE`
-  landmark, while `FS_CENTRE.y` moved .42 → .438 with the name.
+  **THEN THE 6px RULE WENT TOO, and that was the second half of the same
+  request.** The first pass left `.hero-grid`'s full-bleed bar standing where
+  the band had been. Jack, before he had even looked: *"don't just put like a
+  singular line there. We want like take it out. I said to take it out, and
+  then fill the space."* He is right, and the reason is that the bar was
+  never dividing anything on its own — it was the lid of a 44px black object.
+  Alone above 160px of white it reads as a leftover underline rather than as
+  the end of a section, and `#work` already draws its own 4px rule under
+  SELECTED PROJECTS, so the page was not short of a divider.
+  **"Fill the space" took two numbers, both of which existed only because of
+  the strip.** `.hero-grid`'s 86px bottom padding was air between the content
+  and the rule (50 before the marquee was opened up into a seam) — with no
+  rule beneath it, pure hole, so it is 0, and 0 in the stacked rule too where
+  it was 64. And `#work .section-head` came up from 64 to 40, which is the
+  half Jack floated himself: *"maybe selected projects can move slightly up"*.
+  **40 works for the reason 38 failed.** 38 was tried and rejected because
+  "the heading arrived so soon after the strip that the hero had no ending,
+  just a band and then the next thing" — the objection was to the BAND. With
+  no band and no rule the hero's ending IS its white space, and bringing the
+  heading up is what stops that white reading as a hole. It also puts #work's
+  own 4px rule on the first screen at 1440×900, so the hero has an ending
+  again without a line inside it. 40 rather than 38 only so the rejected
+  number is not quoted back at him; at this size they are the same picture.
+  **Measured at 1440×900 after both passes:** nav ends 94, name 253.7, content
+  ends 576.3, hero ends 720, SELECTED PROJECTS ink 760. Content to heading is
+  183.7px where the marquee era had 143 and the first pass had 207.
+  **Three follow-ons.** `.hero-shapes` keeps `-306px` even though the first
+  card moved up 24 — that inset is the field's COORDINATE SPACE, so changing
+  it would rescale the whole composition Jack chose from the shuffler, for an
+  overshoot the opaque cards cover anyway. `FS_CENTRE.y` in both field tools
+  moved .42 → .438 → .483, twice, for the same reason each time: the hero
+  centres its group, so anything taken off the bottom lowers what is left by
+  half. And one slot was nudged y .76 → .79 because the full stop walked into
+  its swing — `field-check` fails at .775 and passes at .78.
   **Restoring it:** `docs/hero-marquee.html` holds every removed block
   verbatim plus the follow-on changes to undo, the same way
   `docs/about-skills-marquee.html` holds the about-page ticker cut before it.
   Both are gitignored, so `git revert` is the other route.
-- Hero `min-height: 80vh` — deliberately not 100vh, so the seam has the next
-  section visible below it, not the bottom edge of the page. The marquee used
-  to be that seam; the 6px rule is now, which is why the number did not move.
+- Hero `min-height: 80vh` — deliberately not 100vh, so the next section is
+  visible below the hero rather than the hero being the bottom edge of the
+  page. **It survived both passes untouched**, and resist the pull to change
+  it: the hero centres its group, so min-height and the name's vertical
+  position are locked together — you cannot close the gap below without
+  moving the name up by exactly as much.
 - `#work .section-head` has `padding-top: 64px`, against 70px everywhere else.
   It has been 70 (the hero looked finished before the work started), then 38
   (the heading arrived so soon after the strip that the hero had no ending),
-  now 64. **It stayed at 64 when the marquee came out**, deliberately: the
-  hero recentring had already opened the gap by 18px, and going to the house
-  70 would move the first card and put the field's 306px inset out by 6 —
-  real work for six pixels nobody can see. See the shape-field note below.
+  then 64, now **40** — see the marquee note above for why 40 works where 38
+  did not. The field's inset deliberately did NOT follow it down; that note
+  explains why.
 - **The hero CTA is shrink-wrapped, ~226px.** It spent a release at
   `width: 100%` with `justify-content: space-between`, squaring the column off
   against a ragged right edge. Jack's verdict: a 356px button with the label
@@ -444,9 +522,13 @@ four languages whenever you size display type.**
 
 ## Animation
 
+### Hover, and reduced motion
+
 - Every hover effect is wrapped in `@media (hover: hover)`. On touch, `:hover`
   latches on tap and never releases.
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
+### The hero field — how many, and how far it reaches
+
 - Hero shapes: **11 / 9 / 7 by width in light, 9 / 7 / 5 in dark** (see the
   thinning note
   below), drift on **two sine terms per axis** (one sine traces a clean
@@ -497,6 +579,8 @@ four languages whenever you size display type.**
   into it, and at 375 it collapsed to four-to-six shapes inside one 60×50
   patch. Jack's call was the free field at every width. The z-order and the
   ≤760px opacity are what protect the text. **Do not reintroduce a keep-out.**
+### The field is authored: bands, hues and the keep order
+
 - **The field is AUTHORED, not generated, and that is the point.** Every
   position and every motion number was `Math.random()` per shape per build
   until 2026-11-10. Random scatter clumps — two or three shapes
@@ -518,11 +602,15 @@ four languages whenever you size display type.**
   absorbed the extras without the result reading as denser-but-random.
   **Re-measured 2026-11-18**, against the real hero at 1440×900 with every
   `.reveal` settled, where the box is 1440×1026: nav ends at .0916, name
-  .2025–.5168, side column .2491–.5168, the 6px seam .6007–.6065, the hero
-  itself .7018, SELECTED PROJECTS .7018–.8752 with its ink at .7641–.8421,
-  filters .8752–.963, first card .9615. The name's numbers are 18px lower
-  than the ones this file used to quote — that is the marquee coming out and
-  the hero recentring, not a retune.
+  .2473–.5617, side column .3013–.5617, the hero itself .7018, SELECTED
+  PROJECTS .7407–.8187 (ink), filters .8519–.9396, first card .9381, and the
+  full stop after MURRAY centres at (.6554, .4829).
+  **The name is 46px lower than the figures this file quoted two days ago**
+  and that is not a retune — it is the marquee and then the 6px rule coming
+  out of the bottom of the hero's centred group. **The nav bound and the
+  hero's own foot did not move at all**, because the field box is still
+  hero-height + 306 and the hero is still 80vh, which is most of why that
+  inset was left alone.
   **Both themes use the SAME eleven slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
@@ -664,6 +752,8 @@ four languages whenever you size display type.**
   against the landmarks — nav `y < .092`, and the full stop's CENTRE at
   (.6555, .42). Centre, not box: a shape may brush past the mark, it may not
   park on it.
+### The shapes themselves — which, what size, what colour
+
 - **The two squares over the name are a TRADE, and how that got settled is
   the reusable part.** The 96 at x .42 is the light red hard square; the 84
   at x .22 is the plum square. Jack asked for "the gray hollow box around
@@ -859,6 +949,8 @@ four languages whenever you size display type.**
   exactly 1 at and above 1392 and desktop is untouched. Measured by driving
   the real `driftAt` over a full cycle: at 375 the seven survivors are on
   screen 70–100% of the time, against 58–79% without it.
+### How the shapes move — weight, paths, speed, randomness
+
 - **Outline weight is 2.6% of the shape's size, not a fixed px — one number
   for the whole field, with a 2px floor.** The SVG shapes were always proportional
   (`stroke-width` is in viewBox units) while circles and squares took a flat
@@ -1031,6 +1123,8 @@ four languages whenever you size display type.**
   regression to one trajectory, not to dictate the spread. Every individual
   envelope was legal the whole time this bug existed, which is exactly why
   nothing caught it.
+### White space, loudness and occupancy
+
 - **The white space below the hero is mostly intentional, and the part that
   was not is fixed.** Jack asked whether the gap between VIEW PROJECTS, the
   marquee and SELECTED PROJECTS was deliberate. Most of it was: the marquee
@@ -1067,6 +1161,8 @@ four languages whenever you size display type.**
   2 because two slots carry `overNav`, and slices 12–13 read 6 and 6 because
   the marquee slab that used to sit there is open page. The only thin slice
   left is the very bottom, 4000px above nothing anyone is looking at.
+### The seam ring, and why drop-shadow
+
 - **The seam form** (`.work::before`) is one oversized ring at the top-right
   of #work, bleeding off the right edge, behind everything. The drifting field
   is small and moving, so its 306px overlap into #work read as leftover hero;
@@ -1089,6 +1185,8 @@ four languages whenever you size display type.**
   element box, not the star. The dark seam ring glows the same way and for
   the same reason: it is a ring with a transparent middle, and drop-shadow
   follows the rendered alpha, so the glow is a ring too.
+### The theme switch
+
 - Theme is applied by a **blocking inline script in `<head>`**, before first
   paint. Without it the page painted light then transitioned to dark over
   250ms on every load.
@@ -1382,6 +1480,8 @@ is most of the point.
 
 ## UX rules
 
+### State, and saying things out loud
+
 - **State lives in one place, and a class is not state.** The language button
   shows the translate mark only; which language is on is told by the menu's
   marked option + `aria-current`. The filters carry `aria-pressed` for the
@@ -1397,6 +1497,8 @@ is most of the point.
   English. `.sr-only` uses `clip-path` and 1px rather than `display: none`,
   which would take the live region out of the accessibility tree and silence
   the thing it exists for.
+### Copy, cards and the section marks
+
 - Cards are one object: photo badge, title, tags, and the action bar all
   respond together. Tags are plain text — as pills, people clicked them
   instead of the card.
@@ -1514,6 +1616,8 @@ is most of the point.
   is the only option legible in both themes that also *means* something: it is
   the colour of the full stop in the name. **Don't give them a hue each
   again.**
+### The hero column, its badge and its CTA
+
 - **The hero column's spacing is one ratio, not three numbers.** Badge, role
   and CTA, and the three vertical whites between and inside them each run
   about 1.75× the one above — measured ink to ink at 1440, where the role
@@ -1603,6 +1707,8 @@ is most of the point.
   scaling Y cannot touch either. **Re-measure the same way before moving it
   again** — the head is a third of the glyph, so there is a point where
   lengthening starts stretching it into a spike.
+### The red mark, at four sizes
+
 - **The red mark appears THREE times and is one mark at three sizes.** The
   full stop after MURRAY, the mark in the JM wordmark, and — since
   2026-11-17 — the availability dot in the hero badge. All three are
@@ -1758,6 +1864,8 @@ is most of the point.
   mark reads `#FF2D55` for a square and the background colour for a circle,
   and the ink extents of the rendered image should match what fontTools
   reports (4.60–43.07 horizontally) to within the raster's quantisation.
+### Hover, lift and touch targets
+
 - **EVERY LIFTING CONTROL CARRIES A HOVER PAD, and without it they all
   flicker.** Thirteen controls translate up-and-left on hover. A transform
   does not move an element's layout but it **does** move its hit testing, so
@@ -1843,6 +1951,8 @@ is most of the point.
   a bar that runs 0–98), `.hero-grid` and `.hero-side`, `#filters`, and
   `.section-head`. The chip row wraps at 375 on a 12px flex gap, so a row-one
   chip ends 8px clear of the row beneath it.
+### Theme, touch paths and four languages
+
 - **A theme change must not change layout.** It did: `.hero-grid`'s 6px
   bottom border was zeroed in dark instead of just hiding the bar its
   `::after` draws, so the hero was 6px shorter in dark and the marquee and
@@ -1954,39 +2064,61 @@ Rules for both:
   aimed at crawlers, and deliberately **no `sr-only` block** — a pitch written
   for machines has no business being read aloud to a screen-reader user.
 - **Keep them in step with the page.** Adding, cutting or renaming a project
-  means editing `llms.txt` and the JSON-LD too. Six live projects:
+  means editing `llms.txt` and the JSON-LD too. Note what they must NOT be
+  kept in step with: the easter eggs, which neither mentions any more. Six live projects:
   cat-coaching, fuse-partners-in-crime, easter-riverside, sandcastles,
   monmouth-retreat, oasis-journey.
 - The llms.txt deliberately **omits the email** and points at the contact
   section instead. The address is already on the page; there is no reason to
   hand it to scrapers in a second, more convenient format.
-- **The easter eggs are kept out of the page for machine readers, in three
-  layers, and all three have to stay true.** Saying "they are easter eggs"
-  in llms.txt was not enough: summaries kept reporting a **Play Pong button
-  next to the project list**, because `.chaos-work-cover` really does sit
-  between the hero and SELECTED PROJECTS in document order and was hidden by
-  CSS alone. CSS hides things from a person, not from a parser.
+- **THE EASTER EGGS ARE NOT DESCRIBED ANYWHERE A MACHINE READS. THEY USED
+  TO BE, AND THAT WAS THE STRATEGY UNTIL 2026-11-18.** The old approach was
+  to explain them so they would be described correctly: llms.txt carried an
+  "About the easter eggs" section, the JSON-LD carried a
+  `disambiguatingDescription` naming Pong and chaos mode, and `index.html`
+  carried a banner addressed to crawlers. It worked in the sense that it was
+  accurate, and it failed in the sense that **the loudest mentions of the
+  games on this site were the three places written for AI to read.**
+  Jack's call: *"if there's a way to maybe like hide it even more… I just
+  want it to be like almost unnoticeable."* So all three came out. Four
+  layers now, and the test for each is the same — would a reader who never
+  runs the JavaScript have any reason to know this exists?
   1. **`inert` and `aria-hidden="true"` in the markup**, removed only when
      the egg is opened. `setInert()` sets both — `inert` already implies
      `aria-hidden` in a current browser, but the explicit attribute is what
      a crawler or an older AT actually reads. Six blocks carry it:
      `#chaosWorkCover`, `#eggMenu`, `#stickerTray`, `#stickerTrash`,
      `#chaosStopBtn`, `#pongWindow`.
-  2. **The visible strings are not in `index.html`.** Every egg label is
-     supplied by `i18n.js` through `data-i18n` — **and `data-i18n-aria`,
-     because an accessible name is a visible string for this purpose**: the
-     trigger's own label is `a11y.eggTrigger` with nothing hardcoded beside
-     it. A fetch of the HTML without JavaScript — which is what most
-     crawlers do — contains no
-     "PLAY PONG", "CHAOS MODE" or "PONG.EXE" text at all. Check with
-     `curl -s <url> | grep "PLAY PONG"`: the only hit should be inside the
-     explanatory comment.
-  3. **A banner comment** at the egg block in `index.html` says plainly
-     what they are, addressed to whoever is reading the source.
+  2. **No label is in `index.html`.** Every one is supplied by `i18n.js`
+     through `data-i18n` — **and `data-i18n-aria`, because an accessible
+     name is a visible string for this purpose**: the trigger's own label is
+     `a11y.eggTrigger` with nothing hardcoded beside it.
+  3. **Nothing names them in prose, in any file a machine reads.** Not
+     llms.txt, not the JSON-LD, not a comment in `index.html`. The comments
+     that remain say "optional extras, off by default" and point here.
+  4. **`.chaos-work-cover` is the LAST child of `#work`, not the first.**
+     It is `position: absolute; inset: 0` over the section, so among its
+     siblings its place costs nothing visually — but it used to sit between
+     the hero and SELECTED PROJECTS in document order, and that is precisely
+     why summaries kept reporting a **Play Pong button next to the project
+     list**. Document order is what a parser reads; CSS hides things from a
+     person, not from a parser.
+  **Measured after the change**, stripping comments, script and style and
+  then tags from `index.html`: 3,187 characters of visible text containing
+  **zero** occurrences of "pong", "chaos" or "sticker". The one "easter" is
+  the Easter at Riverside case study and the two "game"s are Jack's own
+  about-page copy (Cool Math Games, and a card game with friends).
+  **What is left is identifier-level and stays that way on purpose**:
+  `id="pongWindow"`, `class="pong-window"`, `data-i18n="pong.title"`. Those
+  are in attributes on empty, inert, aria-hidden elements, so no text
+  extractor reaches them; only something reading raw HTML would. Renaming
+  them would buy a little more silence and cost the next maintainer the
+  ability to tell what a block is, which this codebase values more. **If the
+  eggs still come up too often, the answer is to delete them, not to
+  obfuscate them** — Jack has said he is open to that.
   **Layer 2 is the exact opposite of the counters rule below, deliberately.**
   The counters are content, so the markup holds the truth; the eggs are not
-  content, so the markup holds nothing. The test is whether a reader who
-  never runs the JS should know the thing exists.
+  content, so the markup holds nothing.
 
 **Anything animated from a placeholder is invisible to a machine reader.** The
 about-section counters are the worked example: the markup now carries `4`,

@@ -217,6 +217,41 @@ console.log('\n— hover and focus pairs');
   if (unresolved) console.log('       ' + unresolved + ' pair(s) use a non-hex token and are left to the live walk');
 }
 
+console.log('\n— styles.css braces balance');
+{
+  /* A stray "}" at the top level is silently ignored by every browser, so
+     nothing looks broken - and that is exactly the problem. One sat after
+     @keyframes tl-ripple-fade for at least five commits and its only effect
+     was to make a naive brace count come out even, which hid a genuinely
+     unclosed .hero-grid for a whole render cycle: the rule swallowed
+     .badge-available and the page fell apart below the hero.
+     Counted with a real tokenizer rather than a regex, because braces inside
+     comments and quoted strings are not braces. */
+  let depth = 0, line = 1, i = 0, mode = 'css', quote = '';
+  const stray = [];
+  while (i < cssRaw.length) {
+    const ch = cssRaw[i], two = cssRaw.substr(i, 2);
+    if (ch === '\n') line++;
+    if (mode === 'css') {
+      if (two === '/*') { mode = 'comment'; i += 2; continue; }
+      if (ch === '"' || ch === "'") { mode = 'str'; quote = ch; i++; continue; }
+      if (ch === '{') depth++;
+      else if (ch === '}') { depth--; if (depth < 0) { stray.push('line ' + line); depth = 0; } }
+    } else if (mode === 'comment') {
+      if (two === '*/') { mode = 'css'; i += 2; continue; }
+    } else {
+      if (ch === '\\') { i += 2; continue; }
+      if (ch === quote) mode = 'css';
+    }
+    i++;
+  }
+  const bad = [];
+  if (depth !== 0) bad.push(depth + ' rule(s) left open');
+  if (stray.length) bad.push('unmatched } at ' + stray.join(', '));
+  if (mode !== 'css') bad.push('file ends inside a ' + mode);
+  say('every rule opens and closes', bad.length === 0, bad.join(' | '));
+}
+
 console.log('\n— script.js section order');
 {
   const nums = [...js.matchAll(/SECTION (\d+) ·/g)].map(m => +m[1]);
