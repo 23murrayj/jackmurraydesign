@@ -782,6 +782,60 @@ a { color: inherit; text-decoration: none; }
 @container (max-width: 222px) { .sk-badge { height: 51px; width: 100%; } }
 @container (max-width: 226px) { .sk-cta   { height: 81px; width: 100%; } }
 
+/* THE WORK BAND. Everything that positions it - the head's padding, the
+   filter row's padding and gap, the card grid's columns - is shared with the
+   real rules rather than copied, so those numbers cannot drift. Only the
+   BARS are sized here, and they follow the same method the title bars use:
+   a multiple of their own font-size, which is fixed for one word in one
+   typeface. */
+.sk-work { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+/* SELECTED PROJECTS is 11.753x its font-size, measured identical at 1440
+   and 1024. The height multiple is 1.082 and it is a COMPROMISE, not a
+   measurement: line-height normal on Archivo Black lands on a rounded line
+   box, so the real ratio wobbles - 80/73.6 = 1.0870 at 1440, 72.5/66.56 =
+   1.0892 at 1024, 42/39 = 1.0769 at 600. 1.088 was taken from the two wide
+   readings and came out 1.43px tall at 600, which pushed the filter row and
+   the cards down by the same amount, because an error in this bar is an
+   error in everything under it. 1.082 is the centre of the range and holds
+   every width inside half a pixel. */
+.sk-head { --sk-h2: clamp(2.3rem, 6.5vw, 4.6rem); }
+.sk-h2 {
+  width: min(100%, calc(var(--sk-h2) * 11.753));
+  height: calc(var(--sk-h2) * 1.082);
+}
+/* It wraps to two lines at ~550: below that the clamp has bottomed out at
+   2.3rem so the ink stays 432.5px wide while the column keeps narrowing.
+   Measured one line at 551 and two at 540. The longer of the two lines is
+   5.767x. */
+@media (max-width: 550px) {
+  .sk-h2 {
+    width: min(100%, calc(var(--sk-h2) * 5.767));
+    height: calc(var(--sk-h2) * 2.164);
+  }
+}
+/* Chip heights are fixed (10px padding + 12.8px text + 2px borders = 40) and
+   the widths are multiples of the chip's own 0.8rem: ALL 5.195, UX/UI 6.351,
+   GRAPHICS 8.765, PHOTOGRAPHY 11.37, MOTION 7.556. Measured identical at
+   1440, 1024 and 390, because none of them depends on the viewport.
+   A COPY CHANGE IS A SKELETON CHANGE here exactly as it is for the badge. */
+.sk-filters { --sk-chip: 0.8rem; }
+.sk-chip { height: 40px; flex: none; }
+.sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.195); }
+.sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.351); }
+.sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.765); }
+.sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 11.37); }
+.sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 7.556); }
+/* The cards take whatever is left of the viewport. No aspect ratio to track:
+   the loader is a fixed full-viewport box with overflow: hidden, and only
+   the top ~60px of the first row is ever on screen. */
+.sk-cards { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+/* The same -1.5px .card carries, which is how the real cards overlap their
+   3px borders into one shared rule rather than a doubled 6px one. Without
+   it the skeleton block sits 1.5px inside the card on every edge - small,
+   but it is the difference between a bar that dissolves into the card and
+   one that leaves a hairline of paper around it as it goes. */
+.sk-card { margin: -1.5px; }
+
 /* Tracks .hero-grid's stacking breakpoint, which moved to 1280 when the
    standing role line made a 162px side column unusable. If these two drift
    apart the loader shows a two-column hero and the page then renders a
@@ -1939,7 +1993,12 @@ body.is-loading { overflow: hidden; }
   .hero-name { font-size: clamp(3.4rem, 16vw, 8rem); }
 }
 /* shared section heading */
-.section-head {
+/* .sk-head rides along on every one of these, and that is the point: the
+   loader's work band has to sit exactly where #work's does, and the only way
+   a mirrored number cannot drift is for it not to be a second number. The
+   4px rule is drawn in the skeleton too - it is structure, not content, and
+   it exists the moment the page lays out. */
+.section-head, .sk-head {
   display: flex; justify-content: space-between; align-items: baseline;
   padding: 70px 5vw 30px;
   border-bottom: 4px solid var(--black);
@@ -1969,7 +2028,7 @@ body.is-loading { overflow: hidden; }
    it, never above. The hero's shape field reaches past the hero to land
    just under this heading's rule, so its inset tracks this number - see
    .hero-shapes. */
-#work .section-head { padding-top: 40px; }
+#work .section-head, .sk-head { padding-top: 40px; }
 .section-head h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
@@ -2190,7 +2249,7 @@ body.is-loading { overflow: hidden; }
   filter: drop-shadow(0 0 16px var(--blue));
 }
 
-.filters {
+.filters, .sk-filters {
   display: flex; flex-wrap: wrap; gap: 12px;
   padding: 40px 5vw 10px;
 }
@@ -2205,8 +2264,8 @@ body.is-loading { overflow: hidden; }
    heading that is already on two lines. Neither is air a phone can afford,
    and together they are worth 32px of photograph. */
 @media (max-width: 760px) {
-  .filters { padding-top: 20px; }
-  #work .section-head { padding-top: 28px; }
+  .filters, .sk-filters { padding-top: 20px; }
+  #work .section-head, .sk-head { padding-top: 28px; }
 }
 .filter-btn {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px;
@@ -2391,7 +2450,12 @@ body.is-loading { overflow: hidden; }
   .card-cta-arrow, .card-cta { transition: none; }
 }
 @media (max-width: 800px) {
-  .gallery { grid-template-columns: 1fr; }
+  .gallery, .sk-cards { grid-template-columns: 1fr; }
+  /* One column means the second card is a full card-height down the page,
+     not beside the first - so the skeleton's second block would stack
+     directly under the first and halve both. Only the first row is ever on
+     screen here, so drop it and let one block take the whole remainder. */
+  .sk-card:nth-child(2) { display: none; }
 }
 
 /* ------------------------------------------------------------------------

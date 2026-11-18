@@ -299,6 +299,28 @@
       </div>
     </div>
   </div>
+  <!-- The work band. This used to stop at the hero, which was right while
+       .hero was 80vh and the hero WAS the first screen. At 66vh the first
+       screen also carries SELECTED PROJECTS, the filter row and the top of
+       two cards, and leaving them out meant the top of the page dissolved
+       out of grey blocks while the bottom third faded up out of nothing. -->
+  <div class="sk-work">
+    <div class="sk-head"><div class="sk sk-h2"></div></div>
+    <!-- five chips: ALL, UX/UI, GRAPHICS, PHOTOGRAPHY, MOTION. Widths are
+         multiples of their own font-size, the same way the title bars are -
+         see .sk-chip. -->
+    <div class="sk-filters">
+      <div class="sk sk-chip"></div>
+      <div class="sk sk-chip"></div>
+      <div class="sk sk-chip"></div>
+      <div class="sk sk-chip"></div>
+      <div class="sk sk-chip"></div>
+    </div>
+    <div class="sk-cards">
+      <div class="sk sk-card"></div>
+      <div class="sk sk-card"></div>
+    </div>
+  </div>
 </div>
 
 <!-- SCROLL PROGRESS -->

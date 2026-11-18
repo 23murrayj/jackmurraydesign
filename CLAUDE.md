@@ -1430,6 +1430,48 @@ correct when someone wrote it down.
   **The lesson generalises:** a skeleton bar that merely MEASURES the same is
   not the same. Check how the real one is painted, not just where it sits —
   an element-box diff will not catch a border standing in for a full bleed.
+- **IT COVERS THE WORK BAND NOW, NOT JUST THE HERO.** It stopped at the hero
+  for as long as `.hero` was 80vh and the hero WAS the first screen. At 66vh
+  the first screen also carries SELECTED PROJECTS, the filter row and the top
+  of two cards — about 300px of it — and the loader was drawing nothing
+  there. Jack, looking at a picture of it: *"we're missing all this stuff for
+  the bottom."*
+  **The way to see why it mattered is the cross-fade, not the skeleton.** The
+  loader dismisses on a 0.5s opacity transition with the real page already
+  painted underneath (the rAF in `dismiss` is there so the two cross rather
+  than flashing). Caught at 55%, the hero was dissolving out of grey blocks
+  while the bottom third faded up out of blank paper — two different
+  handovers in one screen, and the lower one in the band the 66vh change
+  exists to show.
+  **Everything that POSITIONS it is shared with the real rules, not copied.**
+  `.sk-head` rides along on `.section-head`, on `#work .section-head`'s 40px
+  and on its 28px at ≤760; `.sk-filters` on `.filters` and its ≤760
+  padding; `.sk-cards` on `.gallery`'s column count. A mirrored number cannot
+  drift if it is not a second number. The 4px rule is drawn too — it is
+  structure, not content, and it exists the moment the page lays out.
+  **Only the BARS carry multiples**, by the same method the title bars use:
+  SELECTED PROJECTS is 11.753× its font-size (identical at 1440 and 1024),
+  and the chips are multiples of their own 0.8rem — 5.195 / 6.351 / 8.765 /
+  11.37 / 7.556 for ALL, UX/UI, GRAPHICS, PHOTOGRAPHY, MOTION, identical at
+  1440, 1024 and 390 because none of them depends on the viewport. **A copy
+  change is a skeleton change here exactly as it is for the badge.**
+  **The height multiple, 1.082, is a compromise rather than a measurement.**
+  `line-height: normal` on Archivo Black lands on a rounded line box, so the
+  real ratio wobbles: 1.0870 at 1440, 1.0892 at 1024, 1.0769 at 600. Taking
+  1.088 from the two wide readings put the bar 1.43px tall at 600 — and an
+  error in this bar is an error in **everything below it**, so the filter row
+  and the cards moved with it. 1.082 is the centre and holds every width
+  inside half a pixel of the bar itself.
+  **Two structural cases.** The heading wraps to two lines at ~550, where the
+  clamp has bottomed out at 2.3rem so the ink stays 432.5px wide while the
+  column keeps narrowing (measured one line at 551, two at 540); below that
+  the bar is 5.767× wide and two lines tall. And at ≤800 the gallery is one
+  column, so the second card block is dropped — stacked, it would halve both
+  blocks, and only the first row is ever on screen there.
+  `.sk-card` carries `margin: -1.5px`, the same overlap `.card` uses.
+  **Current state: within 1.2px at 320, 390, 540, 600, 801, 1024 and 1440.**
+  The residual is the line-box rounding above and is not reducible with a
+  single constant.
 - **How to check it.** The loader removes itself 600ms after load, so do not
   race it: inject a second copy instead. `fetch('/')`, pull `.loader` out of
   the parsed document, give it a new id and `visibility: hidden`, append it to
@@ -1458,6 +1500,13 @@ correct when someone wrote it down.
      moment to settle; at 150ms it reported as on-screen at 760 and 390 but
      not at 320, which is the kind of inconsistency that means the probe and
      not the page. 600ms is enough.
+  4. **Adding `.in-view` without killing transitions FIRST.** Everything in
+     `#work` is a `.reveal`, which rests 40px low, and the pane will happily
+     report the class as applied while `getComputedStyle` still returns
+     `matrix(1, 0, 0, 1, 0, 40)`. Every landmark below the hero then reads
+     exactly 40px out — a clean, consistent, entirely fictional offset that
+     looks far more like a real bug than a flaky one. Inject
+     `transition: none` first, THEN reveal, then measure.
   **Use geometry for "is it shown": `display !== 'none'` plus a rect that
   overlaps the viewport.** That last part is not pedantry — at ≤760 the real
   `.nav-links` is a fixed drawer parked with its left edge exactly at the
