@@ -1516,110 +1516,7 @@ window.addEventListener('scroll', () => {
   setEggMenu(false);
 }, { passive: true });
 
-// seamless marquee: keep duplicating the group until it's wide enough
-// to fill at least double the viewport, so the -50% loop never shows a gap
-/* ------------------------------------------------------------------------
-   SECTION 14 · MARQUEE STRIPS
-   Fixed px/second, so resizing the type does not change the speed.
-   ------------------------------------------------------------------------ */
-function setupSeamlessMarquee(trackId, groupClass, pxPerSecond) {
-  const track = document.getElementById(trackId);
-  if (!track) return;
-  function fill() {
-    const groupSelector = `.${groupClass}`;
-    const groups = () => track.querySelectorAll(groupSelector);
-    const baseGroup = groups()[0];
-    if (!baseGroup) return;
-    const targetWidth = window.innerWidth * 2.2;
-    // remove any extra clones beyond the original two groups
-    track.querySelectorAll(`${groupSelector}.clone`).forEach((el) => el.remove());
-    let currentWidth = Array.from(groups()).reduce((sum, el) => sum + el.offsetWidth, 0);
-    while (currentWidth < targetWidth) {
-      const clone = baseGroup.cloneNode(true);
-      clone.classList.add('clone');
-      clone.setAttribute('aria-hidden', 'true');
-      track.appendChild(clone);
-      currentWidth += clone.offsetWidth;
-    }
-    // an even group count keeps the -50% loop point on a group boundary (no seam)
-    if (groups().length % 2 !== 0) {
-      const clone = baseGroup.cloneNode(true);
-      clone.classList.add('clone');
-      clone.setAttribute('aria-hidden', 'true');
-      track.appendChild(clone);
-    }
-    const groupWidth = baseGroup.offsetWidth;
-    const totalGroups = groups().length;
-    const duration = (groupWidth * (totalGroups / 2)) / pxPerSecond;
-    track.style.animationDuration = duration + 's';
-  }
-  window.addEventListener('load', fill);
-  window.addEventListener('resize', fill);
-  fill();
-  return fill;
-}
-const marqueeRefills = [
-  setupSeamlessMarquee('marqueeTrack', 'marquee-group', 55),
-  setupSeamlessMarquee('skillsTrack', 'skills-group', 36)
-].filter(Boolean);
 
-// Both ticker strips are authored in the HTML as two base groups which
-// setupSeamlessMarquee then clones to fill the viewport. Retranslating
-// means rewriting the base groups, dropping the stale clones, and letting
-// the refill re-clone at the new text width — Japanese and Spanish are
-// materially different lengths, so the clone count genuinely changes.
-function renderTickers() {
-  const mTrack = document.getElementById('marqueeTrack');
-  if (mTrack) {
-    const items = T.list('marquee.items');
-    if (items.length) {
-      const SEP = '\u00A0\u00A0\u2726\u00A0\u00A0';
-      mTrack.querySelectorAll('.marquee-group').forEach((g) => {
-        if (g.classList.contains('clone')) { g.remove(); return; }
-        // querySelector('span') is the OUTER span: it is first in tree order,
-        // so this keeps finding the same wrapper on every re-render.
-        const span = g.querySelector('span');
-        if (!span) return;
-        span.textContent = '';
-        items.forEach((s) => {
-          const item = document.createElement('span');
-          // non-breaking spaces inside an item keep multi-word entries
-          // ("BRAND SYSTEMS") from breaking across the scroll
-          item.textContent = s.replace(/ /g, '\u00A0');
-          // The separator is decoration and must not be announced - the glyph's
-          // Unicode name ("black four-pointed star") was being read between
-          // every pair of items. Hidden here rather than drawn in CSS because
-          // Chrome puts generated content in the accessibility tree too.
-          // letter-spacing applies per character, so splitting the run into
-          // spans changes neither the strip's width nor its 55px/s duration.
-          const sep = document.createElement('span');
-          sep.setAttribute('aria-hidden', 'true');
-          sep.textContent = SEP;
-          span.append(item, sep);
-        });
-      });
-    }
-  }
-
-  const sTrack = document.getElementById('skillsTrack');
-  if (sTrack) {
-    const items = T.list('skills.marquee');
-    if (items.length) {
-      sTrack.querySelectorAll('.skills-group').forEach((g) => {
-        if (g.classList.contains('clone')) { g.remove(); return; }
-        g.textContent = '';
-        items.forEach((txt) => {
-          const span = document.createElement('span');
-          span.textContent = txt;
-          g.appendChild(span);
-        });
-      });
-    }
-  }
-
-  marqueeRefills.forEach((fn) => fn());
-}
-renderTickers();
 
 /* ------------------------------------------------------------------------
    SECTION 15 · HERO SHAPE FIELD
@@ -1679,7 +1576,7 @@ if (heroShapesContainer) {
      were added on 2026-11-10 to give the field more to look at and were
      cut the same day - "they dont fit". They were not wrong in isolation;
      they were wrong HERE. This page already carries a lot of distinct
-     geometry - the marquee band, the hard rules, the cards, the chips, the
+     geometry - the hard rules, the cards, the chips, the
      name itself - and the field's job is to be the quiet layer behind all
      of it. Six kinds of thing drifting is a second subject. Variety in this
      field has to come from SIZE and FILL, not from new forms. */
@@ -1782,17 +1679,24 @@ if (heroShapesContainer) {
          TOP   y .25 .25 .26 .28   x .22 .42 .65 .90
          MID   y .47 .46 .50 .54   x .10 .30 .50 .88
          SEAM  y .80 .76 .72       x .18 .72 .92
-     Measured against the real hero at 1440, where the field box is
-     1440x1026: the nav ends at y .092, the name occupies .184-.499, the
-     side column .236-.499, the marquee strip .579-.640, SELECTED PROJECTS
-     .702-.875 and the filter row .914-1.002. So band one sits across the
-     top of the name, band two across its foot and the margins either side,
-     band three down in the seam.
-     Band two is NOT on the marquee, and that was a correction: at .57-.66
-     all three rested on or beside the strip, and a near-black circle at
-     .34 over a near-black slab is not a shape, it is a smudge. They cross
-     it on the drift, which is fine and always was; they just do not live
-     there.
+     Measured against the real hero at 1440x900, where the field box is
+     1440x1026 and every .reveal has settled: the nav ends at y .0916, the
+     name occupies .2025-.5168, the side column .2491-.5168, the hero's 6px
+     seam lands at .6007-.6065, the hero itself ends at .7018, SELECTED
+     PROJECTS runs .7018-.8752 with its ink at .7641-.8421, the filter row
+     .8752-.963, and the first card starts at .9615. So band one sits
+     across the top of the name, band two across its foot and the margins
+     either side, band three down past the seam.
+     Those are 18px lower than they used to be, which is the marquee coming
+     out on 2026-11-18: the hero centres its whole group inside 80vh, so
+     losing a 38px strip from the bottom of that group moved everything in
+     it down by half of what went.
+     Band two sits at .44-.56 rather than .57-.66 and the ORIGINAL reason is
+     gone with the strip - a near-black circle at .34 resting on a near-black
+     slab was a smudge rather than a shape. It stays where it is because the
+     second reason still holds: the band was moved down to .44-.56 to close
+     a dead slice at .55-.60, and a band that rests low keeps something
+     living in the space the seam used to occupy.
      That is the same "thin out across strip, heading and tags" the field
      was extended 306px for - it only actually happens if shapes LIVE down
      there rather than wandering down by luck, which is what eleven random
@@ -1815,7 +1719,7 @@ if (heroShapesContainer) {
        arithmetic per shape, at DARK's larger sizes, and it is not
        eyeballable - see the path note further down.
      This is NOT a keep-out. Nothing clamps anything at runtime, and a shape
-     is free to drift over the name, the column, the nav and the marquee -
+     is free to drift over the name, the column, the nav and the seam -
      the build that fenced them out of measured boxes was tried and rejected
      and must not come back, see CLAUDE.md. This sets where a shape lives,
      not where it is allowed to go. */
@@ -1881,8 +1785,9 @@ if (heroShapesContainer) {
     { type: 'square',   size: 96,  color: 'var(--accent)',      filled: true,  keep: 7,  at: [0.42, 0.25], aspect: 1.6,  ratio: 1.0,  reach: 1.5, tilt: -1.5708, pace: 0.38, overNav: true },
     /* dropped from y .46 to .54 - "the yellow circle that's around Murray,
        the hollow one... it should just maybe move down more". Still inside
-       the MID band (.44-.56) and still clear of the marquee at rest, which
-       starts at .579. */
+       the MID band (.44-.56). It also had to clear the marquee strip, which
+       began at .579; that constraint went when the strip did, and the
+       position stays because the band does. */
     /* BLUE, and it reaches SELECTED PROJECTS. "For the little yellow hollow
        circle, change that to blue. And have it - I like its trajectory, but
        it should go all the way down to selected works. I think that
@@ -1930,9 +1835,12 @@ if (heroShapesContainer) {
        across, and retreats the way it came. pace 0.14 makes that cycle 159
        seconds, so it is a slow visitor rather than a shuttle - 62px/s at
        its quickest, the slowest thing in the field.
-       It rests at y .52, which is MID, and swings to .321-.719 - across
-       the marquee strip at .579-.640, which is the white space the request
-       is actually about. It does not REST on the strip, which is the rule.
+       It rests at y .52, which is MID, and swings to .321-.719. The quote
+       names the marquee because the strip was still there when he asked;
+       what he was describing is the white band at .58-.70, which is now
+       open page with the hero's 6px seam running through it. The sweep is
+       the same and it matters slightly more, since that band lost the one
+       object that used to fill it.
        NOT VIVID, where the square it replaces was. That shape was cut one
        commit ago for being the loudest object in the field, and vivid on
        something 81px across is the thing that made it so; filled at the
@@ -2245,15 +2153,16 @@ if (heroShapesContainer) {
         const jx = bx + (Math.random() - 0.5) * 0.14;
         const jy = by + (Math.random() - 0.5) * 0.07;
         const halfW = renderSize / 2 / rectW, halfH = renderSize / 2 / rectH;
-        /* the rolled position has to clear the SAME three landmarks
-           field-check.js holds the authored ones to, using this shape's own
-           amplitudes - so a wide reach cannot buy itself a violation. */
+        /* the rolled position has to clear the SAME landmarks field-check.js
+           holds the authored ones to, using this shape's own amplitudes - so
+           a wide reach cannot buy itself a violation. There were three while
+           the marquee existed; the third was "do not rest on the strip",
+           which went with it. */
         const swingX = (ampX + wobbleAmp) / rectW + halfW;
         const swingY = (ampY + wobbleAmp) / rectH + halfH;
         const hitsNav = jy - swingY < 0.092;
         const hitsStop = Math.abs(jx - 0.6555) < swingX && Math.abs(jy - 0.42) < swingY;
-        const onMarquee = (jy + halfH) > 0.579 && (jy - halfH) < 0.640;
-        if (!hitsNav && !hitsStop && !onMarquee && jx > halfW && jx < 1 - halfW * 0.2) {
+        if (!hitsNav && !hitsStop && jx > halfW && jx < 1 - halfW * 0.2) {
           bx = jx; by = jy;
         }
       }
@@ -3254,7 +3163,6 @@ function refreshAltText() {
 }
 
 T.onChange(() => {
-  renderTickers();
   buildMagneticText();
   refreshAltText();
   // only if the visitor switched language with a project overlay open
@@ -3462,22 +3370,6 @@ setInert(lightbox, true);
    halt. Waiting for the pointer to stay put reads as intent instead of as
    a glitch. Leaving triggers immediately - resuming late feels broken.
    ========================================================================== */
-(function marqueeHoverPause() {
-  var strip = document.querySelector('.marquee');
-  if (!strip) return;
-  var DWELL_MS = 450;
-  var timer = null;
-  strip.addEventListener('pointerenter', function (e) {
-    // touch has no hover state; a tap would latch the pause on with no way off
-    if (e.pointerType === 'touch') return;
-    timer = setTimeout(function () { strip.classList.add('is-paused'); }, DWELL_MS);
-  });
-  strip.addEventListener('pointerleave', function () {
-    clearTimeout(timer);
-    strip.classList.remove('is-paused');
-  });
-})();
-
 /* ==========================================================================
    SECTION 19 · BOOT THE ROUTE — and this has to be the LAST thing in the file.
 

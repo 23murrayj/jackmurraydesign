@@ -68,13 +68,13 @@ const BACKUP = path.join(__dirname, '.field-before-shuffle.json');
    fraction of it. */
 const W = 1440, H = 1026;
 const NAV_BOTTOM = 0.092;
-const FS_CENTRE = { x: 0.6555, y: 0.42 };     // the full stop after MURRAY
-const MARQUEE = { y0: 0.579, y1: 0.640 };
+const FS_CENTRE = { x: 0.6554, y: 0.4381 };     // the full stop after MURRAY
 
 /* Where a band may place a shape. Deliberately narrow: these ranges are the
    part of the composition that was designed, and the roll happens inside
    them. TOP sits across the top of the name, MID across its foot, SEAM down
-   past the marquee. */
+   past the hero's 6px rule - which is what the marquee used to be, and the
+   band kept the name after the strip came out. */
 const BANDS = {
   TOP:  { y: [0.20, 0.28] },
   MID:  { y: [0.44, 0.56] },
@@ -176,8 +176,6 @@ function envelopeOk(d, maxSize, span) {
   if (y0 < NAV_BOTTOM) return false;                                  // into the nav
   if (FS_CENTRE.x >= x0 && FS_CENTRE.x <= x1 &&
       FS_CENTRE.y >= y0 && FS_CENTRE.y <= y1) return false;           // parks on the full stop
-  const top = d.y - sz / 2 / H, bot = d.y + sz / 2 / H;
-  if (bot > MARQUEE.y0 && top < MARQUEE.y1) return false;             // rests on the strip
   return true;
 }
 

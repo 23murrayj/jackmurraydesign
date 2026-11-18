@@ -5,8 +5,11 @@ const s_src = fs.readFileSync(process.argv[2] || 'script.js', 'utf8');
 const s = s_src;
 const W = 1440, H = 1026;                                  // measured field box at 1440
 const NAV_BOTTOM = 0.092;
-const FS_CENTRE  = { x: 0.6555, y: 0.42 };                 // the full stop after MURRAY
-const MARQUEE    = { y0: 0.579, y1: 0.640 };
+// The full stop after MURRAY, measured in the page at 1440x900. y moved
+// .42 -> .438 when the marquee came out: the hero centres its group inside
+// 80vh, so dropping a 38px strip out of that group lowered everything else
+// in it by half of what went.
+const FS_CENTRE  = { x: 0.6554, y: 0.4381 };
 const band = y => y < 0.35 ? 'TOP' : y < 0.62 ? 'MID' : 'SEAM';
 
 function defs(name) {
@@ -144,7 +147,7 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
   console.error('  ranks unique 1-' + all.length + ' ............. ' + (ok1 ? 'ok' : 'FAIL ' + ranks));
   if (!ok1) failures++;
 
-  // 2. swing envelopes: nav band, the full stop's centre, resting on the marquee
+  // 2. swing envelopes: the nav band and the full stop's centre
   /* The amplitudes are reconstructed EXACTLY as buildShapes derives them,
      aspect and reach included. Get that wrong and the checker vouches for
      an envelope nobody draws: with aspect 2.2 the real vertical swing is
@@ -175,7 +178,6 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
        this at all. */
     const hitsNav  = e.y0 < NAV_BOTTOM && !d.overNav;
     const hitsStop = FS_CENTRE.x >= e.x0 && FS_CENTRE.x <= e.x1 && FS_CENTRE.y >= e.y0 && FS_CENTRE.y <= e.y1;
-    const restsOnMarquee = (d.y + d.size / 2 / H) > MARQUEE.y0 && (d.y - d.size / 2 / H) < MARQUEE.y1;
     /* Leaving the frame is the POINT, not a failure - "I think the shapes
        need to be going off the screen, maybe a little bit" - so it is
        counted and printed rather than flagged. The page carries
@@ -183,13 +185,13 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
     envelopes.push(e);
     if (e.x0 < 0) exits.push(d.size + 'L');
     if (e.x1 > 1) exits.push(d.size + 'R');
-    if (hitsNav || hitsStop || restsOnMarquee) {
+    if (hitsNav || hitsStop) {
       failures++; envFails++;
       console.error('  ENVELOPE FAIL ' + d.type + ' ' + d.size + ' @ ' + d.x + ',' + d.y + '  ' +
-        [hitsNav && 'NAV', hitsStop && 'FULL-STOP', restsOnMarquee && 'ON-MARQUEE'].filter(Boolean).join(' '));
+        [hitsNav && 'NAV', hitsStop && 'FULL-STOP'].filter(Boolean).join(' '));
     }
   }
-  console.error('  envelopes (nav / full stop / marquee) ... ' + (envFails ? envFails + ' FAIL' : 'ok'));
+  console.error('  envelopes (nav / full stop) ......... ' + (envFails ? envFails + ' FAIL' : 'ok'));
   /* THE TRAJECTORIES THEMSELVES ARE A RULE NOW. Amplitude used to be
      ampX = 40 + 110t and ampY = 32 + 86t, which holds ampY/ampX at .79 for
      every shape in the set, and the y frequency was a hardcoded .8 of the x
@@ -222,10 +224,14 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
      rather than how long they spend there. Reach is the actionable half:
      a slice no envelope covers is a part of the hero no shape ever visits,
      and no amount of re-timing will fill it.
-     The marquee slab is SUPPOSED to be thin - a shape on the strip is
-     invisible anyway - and the nav band is now visited only by the slots
-     carrying overNav. Everything else reading 0, or the whole top of the
-     field reading 1, is the thing to look at. */
+     Two slices used to be expected to read thin: the nav band, and the
+     marquee slab at 12-13 where a shape was invisible against the strip
+     anyway. The strip came out on 2026-11-18 and those two slices are
+     open page now, which is why they read 6 and 6 - the band the seam
+     runs through is as busy as the rest of the field. The nav band is
+     still visited only by the slots carrying overNav. Everything else
+     reading 0, or the whole top of the field reading 1, is the thing to
+     look at. */
   const SLICES = 20;
   const occ = new Array(SLICES).fill(0);
   for (const e of envelopes) {
@@ -274,7 +280,7 @@ for (const name of ['smoothDefs', 'jaggedDefs']) {
     console.error('  loudness (ink x contrast from the ground, loudest first):');
     console.error('    ' + loud.map(l => l.d.size + '=' + l.v).join('  '));
   }
-  console.error('  occupancy y (20ths, nav=slice 1, marquee=12-13):  ' + occ.map(bar).join(''));
+  console.error('  occupancy y (20ths, nav=slice 1, seam=slice 13):  ' + occ.map(bar).join(''));
   const thin = occ.map((n, i) => [n, i]).filter(([n, i]) => n <= 1 && i > 1 && (i < 11 || i > 13));
   if (thin.length) {
     console.error('    thin slices (<=1 shape can reach): ' +

@@ -147,7 +147,7 @@ a rule here and this paragraph disagree, **this wins and the rule is wrong.**
 Load-bearing phrases, because each one has already settled an argument:
 
 - **"editorial"** and **"intentional asymmetry"** — the 1.4fr/1fr hero split
-  and the full-bleed marquee are asymmetric on purpose; don't centre things to
+  and the full-bleed rules are asymmetric on purpose; don't centre things to
   make them tidy.
 - **"avoiding unnecessary descriptions"** — this is why the cycling typewriter
   tagline and the "Research-led interfaces…" line were cut. Prose that
@@ -159,8 +159,8 @@ Load-bearing phrases, because each one has already settled an argument:
   shapes, stickers and chaos mode are allowed to be fun because none of them
   obstruct reading the work. A new interaction has to pass that test.
 - **"neither generic nor overly chaotic"** — both failure modes are real. The
-  tags-as-pills looked generic; an over-bright marquee and over-dense shapes
-  were chaotic. Expect to be corrected in either direction.
+  tags-as-pills looked generic, and so did the marquee in the end; an
+  over-bright marquee and over-dense shapes were chaotic. Expect to be corrected in either direction.
 
 ## Visual direction
 
@@ -201,8 +201,8 @@ colour there, not at call sites.**
 | `--muted` | `#6A6861` | `#9C9AA3` | Secondary text |
 | `--line` | `#CBC4B4` | `#33333D` | Light dividers |
 
-**Tokens that never INVERT** — the graphic slabs (marquee, loader, about
-section, footer, pong) are a dark surface with light type in both themes, so
+**Tokens that never INVERT** — the graphic slabs (loader, about section,
+footer, pong) are a dark surface with light type in both themes, so
 these stay on their side of the line: `--paper: #F7F3EB`,
 `--muted-ink: #a8a79c`, `--warn-ink: #932D25`.
 
@@ -223,7 +223,8 @@ Light mode has exactly one dark value, `#1A1A18`, and it is `--black`,
 `--ink` and `--accent-on`. It used to have two — charcoal `#20201E` on the
 type, buttons and rules, `#111117` on the marquee, about slab and footer —
 which is 13.83:1 against 15.94:1, and the second one blue where the first is
-warm. Jack caught it on the marquee: side by side it reads as a mistake, and
+warm. Jack caught it on the marquee, which the page no longer has: side by
+side it read as a mistake, and
 it also made the charcoal look light, which is the answer to "is the black
 too light?" — it was, relative to the strip next to it.
 
@@ -382,12 +383,45 @@ four languages whenever you size display type.**
 
 ## Layout
 
-- Hero `min-height: 80vh` — deliberately not 100vh, so the marquee is a seam
-  with the next section visible below it, not the bottom edge of the page.
+- **THE MARQUEE IS GONE, and the 6px rule under `.hero-grid` is the seam.**
+  Removed 2026-11-18 on Jack's call: *"I think it just all looks too AI… I
+  say we take it out… it might look more real."* It was a full-bleed `--ink`
+  band scrolling UX/UI ✦ WEBSITES ✦ BRAND SYSTEMS ✦ PHOTOGRAPHY ✦ MOTION at
+  55px/s, and it was the strongest template signal on the page — an infinite
+  strip of service words is the component every generated portfolio ships,
+  and those five were category labels any designer could have written.
+  **The spacing corrected itself and that is worth understanding before
+  touching it.** `.hero` centres its whole group inside 80vh, so losing a
+  38px strip from the bottom of that group moved everything left in it down
+  by half of what went: the name went from y 189.2 to 207.7 at 1440×900 and
+  the seam from 603.8 to 622.3. Jack guessed both halves in advance — *"maybe
+  the Jack Murray stays there or moves slightly down… maybe selected projects
+  can move slightly up, or maybe not"* — and the answer is that the name does
+  move down, SELECTED PROJECTS does not move at all, and the gap between them
+  grows from 143px to 162px. **Nothing was retuned**: not `.hero-grid`'s 86px
+  padding-bottom, not `#work .section-head`'s 64px, not `min-height: 80vh`.
+  The loading skeleton tracked it on its own for the same reason, and
+  measures within 1px at 1440, 1024, 900, 760 and 390.
+  **Two things did have to change.** `.hero-grid::after` went from
+  `var(--ink)` to `var(--black)` — identical in light, where the page has one
+  black, but in dark `--ink` IS the ground, so an ink bar is invisible. That
+  was fine while the strip underneath drew its own 2px rules; without it dark
+  would have had no seam at all. And `field-check.js` lost its `MARQUEE`
+  landmark, while `FS_CENTRE.y` moved .42 → .438 with the name.
+  **Restoring it:** `docs/hero-marquee.html` holds every removed block
+  verbatim plus the follow-on changes to undo, the same way
+  `docs/about-skills-marquee.html` holds the about-page ticker cut before it.
+  Both are gitignored, so `git revert` is the other route.
+- Hero `min-height: 80vh` — deliberately not 100vh, so the seam has the next
+  section visible below it, not the bottom edge of the page. The marquee used
+  to be that seam; the 6px rule is now, which is why the number did not move.
 - `#work .section-head` has `padding-top: 64px`, against 70px everywhere else.
   It has been 70 (the hero looked finished before the work started), then 38
   (the heading arrived so soon after the strip that the hero had no ending),
-  now 64. See the shape-field note below — the field's inset tracks it.
+  now 64. **It stayed at 64 when the marquee came out**, deliberately: the
+  hero recentring had already opened the gap by 18px, and going to the house
+  70 would move the first card and put the field's 306px inset out by 6 —
+  real work for six pixels nobody can see. See the shape-field note below.
 - **The hero CTA is shrink-wrapped, ~226px.** It spent a release at
   `width: 100%` with `justify-content: space-between`, squaring the column off
   against a ragged right edge. Jack's verdict: a 356px button with the label
@@ -413,8 +447,6 @@ four languages whenever you size display type.**
 - Every hover effect is wrapped in `@media (hover: hover)`. On touch, `:hover`
   latches on tap and never releases.
 - 16 `prefers-reduced-motion` blocks; the global one kills durations.
-- Marquee runs at a **fixed 55 px/second** (`setupSeamlessMarquee` derives the
-  duration from content width), so resizing the type doesn't change its speed.
 - Hero shapes: **11 / 9 / 7 by width in light, 9 / 7 / 5 in dark** (see the
   thinning note
   below), drift on **two sine terms per axis** (one sine traces a clean
@@ -426,7 +458,10 @@ four languages whenever you size display type.**
   `pointer-events: none`.
 - **The field reaches past the hero**, 306px down, to the top of the first
   card — through the heading AND the filter row, so the hero thins out across
-  three bands (strip, heading, tags) rather than ending twice. Three things
+  three bands (seam, heading, tags) rather than ending twice. It was strip,
+  heading, tags until the marquee came out; the band is still there, it is
+  just open page with a 6px rule through it, and the field is now the only
+  thing filling it. Three things
   make that work together: `.hero` is `overflow: clip visible` (NOT `hidden
   visible`, which computes to auto and makes it a scroll container — three
   sticky elements depend on that not happening), `.hero-shapes` is
@@ -455,7 +490,7 @@ four languages whenever you size display type.**
   right: the chip is an object in front, so a shape behind it should be hidden
   rather than showing through.
 - **They are allowed to drift across the type, and that is settled.** A build
-  that held them out of the name, the right column, the nav and the marquee —
+  that held them out of the name, the right column, the nav and the seam —
   measured boxes, envelope-reserving placement, a per-frame clamp — spread
   well at 1440, where the two-column split leaves real negative space. Below
   that it did not: a stacked hero has one pocket, so the field concentrated
@@ -471,17 +506,23 @@ four languages whenever you size display type.**
   fraction of the field box, and the eleven sit in **three bands, 4 / 4 / 3**,
   each band running left to right across the field:
   TOP across the top of the name (y .20–.28), MID across its foot (.44–.56)
-  and SEAM down past the marquee (.70–.90). Those are the RANGES a shape may
+  and SEAM down past the hero's rule (.70–.90) — the band was named for the
+  marquee and kept the name after it went. Those are the RANGES a shape may
   rest in; the exact coordinates are not hand-chosen any more — see the
   shuffler note below. Bands two and three used to sit at .41–.47 and
   .745–.90 and were moved toward the marquee to close a gap — see the
-  white-space note. It went 9 → 12 on 2026-11-10 on Jack's note that the
+  white-space note. They stay where they are now the strip has gone: the gap
+  they were moved to close is still a gap, and the band they fill is the one
+  the strip used to occupy. It went 9 → 12 on 2026-11-10 on Jack's note that the
   field still wanted more, then settled at 11; the band structure is what
   absorbed the extras without the result reading as denser-but-random.
-  Measured against the real hero at 1440,
-  where the box is 1440×1026: nav ends at .092, name .184–.499, side column
-  .236–.499, marquee strip .579–.640, SELECTED PROJECTS .702–.875, filters
-  .914–1.002.
+  **Re-measured 2026-11-18**, against the real hero at 1440×900 with every
+  `.reveal` settled, where the box is 1440×1026: nav ends at .0916, name
+  .2025–.5168, side column .2491–.5168, the 6px seam .6007–.6065, the hero
+  itself .7018, SELECTED PROJECTS .7018–.8752 with its ink at .7641–.8421,
+  filters .8752–.963, first card .9615. The name's numbers are 18px lower
+  than the ones this file used to quote — that is the marquee coming out and
+  the hero recentring, not a retune.
   **Both themes use the SAME eleven slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
@@ -491,10 +532,11 @@ four languages whenever you size display type.**
   ±94px, so a rest at .17 put it in the nav for half of every cycle),
   nothing rests where it can reach the full stop after MURRAY (the 50px circle
   swings ±127px, and a rest at .55/.52 parked it on the page's one piece of
-  punctuation-as-graphic), and band two is off the marquee (a near-black
-  circle at .38 over a near-black slab is a smudge, not a shape).
+  punctuation-as-graphic), and band two was off the marquee (a near-black
+  circle at .38 over a near-black slab is a smudge, not a shape — that third
+  rule retired with the strip, and the positions stayed).
   **This is not a keep-out.** Nothing clamps at runtime; shapes still drift
-  over the name, the column, the nav and the marquee and must keep being
+  over the name, the column, the nav and the seam and must keep being
   allowed to. It sets where a shape LIVES, not where it may go.
 - **Dark carries TWO FEWER at every width**, so the ladder is 11 / 9 / 7 in
   light and 9 / 7 / 5 in dark. Jack: "in the dark mode, I would say maybe
@@ -670,11 +712,12 @@ four languages whenever you size display type.**
   Measured in the page over 2400 seconds: **on screen 34% of the time, in
   54-second visits with 105 seconds away**, 67px/s at its quickest, which
   makes it the slowest thing in the field. It rests at y .535 (MID, and as
-  low as the marquee rule allows an 81px shape to rest), swings .375–.695,
-  and of its visible time 53% is clear above the strip and 47% straddling
-  it. **It never gets fully below the strip** — the band under the marquee
-  is only ~75px and the square is 81, so it cannot fit there; it straddles
-  instead. 49% of its visible time is clear of the name's box, so the
+  low as the marquee rule allowed an 81px shape to rest), swings .375–.695.
+  **The quote names the marquee because the strip was still there when he
+  asked for it**; what he was describing is the white band at .58–.70, which
+  is open page now with the hero's 6px rule running through it. The sweep is
+  unchanged and it matters slightly more, since that band lost the one object
+  that used to fill it. 49% of its visible time is clear of the name's box, so the
   moments where it reads as a clean object are rarer still, which is the
   point rather than a defect.
   **It is `keep` 10, so it is a DESKTOP shape.** A 1575px sweep means
@@ -716,7 +759,7 @@ four languages whenever you size display type.**
   added on 2026-11-10 to give the field more to look at and cut the same day
   — "I don't like the new shapes; they dont fit." They were not bad shapes;
   they were wrong here. This page already carries a lot of distinct geometry
-  — the marquee band, the hard rules, the cards, the chips, the name itself
+  — the hard rules, the cards, the chips, the name itself
   — and the field's job is to be the quiet layer behind all of it. Six kinds
   of drifting thing stops being a texture and becomes a second subject.
   **Variety in this field comes from SIZE and FILL, not from new forms.**
@@ -988,17 +1031,19 @@ four languages whenever you size display type.**
   regression to one trajectory, not to dictate the spread. Every individual
   envelope was legal the whole time this bug existed, which is exactly why
   nothing caught it.
-- **The white space around the marquee is mostly intentional, and the part
-  that was not is fixed.** Jack asked whether the gap between VIEW PROJECTS,
-  the marquee and SELECTED PROJECTS was deliberate. Most of it is: the
-  marquee is meant to be a seam with air around it, and `#work
-  .section-head`'s 64px top padding is a number he tuned himself (70 → 38
-  → 64). What was NOT deliberate was a hole in the shape field just above
-  the strip — a side effect of moving band two off the marquee so a
-  near-black circle would not smudge on a near-black slab. Measuring the
-  field's vertical occupancy in 5% slices showed one slice at y .55–.60
-  completely empty. Band two moved down and band three up, and the centre
-  shape sits at .55 now, 13px clear of the marquee's top edge at 1440.
+- **The white space below the hero is mostly intentional, and the part that
+  was not is fixed.** Jack asked whether the gap between VIEW PROJECTS, the
+  marquee and SELECTED PROJECTS was deliberate. Most of it was: the marquee
+  was meant to be a seam with air around it, and `#work .section-head`'s
+  64px top padding is a number he tuned himself (70 → 38 → 64). What was NOT
+  deliberate was a hole in the shape field just above the strip — a side
+  effect of moving band two off the marquee so a near-black circle would not
+  smudge on a near-black slab. Measuring the field's vertical occupancy in 5%
+  slices showed one slice at y .55–.60 completely empty. Band two moved down
+  and band three up, and the centre shape sits at .55.
+  **The strip itself came out on 2026-11-18** and that band is open page now,
+  which makes the fix matter more rather than less: there is nothing else
+  down there.
   **Loudness is in `field-check` too**, printed as a profile per theme.
   Read it as a shape rather than a score: a field wants one clear top and a
   long tail, and what it does not want is its loudest object parked in the
@@ -1016,11 +1061,12 @@ four languages whenever you size display type.**
   than being rewritten as a throwaway each time: twentieths of the field,
   counting how many shapes can REACH each slice. Reach is the actionable
   half — a slice no envelope covers is a part of the hero no shape ever
-  visits, and no amount of re-timing will fill it. Two slices are supposed
-  to be empty, the nav band and the marquee slab, and the line flags any
-  other slice only one shape can get to. It currently reads
-  `..466677455656555321`: the only thin slice left is the very bottom,
-  4000px above nothing anyone is looking at.
+  visits, and no amount of re-timing will fill it. One slice is supposed to
+  be thin, the nav band, and the line flags any other slice only one shape
+  can get to. It currently reads `22555667677667555321` — the nav band reads
+  2 because two slots carry `overNav`, and slices 12–13 read 6 and 6 because
+  the marquee slab that used to sit there is open page. The only thin slice
+  left is the very bottom, 4000px above nothing anyone is looking at.
 - **The seam form** (`.work::before`) is one oversized ring at the top-right
   of #work, bleeding off the right edge, behind everything. The drifting field
   is small and moving, so its 306px overlap into #work read as leftover hero;
@@ -1114,7 +1160,8 @@ four languages whenever you size display type.**
     `--theme-dur`; a blanket rule puts every element on `--theme-dur` /
     `--theme-ease` for colour properties only. Before this the page changed
     theme in passes — body over .35s, cards .25s, filter buttons .2s, the
-    section rules and marquee not at all. Two carve-outs: the knob gets
+    section rules and marquee not at all (the strip has since gone, the rules
+    have not). Two carve-outs: the knob gets
     `transform` back (it has to travel), and `.hero-shapes .shape` does not
     (JS writes its transform every frame, and a transition makes it smear).
 - **The hero field is positioned the moment it is built** (`placeShapes()` at
@@ -1218,6 +1265,23 @@ correct when someone wrote it down.
   recurring bug.** The grid stacks at **1280**, the nav goes to a drawer and
   44px targets at **760**, the headline changes clamp at **900**, and the nav
   tightens at **360**. Three of those four were wrong in here at once.
+- **THE SEAM BAR HAS TO BE DRAWN THE SAME WAY, not just put in the same
+  place**, and this is the one thing the marquee's removal actually broke.
+  `.sk-hero-grid` had a plain `border-bottom: 6px solid var(--ink)` while
+  `.hero-grid` has a transparent border plus a full-bleed `::after`. Both
+  were wrong and both were invisible while the strip existed. A border is
+  bounded by its element and the element sits inside `.hero`'s 5vw padding,
+  so the loader drew **1296px against the page's 1440** at that width — the
+  strip underneath used to supply the full-bleed edges, so the black mass
+  looked right. And `--ink` IS the dark ground, so in dark the skeleton's bar
+  was invisible — which agreed with the page only because the page's own bar
+  was `display: none` in dark while the strip drew its own 2px rules. Remove
+  the strip and both errors surface at once. The skeleton now mirrors the
+  `::after` exactly, `var(--black)` included; verified identical colour,
+  width, height and y in both themes.
+  **The lesson generalises:** a skeleton bar that merely MEASURES the same is
+  not the same. Check how the real one is painted, not just where it sits —
+  an element-box diff will not catch a border standing in for a full bleed.
 - **How to check it.** The loader removes itself 600ms after load, so do not
   race it: inject a second copy instead. `fetch('/')`, pull `.loader` out of
   the parsed document, give it a new id and `visibility: hidden`, append it to
@@ -1650,7 +1714,7 @@ is most of the point.
   place the superseded palette survived: `favicon.svg` was still
   `#1e1c17` / `#e6e3db` / `#ff3b30` and `site.webmanifest` still
   `#e6e3db` on 2026-11-10, five days after the change. They are a dark slab
-  in both themes, like the marquee and pong, so they wear the DARK palette —
+  in both themes, like the loader and pong, so they wear the DARK palette —
   `#1A1A18` ground, `#F7F3EB` type, `#ff2d55` mark.
   Squaring the mark forced a reflow of the whole chip: at 28.8px the ink of
   "JM" ends at x 47.07 and the mark used to start at 44, so it overlapped the
@@ -1785,8 +1849,10 @@ is most of the point.
   every section below it moved on each switch. Under the wipe that is worse
   than a jump — the two snapshots disagree about where everything below the
   hero is, and the circle's edge drags a 6px step across the page. The
-  marquee's own padding carries the same fix for the same reason. Verify by
-  diffing every landmark's box between themes; it should come back empty.
+  marquee carried the same fix in its own padding until it was removed.
+  Verify by diffing every landmark's box between themes; 438 elements at
+  1440×900 return exactly one, the theme knob, which is the thing that is
+  supposed to move.
 - **Every interaction has a touch path, including the easter eggs.** Pong was
   keyboard-only for a release, so on a phone the egg menu opened a game with
   no way to play it — the CPU scored five times and that was the experience.
@@ -1798,7 +1864,7 @@ is most of the point.
   the label has to follow the device too — `.pong-footer` swaps its
   `data-i18n` key to `pong.controlsTouch` on a coarse pointer, which keeps
   working across language changes because `apply()` reads the attribute live.
-- Four languages (en/es/ja/it), **177 keys each, exact parity** — checked by
+- Four languages (en/es/ja/it), **175 keys each, exact parity** — checked by
   `node tools/audit.js`, which also catches a key nothing references. It
   found 19 dead ones per language on 2026-11-11: translations for four
   placeholder projects deleted long ago, two filter categories with no
@@ -1829,18 +1895,17 @@ Checked by driving the page, not by reading the markup — and two things that
     arrow" on every row. The sibling `.social-icon` SVG was already hidden,
     so this was an oversight rather than a pattern.
   - **The marquee's `✦` separators** turned the strip into "UX/UI, black
-    four-pointed star, WEBSITES, black four-pointed star…". The item text is
-    content and stays readable; each separator is now its own
-    `aria-hidden` span. **`renderTickers()` in `script.js` rebuilds that
-    same structure on every language change, so the markup and the function
-    have to stay in step** — the HTML is only the no-JS fallback, and it had
-    already drifted (it still said UX DESIGN where all four languages say
-    UX/UI). Hidden in the DOM rather than drawn in CSS because Chrome puts
-    generated content in the accessibility tree too. **Splitting one text run
-    into spans costs the strip nothing**: letter-spacing applies per
-    character, so the group measured 825.40 against 825.38 for the single
-    run, and the 55px/s duration is unchanged (3496px track, 31.78s, which
-    is 874 × 2 / 55 exactly).
+    four-pointed star, WEBSITES, black four-pointed star…". Fixed the same
+    morning the strip itself was removed, so the fix is gone with it — but
+    the rule it was an instance of is not, and the next ticker or separator
+    run has to follow it. The item text was content and stayed readable;
+    each separator became its own `aria-hidden` span, in the DOM rather
+    than as CSS generated content, **because Chrome puts generated content
+    in the accessibility tree too** and that would have moved the problem
+    instead of fixing it. The measurement worth keeping: splitting one text
+    run into spans costs a strip nothing, because letter-spacing applies per
+    character — the group measured 825.40 against 825.38 for the single
+    run, so its width and its 55px/s duration were unchanged.
   - **The easter-egg trigger said `aria-label="???"`**, so the one control
     that is permanently in the tree announced as "question mark question mark
     question mark, button". It carries `data-i18n-aria="a11y.eggTrigger"`

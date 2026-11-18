@@ -302,7 +302,6 @@
         <div class="sk sk-cta"></div>
       </div>
     </div>
-    <div class="sk sk-strip"></div>
   </div>
 </div>
 
@@ -407,23 +406,14 @@
       <a href="#work" class="btn-block" data-i18n="hero.cta">VIEW PROJECTS</a>
     </div>
   </div>
-  <!-- The item text is content; the ✦ between items is decoration, so each
-       separator is its own aria-hidden span. Read as one run it announced as
-       "UX DESIGN black four-pointed star WEBSITES black four-pointed star",
-       which is the glyph's Unicode name read out five times. renderTickers()
-       in script.js rebuilds this same structure on every language change -
-       the two must stay in step. Only the first group is readable; the rest
-       are clones and setupSeamlessMarquee marks them aria-hidden. -->
-  <div class="marquee">
-    <div class="marquee-track" id="marqueeTrack">
-      <div class="marquee-group">
-        <span><span>UX/UI</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>WEBSITES</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>BRAND&nbsp;SYSTEMS</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>PHOTOGRAPHY</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>MOTION</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span></span>
-      </div>
-      <div class="marquee-group" aria-hidden="true">
-        <span><span>UX/UI</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>WEBSITES</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>BRAND&nbsp;SYSTEMS</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>PHOTOGRAPHY</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span><span>MOTION</span><span aria-hidden="true">&nbsp;&nbsp;✦&nbsp;&nbsp;</span></span>
-      </div>
-    </div>
-  </div>
+  <!-- The hero marquee used to sit here: a full-bleed ink band scrolling
+       UX/UI ✦ WEBSITES ✦ BRAND SYSTEMS ✦ PHOTOGRAPHY ✦ MOTION at 55px/s.
+       It was the single most template-looking thing on the page - an
+       infinite strip of service words is the component every generated
+       portfolio ships, and the words themselves were category labels any
+       designer could have written. The hero-grid's own 6px full-bleed rule
+       is the seam now, which is what the band was there to be.
+       Markup, CSS and restore notes: docs/hero-marquee.html -->
 </header>
 
 <!-- WORK -->
@@ -605,7 +595,7 @@
   </div>
   <!-- The skills marquee used to sit here. All nine of its tags are already
        on the about page (29 skills in four labelled groups), six were also in
-       the hero marquee, and the tags are the same object as the CTA - boxed,
+       the hero marquee that used to follow this section, and the tags are the same object as the CTA - boxed,
        bordered, uppercase - sitting 14px under it with the motion. It was
        making the one button we want clicked look like the first of ten.
        Markup, CSS and restore notes: docs/about-skills-marquee.html -->
@@ -975,7 +965,7 @@
 </div>
 
 <!-- i18n.js must load first: script.js reads window.I18N when it builds
-     the marquee, the typewriter and the magnetic headline -->
+     the typewriter and the magnetic headline -->
 <script src="/i18n.js"></script>
 <script src="/script.js"></script>
 </body>

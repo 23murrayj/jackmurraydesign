@@ -2,7 +2,7 @@
    i18n.js — language switching for the portfolio.
 
    Loaded BEFORE script.js so window.I18N exists by the time script.js
-   builds the marquee, the typewriter, and the magnetic headline.
+   builds the typewriter and the magnetic headline.
 
    Two things a language switcher has to do, and only one of them is
    about text:
@@ -50,7 +50,6 @@
       'hero.badge': "LET'S MAKE SOMETHING",
       'hero.cta': 'VIEW PROJECTS',
       'hero.role': 'UX DESIGNER &<br>DIGITAL CREATIVE',
-      'marquee.items': ['UX/UI', 'WEBSITES', 'BRAND SYSTEMS', 'PHOTOGRAPHY', 'MOTION'],
 
       'work.title': 'SELECTED PROJECTS',
       'filter.ALL': 'ALL',
@@ -148,7 +147,6 @@
       'about.stat.now': "Where I am right now",
       'about.readmore': "HOW I GOT HERE",
       'about.resume': 'VIEW MY OFFICIAL RESUME ↗︎',
-      'skills.marquee': ['UX DESIGN', 'UI DESIGN', 'WEB DESIGN', 'BRAND SYSTEMS', 'TYPOGRAPHY', 'PHOTOGRAPHY', 'MOTION', 'HTML / CSS', 'AUTOMATION'],
 
       'aboutpage.back': '← BACK',
       'aboutpage.photoAlt': 'Jack with a camera in a Milan palazzo courtyard, red threads strung between the arches behind him.',
@@ -248,7 +246,6 @@
       'hero.badge': 'HAGAMOS ALGO JUNTOS',
       'hero.cta': 'VER PROYECTOS',
       'hero.role': 'DISEÑADOR UX &<br>CREATIVO DIGITAL',
-      'marquee.items': ['UX/UI', 'SITIOS WEB', 'SISTEMAS DE MARCA', 'FOTOGRAFÍA', 'MOTION'],
 
       'work.title': 'PROYECTOS SELECCIONADOS',
       'filter.ALL': 'TODOS',
@@ -346,7 +343,6 @@
       'about.stat.now': "Dónde estoy ahora mismo",
       'about.readmore': "CÓMO LLEGUÉ AQUÍ",
       'about.resume': 'VER MI CV OFICIAL ↗︎',
-      'skills.marquee': ['DISEÑO UX', 'DISEÑO UI', 'DISEÑO WEB', 'SISTEMAS DE MARCA', 'TIPOGRAFÍA', 'FOTOGRAFÍA', 'MOTION', 'HTML / CSS', 'AUTOMATIZACIÓN'],
 
       'aboutpage.back': '← VOLVER',
       'aboutpage.photoAlt': 'Jack con una cámara en el patio de un palacio de Milán, con hilos rojos tendidos entre los arcos.',
@@ -444,7 +440,6 @@
       'hero.badge': 'なにかつくろう',
       'hero.cta': 'プロジェクトを見る',
       'hero.role': 'UXデザイナー &<br>デジタルクリエイティブ',
-      'marquee.items': ['UX/UI', 'ウェブサイト', 'ブランドシステム', '写真', 'モーション'],
 
       'work.title': '選りすぐりのプロジェクト',
       'filter.ALL': 'すべて',
@@ -542,7 +537,6 @@
       'about.stat.now': "いま居る場所",
       'about.readmore': "ここに至るまで",
       'about.resume': '正式な履歴書を見る ↗︎',
-      'skills.marquee': ['UXデザイン', 'UIデザイン', 'ウェブデザイン', 'ブランドシステム', 'タイポグラフィ', '写真', 'モーション', 'HTML / CSS', '自動化'],
 
       'aboutpage.back': '← 戻る',
       'aboutpage.photoAlt': 'ミラノの宮殿の中庭でカメラを持つジャック。背後のアーチには赤い糸が張り巡らされている。',
@@ -640,7 +634,6 @@
       'hero.badge': 'CREIAMO QUALCOSA',
       'hero.cta': 'GUARDA I PROGETTI',
       'hero.role': 'DESIGNER UX &<br>CREATIVO DIGITALE',
-      'marquee.items': ['UX/UI', 'SITI WEB', 'SISTEMI DI MARCA', 'FOTOGRAFIA', 'MOTION'],
 
       'work.title': 'PROGETTI SELEZIONATI',
       'filter.ALL': 'TUTTI',
@@ -738,7 +731,6 @@
       'about.stat.now': "Dove sono adesso",
       'about.readmore': "COME CI SONO ARRIVATO",
       'about.resume': 'GUARDA IL MIO CV UFFICIALE ↗︎',
-      'skills.marquee': ['DESIGN UX', 'DESIGN UI', 'WEB DESIGN', 'SISTEMI DI MARCA', 'TIPOGRAFIA', 'FOTOGRAFIA', 'MOTION', 'HTML / CSS', 'AUTOMAZIONE'],
 
       'aboutpage.back': '← INDIETRO',
       'aboutpage.photoAlt': 'Jack con una macchina fotografica nel cortile di un palazzo milanese, fili rossi tesi tra gli archi.',
