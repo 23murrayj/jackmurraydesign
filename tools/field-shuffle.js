@@ -66,9 +66,9 @@ const BACKUP = path.join(__dirname, '.field-before-shuffle.json');
 
 /* The field box at 1440, measured in the live page. Everything below is a
    fraction of it. */
-const W = 1440, H = 1026;
-const NAV_BOTTOM = 0.092;
-const FS_CENTRE = { x: 0.6554, y: 0.4829 };     // the full stop after MURRAY
+const W = 1440, H = 900;   // tracks .hero's min-height; see field-check.js
+const NAV_BOTTOM = 0.1044;
+const FS_CENTRE = { x: 0.6554, y: 0.4583 };     // the full stop after MURRAY
 
 /* Where a band may place a shape. Deliberately narrow: these ranges are the
    part of the composition that was designed, and the roll happens inside

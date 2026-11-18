@@ -643,17 +643,19 @@ a { color: inherit; text-decoration: none; }
    came out on 2026-11-18 and the group is just .hero-grid now, but the rule
    that caused it stands - whatever .hero holds, the skeleton holds too. */
 .sk-hero {
-  /* min-height: 80vh and NOT flex: 1. This is the single biggest source of
+  /* min-height: 66vh and NOT flex: 1. This is the single biggest source of
      handover jump there has been: the loader is a fixed, full-viewport box,
      so flex: 1 made this 900px tall at a 900px window while the real .hero
-     is 80vh = 720px. Both centre their group inside themselves, and centring
+     is 66vh = 594px. Both centre their group inside themselves, and centring
      the same content in 900 instead of 720 put every landmark 87px low -
      the name, the badge, the role line and the CTA all of it.
      Mirror the real rule exactly and the arithmetic takes care of itself. */
-  flex: none; min-height: 80vh;
-  /* .hero's own padding and centring: the 110px clears the fixed nav, and
-     the hero centres whatever its group is. */
-  padding: 110px 5vw 0;
+  flex: none; min-height: 66vh;
+  /* .hero's own padding and centring: the 110px clears the fixed nav, the
+     hero centres whatever its group is, and the 40 at the bottom biases that
+     centring up by 20. All three have to match .hero exactly - this is the
+     single biggest source of handover jump there has been. */
+  padding: 110px 5vw 40px;
   display: flex; flex-direction: column; justify-content: center;
 }
 
@@ -1203,18 +1205,30 @@ body.is-loading { overflow: hidden; }
 /* HERO */
 .hero {
   position: relative;
-  /* NOT 100vh. At a full viewport the hero ended exactly where the fold
-     did, so the first screen looked like the whole site: the hero's own
-     bottom edge read as the bottom of the page rather than a divider, and
-     nothing gave a reason to scroll. Giving the fold back ~14vh puts the
-     seam above it with the top of SELECTED PROJECTS showing underneath, so
-     the edge reads as a join between two sections instead of a full stop.
-     The marquee used to be that seam and the 6px rule is now, which is why
-     this number did not move when the strip came out.
+  /* 66vh, AND THE POINT IS WHAT IS VISIBLE UNDER IT. It was 100vh once,
+     which ended the hero exactly at the fold so the first screen looked like
+     the whole site. 80vh fixed that halfway: it showed SELECTED PROJECTS,
+     but the cards still began 62.5px BELOW the fold at 1440x900, so the one
+     thing that proves there is a portfolio down there was the one thing you
+     could not see. Jack: "have it so we see a small part of the cards... so
+     we don't have the illusion of completeness even more."
+     At 66vh the first card's top edge sits 63.5px above the fold at
+     1440x900, which is a band of photograph plus the whole filter row.
+     THE 40px BOTTOM PADDING IS NOT SPACING, IT IS A BIAS. This box centres
+     its group, so every px of height taken off the bottom also pulls the
+     name UP by half - and that would have taken the white between the hero
+     and SELECTED PROJECTS down with it, which Jack asked to keep ("still
+     have that white space in the middle"). Padding at the bottom shifts the
+     centring up by half of itself without touching the gap below the group,
+     so the 40 buys back 20px of that white. Measured at 1440x900:
+     nav to name 76.7, middle white 140.7, card peek 63.5 - against 159.7 /
+     183.7 / -62.5 at 80vh with no padding.
+     The trade is the top: 159.7px of air under the nav was the half of the
+     hero's symmetry doing no work, and this spends it.
      A min-height, so a tall hero on a phone still grows past it. */
-  min-height: 80vh;
+  min-height: 66vh;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 110px 5vw 0;
+  padding: 110px 5vw 40px;
   background: var(--white);
   /* clip sideways, spill downwards. The field used to stop dead at the
      hero's foot because this was overflow: hidden, which made the marquee
@@ -1879,6 +1893,16 @@ body.is-loading { overflow: hidden; }
    and the name keeps its full size rather than being shrunk to make room.
    DOM order already reads name → badge → role → description → CTA. */
 @media (max-width: 1280px) {
+  /* THE 40px BIAS STAYS ON HERE, and that was worth measuring rather than
+     reasoning about. The argument for dropping it stacked is that it only
+     has a job while min-height sets the hero's height - and the assumption
+     was that a stacked hero is content-bound. On a phone it is not: at
+     390x844 the content comes to 502 against a 66vh floor of 557, so the
+     floor still wins and the 40 is still buying 20px of upward bias.
+     Dropping it there moved the name DOWN 20px and took the white between
+     the hero and SELECTED PROJECTS from 87.6 to 67.6, while the first card
+     did not move at all - the hero's height never changed. Measured, not
+     guessed; the reasoning was clean and the premise was false. */
   .hero-grid {
     grid-template-columns: 1fr;
     align-items: start;
@@ -2169,6 +2193,20 @@ body.is-loading { overflow: hidden; }
 .filters {
   display: flex; flex-wrap: wrap; gap: 12px;
   padding: 40px 5vw 10px;
+}
+/* A PHONE PAYS FOR THE WRAP. At 390 the chip row is two deep - 92px against
+   40 - which with the heading's own two lines puts 294.5px between the hero's
+   foot and the first card, where a desktop has 242.5. That is most of why
+   .hero's 66vh buys a 63.5px look at the cards at 1440x900 and still left
+   them 7.5px BELOW the fold at 390x844, which is the one width where "there
+   is more down there" is hardest to signal.
+   Both numbers come down rather than one: 40 -> 20 above a row that is
+   already twice as tall as it was designed to be, and 40 -> 28 above a
+   heading that is already on two lines. Neither is air a phone can afford,
+   and together they are worth 32px of photograph. */
+@media (max-width: 760px) {
+  .filters { padding-top: 20px; }
+  #work .section-head { padding-top: 28px; }
 }
 .filter-btn {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px;

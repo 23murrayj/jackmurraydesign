@@ -3,17 +3,25 @@
 const fs = require('fs');
 const s_src = fs.readFileSync(process.argv[2] || 'script.js', 'utf8');
 const s = s_src;
-const W = 1440, H = 1026;                                  // measured field box at 1440
-const NAV_BOTTOM = 0.092;
+/* The field box, measured in the page at 1440x900. H is hero-height + the
+   306px .hero-shapes reaches past it, so it tracks .hero's min-height: it
+   was 1026 while that was 80vh and is 900 at 66vh. Everything below is a
+   fraction of this box, so H moving rescales every envelope - re-measure in
+   the page rather than deriving it, and re-run this file. */
+const W = 1440, H = 900;
+/* The nav is 94px tall whatever the hero does; this is that 94 as a
+   fraction of the box above, so it moves when H does (.092 at 1026). */
+const NAV_BOTTOM = 0.1044;
 // The full stop after MURRAY, measured in the page at 1440x900. It has moved
 // twice in two days and both times for the same mechanism: .hero centres its
 // whole group inside 80vh, so anything taken out of the BOTTOM of that group
 // lowers everything left in it by half of what went.
 //   .42   -> .438  the marquee came out (38px strip)
 //   .438  -> .483  .hero-grid's 86px bottom padding went with the 6px rule
-// The nav bound and the hero's own foot did NOT move, because the field box
-// is still hero-height + 306 and the hero is still 80vh.
-const FS_CENTRE  = { x: 0.6554, y: 0.4829 };
+//   .483  -> .458  .hero went 80vh -> 66vh +40 so the cards peek over the fold
+// The last one is a different mechanism: the first two lowered the name
+// inside a fixed box, this one shrank the box under a name that also rose.
+const FS_CENTRE  = { x: 0.6554, y: 0.4583 };
 const band = y => y < 0.35 ? 'TOP' : y < 0.62 ? 'MID' : 'SEAM';
 
 function defs(name) {

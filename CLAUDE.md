@@ -37,7 +37,7 @@ to mirror the hero exactly, so moving anything in the hero is a two-file job
 | change any colour | **Palette** | the contrast rules at the end of it |
 | touch the hero shapes | **Animation** → the field (five subsections) | `node tools/field-check.js` |
 | move anything in the hero | **Layout**, **The loading skeleton** | re-measure the skeleton |
-| change the hero's vertical rhythm | **Layout** → the marquee note | `.hero` centres its group: half of what you remove comes back as space above |
+| change the hero's vertical rhythm | **Layout** → the min-height note | `.hero` centres its group, so half of what you remove comes back as space above — and its height is the field's coordinate space |
 | touch the theme switch | **Animation** → The theme switch | the browser-pane warning |
 | add / rename / remove a project | **Routing** (last line) | `assets/README.md` — a 7-step checklist, not 3 |
 | add any user-facing string | **UX rules** → four languages | all four, exact parity, `audit.js` checks it |
@@ -439,15 +439,17 @@ four languages whenever you size display type.**
   strip of service words is the component every generated portfolio ships,
   and those five were category labels any designer could have written.
   **The spacing corrected itself and that is worth understanding before
-  touching it.** `.hero` centres its whole group inside 80vh, so losing a
+  touching it.** `.hero` centres its whole group inside its min-height,
+  which was still 80vh at this point, so losing a
   38px strip from the bottom of that group moved everything left in it down
   by half of what went: the name went from y 189.2 to 207.7 at 1440×900 and
   the seam from 603.8 to 622.3. Jack guessed both halves in advance — *"maybe
   the Jack Murray stays there or moves slightly down… maybe selected projects
   can move slightly up, or maybe not"* — and the answer is that the name does
   move down, SELECTED PROJECTS does not move at all, and the gap between them
-  grows from 143px to 162px. **Nothing was retuned**: not `.hero-grid`'s 86px
+  grows from 143px to 162px. **Nothing was retuned in that first pass**: not `.hero-grid`'s 86px
   padding-bottom, not `#work .section-head`'s 64px, not `min-height: 80vh`.
+  All three moved in the two passes that followed, for reasons of their own.
   The loading skeleton tracked it on its own for the same reason, and
   measures within 1px at 1440, 1024, 900, 760 and 390.
   **THEN THE 6px RULE WENT TOO, and that was the second half of the same
@@ -488,18 +490,49 @@ four languages whenever you size display type.**
   verbatim plus the follow-on changes to undo, the same way
   `docs/about-skills-marquee.html` holds the about-page ticker cut before it.
   Both are gitignored, so `git revert` is the other route.
-- Hero `min-height: 80vh` — deliberately not 100vh, so the next section is
-  visible below the hero rather than the hero being the bottom edge of the
-  page. **It survived both passes untouched**, and resist the pull to change
-  it: the hero centres its group, so min-height and the name's vertical
-  position are locked together — you cannot close the gap below without
-  moving the name up by exactly as much.
+- **Hero `min-height: 66vh` with a 40px bottom padding, and the point is
+  what you can see UNDER it.** It was 100vh once, which ended the hero
+  exactly at the fold so the first screen looked like the whole site. 80vh
+  fixed that halfway — it showed SELECTED PROJECTS, but the first card still
+  began **62.5px below the fold** at 1440×900, so the one thing that proves
+  there is a portfolio down there was the one thing you could not see.
+  Jack: *"have it so we see a small part of the cards… so we don't have the
+  illusion of completeness even more."*
+  **The 40px bottom padding is not spacing, it is a bias.** The hero centres
+  its group, so every px of height taken off also pulls the name up by half —
+  and that would have taken the white between the hero and SELECTED PROJECTS
+  with it, which Jack asked to keep (*"still have that white space in the
+  middle"*). Padding at the bottom shifts the centring up by half of itself
+  without touching the gap below the group, so the 40 buys back 20px of that
+  white. **Measured at 1440×900: nav→name 76.7, middle white 140.7, card peek
+  63.5**, against 159.7 / 183.7 / −62.5 at 80vh with no padding.
+  What it spends is the top. 159.7px of air under the nav was the half of the
+  hero's symmetry doing no work.
+  **Across viewport heights** (the peek is `V×(1−0.66) − 242.5`, so it grows
+  with the window): 1512×982 → 91.4, 1440×900 → 63.5, 1440×800 → 29.5.
+  At 1024×768 the hero is content-bound rather than height-bound and the
+  cards stay below the fold; that is the floor, not a bug.
+  **A phone needed two more numbers**, because at 390 the chip row is two
+  deep (92px against 40) and the heading is on two lines, which puts 294.5px
+  between the hero's foot and the first card where a desktop has 242.5 — so
+  66vh alone still left the card 7.5px below the fold at 390×844. At ≤760px
+  `.filters` drops to 20px of top padding and `#work .section-head` to 28,
+  which is 32px of photograph and takes the peek to **+24.5**.
+  **One thing measured false before it shipped.** The obvious next move was
+  to drop the 40px bias on stacked layouts, on the reasoning that a stacked
+  hero is content-bound so there is no centring to bias. At 390×844 it is
+  not: the content comes to 502 against a 66vh floor of 557, so the floor
+  still wins. Dropping it moved the name DOWN 20px and took the middle white
+  from 87.6 to 67.6 while the first card did not move at all. The reasoning
+  was clean and the premise was false — measure which way a hero is bound
+  before assuming.
 - `#work .section-head` has `padding-top: 64px`, against 70px everywhere else.
   It has been 70 (the hero looked finished before the work started), then 38
   (the heading arrived so soon after the strip that the hero had no ending),
-  then 64, now **40** — see the marquee note above for why 40 works where 38
-  did not. The field's inset deliberately did NOT follow it down; that note
-  explains why.
+  then 64, now **40**, and **28 at ≤760px** — see the marquee note above for
+  why 40 works where 38 did not, and the min-height note for why a phone
+  needs the extra 12. The field's inset deliberately did NOT follow any of it
+  down; that note explains why.
 - **The hero CTA is shrink-wrapped, ~226px.** It spent a release at
   `width: 100%` with `justify-content: space-between`, squaring the column off
   against a ragged right edge. Jack's verdict: a 356px button with the label
@@ -600,17 +633,24 @@ four languages whenever you size display type.**
   the strip used to occupy. It went 9 → 12 on 2026-11-10 on Jack's note that the
   field still wanted more, then settled at 11; the band structure is what
   absorbed the extras without the result reading as denser-but-random.
-  **Re-measured 2026-11-18**, against the real hero at 1440×900 with every
-  `.reveal` settled, where the box is 1440×1026: nav ends at .0916, name
-  .2473–.5617, side column .3013–.5617, the hero itself .7018, SELECTED
-  PROJECTS .7407–.8187 (ink), filters .8519–.9396, first card .9381, and the
-  full stop after MURRAY centres at (.6554, .4829).
-  **The name is 46px lower than the figures this file quoted two days ago**
-  and that is not a retune — it is the marquee and then the 6px rule coming
-  out of the bottom of the hero's centred group. **The nav bound and the
-  hero's own foot did not move at all**, because the field box is still
-  hero-height + 306 and the hero is still 80vh, which is most of why that
-  inset was left alone.
+  **Re-measured 2026-11-18 (third time that day)**, against the real hero at
+  1440×900 with every `.reveal` settled. **The box is 1440×900 now**, not
+  1026: it is hero-height + the 306px the field reaches past it, and the hero
+  went 80vh → 66vh. nav ends at **.1044**, name .1897–.5481, side column
+  .2429–.5481, the hero itself .66, SELECTED PROJECTS .7044–.7933 (ink),
+  filters .8311–.9311, first card .9294, and the full stop after MURRAY
+  centres at **(.6554, .4583)**.
+  **EVERY SHAPE IS NOW 12% BIGGER AS A FRACTION OF THE BOX** without a single
+  px changing, and the nav band grew the same way — a fixed 94px is .1044 of
+  900 where it was .0916 of 1026. That broke three slots at once and
+  `field-check` named all three: the square over JACK (.25 → **.28**) and the
+  far-left sweeper (.47 → **.55**) had started reaching into the nav, and the
+  seam sweeper (.79 → **.82**) into the full stop. All three moved by REST,
+  not by reach, so the sweeps Jack asked for are intact, and all three are
+  mirrored in `jaggedDefs`.
+  **If you change `.hero`'s min-height, expect to re-measure all of this**:
+  `H` and `NAV_BOTTOM` and `FS_CENTRE` in both field tools, then run
+  `field-check` and move whatever it names.
   **Both themes use the SAME eleven slots**, assigned biggest-to-biggest, so the
   theme switch — which rebuilds the field inside the view-transition callback
   — reveals the same composition wearing different shapes instead of jumping
@@ -1285,7 +1325,8 @@ measuring it**, because a measurement is right at the width it was taken at
 and nowhere else. Three of the four sweeps below found a value that had been
 correct when someone wrote it down.
 
-- **`.sk-hero` must mirror `.hero`'s `min-height: 80vh`, not `flex: 1`.**
+- **`.sk-hero` must mirror `.hero`'s `min-height` (66vh) and its 40px
+  bottom padding, not `flex: 1`.**
   The loader is a fixed full-viewport box, so `flex: 1` made the skeleton
   hero 900px tall at a 900px window against the real 720. Both centre their
   group inside themselves, and centring the same content in 900 instead of
