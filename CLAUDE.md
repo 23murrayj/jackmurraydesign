@@ -108,9 +108,13 @@ above is the index, and the subsection headers are the fine-grained one.
    comment reading "NINE, not twelve" after the answer had become twelve.
    The code was right the whole time; only the prose was wrong.
 2. **Verify a count where it happens.** The same audit nearly "fixed" a
-   correct claim: `.reveal` is on 19 elements at runtime but only 16 in the
-   markup, because `renderGallery` adds the rest. `grep` would have made
-   that worse.
+   correct claim: `.reveal` is on **18 elements at runtime but only 12 in
+   the markup**, because `renderGallery` adds one per card. `grep` would
+   have made that worse — and did: the "16" this rule used to quote was
+   `grep -c reveal index.html`, which counts every LINE mentioning the word,
+   comments included. That number is 15 today and has never been the count
+   of anything. Count the elements that carry the class
+   (`grep -o 'class="[^"]*reveal[^"]*"'`), or ask the page.
 3. **If a tool reports success, check that it did any work.**
    `field-shuffle.js` printed "all passing" while generating zero
    arrangements, twice, for two different reasons. An empty loop passes
@@ -1723,6 +1727,23 @@ is most of the point.
   becomes a highlighted phrase, and the two rows read as two voices rather
   than one line that happens to break. **Colour around the letterform reads as
   light; colour inside it reads as a change of subject.**
+- **THE CONTACT BAND ENDS ON ITS OWN PADDING, with nothing drawn across it.**
+  `.contact-bottom` was an empty div below the form whose only effect was a
+  3px `--ink` rule the full width of the band and 20px of coral under it.
+  Jack: *"there's like a single black bar that goes across the whole screen,
+  and then there's like a bit of red space… not really sure what that is
+  about."*
+  It was the divider above `<p class="contact-loc">BASED IN ILLINOIS —
+  AVAILABLE ANYWHERE</p>`. The line was cut and the container was left, so
+  the rule had been separating the form from nothing. Both are gone; the
+  section's own 50px of bottom padding is the gap, and the coral now meets
+  the footer's ink on a hard edge like every other band on the page.
+  **The class, its CSS and its i18n key all went at different times**, which
+  is why nothing caught it: `audit.js` checks for dead CSS classes and
+  unreferenced i18n keys, and `.contact-loc` and `contact.location` had both
+  been tidied away properly. An empty element whose rule still matches is
+  invisible to both checks — it is live CSS on live markup, and only the eye
+  can tell that what it is dividing no longer exists.
 - **The contact statement is "Say Hello!", and it is the one display line on
   the page that is NOT set in caps.** It read "GOT AN IDEA? / LET'S TALK!"
   across two lines, which is the register of a pitch; the `text-transform:
@@ -2309,7 +2330,7 @@ Checked by driving the page, not by reading the markup — and two things that
 - 16 `prefers-reduced-motion` blocks; every hover behind `@media (hover: hover)`.
 - The honeypot is `aria-hidden`, `tabindex="-1"` and parked at -9999px.
 
-- **There is a `<noscript>` fallback and it must stay.** `.reveal` starts 19
+- **There is a `<noscript>` fallback and it must stay.** `.reveal` starts 18
   blocks at `opacity: 0` and only JS adds `.in-view`, so without it a
   visitor whose scripts are blocked gets the hero and then an empty red band
   where the contact form should be — which reads as "I have seen this site",

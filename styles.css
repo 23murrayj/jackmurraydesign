@@ -4061,10 +4061,6 @@ body.is-loading { overflow: hidden; }
   font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;
   min-height: 1.2em;
 }
-.contact-bottom {
-  padding: 20px 5vw 0; border-top: 3px solid var(--ink);
-}
-
 /* ------------------------------------------------------------------------
    SECTION 16 · FOOTER
    ------------------------------------------------------------------------ */
