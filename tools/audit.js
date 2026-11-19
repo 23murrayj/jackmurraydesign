@@ -146,6 +146,47 @@ console.log('\n— the project list agrees everywhere');
   };
   const sig = o => o.slice().sort().join(',');
   for (const [k, v] of Object.entries(sets)) say(k + ' (' + v.length + ')', sig(v) === sig(sets.projectData), sig(v));
+
+  // The fifth file. index.html writes the six projects out inside #gallery so
+  // the document says what the work is before renderGallery() replaces them
+  // with the real cards - the markup-holds-the-truth rule. That makes it a
+  // copy of projectData, and a copy drifts: a renamed project or a reworded
+  // desc leaves the pre-script page telling a reader something the page
+  // itself no longer says. Ids are checked above with everything else; the
+  // TITLE and DESC are checked here, because an id can agree while the words
+  // beside it are a release out of date, and that is the failure a reader
+  // without JavaScript would actually see.
+  const fb = (html.match(/<ul class="gallery-fallback">[\s\S]*?<\/ul>/) || [''])[0];
+  const fbItems = [...fb.matchAll(/<li>[\s\S]*?<\/li>/g)].map((m) => {
+    const li = m[0];
+    const g = (re) => ((li.match(re) || [])[1] || '').trim();
+    return {
+      id: g(/href="\/work\/([\w-]+)"/),
+      title: g(/class="gallery-fallback-title">([^<]*)</),
+      desc: g(/class="gallery-fallback-desc">([^<]*)</),
+    };
+  });
+  sets.galleryFallback = fbItems.map(i => i.id);
+  say('galleryFallback (' + sets.galleryFallback.length + ')',
+      sig(sets.galleryFallback) === sig(sets.projectData), sig(sets.galleryFallback));
+
+  // Entity-decode only what the list actually needs. A full decoder here
+  // would be a second HTML parser to keep correct; the list is hand-written
+  // ASCII plus the apostrophes, so the apostrophe is the whole alphabet.
+  const dec = s => s.replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+  const stale = [];
+  for (const it of fbItems) {
+    const seg = js.slice(js.indexOf("  '" + it.id + "': {"));
+    const grab = (key) => {
+      const m = seg.slice(0, 4000).match(new RegExp(key + ": ([\"'])((?:(?!\\1)[\\s\\S])*?)\\1"));
+      return m ? m[2] : null;
+    };
+    const title = grab('title');
+    const desc = grab('desc');
+    if (title !== dec(it.title)) stale.push(it.id + ' title: "' + dec(it.title) + '" vs "' + title + '"');
+    if (desc !== dec(it.desc)) stale.push(it.id + ' desc: "' + dec(it.desc) + '" vs "' + desc + '"');
+  }
+  say('fallback titles and descs match projectData', stale.length === 0, stale.join(' | '));
 }
 
 console.log('\n— WebP invariant (every inline jpg has a webp sibling)');

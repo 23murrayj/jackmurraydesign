@@ -1622,8 +1622,14 @@ The click handler ignores modified clicks on purpose — calling
 `preventDefault` on a cmd-click would quietly remove open-in-new-tab, which
 is most of the point.
 
-**Adding or renaming a project means four files**: `projectData`,
-`sitemap.xml`, `llms.txt` and the JSON-LD in `index.html`.
+**Adding or renaming a project means FIVE files**: `projectData`,
+`sitemap.xml`, `llms.txt`, the JSON-LD in `index.html` — and the
+`.gallery-fallback` list inside `#gallery` in `index.html`, which is the
+same six projects written out in markup (see *Machine readers*). It was
+four until 2026-11-19. `node tools/audit.js` checks all five agree, and
+checks the fallback's TITLES and DESCS against `projectData` as well as
+its ids — an id can agree while the words beside it are a release out of
+date, and those words are what a reader without JavaScript actually sees.
 
 ## UX rules
 
@@ -2419,6 +2425,53 @@ Rules for both:
   **Layer 2 is the exact opposite of the counters rule below, deliberately.**
   The counters are content, so the markup holds the truth; the eggs are not
   content, so the markup holds nothing.
+
+**ANYTHING RENDERED FROM JAVASCRIPT IS INVISIBLE TOO, AND THE GALLERY WAS.**
+Jack: *"when I give an AI my website, I can’t read inside the projects."* He
+was describing something larger than he thought. `renderGallery` built all
+six cards from `projectData`, so SELECTED PROJECTS was an EMPTY DIV in the
+document — not the write-ups missing, the project NAMES missing. Measured,
+the visible text of the served page was 3,187 characters containing no
+mention of Caterpillar or of any other project. The JSON-LD named all six
+and `llms.txt` described them, so the two files written FOR machines were
+the only places on the site that said what the work is, which is the same
+inversion the easter-egg note records.
+**It is worse on a deep link.** `vercel.json` rewrites `/work/<id>` to
+`index.html`, so `/work/cat-coaching` returned bytes identical to `/` —
+right down to the generic `<title>` and a canonical pointing at `/`, both
+of which `applyRouteMeta` sets at runtime. Anything that fetched a case
+study URL without running scripts got the home page and could not tell.
+**The fix is the counters rule applied to the gallery**: `index.html` writes
+the six projects out inside `#gallery` — title, category, one-line desc,
+real `/work/<id>` href — and `renderGallery` replaces them. Markup holds
+the truth, JS holds the presentation. 3,187 characters became 3,800, all
+six projects named, and "pong", "chaos" and "sticker" are still absent.
+**Three things about it that were decided rather than defaulted:**
+- **Not `<noscript>`.** It is the obvious container and it is the wrong one:
+  most HTML-to-text extractors strip `noscript` along with `script` and
+  `style`, so the readers this exists for would never have seen it. (The
+  `<noscript>` in `<head>` is a different thing — a stylesheet for a human
+  with JS blocked, not content for a parser.)
+- **Not hidden with CSS.** A `display: none` copy would never flash and
+  would still be read, which is exactly why it is forbidden: it is hidden
+  duplicate text aimed at crawlers. This text is the same text the cards
+  show, so it is allowed to be visible.
+- **It never flashes anyway**, which is what makes visible affordable.
+  `.loader` is the second element in `<body>`, fixed and full-viewport, and
+  `script.js` is a blocking script at the end of `<body>` — so the swap
+  happens behind the skeleton. Verified: 6 cards and 0 `.gallery-fallback`
+  nodes in the live DOM.
+  It is styled regardless, because the visitor who does see it is the one
+  whose JavaScript is blocked, and for them this IS the project list: one
+  column with 3px rules, display titles, the page’s own 5vw gutter (`.gallery`
+  is full-bleed, which is right for photographs and wrong for a line of text).
+**What it does NOT fix, honestly:** the long case-study prose lives in
+`i18n.js` as `proj.<id>.body` and is still JS-only, and a deep link still
+serves the home document. Prerendering is the real answer and it needs a
+build step, which this project does not have. `llms.txt` carries a paragraph
+per project and is the channel that covers the gap; its claim that a
+no-JS reader "will see the cards and not the write-ups" was false while the
+gallery was empty, and is true now.
 
 **Anything animated from a placeholder is invisible to a machine reader.** The
 about-section counters are the worked example: the markup now carries `4`,

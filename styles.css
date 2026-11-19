@@ -2295,6 +2295,55 @@ body.is-loading { overflow: hidden; }
   grid-template-columns: repeat(2, 1fr);
   gap: 0;
 }
+
+/* The six projects as written in index.html, before renderGallery() swaps the
+   real cards in. In a normal browser this is never painted: script.js is a
+   blocking script at the end of <body> and the loading skeleton is a fixed
+   full-viewport overlay, so the swap happens behind it. It is styled anyway,
+   because the one visitor who does see it is the one whose JavaScript is
+   blocked, and for them this IS the project list — the same case the
+   <noscript> block in <head> exists for. One column, because a grid of text
+   blocks with no images is a list wearing a grid, and rules rather than
+   borders, because these are entries and not cards. */
+.gallery-fallback {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 3px solid var(--black);
+}
+.gallery-fallback li { border-bottom: 3px solid var(--black); }
+/* .gallery is full-bleed, which is right for photographs running edge to
+   edge and wrong for a line of text: without this the titles start at x 0,
+   hard against the viewport. 5vw is the page gutter .hero and .filters use. */
+.gallery-fallback a {
+  display: block;
+  padding: 28px 5vw;
+  text-decoration: none;
+  color: inherit;
+}
+.gallery-fallback-cat {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--accent-ink);
+  margin-bottom: 8px;
+}
+.gallery-fallback-title {
+  display: block;
+  font-family: var(--ff-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+  line-height: 1.05;
+}
+.gallery-fallback-desc {
+  display: block;
+  max-width: 54ch;
+  margin-top: 10px;
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .gallery-fallback a:hover .gallery-fallback-title { color: var(--accent-ink); }
+}
 .card {
   position: relative;
   border: 3px solid var(--black);

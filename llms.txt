@@ -91,6 +91,12 @@ Every case study has its own URL, and so does the about page:
 They are single-page overlays behind the scenes - the server rewrites those
 paths to the same document and the page opens the right panel from the URL -
 but they are real addresses: linkable, shareable and each with its own title
-and canonical. The case study text is injected by JavaScript from one data
-object, so a reader that does not execute JavaScript will see the cards and
-not the write-ups.
+and canonical.
+
+The six projects are written out in the HTML of the home page, with their
+titles, categories, one-line descriptions and these URLs, and the script
+replaces that list with the real cards once it runs. The long case study
+write-ups are a different matter: they live in the translation file and are
+injected by JavaScript, so a reader that does not execute scripts gets the
+six projects and what each one is, and the summaries above rather than the
+full write-ups.

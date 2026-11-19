@@ -471,9 +471,74 @@
   <p class="sr-only" id="filterStatus" role="status" aria-live="polite"></p>
 
   <div class="gallery" id="gallery">
-    <!-- Cards are generated from projectData in script.js (see renderGallery).
-         Adding a project means adding one object there — there is no card
-         markup to write here. -->
+    <!-- renderGallery() in script.js REPLACES everything inside this div with
+         the real cards, built from projectData. What is written out below is
+         the same six projects, in the same order, with the same titles and
+         the same one-line descriptions the cards carry — so the markup says
+         what the work is before any script has run.
+         WHY IT IS HERE AND NOT A COMMENT. The gallery was JS-only, which made
+         the six project names absent from the document: anything that reads
+         the HTML rather than running it — an AI asked to look at the site, a
+         crawler that does not execute scripts, a reader with JS blocked — got
+         a page whose SELECTED PROJECTS section was literally empty. The
+         JSON-LD and llms.txt named the projects and the page itself did not.
+         Same rule as the about-section counters: MARKUP HOLDS THE TRUTH, JS
+         HOLDS THE PRESENTATION. Not a <noscript> block, deliberately — most
+         HTML-to-text extractors strip noscript along with script and style,
+         so the readers this is for would never have seen it. And not hidden
+         with CSS either: this is the same text the cards show, so it is
+         allowed to be visible, and hidden duplicate text aimed at crawlers is
+         exactly what the machine-readers rule in CLAUDE.md forbids.
+         Nobody sees it in a normal browser anyway: the loading skeleton is a
+         fixed full-viewport overlay and script.js is a blocking script at the
+         end of <body>, so the swap happens behind the loader.
+         IT IS A FIFTH FILE TO KEEP IN STEP. Adding, renaming or cutting a
+         project means projectData, sitemap.xml, llms.txt, the JSON-LD above
+         and this list. tools/audit.js checks all five agree. -->
+    <ul class="gallery-fallback">
+      <li>
+        <a href="/work/cat-coaching">
+          <span class="gallery-fallback-cat">UX/UI</span>
+          <span class="gallery-fallback-title">CATERPILLAR UX CHALLENGE</span>
+          <span class="gallery-fallback-desc">Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.</span>
+        </a>
+      </li>
+      <li>
+        <a href="/work/easter-riverside">
+          <span class="gallery-fallback-cat">GRAPHICS</span>
+          <span class="gallery-fallback-title">EASTER AT RIVERSIDE</span>
+          <span class="gallery-fallback-desc">One identity across two services, from invitation cards to a banner on the side of the building.</span>
+        </a>
+      </li>
+      <li>
+        <a href="/work/fuse-partners-in-crime">
+          <span class="gallery-fallback-cat">UX/UI</span>
+          <span class="gallery-fallback-title">PARTNERS IN CRIME</span>
+          <span class="gallery-fallback-desc">Asymmetric VR and PC co-op heist, shown at the Peoria Riverfront Museum.</span>
+        </a>
+      </li>
+      <li>
+        <a href="/work/sandcastles">
+          <span class="gallery-fallback-cat">GRAPHICS</span>
+          <span class="gallery-fallback-title">SANDCASTLES</span>
+          <span class="gallery-fallback-desc">Sermon series identity applied across stage screens, social, and print.</span>
+        </a>
+      </li>
+      <li>
+        <a href="/work/monmouth-retreat">
+          <span class="gallery-fallback-cat">PHOTOGRAPHY</span>
+          <span class="gallery-fallback-title">MONMOUTH RETREAT</span>
+          <span class="gallery-fallback-desc">Candid photography from a worship team&#39;s retreat in Monmouth.</span>
+        </a>
+      </li>
+      <li>
+        <a href="/work/oasis-journey">
+          <span class="gallery-fallback-cat">MOTION</span>
+          <span class="gallery-fallback-title">JOURNEY TO THE OASIS</span>
+          <span class="gallery-fallback-desc">3D animated short created as an early motion and storytelling project.</span>
+        </a>
+      </li>
+    </ul>
   </div>
 
   <!-- Optional extra, off by default. Absolutely positioned over this
