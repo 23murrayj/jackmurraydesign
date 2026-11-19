@@ -3252,16 +3252,25 @@ if (pongCanvas) {
 // Note this sets an inline transform, which beats any :hover transform in the
 // stylesheet - so a tilted element's hover styling has to live in the parts
 // this does not touch (box-shadow on the cards, the ring on the photo).
+/* The AREA is what the pointer is tracked against, and it is the element
+   itself unless an ancestor claims it with data-tilt-area. A card is its own
+   area. The about photo is not: it shrinks 28px on hover to give the
+   rotation somewhere to go, so the pointer spends most of its time over
+   panel rather than over photo - bound to the photo, crossing into that gap
+   fires mouseleave and flattens the tilt mid-hover. Measuring from the area
+   too, not just listening on it, keeps the full panel mapped to the same
+   +-6deg instead of the shrunken photo's box. */
 if (!prefersReducedMotion) document.querySelectorAll('[data-tilt]').forEach((card) => {
-  card.addEventListener('mousemove', (e) => {
-    const rect = card.getBoundingClientRect();
+  const area = card.closest('[data-tilt-area]') || card;
+  area.addEventListener('mousemove', (e) => {
+    const rect = area.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const rotateX = ((y - rect.height / 2) / rect.height) * -6;
     const rotateY = ((x - rect.width / 2) / rect.width) * 6;
     card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
   });
-  card.addEventListener('mouseleave', () => {
+  area.addEventListener('mouseleave', () => {
     card.style.transform = '';
   });
 });

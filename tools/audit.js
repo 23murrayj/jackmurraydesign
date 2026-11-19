@@ -167,7 +167,16 @@ console.log('\n— WebP invariant (every inline jpg has a webp sibling)');
 
 console.log('\n— asset paths are root-relative (they resolve against /work/ on a deep link)');
 {
-  const rel = (js.match(/["']assets\//g) || []).length + (html.match(/(src|href)="assets\//g) || []).length;
+  /* srcset is in this list because it was NOT, and that is exactly how the
+     one live instance survived: <source srcset="assets/about/..."> inside the
+     about portrait's <picture>. src and href were both checked, srcset was
+     not, so this said "0 found" with a relative path sitting in the markup.
+     It matters more on a <source> than anywhere else - a <picture> falls back
+     when a browser cannot DECODE a type, not when a file 404s, so a source
+     that resolves against /work/ is a broken image rather than a quiet
+     downgrade to the jpg. */
+  const rel = (js.match(/["']assets\//g) || []).length
+            + (html.match(/(src|href|srcset)="assets\//g) || []).length;
   say('no relative assets/ paths', rel === 0, rel + ' found');
 }
 

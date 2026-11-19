@@ -3482,17 +3482,16 @@ body.is-loading { overflow: hidden; }
   overflow: hidden;
 }
 .about-panel .about-portrait {
-  /* -5%, not 0. The tilt is a 3D rotation, so the far edge of the photo
-     swings back and lands inside the panel - up to 13px of bare ink in the
-     top corners at full tilt, which is the artefact that showed. Oversizing
-     the photo past that worst case keeps its edges outside the panel's clip,
-     so the panel stays completely filled at every cursor position.
-     A percentage rather than a pixel figure because the gap grows with the
-     panel's own height: 16px held at the 732px panel this viewport renders
-     (1.7px to spare) but went 11px negative at 1100px, which would have put
-     the artefact straight back on a taller section. -5% keeps at least 6px
-     of cover at every panel size measured, from 300x650 to 490x760. */
-  position: absolute; inset: -5%;
+  /* FLUSH AT REST. This was -5%, which oversized the photo so its edges sat
+     17-37px OUTSIDE the panel's clip at this viewport. That did fix the
+     artefact it was aimed at - a 3D rotation swings the far edge back and
+     opens a sliver of bare ink, measured at 7.7px - but it cost the whole
+     effect, because a photo bigger than its window can never show you a
+     corner. The tilt was still running; you just could not see it. Jack:
+     "it looks like it's tilting, but then the top corners aren't actually
+     moving, I guess, or any of the corners."
+     The room the rotation needs is made on HOVER instead, below. */
+  position: absolute; inset: 0;
   border: 0;
 }
 /* the 4px rule that runs under the section heading, continued down the seam:
@@ -3520,7 +3519,38 @@ body.is-loading { overflow: hidden; }
   display: block;
   /* the card's own curve on transform, which is what makes the tilt settle
      back rather than snap when the pointer leaves */
-  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .3s, filter .3s;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), inset .35s cubic-bezier(.2,.8,.2,1), box-shadow .3s, filter .3s;
+}
+/* THE PHOTO PULLS IN WHEN YOU POINT AT IT, and that gap is the whole fix.
+   A card can tilt because it has page around it for its corners to move
+   into; this photo is flush to the viewport's right edge and to the
+   section's top and bottom, so it has none - and a tilt with nowhere to go
+   either clips (what it did) or tears a gap at the opposite edge.
+   So the hover makes the room. Measured at a 420x747 panel, the worst case
+   over the four extreme tilts is 26px of overhang (top and bottom, where
+   the perspective magnifies a 753px-tall box) and 15.8px sideways, against
+   a 7.7px gap on the trailing edge.
+   max(28px, 4%) AND NOT A FLAT 28, which is the trap the rule this replaced
+   fell into from the other side. The vertical overhang is perspective
+   magnification of a box as tall as the panel, so it scales WITH the panel:
+   measured 21.3px of it at a 747px panel and 23.4px at 782px, both ~3% of
+   the height. A flat 28 therefore gets thinner the taller the section gets -
+   it left only 4.6px of clearance at 1280, where the narrower column makes
+   the copy taller - and one extra line of about text would have taken it
+   negative. The percentage resolves against height for top/bottom and width
+   for left/right, which is exactly the right axis for each, and the 28px
+   floor covers the short-panel case where 4% would be too little sideways.
+   It reads as the lift the cards have: they rise off the page, this steps
+   back off the panel, and both say "this is an object, and it is pressable".
+   ON THE PANEL, not the photo. Once the photo has pulled in, the 28px ring
+   of ink around it is panel and not photo - scope the hover to the photo
+   and moving the cursor into that gap un-hovers it, so it snaps back out
+   and then in again. Same trap as the hover pads in SECTION 02b.
+   min-width 801 because below that the photo is position: relative with
+   inset: auto (see the mobile block), where an inset would shove it rather
+   than shrink it. */
+@media (hover: hover) and (min-width: 801px) {
+  .about-panel:hover .about-portrait { inset: max(28px, 4%); }
 }
 /* The ring sits on the panel, not on the photo. On the photo it rode along
    with the tilt, which put a yellow frame in the middle of the picture with
@@ -3533,13 +3563,16 @@ body.is-loading { overflow: hidden; }
   box-shadow: inset 0 0 0 0 var(--highlight);
   transition: box-shadow .3s ease;
 }
-/* hover:hover, because a tap on a touch screen leaves :hover matching until
-   something else is tapped - measured stuck on at 375px wide, ring and all,
-   with no way for a finger to dismiss it. Keyboard focus is outside the
-   query so it still works everywhere. */
-@media (hover: hover) {
-  .about-panel:hover::after { box-shadow: inset 0 0 0 6px var(--highlight); }
-}
+/* NO RING ON HOVER ANY MORE - the gap the photo opens is the hover state,
+   and two signals for one event is one too many. It was also the thing Jack
+   could not place: "it's got like a gray thing on the side. I'm not really
+   sure what's going on with it." --highlight is lime in dark but STONE
+   (#CBC4B4) in light, so in light mode this drew a 6px grey frame inside the
+   panel edge on hover. The comment two rules up still called it yellow,
+   which is what the token was before 2026-11-05.
+   KEYBOARD KEEPS IT, and must: focus has no other indicator here, the photo
+   is a link, and a 28px inset is a change of layout rather than a focus
+   ring. Outside the hover query so it works on every device. */
 .about-panel:has(.about-portrait:focus-visible)::after {
   box-shadow: inset 0 0 0 6px var(--highlight);
 }
@@ -3559,6 +3592,14 @@ body.is-loading { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .about-panel::after { transition: none; }
   .about-portrait { transition: none; }
+  /* AND THE HOVER GOES BACK TO THE RING HERE. The inset exists to give a 3D
+     tilt somewhere to go, and script.js does not install the tilt at all
+     when this is set - so the room is for nothing, and all that is left is
+     28px of photo jumping away from you with the transition stripped out.
+     The ring is the right signal for a reader who has asked for less
+     motion: it is the one that does not move anything. */
+  .about-panel:hover .about-portrait { inset: 0; }
+  .about-panel:hover::after { box-shadow: inset 0 0 0 6px var(--highlight); }
 }
 .about-portrait img { display: block; }
 /* No zoom on hover, because the project cards do not zoom either. They used

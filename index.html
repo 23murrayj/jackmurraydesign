@@ -582,11 +582,16 @@
            towards a page about a person. aria-label (not the alt) names the
            destination: the alt describes the picture, which is not what a
            screen reader needs to hear about where a link goes. -->
-      <div class="about-panel reveal">
+      <!-- data-tilt-area: the tilt tracks the PANEL, not the photo. On hover
+           the photo pulls in 28px to make room for the rotation, so the ring
+           of ink around it is panel and not photo - without this the pointer
+           crossing into that gap would fire mouseleave on the photo and snap
+           the tilt back to flat while you are still hovering. -->
+      <div class="about-panel reveal" data-tilt-area>
         <a class="about-portrait" href="#about" id="aboutPortrait" data-tilt
            data-i18n-aria="about.portraitLink" aria-label="More about Jack">
           <picture>
-            <source type="image/webp" srcset="assets/about/jack-centrale.webp">
+            <source type="image/webp" srcset="/assets/about/jack-centrale.webp">
             <img src="/assets/about/jack-centrale.jpg" width="918" height="1600"
                  loading="lazy" decoding="async"
                  data-i18n-alt="about.portraitAlt"

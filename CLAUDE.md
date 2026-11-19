@@ -1560,9 +1560,18 @@ The shape is one-way and worth keeping that way:
 
 ### Three things that will break it
 
-- **Asset paths must be root-relative.** This is the one that actually broke:
-  `src="assets/…"` resolves against `/work/` on a deep link, so every image,
-  the stylesheet and both scripts 404 and the page arrives dead. All of
+- **Asset paths must be root-relative — `srcset` included.** This is the one
+  that actually broke: `src="assets/…"` resolves against `/work/` on a deep
+  link, so every image, the stylesheet and both scripts 404 and the page
+  arrives dead.
+  **One survived until 2026-11-19 because the audit only looked at `src` and
+  `href`**: `<source srcset="assets/about/jack-centrale.webp">` in the about
+  portrait's `<picture>`. It read "0 found" with a relative path sitting in
+  the markup. It matters more on a `<source>` than anywhere else — a
+  `<picture>` falls back when a browser cannot DECODE a type, not when a file
+  404s, so a source that resolves against `/work/` is a broken image rather
+  than a quiet downgrade to the jpg. `audit.js` checks all three attributes
+  now; it was made to fail on the live bug before the path was fixed. All of
   `index.html` and the 77 paths in `script.js` are `/assets/…` now (0
   relative ones left — checkable with
   `grep -c "[\"']assets/" script.js`). **CSS `url()` is the exception** — it
@@ -2132,6 +2141,55 @@ is most of the point.
   lift under a 12px block casts further than the card moved, so it reads as a
   sticker laid on the page rather than a card that rose off it. **Keep the
   shadow in proportion to the lift.** Do not grow either again.
+- **THE ABOUT PHOTO MAKES ITS OWN ROOM TO TILT, and the reason is that it
+  has none.** It carries the cards' `data-tilt`, but a card can tilt because
+  it has page around it for its corners to move into; this photo is flush to
+  the viewport's right edge and to the section's top and bottom. A tilt with
+  nowhere to go either clips or tears a gap at the trailing edge, and the
+  fix history is a straight line between those two failures:
+  1. Flush and unclipped — the rotation opened a 7.7px sliver of bare ink.
+  2. `inset: -5%`, oversizing the photo so its edges sat 17–37px outside the
+     panel's clip. That killed the sliver and **also killed the effect**: a
+     photo bigger than its window can never show you a corner, so the tilt
+     ran and nothing at the edges moved. Jack: *"it looks like it's tilting,
+     but then the top corners aren't actually moving."*
+  3. Now: flush at rest, and on hover it pulls IN to `max(28px, 4%)` so the
+     whole photo, corners included, stays inside the panel at every cursor
+     position. The gap reads as the lift the cards have — they rise off the
+     page, this steps back off the panel.
+  **The 4% is not decoration.** The vertical overhang is perspective
+  magnification of a box as tall as the panel, so it grows WITH the panel:
+  21.3px at a 747px panel, 23.4px at 782px, both ≈3% of height. A flat 28px
+  left only 4.6px of clearance at 1280, where the narrower column makes the
+  copy taller, and one more line of about text would have taken it negative.
+  A percentage resolves against height for top/bottom and width for
+  left/right — the right axis for each — and the 28px floor covers short
+  panels where 4% is too little sideways. Measured clearance is now 8.3–11.2px
+  at 900, 1150, 1280, 1440 and 1600, against 4.6–11.1 flat.
+  **`data-tilt-area` on the panel is what stops it flickering.** Once the
+  photo has pulled in, the ring of ink around it is panel and not photo, so a
+  tilt bound to the photo fires `mouseleave` the moment the pointer crosses
+  into the gap and snaps the lean flat mid-hover. The handler now looks for
+  `closest('[data-tilt-area]')` and both listens on it and measures from it,
+  so the full panel maps to the same ±6°. Same trap as the hover pads above,
+  in a different costume. The hover rule is on `.about-panel:hover` for the
+  identical reason.
+  **The ring went with it.** `.about-panel::after` drew a 6px
+  `var(--highlight)` frame on hover, and the gap is now the hover state —
+  two signals for one event is one too many. It was also the thing Jack
+  could not place: *"it's got like a gray thing on the side."* `--highlight`
+  is lime in dark but **stone `#CBC4B4` in light**, so in light mode it was a
+  grey frame; the code comment still called it yellow, which is what the
+  token was before 2026-11-05. **Keyboard keeps the ring** and must — focus
+  has no other indicator here, the photo is a link, and a 28px inset is a
+  layout change rather than a focus ring.
+  **Reduced motion keeps the ring too and skips the inset**: `script.js` does
+  not install the tilt at all under that setting, so the room would be for
+  nothing and all that is left is 28px of photo jumping away with the
+  transition stripped out.
+  **The hover rule is `min-width: 801px`.** Below that the photo is
+  `position: relative` with `inset: auto` (it becomes a bordered 1:2 card in
+  flow), where an inset would shove it rather than shrink it.
 - Controls that open menus use `aria-expanded`; the theme control is
   `role="switch"` + `aria-checked`.
 - Menus close on outside click, Escape, and scrolling away (40px threshold).
