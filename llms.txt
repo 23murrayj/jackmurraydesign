@@ -93,10 +93,9 @@ paths to the same document and the page opens the right panel from the URL -
 but they are real addresses: linkable, shareable and each with its own title
 and canonical.
 
-The six projects are written out in the HTML of the home page, with their
-titles, categories, one-line descriptions and these URLs, and the script
-replaces that list with the real cards once it runs. The long case study
-write-ups are a different matter: they live in the translation file and are
-injected by JavaScript, so a reader that does not execute scripts gets the
-six projects and what each one is, and the summaries above rather than the
-full write-ups.
+The six projects are written out in the HTML of the home page - titles,
+categories, one-line descriptions, the full case study write-ups and these
+URLs - and the script replaces that list with the real cards once it runs.
+So a reader that does not execute JavaScript gets the same six projects and
+the same text a visitor reads, in English; the four-language version and the
+photography are the parts that need the script.

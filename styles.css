@@ -2335,12 +2335,25 @@ body.is-loading { overflow: hidden; }
   font-size: clamp(1.5rem, 3.4vw, 2.4rem);
   line-height: 1.05;
 }
+/* 68ch, the same measure as the write-up below it. 54 was a tighter lead
+   measure, which is a normal editorial move and read here as two columns of
+   slightly different widths - a near-miss rather than a decision. */
 .gallery-fallback-desc {
   display: block;
-  max-width: 54ch;
+  max-width: 68ch;
   margin-top: 10px;
   color: var(--muted);
 }
+/* The write-up itself. It sits OUTSIDE the <a>, which is deliberate: a link
+   wrapping four paragraphs is a link nobody can skim past, and the title
+   above it is already the control. Same paragraph split openProject() uses,
+   so this reads as the panel does. */
+.gallery-fallback-body {
+  max-width: 68ch;
+  margin: 14px 5vw 0;
+  color: var(--muted);
+}
+.gallery-fallback-body:first-of-type { margin-top: 18px; }
 @media (hover: hover) {
   .gallery-fallback a:hover .gallery-fallback-title { color: var(--accent-ink); }
 }

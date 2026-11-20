@@ -1625,11 +1625,13 @@ is most of the point.
 **Adding or renaming a project means FIVE files**: `projectData`,
 `sitemap.xml`, `llms.txt`, the JSON-LD in `index.html` — and the
 `.gallery-fallback` list inside `#gallery` in `index.html`, which is the
-same six projects written out in markup (see *Machine readers*). It was
-four until 2026-11-19. `node tools/audit.js` checks all five agree, and
-checks the fallback's TITLES and DESCS against `projectData` as well as
-its ids — an id can agree while the words beside it are a release out of
-date, and those words are what a reader without JavaScript actually sees.
+same six projects written out in markup, write-ups included (see *Machine
+readers*). It was four until 2026-11-19. **You do not edit the fifth by
+hand: run `node tools/write-fallback.js`**, which regenerates it from
+`projectData` and `i18n.js`. `node tools/audit.js` checks all five agree
+and re-derives the fifth to prove it is current — an id can agree while
+the words beside it are a release out of date, and those words are what a
+reader without JavaScript actually sees.
 
 ## UX rules
 
@@ -2457,10 +2459,32 @@ right down to the generic `<title>` and a canonical pointing at `/`, both
 of which `applyRouteMeta` sets at runtime. Anything that fetched a case
 study URL without running scripts got the home page and could not tell.
 **The fix is the counters rule applied to the gallery**: `index.html` writes
-the six projects out inside `#gallery` — title, category, one-line desc,
-real `/work/<id>` href — and `renderGallery` replaces them. Markup holds
-the truth, JS holds the presentation. 3,187 characters became 3,800, all
-six projects named, and "pong", "chaos" and "sticker" are still absent.
+the six projects out inside `#gallery` — category, title, one-line desc,
+the full write-up, and a real `/work/<id>` href — and `renderGallery`
+replaces them. Markup holds the truth, JS holds the presentation. "pong",
+"chaos" and "sticker" are still absent from the readable text.
+**IT IS GENERATED, NOT TYPED.** `node tools/write-fallback.js` rewrites the
+block from `projectData` and the English strings in `i18n.js`;
+`--check` exits 1 if what is in `index.html` is stale, which is how
+`audit.js` tests it. **That is not a build step** — nothing runs at deploy
+and nothing runs in the browser, and what ships is the same hand-editable
+static HTML. It writes a block of it for you, the way
+`tools/field-shuffle.js` writes a block of `script.js`.
+**English only, and that is forced rather than chosen**: the markup is what
+a reader sees before any script has run, so `i18n.js` cannot have run
+either and there is exactly one language available.
+**The audit checks it by RE-DERIVING it**, not by comparing fields — the
+honest question is "is this what the generator would write today", which
+covers paragraphing and anything added later for free. A second check
+counts write-ups present, because a body that exists in `i18n.js` and not
+in the markup is the silent half: the list still looks complete and the one
+project whose process a reader most wants is the one that went missing.
+**That check was wrong first time and the bug is a reusable one.** It found
+a project's `<li>` with `<li>(?:(?!</li>)[\s\S])*?/work/<id>[\s\S]*?</li>`,
+whose trailing lazy run goes PAST the item into the next one — so a project
+whose write-up had been deleted borrowed its neighbour's and the check read
+6/6 on markup that was missing a write-up. It splits on `</li>` now. All
+three checks were made to fail before being trusted.
 **Three things about it that were decided rather than defaulted:**
 - **Not `<noscript>`.** It is the obvious container and it is the wrong one:
   most HTML-to-text extractors strip `noscript` along with `script` and
@@ -2480,13 +2504,41 @@ six projects named, and "pong", "chaos" and "sticker" are still absent.
   whose JavaScript is blocked, and for them this IS the project list: one
   column with 3px rules, display titles, the page’s own 5vw gutter (`.gallery`
   is full-bleed, which is right for photographs and wrong for a line of text).
-**What it does NOT fix, honestly:** the long case-study prose lives in
-`i18n.js` as `proj.<id>.body` and is still JS-only, and a deep link still
-serves the home document. Prerendering is the real answer and it needs a
-build step, which this project does not have. `llms.txt` carries a paragraph
-per project and is the channel that covers the gap; its claim that a
-no-JS reader "will see the cards and not the write-ups" was false while the
-gallery was empty, and is true now.
+**THE WRITE-UPS WENT IN TOO, ON 2026-11-20, AND THE RESEARCH IS WHY.** The
+first pass stopped at titles and one-line descs and said the long prose was
+covered by `llms.txt`. Jack asked for that to be looked up before going
+further, and both halves of the assumption came back changed:
+- **The crawlers really do not render.** Vercel/MERJ's testing (Dec 2024,
+  re-tested since) found GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot,
+  PerplexityBot, Meta-ExternalAgent and Bytespider all fetch pages WITHOUT
+  executing JavaScript. ClaudeBot downloads JS files in about a quarter of
+  requests and runs none of them. Googlebot and Applebot DO render — so
+  Google could see this site and the AI crawlers could not, which is exactly
+  the inversion that makes this invisible to the audience Jack is writing
+  for. Note what is NOT established: none of the three vendors documents
+  this, so it is independent measurement rather than policy, and it could
+  change.
+- **`llms.txt` is not the backstop it looks like.** Ahrefs scanned 137k
+  sites in May 2026 and **97% of llms.txt files were never requested at
+  all**; Google has said it does not affect Search. Keep the file — it is
+  cheap and it is read by coding agents — but do not let it carry a gap in
+  the HTML again. **The HTML is the thing that gets read.**
+So the six write-ups are in the markup too: 789 words, 4.3KB, which took
+the readable page from 627 words to **1,425** and the file from 56KB to
+66KB. Every word of it is on the site at the `/work/<id>` URL it sits
+under.
+**That is not cloaking, and the distinction is worth knowing** because it
+is the one way this could go wrong. Search engines penalise markup whose
+content DIFFERS from what the visitor gets; delivering the same content
+twice, or through a script, is explicitly fine. The rule to hold: anything
+in this block must be text the site actually shows somewhere a visitor can
+reach. The moment it says something the panels do not, it is a spam signal
+rather than an accessibility one.
+**What is still not fixed:** a deep link still serves the home document, so
+`/work/cat-coaching` is the home page's markup — which now contains that
+case study, but not as its own document, and the per-route `<title>` and
+canonical are still set at runtime. Prerendering is the real answer and it
+needs a build step this project does not have.
 
 **Anything animated from a placeholder is invisible to a machine reader.** The
 about-section counters are the worked example: the markup now carries `4`,
