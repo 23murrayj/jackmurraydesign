@@ -2570,6 +2570,34 @@ twice, or through a script, is explicitly fine. The rule to hold: anything
 in this block must be text the site actually shows somewhere a visitor can
 reach. The moment it says something the panels do not, it is a spam signal
 rather than an accessibility one.
+**THE WRITE-UPS ARE ON THE JSON-LD CARDS TOO, since 2026-11-20, and the
+reason is LABELLING rather than reach.** Jack noticed a model that plainly
+had his project text still reporting it could not get into the projects, and
+read it correctly: *"it thinks that since it can't get into the projects,
+that it can't read certain parts as well, even though it can."* The markup
+says WHAT the work is; it does not say WHICH PROJECT any of it belongs to.
+A reader that fetches `/work/cat-coaching` gets the home document, finds the
+Caterpillar text inside it, and has nothing binding that text to the url it
+asked for — so it concludes it failed while holding the answer.
+The six `CreativeWork` entries already bind a name to a `/work/<id>`, so
+giving each one a `description` completes the mapping for anything that
+parses structured data. **It labels; it does not relocate** — six real
+documents remain the only fix for the url itself, and that still needs a
+build step. Written by the same generator, kept current by the same hook,
++6 lines of JSON-LD and nothing else: no CSS, no `script.js`, no visible
+markup, verified by diffing the commit.
+**The audit cross-checks it against the markup rather than trusting the
+generator**, and that distinction is the point: `--check` proves
+`index.html` matches what the generator PRODUCES, not that the generator is
+right. When this was first written, a lazy run in its entry regex started at
+the first `CreativeWork` and ran forward to whichever url it was asked for,
+so the Oasis write-up landed on the Caterpillar card — and `--check` would
+have called that current, because it was exactly what the generator wrote.
+Comparing two independently written places in the file is what gives a
+generator bug somewhere to surface. **It is the same tempered-lazy bug as
+the `</li>` one above, written into new code two days after documenting
+it**; if you are matching one record out of many, forbid the record's own
+start token inside the run.
 **What is still not fixed:** a deep link still serves the home document, so
 `/work/cat-coaching` is the home page's markup — which now contains that
 case study, but not as its own document, and the per-route `<title>` and

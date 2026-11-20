@@ -103,12 +103,67 @@ const items = ids.map((id) => {
 
 const block = `    <ul class="gallery-fallback">\n${items}\n    </ul>`;
 
+/* ---------------------------------------------------------------------------
+   The same six write-ups, onto the JSON-LD cards.
+
+   WHY, given the text is already in the markup above. Because the markup says
+   WHAT the work is and the JSON-LD says WHICH PROJECT it belongs to. The six
+   CreativeWork entries already bind a name to a /work/<id> url; without a
+   description the write-ups sit in the document unattached to either, so a
+   reader that fetches /work/cat-coaching gets the home document, finds the
+   Caterpillar text in it, and has nothing telling it that THAT is what it
+   asked for. Jack described the symptom from the other end: a model that had
+   his project text in hand still reported it could not get into the projects.
+   This is the cheap half of the fix - the real one is six documents, which
+   needs a build step. It labels; it does not relocate.
+
+   Inserted after "about" and before "creator", so the two prose fields sit
+   together: about is the card blurb, description is the write-up. Written by
+   targeted insertion rather than by re-serialising the block, because
+   JSON.stringify would reflow all 90 lines of hand-formatted JSON-LD and bury
+   this change in a diff nobody can read.
+   --------------------------------------------------------------------------- */
+function withDescriptions(html) {
+  let out = html;
+  for (const id of ids) {
+    const body = englishKey('proj.' + id + '.body');
+    if (!body) continue;
+
+    // The whole CreativeWork object for this id. Each one ends with its url,
+    // so the lazy run cannot reach into the next entry - the same trap that
+    // made an audit check read 6/6 on markup missing a write-up.
+    const entryRe = new RegExp(
+      // TEMPERED, not a plain lazy run. '[\\s\\S]*?' here starts at the FIRST
+      // CreativeWork in the document and runs forward to whichever url it was
+      // asked for, swallowing every entry in between - so the last project's
+      // write-up landed on the first project's card. Same shape of bug as the
+      // audit check that read 6/6 on markup missing a write-up, written into
+      // new code two days after documenting it. Forbidding another
+      // CreativeWork inside the run is what keeps each entry to itself.
+      '\\{\\s*"@type": "CreativeWork",(?:(?!"@type": "CreativeWork")[\\s\\S])*?"url": "https://jackmurraydesign\\.com/work/' + id + '"\\s*\\}'
+    );
+    const entry = (out.match(entryRe) || [])[0];
+    if (!entry) throw new Error('no JSON-LD entry for ' + id);
+
+    const aboutLine = entry.match(/^([ \t]*)"about": .*,$/m);
+    if (!aboutLine) throw new Error('no "about" line in the JSON-LD entry for ' + id);
+    const indent = aboutLine[1];
+
+    const next = entry
+      .replace(/^[ \t]*"description": [\s\S]*?",$\n/m, '')
+      .replace(aboutLine[0], aboutLine[0] + '\n' + indent + '"description": ' + JSON.stringify(body) + ',');
+
+    out = out.replace(entry, () => next);
+  }
+  return out;
+}
+
 const file = path.join(R, 'index.html');
 const html = fs.readFileSync(file, 'utf8');
 const re = /^ {4}<ul class="gallery-fallback">[\s\S]*?^ {4}<\/ul>$/m;
 if (!re.test(html)) throw new Error('could not find the gallery-fallback block in index.html');
 
-const next = html.replace(re, block);
+const next = withDescriptions(html.replace(re, () => block));
 const check = process.argv.includes('--check');
 
 if (check) {

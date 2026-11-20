@@ -232,7 +232,7 @@ console.log('\n— the project list agrees everywhere');
       if (Array.isArray(n)) return n.forEach(walk);
       if (n && typeof n === 'object') {
         if (typeof n.url === 'string' && n.url.includes('/work/')) {
-          ld.push({ id: n.url.split('/work/')[1].replace(/\/$/, ''), name: n.name || '' });
+          ld.push({ id: n.url.split('/work/')[1].replace(/\/$/, ''), name: n.name || '', description: n.description || '' });
         }
         Object.values(n).forEach(walk);
       }
@@ -252,6 +252,28 @@ console.log('\n— the project list agrees everywhere');
     const llmsMiss = ld.filter((e) => !new RegExp('\\*\\*' + title(e.id).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\*\\*', 'i').test(llms))
                        .map((e) => e.id + ' (' + title(e.id) + ')');
     say('llms.txt calls each project what the site calls it', llmsMiss.length === 0, llmsMiss.join(' | '));
+
+    // AND THAT EACH JSON-LD CARD CARRIES ITS OWN PROJECT'S WRITE-UP.
+    // This is not covered by the staleness check above, and the difference is
+    // the whole reason it exists: --check proves index.html matches what the
+    // GENERATOR produces, not that the generator is right. When the generator
+    // was first taught to write these, a lazy run in its entry regex started
+    // at the FIRST CreativeWork and ran forward to whichever url it was asked
+    // for - so the Oasis write-up landed on the Caterpillar card, and
+    // --check would have called that current, because it was exactly what the
+    // generator wrote. This compares two independently written places in the
+    // file instead, so a generator bug has somewhere to show up.
+    const fbBlock = (html.match(/<ul class="gallery-fallback">[\s\S]*?<\/ul>/) || [''])[0];
+    const liChunks = fbBlock.split('</li>');
+    const unesc = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    const wrong = [];
+    for (const e of ld) {
+      const li = liChunks.find((s) => s.includes('/work/' + e.id + '"')) || '';
+      const paras = [...li.matchAll(/class="gallery-fallback-body">([^<]*)</g)].map((m) => unesc(m[1]));
+      if (!paras.length) continue;
+      if ((e.description || '') !== paras.join('\n\n')) wrong.push(e.id);
+    }
+    say('each JSON-LD card carries its own write-up', wrong.length === 0, wrong.join(' '));
   }
 }
 
