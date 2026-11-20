@@ -2407,6 +2407,21 @@ Rules for both:
 - They say **nothing that is not already visible on the site.** No hidden text
   aimed at crawlers, and deliberately **no `sr-only` block** — a pitch written
   for machines has no business being read aloud to a screen-reader user.
+- **AGREE ON WHAT EACH PROJECT IS CALLED, not just on which projects exist.**
+  For months the JSON-LD and `llms.txt` called `cat-coaching` "Adaptive
+  Coaching Interface" while the site called it CATERPILLAR UX CHALLENGE — so
+  anything reading this site was handed two names for its strongest project
+  and nothing saying they were one thing. Every id check passed the whole
+  time, because ids were all anyone was checking.
+  **Found by reading a crawler's summary and noticing it would not commit to
+  a name** — which is not a test anyone can run twice, so it is two checks in
+  `audit.js` now, one per file, compared case-insensitively (the card is set
+  in caps because the TYPE is uppercase; that is styling, not a different
+  name). Both were made to fail by putting the old name back.
+  **The site's own title wins.** `projectData` is what a visitor reads, so
+  the metadata follows it rather than the other way round. If a name is ever
+  genuinely wrong, change it on the card and let the checks pull the other
+  two along.
 - **Keep them in step with the page.** Adding, cutting or renaming a project
   means editing `llms.txt` and the JSON-LD too. Note what they must NOT be
   kept in step with: the easter eggs, which neither mentions any more. Six live projects:

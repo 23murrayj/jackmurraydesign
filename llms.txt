@@ -26,7 +26,7 @@ Contact: the form or the address in the contact section of the site.
 
 Six case studies, all real, none speculative or invented:
 
-- **Adaptive Coaching Interface** — UX research and design for heavy
+- **Caterpillar UX Challenge** — UX research and design for heavy
   equipment operators, a three-person team partnered with Caterpillar through
   an Advanced Interaction Design course at Bradley. Won Best Research Award.
   Seven weeks of review with Caterpillar's UX team, two rounds of iteration,

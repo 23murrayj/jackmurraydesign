@@ -214,6 +214,45 @@ console.log('\n— the project list agrees everywhere');
     say('the pre-commit hook is installed', installed,
         installed ? '' : 'run:  git config core.hooksPath .githooks');
   }
+
+  // AND THAT THE FIVE AGREE ON WHAT EACH PROJECT IS CALLED, not just on which
+  // projects exist. The ids matched for months while the JSON-LD and llms.txt
+  // called cat-coaching "Adaptive Coaching Interface" and the site called it
+  // "CATERPILLAR UX CHALLENGE" - so anything reading this site was handed two
+  // names for its strongest project and no way to tell they were one thing.
+  // Found by reading a crawler's summary of the site and noticing it would
+  // not commit to a name, which is not a check anyone can run twice.
+  // Compared case-insensitively on purpose: the card is set in caps because
+  // the TYPE is uppercase, and that is a styling decision rather than a
+  // different name. What must not differ is the words.
+  {
+    const ldBlock = (html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/) || [, '{}'])[1];
+    const ld = [];
+    (function walk(n) {
+      if (Array.isArray(n)) return n.forEach(walk);
+      if (n && typeof n === 'object') {
+        if (typeof n.url === 'string' && n.url.includes('/work/')) {
+          ld.push({ id: n.url.split('/work/')[1].replace(/\/$/, ''), name: n.name || '' });
+        }
+        Object.values(n).forEach(walk);
+      }
+    })(JSON.parse(ldBlock));
+
+    const title = (id) => {
+      const at = js.indexOf("  '" + id + "': {");
+      const m = /title: (["'])((?:[^"'\\]|\\.|(?!\1)["'])*)\1/.exec(js.slice(at, at + 6000));
+      return m ? m[2] : '';
+    };
+    const norm = (s) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+
+    const clash = ld.filter((e) => norm(e.name) !== norm(title(e.id)))
+                    .map((e) => e.id + ': JSON-LD "' + e.name + '" vs site "' + title(e.id) + '"');
+    say('the JSON-LD calls each project what the site calls it', clash.length === 0, clash.join(' | '));
+
+    const llmsMiss = ld.filter((e) => !new RegExp('\\*\\*' + title(e.id).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\*\\*', 'i').test(llms))
+                       .map((e) => e.id + ' (' + title(e.id) + ')');
+    say('llms.txt calls each project what the site calls it', llmsMiss.length === 0, llmsMiss.join(' | '));
+  }
 }
 
 console.log('\n— WebP invariant (every inline jpg has a webp sibling)');
