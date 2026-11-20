@@ -22,6 +22,8 @@ Bash. **Git:** `/Library/Developer/CommandLineTools/usr/bin/git` — the plain
 
 **Check it:** `node tools/audit.js` and `node tools/field-check.js`, before
 any commit touching more than one file. Neither replaces driving the page.
+A `git config core.hooksPath .githooks` in a fresh clone turns the
+pre-commit hook on; `audit.js` tells you if you have not.
 
 **Three things that will bite you**, each with a section of its own below:
 the in-app browser lies about animation and `getComputedStyle` goes stale
@@ -1626,12 +1628,31 @@ is most of the point.
 `sitemap.xml`, `llms.txt`, the JSON-LD in `index.html` — and the
 `.gallery-fallback` list inside `#gallery` in `index.html`, which is the
 same six projects written out in markup, write-ups included (see *Machine
-readers*). It was four until 2026-11-19. **You do not edit the fifth by
-hand: run `node tools/write-fallback.js`**, which regenerates it from
-`projectData` and `i18n.js`. `node tools/audit.js` checks all five agree
-and re-derives the fifth to prove it is current — an id can agree while
-the words beside it are a release out of date, and those words are what a
-reader without JavaScript actually sees.
+readers*). It was four until 2026-11-19.
+**THE FIFTH LOOKS AFTER ITSELF — `.githooks/pre-commit` REGENERATES IT ON
+EVERY COMMIT.** It was a documented manual step for one day, which Jack
+ended: *"I wont remember that so make sure it auto does it."* He is right,
+and it generalises past this one file — **a maintenance step a person has
+to remember is a bug with a manual workaround.** If you add another derived
+file here, hook it rather than writing it down.
+`node tools/write-fallback.js` still exists and still works by hand; the
+hook just calls it so nobody has to.
+**It refuses rather than sweeps.** `git add index.html` inside a hook can
+pull unrelated unstaged edits into a commit, which is a worse surprise than
+the stale block it prevents. So it checks whether `index.html` was already
+dirty: clean, it regenerates and stages; dirty, it regenerates, stages
+NOTHING, explains, and exits 1 so the commit stops. `SKIP_FALLBACK_HOOK=1`
+is the escape hatch. Both paths were driven before being trusted.
+**It is not a build step** — nothing runs at deploy and nothing runs in a
+browser; it writes static HTML on this machine, like `field-shuffle.js`.
+**`core.hooksPath` is LOCAL config and does not survive a fresh clone**, so
+that is the one way this silently stops working: `audit.js` has a check for
+it that prints the one command to fix it
+(`git config core.hooksPath .githooks`).
+`node tools/audit.js` also checks all five lists agree and re-derives the
+fifth to prove it is current — an id can agree while the words beside it
+are a release out of date, and those words are what a reader without
+JavaScript actually sees.
 
 ## UX rules
 

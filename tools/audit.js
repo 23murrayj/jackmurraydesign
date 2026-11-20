@@ -196,6 +196,24 @@ console.log('\n— the project list agrees everywhere');
   say('every write-up is in the markup (' + inFb.length + '/' + withBody.length + ')',
       inFb.length === withBody.length,
       withBody.filter(id => !inFb.includes(id)).join(' '));
+
+  // And that nobody has to remember any of the above. .githooks/pre-commit
+  // regenerates the block on every commit, which is the real fix - Jack, on
+  // being told to run the tool by hand: "I wont remember that so make sure it
+  // auto does it." But core.hooksPath is LOCAL git config: it is not in the
+  // repository and does not survive a fresh clone, so the one failure mode is
+  // a checkout where the hook silently is not running. This is the thing that
+  // notices.
+  {
+    let hooksPath = '';
+    try {
+      hooksPath = execFileSync('git', ['config', 'core.hooksPath'], { cwd: R, stdio: ['ignore', 'pipe', 'ignore'] })
+                    .toString().trim();
+    } catch (e) { /* unset: git exits 1 */ }
+    const installed = hooksPath === '.githooks' && fs.existsSync(path.join(R, '.githooks/pre-commit'));
+    say('the pre-commit hook is installed', installed,
+        installed ? '' : 'run:  git config core.hooksPath .githooks');
+  }
 }
 
 console.log('\n— WebP invariant (every inline jpg has a webp sibling)');
