@@ -3529,6 +3529,22 @@ body.is-loading { overflow: hidden; }
   position: absolute; top: 0; right: 0; bottom: 0;
   width: var(--about-panel);
   overflow: hidden;
+  /* WHAT THE TILT SHOWS YOU THROUGH THE GAP. A 3D rotation swings the far
+     edge back and opens a sliver - measured 7.7px at the trailing edge - and
+     until now that sliver was bare --ink, so a black-and-white photograph
+     appeared to be peeling off a black hole. Jack: "on the black and white,
+     it looks a bit funky."
+     --white, not --paper, and not a literal: it is the ground the rest of the
+     page is already made of, so the sliver reads as the page BEHIND the photo
+     rather than as a fifth surface. It also flips with the theme, which is
+     what keeps this honest in dark mode - there --white and --ink are both
+     #111117, so dark sees no change at all, which is right: dark’s page
+     ground IS near-black and a cream sliver there would be the same mistake
+     pointing the other way.
+     Clipped by overflow: hidden to the panel itself, so nothing appears to
+     the LEFT of the 4px rule. Below 801px the photo is in flow and fills its
+     box with no tilt installed, so this is never seen there. */
+  background: var(--white);
 }
 .about-panel .about-portrait {
   /* FLUSH AT REST. This was -5%, which oversized the photo so its edges sat

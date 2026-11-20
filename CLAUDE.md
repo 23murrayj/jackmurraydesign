@@ -2180,19 +2180,38 @@ date, and those words are what a reader without JavaScript actually sees.
      photo bigger than its window can never show you a corner, so the tilt
      ran and nothing at the edges moved. Jack: *"it looks like it's tilting,
      but then the top corners aren't actually moving."*
-  3. Now: flush at rest, and on hover it pulls IN to `max(28px, 4%)` so the
-     whole photo, corners included, stays inside the panel at every cursor
-     position. The gap reads as the lift the cards have — they rise off the
-     page, this steps back off the panel.
-  **The 4% is not decoration.** The vertical overhang is perspective
-  magnification of a box as tall as the panel, so it grows WITH the panel:
-  21.3px at a 747px panel, 23.4px at 782px, both ≈3% of height. A flat 28px
-  left only 4.6px of clearance at 1280, where the narrower column makes the
-  copy taller, and one more line of about text would have taken it negative.
-  A percentage resolves against height for top/bottom and width for
-  left/right — the right axis for each — and the 28px floor covers short
-  panels where 4% is too little sideways. Measured clearance is now 8.3–11.2px
-  at 900, 1150, 1280, 1440 and 1600, against 4.6–11.1 flat.
+  3. Flush at rest, pulling IN to `max(28px, 4%)` on hover so the whole
+     photo stayed inside the panel at every cursor position. The corners
+     moved again, and it bought that by making the photo visibly SMALLER
+     the moment you pointed at it. Jack: *"it gets smaller for some reason…
+     It should just be tilting."* He is right, and the giveaway is that
+     every other tilting thing on the site — all six cards — tilts at its
+     own size.
+  4. **Now: flush at rest AND on hover, and the panel behind it is
+     `--white`.** The sliver from step 1 is back, because it is the honest
+     consequence of tilting something flush to three edges; what changed is
+     what the sliver SHOWS. It was bare `--ink`, so a black-and-white
+     photograph looked like it was peeling off a black hole — Jack: *"on the
+     black and white, it looks a bit funky."* Against the page's own ground
+     it reads as the page behind the photo, which is what a tilted card
+     shows you.
+  **Measured at full tilt** (`rotateX(-6deg) rotateY(6deg)`): left −11.8,
+  top −26, right −3.5, bottom **+7.7**. Three edges clip and the trailing
+  edge opens. The cards do the same thing; they just have page around them,
+  so nobody calls it clipping.
+  **`--white` and not `--paper`, and not a literal**, for a reason that
+  only shows in the other theme: `--white` flips, and in dark it is
+  `#111117` — the same value as `--ink`. So **dark sees no change at all**,
+  which is right rather than lucky: dark's page ground IS near-black, and a
+  cream sliver there would be the same mistake pointing the other way.
+  Verified: light panel `rgb(240,236,225)` on a `rgb(26,26,24)` section,
+  dark panel and section both `rgb(17,17,23)`.
+  **It is invisible at rest and on a phone.** At rest the photo is
+  `inset: 0`, so it covers the panel's padding box exactly — measured, panel
+  x1020 w420 against photo x1024 w416, the 4px being the border. Below 801px
+  the photo is in flow with no tilt installed and the two rects are identical
+  (20, 1362, 147, 295 at 390). The only time this colour exists on screen is
+  mid-tilt.
   **`data-tilt-area` on the panel is what stops it flickering.** Once the
   photo has pulled in, the ring of ink around it is panel and not photo, so a
   tilt bound to the photo fires `mouseleave` the moment the pointer crosses
@@ -2210,13 +2229,9 @@ date, and those words are what a reader without JavaScript actually sees.
   token was before 2026-11-05. **Keyboard keeps the ring** and must — focus
   has no other indicator here, the photo is a link, and a 28px inset is a
   layout change rather than a focus ring.
-  **Reduced motion keeps the ring too and skips the inset**: `script.js` does
-  not install the tilt at all under that setting, so the room would be for
-  nothing and all that is left is 28px of photo jumping away with the
-  transition stripped out.
-  **The hover rule is `min-width: 801px`.** Below that the photo is
-  `position: relative` with `inset: auto` (it becomes a bordered 1:2 card in
-  flow), where an inset would shove it rather than shrink it.
+  **Reduced motion keeps the ring**: `script.js` does not install the tilt
+  at all under that setting, so there is no lean to indicate and focus would
+  otherwise have no indicator here at all.
 - Controls that open menus use `aria-expanded`; the theme control is
   `role="switch"` + `aria-checked`.
 - Menus close on outside click, Escape, and scrolling away (40px threshold).
