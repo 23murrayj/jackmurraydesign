@@ -3927,14 +3927,31 @@ void main(){
    spread into and never samples the clamped edge of the texture. */
 const SHADOW_RES = 256;
 const SHADOW_STRENGTH = 0.46;   // peak alpha under the object
+/* The key panel sits at normalize(-0.40, 0.76, 0.51) - above, to the left
+   and slightly toward the viewer - so its shadow falls right and away.
+   The exact projection would be (0.40, -0.51) / 0.76, which is (0.53,
+   -0.67); this is about 60% of that, because the honest number throws the
+   shadow most of its own width off the object and reads as a second
+   object rather than as a shadow. The extent the coverage pass renders at
+   (1.35x the radius) has room for the offset: the silhouette reaches
+   about 1.0 and the lean adds at most 0.4. */
+const SHADOW_SKEW = new Float32Array([0.32, -0.40]);
 
 const SHADOW_COV_VS = `
 attribute vec3 aPos;
 uniform mat4 uSpin;        // yaw only: the floor does not spin with the object
 uniform float uExtent;
+uniform vec2 uSkew;        // where the light is, as a lean per unit of height
 void main(){
   vec3 p = (uSpin * vec4(aPos, 1.0)).xyz;
-  gl_Position = vec4(p.x / uExtent, p.z / uExtent, 0.0, 1.0);
+  /* A SHEAR, WHICH IS WHAT AN ANGLED LIGHT IS. Straight down the normal
+     gives a shadow sitting symmetrically under the object, and Jack asked
+     to see it raked. Offsetting each vertex by its own HEIGHT times the
+     light's lean is exactly the projection of a directional source onto
+     the floor - the top of the object throws further than the feet, which
+     is the part that reads as a direction rather than a nudge. */
+  vec2 q = p.xz + uSkew * p.y;
+  gl_Position = vec4(q.x / uExtent, q.y / uExtent, 0.0, 1.0);
 }`;
 const SHADOW_COV_FS = `
 precision mediump float;
@@ -4099,7 +4116,7 @@ function startModelViewer(stage, src) {
   const hand = document.createElement('div');
   hand.className = 'model-hand';
   hand.setAttribute('aria-hidden', 'true');
-  /* A HAND, AND THIS ONE WAS LOOKED AT BEFORE IT SHIPPED. The previous
+  /* A HAND WITH A TOUCH RING, AND IT WAS LOOKED AT BEFORE IT SHIPPED. The previous
      two were assembled out of a ring, a stem and a pad on the theory
      that primitives cannot be malformed - true, and beside the point:
      Jack, "it looks like a joystick. It looks really bad." He was right,
@@ -4114,6 +4131,14 @@ function startModelViewer(stage, src) {
      fill and a dark outline in both. */
   hand.innerHTML =
     '<svg viewBox="0 0 44 56" aria-hidden="true">' +
+      /* the touch ring, FIRST so the fingertip draws over its lower edge
+         and reads as being inside it rather than under it. Jack: "I like
+         the one with the little circle next to the finger, or like in the
+         finger... so that way you kind of know to touch." Compared against
+         a tap-ripple pair of arcs and a solid cap at 132px before
+         choosing: the arcs read as cluttered at 42px and the solid cap
+         just makes the finger look longer. */
+      '<circle cx="20" cy="7" r="6" fill="none" stroke="#1A1A18" stroke-width="2.4"/>' +
       '<path d="M16 30V11a4 4 0 0 1 8 0v15" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
       '<path d="M24 26v-3a3.6 3.6 0 0 1 7.2 0v5" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
       '<path d="M31.2 28v-2a3.6 3.6 0 0 1 7.2 0v11c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5a3.8 3.8 0 0 1 5.6-5l4.4 4.3" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>' +
@@ -4304,6 +4329,28 @@ function startModelViewer(stage, src) {
     }
   }
 
+  /* WHOEVER DISTURBS THE STATE PUTS IT BACK. This used to live at the
+     end of the shadow quad, which worked only for as long as the quad
+     was drawn unconditionally - and it stopped being, the moment the
+     shadow learned to fade out below the floor. Skipping the quad left
+     the COVERAGE program bound, whose whole job is to output vec4(1.0),
+     so the object came out as a solid white silhouette for exactly the
+     orientations where the shadow is hidden. Jack: "whenever you go
+     under and look at the bottom, it now looks like there's just like a
+     white shape."
+     WebGL1 has no VAOs, so attribute pointers are global state and a
+     uniform written against another program's location is an
+     INVALID_OPERATION that fails silently. Both are the same lesson: a
+     teardown attached to an optional call is not a teardown. */
+  function useObjectProgram() {
+    gl.useProgram(prog);
+    const pl = gl.getAttribLocation(prog, 'aPos'), nl = gl.getAttribLocation(prog, 'aNor');
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(pl); gl.vertexAttribPointer(pl, 3, gl.SHORT, true, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, norBuf);
+    gl.enableVertexAttribArray(nl); gl.vertexAttribPointer(nl, 3, gl.BYTE, true, 0, 0);
+  }
+
   /* PASS 1: the coverage map. Yaw only - this camera looks straight down
      the floor's normal, so pitch would tilt the thing it is measuring. */
   function drawCoverage(spin, extent) {
@@ -4319,9 +4366,11 @@ function startModelViewer(stage, src) {
     gl.vertexAttribPointer(loc, 3, gl.SHORT, true, 0, 0);
     gl.uniformMatrix4fv(gl.getUniformLocation(covProg, 'uSpin'), false, spin);
     gl.uniform1f(gl.getUniformLocation(covProg, 'uExtent'), extent);
+    gl.uniform2fv(gl.getUniformLocation(covProg, 'uSkew'), SHADOW_SKEW);
     gl.drawElements(gl.TRIANGLES, mesh.nt * 3, gl.UNSIGNED_SHORT, 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.enable(gl.DEPTH_TEST);
+    useObjectProgram();   // unconditionally: the quad after this is optional
   }
 
   /* PASS 2: the floor. Pitch only, no depth write - it is behind
@@ -4348,13 +4397,7 @@ function startModelViewer(stage, src) {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.depthMask(true);
     gl.disable(gl.BLEND);
-    /* hand the mesh attributes back to the object's program */
-    gl.useProgram(prog);
-    const pl = gl.getAttribLocation(prog, 'aPos'), nl = gl.getAttribLocation(prog, 'aNor');
-    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-    gl.enableVertexAttribArray(pl); gl.vertexAttribPointer(pl, 3, gl.SHORT, true, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, norBuf);
-    gl.enableVertexAttribArray(nl); gl.vertexAttribPointer(nl, 3, gl.BYTE, true, 0, 0);
+    useObjectProgram();
   }
 
   let last = 0, lastTheme = null;
