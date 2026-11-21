@@ -844,6 +844,7 @@ function renderCompareStage(src) {
       <model-viewer
         src="${escapeAttr(src)}"
         alt="The same pot clip mesh, rendered by Google's model-viewer for comparison"
+        loading="eager"
         camera-controls
         auto-rotate
         auto-rotate-delay="6000"

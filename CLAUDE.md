@@ -2906,6 +2906,42 @@ page will not tell you whether the object still turns.
   prevent. It still coasts a drag the visitor asked for, and still turns
   with the keyboard.
 
+### The `<model-viewer>` comparison — TEMPORARY, DELETE IT
+
+A second stage under the real one, running Google's `<model-viewer>` on
+the same object, so the difference can be looked at rather than argued
+about. **It is scaffolding and it is meant to come out.** Removing it is
+the `compare` key in `projectData`, `renderCompareStage()`, the
+`.stage-compare` block in `styles.css`, `assets/projects/pot-clip/model-compare.glb`
+and `tools/jmm-to-glb.js` — every one of them carries a comment saying so.
+
+- **It gets the SAME mesh**, converted back out of the packed `.jmm` by
+  `tools/jmm-to-glb.js`: 19,056 verts, 38,380 tris, the same normals and
+  the same metallic 0.85 / roughness 0.35 material as Jack's export.
+  Handing it the original 23MB GLB would compare the geometry as well and
+  flatter it for a reason that has nothing to do with shading. Its
+  `camera-orbit`, `auto-rotate-delay` and `rotation-per-second` mirror
+  `HOME_YAW`, `HOME_PITCH`, `IDLE_AFTER` and `IDLE_SPIN` — verified, it
+  reports back 2.007 rad and 67°, which is our home pose exactly.
+- **A VISITOR NEVER SEES IT.** `wantsCompare()` is true only on
+  `localhost`/`127.0.0.1` or with `?compare` in the URL, so the 673KB mesh
+  and the ~250KB CDN library stay off a portfolio page whose first rule is
+  no dependencies. `?compare=1` works on the deployed site too, so it can
+  be checked from a phone without putting it in front of anyone. The
+  predicate is tested against a near-miss (`?comparison=1`) as well as the
+  hits, because a loose regex here ships a dependency to everybody.
+- **It needs `loading="eager"`.** `<model-viewer>` defers until its element
+  intersects the viewport, and **the browser pane does not deliver
+  IntersectionObserver callbacks** — the same hazard this file already
+  records for `.reveal`. Without it the element sits there with
+  `loaded: false` and fires no events at all, which looks exactly like a
+  broken GLB.
+- **It will not PAINT in the pane either**, because it renders through
+  three.js without `preserveDrawingBuffer`, so whatever frame you pump is
+  gone before a screenshot composites. `loaded === true` and the `load`
+  event are as far as the pane can take you; the picture needs a real
+  browser.
+
 ### What stops it being clipped
 
 - **THE CAMERA IS FITTED TO THE MESH'S BOUNDING SPHERE**, measured from the
