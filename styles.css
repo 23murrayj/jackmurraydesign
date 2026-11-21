@@ -527,6 +527,14 @@ a { color: inherit; text-decoration: none; }
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
+/* The two overlays are focusable REGIONS (tabindex="-1"), because opening
+   one now puts focus on the panel rather than on its back button — see
+   activateDialog for why. They must not take the ring above: a 3px coral
+   outline around a full-viewport panel is not a focus indicator, it is a
+   border on the whole screen. Same exception, same reasoning, as
+   .hero:focus. */
+.project-overlay:focus,
+.about-overlay:focus { outline: none; }
 
 /* honeypot: kept in the DOM (so bots that auto-fill it tip their hand)
    but positioned off-screen and unreachable for real visitors/keyboard */

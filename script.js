@@ -816,25 +816,23 @@ const projectStage = document.getElementById('projectStage');
    The <img> is the poster AND the fallback - a dead fetch, a lost context
    or no WebGL at all leaves a working photograph rather than a hole. */
 /* ---- the <model-viewer> comparison. TEMPORARY; see `compare` in projectData.
-   It is shown only on a local server or when the URL asks for it, so a
-   visitor never pays for a CDN library and a second copy of the mesh on a
-   portfolio page whose first rule is no dependencies. Jack can see it at
-   /work/pot-clip?compare=1 anywhere, including the deployed site. */
+   A second stage under the real one, running Google's viewer on the same
+   object, so the difference can be looked at rather than argued about.
+
+   IT IS UN-GATED ON PURPOSE, FOR NOW. It sat behind ?compare so a visitor
+   never paid for a CDN library and a second copy of the mesh, which was
+   the right instinct and the wrong call: Jack asked twice to see the two
+   side by side, and a flag he has to remember cost three rounds of "I
+   still only see one" - the last of them after the flag turned out not to
+   survive a deep link anyway, because the router strips the query before
+   the stage renders.
+   So this is LIVE WEIGHT until he has looked - about 920KB on a portfolio
+   page whose first rule is no dependencies - and it comes out as soon as
+   he has. Removing it is this block, the `compare` key in projectData,
+   the `.stage-compare` CSS, model-compare.glb and tools/jmm-to-glb.js. */
 const COMPARE_LIB = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js';
 let compareLibAdded = false;
-/* READ ONCE, HERE, BEFORE THE ROUTER TOUCHES THE ADDRESS BAR. The boot
-   block in SECTION 20 normalises a deep link: landing on
-   /work/pot-clip?compare=1 it replaceStates "/" and then pushes
-   "/work/pot-clip", and neither carries the query — so by the time the
-   panel opens and the stage renders, location.search is empty. Reading it
-   at render time worked on localhost (which passes on hostname alone) and
-   silently did nothing on the live site, which is exactly how it was
-   reported: pushed, and only one viewer.
-   This file executes top to bottom well before that boot block, so the
-   value here is the URL the visitor actually arrived on. */
-const COMPARE_ON = /[?&]compare(=|&|$)/.test(location.search) ||
-  location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-function wantsCompare() { return COMPARE_ON; }
+function wantsCompare() { return true; }
 function renderCompareStage(src) {
   if (!compareLibAdded) {
     const s = document.createElement('script');
@@ -1134,7 +1132,7 @@ function openProject(id) {
   // viewport, so the window's scroll position doesn't matter while it's open,
   // and body overflow:hidden already holds the page still.
   projectOverlay.scrollTop = 0;
-  activateDialog(projectOverlay, projectBack);
+  activateDialog(projectOverlay);
 }
 
 function closeProject() {
@@ -1329,7 +1327,7 @@ function openAboutPage(e) {
   // viewport, so the window's scroll position doesn't matter while it's open,
   // and body overflow:hidden already holds the page still.
   aboutOverlay.scrollTop = 0;
-  activateDialog(aboutOverlay, aboutBack);
+  activateDialog(aboutOverlay);
 }
 function closeAboutPage() {
   aboutOverlay.classList.remove('open');
@@ -3586,9 +3584,28 @@ function activateDialog(overlay, initialFocus) {
   // skip the focus move in exactly the cases it matters. The panel is
   // still transitioning in visually, but a transform doesn't affect
   // focusability, so there's nothing to wait for.
+  /* FOCUS THE DIALOG REGION, NOT ITS FIRST CONTROL, where the overlay can
+     take focus itself. Putting it on BACK TO WORK meant that reloading a
+     project page drew a focus ring round that button: a reload is a
+     KEYBOARD action, so the browser's :focus-visible heuristic decides the
+     visitor is navigating by keyboard and shows the ring for the
+     programmatic focus that follows. Jack reported it as the button looking
+     bugged after a refresh, and it does - the 3px coral ring at 3px offset
+     sits inside the button's own 4px hard coral shadow, so the control
+     wears two coral rectangles at two different offsets with page ground
+     showing between them.
+     A ring is right when a visitor operated a control to get here and wrong
+     when the page merely loaded, and the element itself cannot tell the
+     difference. Focusing the region sidesteps it: there is no control to
+     ring, a screen reader still announces the project name and "dialog"
+     (better than "BACK TO WORK, button"), and the first Tab still lands on
+     the back button. Same pattern and same reasoning as .hero carrying
+     tabindex="-1" with no focus outline - it is a region, not a control.
+     The lightbox deliberately keeps its close button: it is only ever
+     opened by operating a control, so the ring there is earned. */
   const target = (initialFocus && focusablesIn(overlay).includes(initialFocus))
     ? initialFocus
-    : focusablesIn(overlay)[0];
+    : (overlay.hasAttribute('tabindex') ? overlay : focusablesIn(overlay)[0]);
   // preventScroll: the panel is still transformed offscreen at this point, and
   // focusing something inside it would otherwise let the browser scroll an
   // ancestor to bring it into view — another source of the jump behind it.
@@ -3619,6 +3636,14 @@ document.addEventListener('keydown', (e) => {
   if (!trappedDialog.contains(document.activeElement)) {
     e.preventDefault();
     first.focus();
+  } else if (document.activeElement === trappedDialog) {
+    /* focus is on the dialog REGION itself, which is where opening one now
+       puts it. contains() counts an element as containing itself, so this
+       is inside the trap - but it is neither first nor last, so without
+       this branch a Shift+Tab would fall through to the default and walk
+       backwards out of the dialog onto the page behind it. */
+    e.preventDefault();
+    (e.shiftKey ? last : first).focus();
   } else if (e.shiftKey && document.activeElement === first) {
     e.preventDefault();
     last.focus();
