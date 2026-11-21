@@ -262,44 +262,80 @@ const projectData = {
         // the turntable's band. `stage: true` relocates #projectStage into
         // this section rather than duplicating it - there is one canvas and
         // one poster, and renderProjectStage owns both.
+        /* The dimensioned page sits with the DESIGN rather than with the
+           process, and it moved here when the process became four cards.
+           It is the orthographic views and the millimetres - 26 / 45 / 31 /
+           19 - so it documents what the thing IS, which is this section,
+           where in a list of making-of photographs it was the one that was
+           not a photograph of making anything.
+             Shot in portrait with the page turned, so it arrived on its side
+           and stayed that way for a release. Rotated 90 degrees anticlockwise
+           and baked to orientation 1 - see the double-rotation gotcha in
+           assets/README.md for why the EXIF tag is not the way to do it. */
         { id: 'design', title: 'proj.pot-clip.cs.design.t',
-          html: 'proj.pot-clip.cs.design.b', stage: true },
-
-        // four steps, each with its own photographs. Step 2 carries two
-        // because it IS two operations - sculpted, then finished - and the
-        // spray booth is where it stops being foam.
-        { id: 'process', title: 'proj.pot-clip.cs.process.t', steps: [
-          { text: 'proj.pot-clip.cs.process.1', figures: [
-            { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
-              full: '/assets/projects/pot-clip/cs-profiles.jpg',
-              altKey: 'proj.pot-clip.cs.alt.profiles' },
-            // Shot in portrait with the page turned, so it arrived on its
-            // side and stayed that way for a release. Rotated 90 degrees
-            // anticlockwise and baked to orientation 1 - see the
-            // double-rotation gotcha in assets/README.md.
+          html: 'proj.pot-clip.cs.design.b', stage: true,
+          figures: [
             { src: '/assets/projects/pot-clip/04-measurements.jpg', w: 1399, h: 779,
               full: '/assets/projects/pot-clip/04-measurements-full.jpg',
               altKey: 'proj.pot-clip.alt.4' },
           ] },
-          { text: 'proj.pot-clip.cs.process.2', figures: [
-            { src: '/assets/projects/pot-clip/cs-foam.jpg', w: 1200, h: 1500,
-              full: '/assets/projects/pot-clip/cs-foam.jpg',
-              altKey: 'proj.pot-clip.cs.alt.foam' },
-            { src: '/assets/projects/pot-clip/cs-booth.jpg', w: 1000, h: 1778,
-              full: '/assets/projects/pot-clip/cs-booth.jpg',
-              altKey: 'proj.pot-clip.cs.alt.booth' },
+
+        /* FOUR CARDS: one photograph and one line each. Jack, with a
+           mock-up: "turn the process part into some cards like this to make
+           them a bit more condensed and scannable." It was four numbered
+           paragraphs carrying up to two photographs apiece - the most
+           vertical space on the page, spent on the part a reader scans.
+             THE PROSE DID NOT VANISH, IT MOVED UP. `html` carries the two
+           paragraphs that used to be spread across the steps, so the
+           appearance-model nuance and the digital-model-came-last correction
+           are still on the page. Dropping them would also have put the
+           markup fallback in the position it must never be in: saying
+           something the panel does not.
+             ONE PHOTOGRAPH PER CARD, and that was measured rather than
+           assumed. Step 2 first carried two - the foam and the spray booth,
+           because it IS two operations - and two stacked portraits in a
+           215px column made that card 688px tall against 175 for the other
+           three. The mock-up's taller second tile is one PORTRAIT beside
+           three landscapes, which is a 269/121 difference, not a 688/175
+           one. So the booth shot is out of the page (it is still in
+           assets/, and the caption still says spray-finished).
+             Nothing is cropped to even the row up. A square or 4:3 tile
+           would take 25-44% off the width of a 1400x788 source, and on the
+           paper-profiles shot that is the outer two profiles - the same
+           argument the figure rows already lost. */
+        { id: 'process', title: 'proj.pot-clip.cs.process.t',
+          html: 'proj.pot-clip.cs.process.b',
+          steps: [
+            { label: 'proj.pot-clip.cs.process.1', figures: [
+              { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
+                full: '/assets/projects/pot-clip/cs-profiles.jpg',
+                altKey: 'proj.pot-clip.cs.alt.profiles' },
+            ] },
+            { label: 'proj.pot-clip.cs.process.2', figures: [
+              { src: '/assets/projects/pot-clip/cs-foam.jpg', w: 1200, h: 1500,
+                full: '/assets/projects/pot-clip/cs-foam.jpg',
+                altKey: 'proj.pot-clip.cs.alt.foam' },
+            ] },
+            { label: 'proj.pot-clip.cs.process.3', figures: [
+              { src: '/assets/projects/pot-clip/cs-blender.jpg', w: 1400, h: 895,
+                full: '/assets/projects/pot-clip/cs-blender.jpg',
+                altKey: 'proj.pot-clip.cs.alt.blender' },
+            ] },
+            /* CROPPED TO THE VIEWPORT. The source is a screenshot of the
+               <model-viewer> editor and the right third of it is a code
+               snippet, a File Manager and a Download Scene button - tooling,
+               not work, and a thing this codebase pointedly does not use.
+               Centred on the render's own ink box (446-1661 x 570-1318 in
+               the 2948x1578 source), 1800x1200 at source scale, which comes
+               out 293/292 left-right and 226/226 top-bottom.
+                 14-object.jpg is still the turntable's poster and keeps
+               alt.14; this is a different render and gets its own alt. */
+            { label: 'proj.pot-clip.cs.process.4', figures: [
+              { src: '/assets/projects/pot-clip/cs-render.jpg', w: 1400, h: 933,
+                full: '/assets/projects/pot-clip/cs-render.jpg',
+                altKey: 'proj.pot-clip.cs.alt.render' },
+            ] },
           ] },
-          { text: 'proj.pot-clip.cs.process.3', figures: [
-            { src: '/assets/projects/pot-clip/cs-blender.jpg', w: 1400, h: 895,
-              full: '/assets/projects/pot-clip/cs-blender.jpg',
-              altKey: 'proj.pot-clip.cs.alt.blender' },
-          ] },
-          { text: 'proj.pot-clip.cs.process.4', figures: [
-            { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933,
-              full: '/assets/projects/pot-clip/14-object.jpg',
-              altKey: 'proj.pot-clip.alt.14' },
-          ] },
-        ] },
 
         { id: 'testing', title: 'proj.pot-clip.cs.testing.t',
           stats: [
@@ -1028,9 +1064,16 @@ function renderCaseStudy(data) {
         + '</div>';
     }
     if (sec.steps) {
+      /* A card is a picture with a label under it, not a paragraph with a
+         picture beside it - so the media comes first in the markup as well
+         as in the layout. The number is a CSS counter rather than part of
+         the string: it cannot drift from the order, it needs no
+         translating, and the <ol> already carries the same fact for anything
+         reading the markup. */
       out += '<ol class="cs-steps">' + sec.steps.map((st) =>
-        '<li class="cs-step">' + csText('div', 'cs-step-txt', st.text, true)
-        + figs(st.figures) + '</li>').join('') + '</ol>';
+        '<li class="cs-step"><div class="cs-step-media">' + figs(st.figures)
+        + '</div>' + csText('p', 'cs-step-cap', st.label) + '</li>').join('')
+        + '</ol>';
     }
     out += figs(sec.figures);
     if (sec.after) out += csText('p', 'cs-after', sec.after);

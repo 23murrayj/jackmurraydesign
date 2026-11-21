@@ -1693,12 +1693,48 @@ what an editorial page does with photographs of different shapes. **A lone
 portrait is capped at 400px** — at the column's full 924 a 1000×1778 source
 draws 1643px tall, two and a half screens of one photograph.
 
+**PROCESS IS FOUR CARDS, one photograph and one line each.** Jack, with a
+mock-up: *"turn the process part into some cards like this to make them a
+bit more condensed and scannable."* It was four numbered paragraphs carrying
+up to two photographs apiece — the tallest thing on the page, spent on the
+part a reader scans rather than reads.
+**The prose did not vanish, it moved up.** The section's `html` carries the
+two paragraphs that were spread across the steps, so the appearance-model
+nuance and the digital-model-came-last correction are still on the page.
+Dropping them would also have put the markup fallback in the one position it
+must never be in: saying something the panel does not.
+**ONE PHOTOGRAPH PER CARD, AND THAT WAS MEASURED.** Step 2 first kept two —
+the foam and the spray booth, because it genuinely is two operations — and
+two stacked portraits in a 215px column made that card **688px tall against
+175** for the other three. The mock-up's taller second tile is one PORTRAIT
+beside three landscapes, which is 299 against 172–177, not 688 against 175.
+So the booth shot is out of the page; it is still in `assets/` and its alt
+text is in the restore note. **Nothing is cropped to even the row up** — a
+square or 4:3 tile takes 25–44% off the width of a 1400×788 source, and on
+the paper-profiles shot that is the outer two profiles.
+The number is a CSS counter (`decimal-leading-zero`), not part of the
+string: it cannot drift from the order and there is nothing to translate
+four times. The grid is **4 / 2 / 1 columns at 1100 / 900 / 560** — four
+cards need about 200px each to stay photographs rather than thumbnails, and
+a phone column is already as condensed as this page gets.
+
+**The dimensioned notebook page moved to "The design"** when that happened.
+It is the orthographic views and the millimetres, so it documents what the
+thing IS; in a row of making-of photographs it was the one that was not a
+photograph of making anything.
+
 **The photographs are the new `Final Alessi Flow` set**, exported as
-`cs-*.jpg` + `.webp` (11 of them, 1.18MB of webp), plus two survivors of the
-old wall: `04-measurements` (the dimensioned notebook page, the one that
-arrived on its side) and `14-object` (the render, which is also the
-turntable's poster). **`cs-store.jpg` has identifiable bystanders** — the
-Milan shopfront — so it falls under the safety constraint below.
+`cs-*.jpg` + `.webp`, plus two survivors of the old wall:
+`04-measurements` (the dimensioned notebook page, the one that arrived on
+its side) and `14-object` (the silver render, which is now only the
+turntable's poster). **`cs-render` is cropped, and had to be**: the source
+Jack asked for is a screenshot of the `<model-viewer>` editor, and the right
+third of it is a code snippet, a File Manager and a Download Scene button —
+tooling rather than work, and a thing this codebase pointedly does not use.
+Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
+source), 1800×1200 at source scale, margins 293/292 and 226/226.
+**`cs-store.jpg` has identifiable bystanders** — the Milan shopfront — so it
+falls under the safety constraint below.
 
 **The old photo wall is in `docs/pot-clip-masonry.md`**, verbatim, with the
 48 alt-text lines that came out of `i18n.js` and the list of 11 photographs

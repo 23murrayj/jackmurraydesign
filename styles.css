@@ -3323,22 +3323,32 @@ body.is-loading { overflow: hidden; }
 .cs-stage-slot:has(.is-live) .cs-stage-hint { opacity: 1; }
 .cs-stage-slot .project-stage { order: 1; }
 
-/* ---- the numbered process -------------------------------------------- */
-.cs-steps { list-style: none; counter-reset: csstep; margin-top: 8px; }
-.cs-step {
-  counter-increment: csstep;
-  display: grid; grid-template-columns: 52px 1fr; gap: 0 20px;
-  padding-top: 30px; margin-top: 30px; border-top: 1px solid var(--line);
+/* ---- the process, as four cards ---------------------------------------
+   Jack, with a mock-up: "turn the process part into some cards like this to
+   make them a bit more condensed and scannable." It was four numbered
+   paragraphs with up to two photographs each, stacked - the tallest thing
+   on the page, spent on the part a reader scans rather than reads. The
+   prose it replaced moved up into the section's own two paragraphs; this
+   row is a picture and a line.
+   ALIGNED AT THE TOP, NOT STRETCHED. Step 2 carries two photographs, so its
+   card is taller than the other three - which is what the mock-up draws,
+   and what the rest of this layout already does with figures of different
+   shapes. */
+.cs-steps {
+  list-style: none; counter-reset: csstep;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 22px; align-items: start; margin-top: 30px;
 }
-.cs-step:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
-.cs-step::before {
-  content: counter(csstep);
-  font-family: var(--ff-display); font-size: 1.75rem; line-height: 0.9;
-  color: var(--accent); grid-row: 1 / span 2;
-}
-.cs-step-txt { font-size: 1.02rem; line-height: 1.65; max-width: 58ch; }
-.cs-step-txt strong { font-weight: 700; }
-.cs-step .cs-figs { grid-column: 2; margin-top: 20px; }
+.cs-step { counter-increment: csstep; }
+/* inside a card the figures always stack, whatever the shared row class
+   would otherwise do with two of them, and the lone-portrait cap does not
+   apply - the column is already the cap */
+.cs-step-media .cs-figs { grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
+.cs-step-media .cs-fig.is-portrait { max-width: none; }
+.cs-step-cap { margin-top: 13px; font-size: 0.84rem; line-height: 1.45; }
+/* The number is drawn, not written: a counter cannot fall out of step with
+   the order and there is nothing to translate four times. */
+.cs-step-cap::before { content: counter(csstep, decimal-leading-zero) " · "; font-weight: 700; }
 
 /* ---- the two test figures --------------------------------------------
    One colour across both, for the reason the summary cards are one colour:
@@ -3390,6 +3400,17 @@ body.is-loading { overflow: hidden; }
    photograph AND the four facts, so the two stack. The contents column goes
    with it: sticky is worth nothing once it is a box above the thing it
    points at, so it becomes exactly that - a bordered block, in flow. */
+/* Four cards need about 200px each to stay photographs rather than
+   thumbnails. Two at 900, and one on a phone - "condensed" is a desktop
+   win; a phone column is already as condensed as the page gets, and
+   160px-wide pictures of paper profiles are unreadable. */
+@media (max-width: 900px) {
+  .cs-steps { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .cs-steps { grid-template-columns: 1fr; gap: 28px; }
+}
+
 @media (max-width: 1100px) {
   .cs-mast { grid-template-columns: 1fr; gap: 36px; }
   .cs-mast-media { order: -1; }
@@ -3414,8 +3435,6 @@ body.is-loading { overflow: hidden; }
      thumbnail of a process shot rather than a photograph of one. */
   .cs-figs-2, .cs-figs-3 { grid-template-columns: 1fr; }
   .cs-figs-1 .cs-fig.is-portrait { max-width: none; }
-  .cs-step { grid-template-columns: 38px 1fr; gap: 0 14px; }
-  .cs-step::before { font-size: 1.4rem; }
   .cs-toc ol { grid-template-columns: 1fr; }
   .cs-disclaimer { margin-top: 48px; }
 }
