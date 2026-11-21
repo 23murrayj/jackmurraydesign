@@ -105,11 +105,20 @@ Then give the PROJECT (not a `photos` entry) a `model` block:
 
 ```js
 model: {
-  src: '/assets/projects/<id>/model.jmm',
+  src: '/assets/projects/<id>/model.jmm?v=<first 8 of the sha256>',
   poster: { src: '/assets/projects/<id>/<n>-object.jpg', w: 1400, h: 933 },
   altIndex: 13,          // 0-based index into the alt.N series; 13 -> alt.14
 },
 ```
+
+**The `?v=` is the file's own content hash and it is required.**
+`vercel.json` gives `/assets/` an hour of freshness and a week of
+stale-while-revalidate, so repacking at the same path serves the old mesh
+to every returning visitor — and an old mesh through the current viewer
+renders lying on its back, because the packer bakes the node transform in
+and the viewer no longer corrects for it. Get it with
+`shasum -a 256 <file> | cut -c1-8`, and update it on **every** repack;
+`node tools/model-check.js` fails if it does not match.
 
 It renders into `#projectStage`, a band of its own between the title and
 the photographs, with no frame around it. The still is the poster **and**

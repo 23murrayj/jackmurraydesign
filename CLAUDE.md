@@ -2813,63 +2813,127 @@ page will not tell you whether the object still turns.
   the vertex count is odd, so reader and writer could disagree about where
   the indices start. Positions are int16 across the bounding box (~15
   microns on a 100mm object), normals int8.
-- **THE MATERIAL TOOK THREE PASSES OF ONE LESSON: contrast, not gradient.**
-  A smooth sky-to-floor ramp rendered as matte grey plastic twice. A
-  polished surface is almost entirely a mirror, so a mirror of something
-  featureless is featureless. What reads as metal is a **hard cyc edge**,
-  three distinct sources, and a thin horizon streak — and the streak is most
-  of the sense of motion, because it is the highlight that sweeps as the
-  form turns. The result is satin rather than chrome, which is **correct**:
-  the physical piece is sprayed silver and Blender's own material is
-  roughness 0.48.
+- **THE URL CARRIES THE MESH'S CONTENT HASH (`?v=`), AND IT IS LOAD-BEARING.**
+  `vercel.json` gives everything under `/assets/` an hour of freshness and a
+  **week** of stale-while-revalidate. Repack the mesh at the same path and
+  every returning visitor keeps the old bytes — and since the packer bakes
+  the node transform in and the viewer dropped its `ZUP`, an old mesh
+  through the new viewer does not merely look dated, it renders **lying on
+  its back**. Jack reported it as two faults — *"you didn't change the 3D
+  model… it's still the old one"* and *"it's upside down"* — and it was one:
+  a cached file. **`model-check.js` fails if the `?v=` and the file disagree**,
+  because a hash somebody has to remember to update is a hash that will be
+  wrong.
+- **THE MATERIAL: contrast, not gradient — and PANELS, not point lobes.**
+  A smooth sky-to-floor ramp rendered as matte grey plastic twice, because
+  a polished surface is almost entirely a mirror and a mirror of something
+  featureless is featureless. The fix after that was three
+  `pow(dot(d,L), n)` lobes, which is better and still wrong in the same
+  direction: a lobe is a POINT source, so the reflection is a small round
+  blob that barely changes as the form turns. Jack, comparing against a
+  real glTF viewer: *"when I put it into like Google's viewing thing, it
+  looks a lot better than how it looks on the current site."*
+  What an HDRI actually gives a mirror is **rectangles** — lit panels with
+  straight edges — and the edge of a panel travelling across a curve is
+  what reads as polished metal. `panel()` projects the reflection vector
+  into a basis around each source and tests it against a rectangle, so the
+  highlights have corners; the horizon is a hard bright line for the same
+  reason, and it is the single most important feature in the environment
+  because it is the thing that sweeps.
+  **Tone mapping is ACES, not `col/(col+0.9)`.** Reinhard desaturates as it
+  rolls off, so every highlight turned the same pale grey and the whole
+  object trended to one value — which IS the flat look.
+  **The studio values were re-tuned for it and that was not optional:** the
+  old `top: 2.30` was set against Reinhard's gentle shoulder, and dropped
+  into ACES it clips. The first build of this shader rendered a near-white
+  object with no form in it at all.
+  **Tuned offline, not in the browser.** The fragment shader is thirty
+  lines of vector maths, so it is ported into `scratchpad/shade.js` and the
+  real mesh rendered at a dozen settings in one run — a dozen browser
+  reloads to move one number is how you end up keeping the first guess.
+  Roughness is 0.32, satin rather than chrome, which is **correct**: the
+  physical piece is sprayed silver and Blender's own material is 0.35.
 
 ### How it turns
 
-- **IT IS A TURNTABLE, NOT AN ARCBALL, and that is what satisfies both
-  halves of the brief.** Jack asked for two things that sound opposed —
-  *"you should be able to rotate it any way you want"* and *"make sure that
-  it's upright when it's turning"*. A turntable gives both: `rotX(pitch) ·
-  rotY(yaw)` spins the object about its own vertical axis and raises the
-  eye, and no composition of the two introduces roll. An arcball would let
-  you tip it onto its head. `model-check` asserts the no-roll property over
-  46k yaw/pitch pairs rather than taking the matrix algebra on trust.
-- **Yaw is unbounded and pitch is the only axis that can stop**, at 83°,
-  short of the 90 where the horizon would flip.
-- **THERE WERE THREE STOPPING POINTS AND ALL THREE ARE GONE.** Jack: *"you
-  can rotate a full 360, but it has like stopping points."* Pitch hit a
-  hard `Math.max/min` wall at ±1.3 and stopped dead; a release stopped the
-  object dead because there was no momentum; and `spin = false` was
-  permanent, so the resting turntable never came back after the first drag.
-  Now pitch meets **resistance** instead of a wall — past `PITCH_SOFT` an
-  incoming delta is scaled by how much room is left, so it goes heavy in
-  the hand and arrives asymptotically — a release **coasts** on its
-  velocity, and the turntable **eases back** after `IDLE_AFTER`.
-- **MOMENTUM AND THE RETURN TO THE TURNTABLE ARE ONE DECISION, not two
-  that run at once.** Written as two — a decay every frame plus a blend
-  toward `IDLE_SPIN` — they fight, and yaw settles at the fixed point of
-  the pair rather than at `IDLE_SPIN`. Measured, 0.077 rad/s against the
-  0.30 asked for: the object crept. It is one branch or the other now.
+- **NOTHING STOPS, IN EITHER AXIS.** Both are unbounded: yaw and pitch each
+  run forever, you can tumble it end over end, and there is no edge
+  anywhere. The previous build clamped pitch to ±1.45 so the object could
+  never be seen upside down, and a clamp is a wall whatever easing you put
+  in front of it — Jack, after it shipped: *"it still hard stops at certain
+  points when I'm trying to rotate it… I should be able to rotate it all
+  that I want."*
+- **UPRIGHTNESS MOVED FROM A CLAMP TO A RETURN, and that is what dissolves
+  the contradiction.** He also asked for *"when you don't touch it for like
+  5 or 10 seconds, then it should slowly move back to its original spot and
+  start rotating"* — so being the right way up is a property of the RESTING
+  pose, not of the drag. Let both axes run free while a hand is on it and
+  bring it home afterwards, and every angle is reachable while the object
+  still spends all of its unattended life upright. This is strictly better
+  than the clamp; do not put a limit back.
+- **The trip home takes the SHORT way round, and lands on the NEAREST
+  EQUIVALENT of home rather than on the literal number.** After two tumbles
+  yaw can be 14 rad from where it started; `shortWay()` normalises the
+  delta into ±π so the object does not unwind every turn it was given,
+  which would read as a rewind. Assigning `yaw = HOME_YAW` on arrival looks
+  identical (the matrix is 2π-periodic) but throws away whole turns — an
+  18-radian jump in the number, which `model-check` caught.
+- **`homed` latches on arrival.** Without it the return keeps hauling the
+  object back to `HOME_YAW` while the resting spin is trying to carry it
+  away, which is the same two-forces-fighting bug as the momentum one
+  below, and it would simply never drift.
+- **Timings, all of them on Jack's ear:** `IDLE_AFTER` 6s (he said "5 or
+  10"), `IDLE_SPIN` **0.14 rad/s — one revolution every 45 seconds**, which
+  is "very slowly"; it was 0.30. Drag is 0.75 of a turn per full sweep of
+  the stage, down from 1.1, because he asked for it slower in the hand too.
+- **Drag speed is per fraction of the stage, not per pixel**, so the same
+  gesture turns it the same amount on a phone and on a desktop.
+- **Momentum and the return are one branch or the other, never both.**
+  Written as two things running at once — a decay plus a blend toward the
+  idle speed — they fight, and yaw settles at the fixed point of the pair:
+  measured, 0.077 rad/s against the 0.30 asked for, so the object crept.
 - **EVERY RATE IS `exp(-k·dt)` AND EVERY POSITION IS INTEGRATED IN CLOSED
-  FORM.** A per-frame multiplier is twice as fast at 120Hz as at 60, and
-  even with exponential rates a `yaw += vel · dt` Riemann sum is not
-  framerate-independent — that one alone left 60Hz and 144Hz **0.022 rad**
-  apart after a single second. Displacement under an exponentially decaying
-  velocity has an exact form, so the loop uses it and the two rates now
-  agree **to zero**.
-- **Drag speed is per fraction of the stage, not per pixel.** A flat
-  0.01 rad/px turned the object a different amount on a phone than on a
-  desktop, and much less once the stage became a full-width band. A full
-  sweep is ~1.1 turns at any size.
+  FORM.** A per-frame multiplier runs twice as fast at 120Hz, and even with
+  exponential rates a `yaw += vel · dt` Riemann sum is not
+  framerate-independent — that alone left 60Hz and 144Hz 0.022 rad apart
+  after one second. Both now agree **to zero**.
 - **The arrow keys nudge the velocity, not the angle**, so a held key
-  accelerates into a smooth turn and coasts on release instead of stepping
-  in 0.22 rad jumps. A drag-only control is one a keyboard cannot reach.
-- A tap is not a throw (under 0.02 rad of travel kills the velocity, or
-  click jitter would launch it), and a throw is capped at 9 rad/s so a fast
-  swipe on a phone cannot turn it into a blur.
-- Reduced motion gets **no drift of its own** but still coasts a drag the
-  visitor asked for — and can still turn it with the keyboard.
+  accelerates into a turn and coasts on release. A tap is not a throw
+  (under 0.02 rad of travel kills the velocity), and a throw caps at
+  9 rad/s so a fast swipe cannot turn it into a blur.
+- **Reduced motion leaves it exactly where it was put** — no drift and no
+  homing, since automatic movement is the thing that setting exists to
+  prevent. It still coasts a drag the visitor asked for, and still turns
+  with the keyboard.
+
+### What stops it being clipped
+
+- **THE CAMERA IS FITTED TO THE MESH'S BOUNDING SPHERE**, measured from the
+  mesh on load, not a constant. It was a fixed `DIST = 3.55`, which showed
+  1.137 of vertical half-extent against a bounding sphere of **1.4746** —
+  so it fitted at the resting angle, where the long axis lies across the
+  frame, and was cut the instant a drag stood that axis up. Jack: *"it
+  clips off at a certain point, so it should always look like you can fully
+  see it."*
+- **The sphere is the right bound, not the bounding box**, because with free
+  rotation any vertex can be turned to any edge. A sphere of radius r
+  clears a frustum at `r / sin(halfAngle)`, and taking the **smaller** of
+  the two half-angles covers a tall stage as well as a wide one — so the
+  phone band is handled by the same arithmetic rather than a second rule.
+  Recomputed on resize, so a reshaped stage cannot reintroduce it.
+- **`model-check` asserts it twice, analytically and empirically.** The
+  formula is only a proof if the formula is right, so it also projects
+  every vertex through the viewer's own matrices over a full tumble in both
+  axes — 408 orientations × 19,056 vertices — and reports the furthest any
+  of them lands from centre. Currently **93.5%** of the way to the edge.
+- **The cost is apparent size, and the band pays it.** Fitting the worst
+  orientation means the resting one sits well inside the frame, so
+  `.project-stage` went from `clamp(320px, 52vh, 560px)` to
+  `clamp(360px, 62vh, 640px)` to buy the pixels back. Height on the band is
+  the only lever that does not reintroduce clipping.
 
 ### Where it sits
+
 
 - **IT IS NOT A TILE IN THE PHOTO WALL ANY MORE, and that is the point.**
   It was the fourteenth cell of the masonry grid, so it wore the grid's 4px
@@ -2880,9 +2944,10 @@ page will not tell you whether the object still turns.
   title and the photographs, with **no border, no background and no frame
   of any kind**. What makes it an area is height and air, which is also the
   only treatment that cannot accidentally become a second box.
-- `clamp(320px, 52vh, 560px)` tall, and a flat 320 at ≤760px — fixed on a
+- `clamp(360px, 62vh, 640px)` tall, and a flat 360 at ≤760px — fixed on a
   phone, so an address bar sliding away mid-scroll cannot resize the canvas
-  under the finger.
+  under the finger. It is taller than it looks like it needs to be; see
+  *What stops it being clipped* for why.
 - **The still render is the poster AND the fallback.** The stage holds an
   `<img>` and the canvas sits over it; `.is-live` goes on once the canvas
   has drawn, so a failed fetch, a dead context or no WebGL at all leaves a

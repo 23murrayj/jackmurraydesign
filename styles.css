@@ -866,8 +866,14 @@ a { color: inherit; text-decoration: none; }
    The height is viewport-relative because the object is the subject here
    rather than an illustration of it, with a cap so a tall desktop window
    does not hand it most of a screen. */
+/* TALLER THAN IT LOOKS IT NEEDS TO BE, because the camera is fitted to the
+   mesh's bounding SPHERE so the object can never be clipped at any angle
+   (see SECTION 19). That fit is set by the worst orientation, not the
+   resting one, so at rest the object sits well inside the frame with air
+   around it — and the only way to buy back apparent size is height on the
+   band itself. 52vh/560 left it looking small once the fit went in. */
 .project-stage {
-  height: clamp(320px, 52vh, 560px);
+  height: clamp(360px, 62vh, 640px);
   margin-bottom: 40px;
 }
 .project-detail:not(.has-stage) .project-stage { display: none; }
@@ -886,7 +892,7 @@ a { color: inherit; text-decoration: none; }
   /* A phone's viewport height is mostly browser chrome, and the object has
      to stay big enough to be worth dragging. Fixed, so an address bar
      sliding away mid-scroll cannot resize the canvas under the finger. */
-  .project-stage { height: 320px; margin-bottom: 28px; }
+  .project-stage { height: 360px; margin-bottom: 28px; }
 }
 
 .model-stage { position: relative; display: block; touch-action: none; cursor: grab; }

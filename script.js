@@ -270,7 +270,21 @@ const projectData = {
     // and it keeps alt.14 - it was photo 14 and the other thirteen did not
     // renumber, so no alt text moved.
     model: {
-      src: '/assets/projects/pot-clip/model.jmm',
+      /* THE ?v IS THE FILE'S OWN CONTENT HASH, AND IT IS NOT DECORATION.
+         Repacking the mesh changes the bytes at a URL that vercel.json
+         gives an hour of freshness and a WEEK of stale-while-revalidate,
+         so every returning visitor keeps the old mesh - and that is not a
+         cosmetic staleness: the packer now bakes the glTF node transform
+         in and the viewer no longer applies its old ZUP correction, so an
+         old mesh through the new viewer renders LYING ON ITS BACK.
+         That is exactly what Jack saw - "you didn't change the 3D model...
+         it's still the old one" and "it's upside down" were one bug, a
+         cached file, reported as two.
+         A hash in the query makes the URL change whenever the bytes do, so
+         there is nothing to go stale. `model-check.js` fails if the two
+         ever disagree, because a hand-maintained hash is a hash that will
+         be wrong. */
+      src: '/assets/projects/pot-clip/model.jmm?v=1c0b18a9',
       poster: { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933 },
       // index into the alt.N series, 0-based — 13 resolves proj.…alt.14
       altIndex: 13,
@@ -3730,31 +3744,69 @@ precision highp float;
 varying vec3 vN, vW;
 uniform vec3 uEye, uBase, uTop, uHorizon, uBottom;
 uniform float uRough, uExposure;
+
+/* A RECTANGULAR SOFTBOX, which is the thing the old environment was missing.
+   It lit with three pow(dot(d,L), n) lobes, and a lobe is a POINT source with
+   soft edges - a mirror reflecting one shows a small round blob that barely
+   changes as the form turns. A real studio (and the HDRI Google's viewer
+   lights with) is made of PANELS, and what reads as polished metal is the
+   straight edge of a panel travelling across a curved surface.
+   Projects d into a basis around c and tests it against a rectangle, so the
+   reflection has corners and edges. soft opens with roughness. */
+float panel(vec3 d, vec3 c, vec2 halfSize, float soft){
+  float fwd = dot(d, c);
+  if (fwd <= 0.001) return 0.0;
+  vec3 up = abs(c.y) > 0.95 ? vec3(0.0, 0.0, 1.0) : vec3(0.0, 1.0, 0.0);
+  vec3 tx = normalize(cross(up, c));
+  vec3 ty = cross(c, tx);
+  vec2 uv = abs(vec2(dot(d, tx), dot(d, ty))) / fwd;
+  vec2 e = smoothstep(halfSize + soft, halfSize - soft, uv);
+  return e.x * e.y;
+}
+
 vec3 env(vec3 d, float blur){
-  float y = d.y;
-  float h = smoothstep(-0.20, 0.06, y);
-  vec3 c = mix(uBottom, uHorizon, h);
-  c = mix(c, uTop, smoothstep(0.10, 0.95, y));
-  float key  = pow(max(dot(d, normalize(vec3(-0.42, 0.70, 0.58))), 0.0), mix(160.0, 5.0, blur));
-  float box  = pow(max(dot(d, normalize(vec3( 0.12, 0.95,-0.28))), 0.0), mix( 60.0, 4.0, blur));
-  float kick = pow(max(dot(d, normalize(vec3( 0.86, 0.06, 0.50))), 0.0), mix( 90.0, 6.0, blur));
-  c += vec3(1.00,1.00,1.00) * key  * mix(5.5, 0.8, blur);
-  c += vec3(0.97,0.98,1.00) * box  * mix(3.0, 0.5, blur);
-  c += vec3(1.00,0.99,0.96) * kick * mix(2.2, 0.3, blur);
-  c += vec3(1.0) * pow(1.0 - abs(y), 40.0) * (1.0 - blur * 0.8) * 0.9;
+  float y = clamp(d.y, -1.0, 1.0);
+  /* floor -> horizon -> zenith. The cyc is darker below and brightest
+     overhead, like a room with a lit ceiling and an unlit floor. */
+  vec3 c = mix(uBottom, uHorizon, smoothstep(-0.42, -0.02, y));
+  c = mix(c, uTop, smoothstep(0.0, 0.80, y));
+  /* THE HORIZON IS THE MOST IMPORTANT FEATURE IN HERE. It is the hard edge
+     where the lit cyc meets the floor, and on a convex form it reads as the
+     bright line that sweeps round as the object turns - most of the sense of
+     motion, and most of what says "metal" rather than "grey plastic". */
+  float hw = mix(0.012, 0.30, blur);
+  c += uHorizon * 1.05 * exp(-(y * y) / (hw * hw));
+  float s = mix(0.015, 0.55, blur);
+  /* key: a tall softbox high and to the left, the main shape on the form */
+  c += vec3(1.00, 1.00, 1.00) * 2.00 * panel(d, normalize(vec3(-0.40, 0.76, 0.51)), vec2(0.30, 0.17), s);
+  /* fill: a wide low panel on the right, so the shadow side is not dead */
+  c += vec3(0.93, 0.96, 1.00) * 1.15 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
+  /* rim: behind and slightly under, which separates the silhouette */
+  c += vec3(1.00, 0.95, 0.88) * 0.85 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
+  /* a narrow overhead strip - the ceiling light, catching the top edges */
+  c += vec3(1.00, 1.00, 1.00) * 0.90 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
   return c;
 }
+
+/* ACES rather than col/(col+0.9). The Reinhard it replaces desaturates as it
+   rolls off, so every highlight turned the same pale grey and the whole
+   object trended to one value - which is exactly the "flat" look. */
+vec3 aces(vec3 x){
+  return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+
 void main(){
   vec3 N = normalize(vN);
   if (!gl_FrontFacing) N = -N;
   vec3 V = normalize(uEye - vW);
   vec3 R = reflect(-V, N);
   float NoV = clamp(dot(N, V), 0.0, 1.0);
-  vec3 refl = mix(env(R, uRough), env(N, 1.0), uRough * 0.22);
+  /* two samples standing in for a roughness mip chain: a sharp reflection
+     along R and a wide one along N, mixed by roughness */
+  vec3 refl = mix(env(R, uRough), env(N, 1.0), uRough * 0.30);
   vec3 F = uBase + (1.0 - uBase) * pow(1.0 - NoV, 5.0);
   vec3 col = refl * F * uExposure;
-  col = col / (col + vec3(0.9));
-  gl_FragColor = vec4(pow(col, vec3(1.0/2.2)), 1.0);
+  gl_FragColor = vec4(pow(aces(col), vec3(1.0/2.2)), 1.0);
 }`;
 
 function parseMesh(buf) {
@@ -3775,9 +3827,16 @@ function parseMesh(buf) {
    the dark ground is near-black, and a metal object reflects the room it is
    in - leaving one environment for both would put a bright studio behind an
    object sitting on a black page. */
+/* RE-TUNED FOR ACES. The old values were set against a Reinhard curve
+   (col/(col+0.9)), which rolls off so gently that a top of 2.30 still read
+   as mid grey. Dropped into ACES the same numbers clip: the first build of
+   this shader rendered a near-white object with no form in it at all.
+   Picked by porting the fragment shader to Node (it is thirty lines of
+   vector maths) and rendering the real mesh at a dozen settings, rather
+   than guessing one value per browser reload. */
 const MODEL_LOOK = {
-  light: { top: [2.30,2.34,2.50], horizon: [0.92,0.94,1.02], bottom: [0.20,0.20,0.24], exposure: 1.00 },
-  dark:  { top: [2.05,2.09,2.26], horizon: [0.70,0.72,0.82], bottom: [0.13,0.13,0.17], exposure: 0.92 },
+  light: { top: [0.92,0.95,1.05], horizon: [0.40,0.42,0.48], bottom: [0.075,0.075,0.092], exposure: 0.95 },
+  dark:  { top: [0.82,0.85,0.95], horizon: [0.34,0.36,0.42], bottom: [0.055,0.055,0.070], exposure: 0.90 },
 };
 
 function startModelViewer(stage, src) {
@@ -3794,6 +3853,8 @@ function startModelViewer(stage, src) {
      angle Jack's own product render (14-object.jpg, the poster behind this
      canvas) was shot at. Picked by rendering a yaw sweep offline and
      comparing against that photograph, not by nudging it in the browser. */
+  const FOV = 0.62;                // vertical, radians
+  let radius = 1.5;                // bounding sphere, measured from the mesh on load
   let mesh = null, prog = null, raf = 0, yaw = 2.0, pitch = -0.28;
   /* MOTION STATE. It used to be `yaw += delta` straight out of pointermove
      with a hard clamp on pitch, and Jack's read of that was "you can rotate
@@ -3816,14 +3877,37 @@ function startModelViewer(stage, src) {
   };
   const U = (n) => gl.getUniformLocation(prog, n);
 
+  /* THE CAMERA IS FITTED TO THE MESH'S BOUNDING SPHERE, and the old fixed
+     DIST = 3.55 is why it clipped. Jack: "it clips off at a certain point,
+     so it should always look like you can fully see it."
+     Measured: this mesh's bounding sphere is radius 1.4746 (positions are
+     normalised so the LONGEST axis is ±1, and the diagonal is longer than
+     any axis), while 3.55 at a 0.62 rad vertical FOV only showed 1.1372.
+     So it fitted at the resting angle, where the long axis lies across the
+     frame, and was cut off the moment a drag stood that axis up.
+     A sphere of radius r is fully inside the frustum at distance
+     r / sin(halfAngle), and with free rotation the sphere IS the worst
+     case - any vertex can be turned to any side. Taking the SMALLER of the
+     two half-angles covers a tall stage as well as a wide one, so the phone
+     band is handled by the same arithmetic.
+     It is recomputed here rather than fixed, so a different export or a
+     reshaped stage cannot reintroduce this. */
+  const FIT_MARGIN = 1.06;         // a sliver of air, so it never kisses the edge
+  let dist = 4.0;                  // until the mesh is loaded and radius is known
+  let fitDirty = true;             // forces a refit once the real radius is known
   function size() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     const w = Math.max(1, Math.round(stage.clientWidth * dpr));
     const h = Math.max(1, Math.round(stage.clientHeight * dpr));
-    if (canvas.width !== w || canvas.height !== h) {
+    if (fitDirty || canvas.width !== w || canvas.height !== h) {
+      fitDirty = false;
       canvas.width = w; canvas.height = h;
       gl.viewport(0, 0, w, h);
-      gl.uniformMatrix4fv(U('uProj'), false, M4.persp(0.62, w / h, 0.1, 20));
+      const aspect = w / h;
+      const halfY = FOV / 2;
+      const halfX = Math.atan(Math.tan(halfY) * aspect);
+      dist = (radius / Math.sin(Math.min(halfX, halfY))) * FIT_MARGIN;
+      gl.uniformMatrix4fv(U('uProj'), false, M4.persp(FOV, aspect, 0.1, dist + radius + 1));
     }
   }
 
@@ -3835,37 +3919,41 @@ function startModelViewer(stage, src) {
     gl.uniform1f(U('uExposure'), l.exposure);
   }
 
-  const DIST = 3.55;
+  /* NOTHING STOPS ANY MORE, IN EITHER AXIS, and the upright guarantee moved
+     from a clamp to a RETURN. The previous build kept pitch inside ±1.45 so
+     the object could never be seen upside down, which is a wall by another
+     name: Jack, after it shipped, "it still hard stops at certain points
+     when I'm trying to rotate it... I should be able to rotate it all that
+     I want."
+     The two requests only look contradictory. He also asked for "when you
+     don't touch it for like 5 or 10 seconds, then it should slowly move
+     back to its original spot and start rotating" - so uprightness is a
+     property of the RESTING pose, not of the drag. Let both axes run free
+     while a hand is on it, and bring it home afterwards.
+     That is strictly better than the clamp: every angle is reachable, there
+     is no edge to hit, and the object still spends all of its unattended
+     life the right way up. */
+  const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
+  const HOME_PITCH = -0.28;
+  const IDLE_SPIN = 0.14;       // rad/s - a 45-second revolution. "very slowly"
+  const IDLE_AFTER = 6.0;       // "like 5 or 10 seconds" before it heads home
+  const THROW_DECAY = 1.8;      // a flick is down to ~2% of itself in 2s
+  const RETURN_EASE = 1.1;      // how briskly it travels back
+  const HOME_EPS = 0.01;        // close enough to call it home and start spinning
 
-  /* UPRIGHT IS THE WHOLE POINT, so this is a TURNTABLE and not an arcball.
-     Jack asked for two things that sound opposed - "rotate it any way you
-     want" and "make sure that it's upright when it's turning" - and a
-     turntable is what satisfies both: yaw spins the object about its own
-     vertical axis, pitch raises and lowers the eye, and no composition of
-     the two ever introduces roll. An arcball would let you tip it onto its
-     head, which is the thing he asked not to happen.
-     So yaw is free and unbounded - a genuine, endless 360 - and pitch is
-     the only axis that can stop, because past vertical you are looking at
-     the object from behind its own pole and the horizon flips.
-     PITCH_MAX is 1.45 rad, 83 deg: high enough to see the top of the clip,
-     short of the 90 where it would invert. */
-  const PITCH_MAX = 1.45;
-  const PITCH_SOFT = 1.10;      // resistance starts here, well before the wall
-  const IDLE_SPIN = 0.30;       // rad/s, the resting turntable
-  const IDLE_AFTER = 2.2;       // seconds of stillness before it drifts back
-  const THROW_DECAY = 1.8;      // a flick is down to ~2% of itself by IDLE_AFTER
-  const IDLE_EASE = 1.2;        // how fast the resting drift is taken up
+  /* Angles are unbounded, so coming home has to take the SHORT way round.
+     After a couple of full tumbles yaw can be 14 rad from where it started
+     and pitch can be past vertical; without this the object would unwind
+     every turn it was given, which looks like a rewind rather than a
+     return. */
+  const shortWay = (from, to) => {
+    let d = (to - from) % (Math.PI * 2);
+    if (d > Math.PI) d -= Math.PI * 2;
+    if (d < -Math.PI) d += Math.PI * 2;
+    return d;
+  };
 
-  /* Resistance instead of a wall. Past PITCH_SOFT an incoming delta is
-     scaled by how much room is left, so the axis goes heavy in the hand and
-     arrives at the limit asymptotically rather than hitting it. The old
-     Math.max/min did the arithmetic correctly and felt like a stop, which
-     is the whole complaint. */
-  function addPitch(d) {
-    const over = (Math.abs(pitch) - PITCH_SOFT) / (PITCH_MAX - PITCH_SOFT);
-    if (over > 0 && Math.sign(d) === Math.sign(pitch)) d *= Math.max(0, 1 - over) ** 2;
-    pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch + d));
-  }
+  let homed = false;            // true once it has arrived and is just drifting
 
   let last = 0, lastTheme = null;
   function frame(now) {
@@ -3875,37 +3963,47 @@ function startModelViewer(stage, src) {
 
     if (!drag && dt) {
       idle += dt;
-      /* MOMENTUM AND THE RETURN TO THE TURNTABLE ARE ONE DECISION, not two
-         that run at once. Written as two - a decay every frame, plus a
-         blend toward IDLE_SPIN - they fight: the decay eats the idle
-         velocity as fast as the blend adds it, and yaw settles at the
-         fixed point of the pair rather than at IDLE_SPIN. Measured, that
-         was 0.077 rad/s against the 0.30 asked for, so the object crept.
-         So it is one or the other. Before the idle delay the throw runs
-         down; after it, the velocity eases to the resting drift from
-         wherever the throw left it.
-         BOTH ARE `1 - exp(-k·dt)`, which is what makes them
-         framerate-independent: exponentials compose, so a second's worth
-         of frames gives exp(-k) whatever dt is. The linear
-         `min(1, dt * 0.8)` this replaces did not - 60Hz and 144Hz had
-         drifted 0.022 rad apart after a single second. */
       if (!reduce && idle > IDLE_AFTER) {
-        const e = Math.exp(-IDLE_EASE * dt);
-        yaw += IDLE_SPIN * dt + (yawVel - IDLE_SPIN) * (1 - e) / IDLE_EASE;
-        yawVel = IDLE_SPIN + (yawVel - IDLE_SPIN) * e;
+        /* HOME, THEN DRIFT. Two phases rather than one blend, because they
+           want opposite things: getting back wants a target, drifting wants
+           a rate, and running both at once is what made the previous build
+           creep at a quarter of its stated speed.
+           The travel is `1 - exp(-k·dt)` on the SHORT way round each axis,
+           so it is framerate-independent and never unwinds a turn the
+           visitor gave it. Once inside HOME_EPS it latches and the only
+           thing left is the slow spin - so it does not keep hauling itself
+           back to HOME_YAW while it drifts away from it. */
+        if (!homed) {
+          const k = 1 - Math.exp(-RETURN_EASE * dt);
+          const dy = shortWay(yaw, HOME_YAW);
+          const dp = shortWay(pitch, HOME_PITCH);
+          yaw += dy * k;
+          pitch += dp * k;
+          if (Math.abs(dy) < HOME_EPS && Math.abs(dp) < HOME_EPS) {
+            /* land on the NEAREST EQUIVALENT of home, not on HOME_YAW
+               itself. Assigning the literal throws away however many whole
+               turns the visitor put in - 6π in the checker's case. The
+               pose renders identically either way, since the matrix is
+               2π-periodic, but it is an 18-radian discontinuity in the
+               number, and anything that ever reads the angle (the checker
+               did) sees a jump that is not a movement. */
+            yaw += dy; pitch += dp; homed = true;
+          }
+        } else {
+          yaw += IDLE_SPIN * dt;
+        }
+        yawVel = pitchVel = 0;
       } else {
+        /* still coasting from a throw. Exponential rate, closed-form
+           displacement - a `yaw += vel * dt` Riemann sum is not
+           framerate-independent even when the rate is, and that alone had
+           60Hz and 144Hz 0.022 rad apart after one second. */
         const e = Math.exp(-THROW_DECAY * dt);
         yaw += yawVel * (1 - e) / THROW_DECAY;
+        pitch += pitchVel * (1 - e) / THROW_DECAY;
         yawVel *= e;
+        pitchVel *= e;
       }
-      const ep = Math.exp(-THROW_DECAY * dt);    // pitch only ever runs down
-      if (pitchVel) addPitch(pitchVel * (1 - ep) / THROW_DECAY);
-      pitchVel *= ep;
-      /* the spring that recovers an overshoot, and the only thing that
-         moves pitch when nothing else is: settle back inside the soft
-         limit rather than resting against the hard one */
-      const over = Math.abs(pitch) - PITCH_SOFT;
-      if (over > 0) pitch = Math.sign(pitch) * (PITCH_SOFT + over * Math.exp(-3.0 * dt));
     }
 
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -3913,10 +4011,10 @@ function startModelViewer(stage, src) {
     size();
     const model = M4.mul(M4.rotX(pitch), M4.rotY(yaw));
     gl.uniformMatrix4fv(U('uModel'), false, model);
-    gl.uniformMatrix4fv(U('uView'), false, M4.trans(0, 0, -DIST));
+    gl.uniformMatrix4fv(U('uView'), false, M4.trans(0, 0, -dist));
     gl.uniformMatrix3fv(U('uNormal'), false, new Float32Array([
       model[0], model[1], model[2], model[4], model[5], model[6], model[8], model[9], model[10]]));
-    gl.uniform3f(U('uEye'), 0, 0, DIST);
+    gl.uniform3f(U('uEye'), 0, 0, dist);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, mesh.nt * 3, gl.UNSIGNED_SHORT, 0);
   }
@@ -3926,6 +4024,16 @@ function startModelViewer(stage, src) {
     return r.arrayBuffer();
   }).then((buf) => {
     mesh = parseMesh(buf);
+    // the fit above needs the real worst case, so measure it rather than
+    // assuming the bbox: the diagonal is longer than any single axis
+    let r2 = 0;
+    for (let i = 0; i < mesh.nv; i++) {
+      const x = mesh.pos[i*3] / 32767, y = mesh.pos[i*3+1] / 32767, z = mesh.pos[i*3+2] / 32767;
+      const d2 = x*x + y*y + z*z;
+      if (d2 > r2) r2 = d2;
+    }
+    radius = Math.sqrt(r2);
+    fitDirty = true;
     prog = gl.createProgram();
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, MODEL_VS));
     gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, MODEL_FS));
@@ -3953,7 +4061,7 @@ function startModelViewer(stage, src) {
     buffer(mesh.nor, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aNor'), gl.BYTE);
     buffer(mesh.idx, gl.ELEMENT_ARRAY_BUFFER);
     gl.uniform3fv(U('uBase'), [0.78, 0.79, 0.82]);
-    gl.uniform1f(U('uRough'), 0.26);
+    gl.uniform1f(U('uRough'), 0.32);
     look();
     size();
     stage.appendChild(canvas);
@@ -3968,8 +4076,9 @@ function startModelViewer(stage, src) {
      0.01 rad/px, so the same gesture turned the object a different amount
      on a phone than on a desktop, and after the stage grew to a full-width
      band it turned it much less. A full sweep across the stage is now
-     about 1.1 turns whatever the stage measures. */
-  const SWEEP = Math.PI * 2.2;
+     0.75 of a turn whatever the stage measures - it was 1.1, and Jack
+     asked for it slower in the hand as well as at rest. */
+  const SWEEP = Math.PI * 1.5;
   let moved = 0;
 
   stage.addEventListener('pointerdown', (e) => {
@@ -3978,6 +4087,7 @@ function startModelViewer(stage, src) {
     moved = 0;
     yawVel = pitchVel = 0;     // catching a spinning object stops it dead, as it should
     idle = 0;
+    homed = false;             // it has been moved, so it owes a trip home
     stage.setPointerCapture(e.pointerId);
     e.preventDefault();
   });
@@ -3989,7 +4099,7 @@ function startModelViewer(stage, src) {
     const now = performance.now();
     const dt = Math.max(now - drag.t, 1) / 1000;
     yaw += dx;
-    addPitch(dy);
+    pitch += dy;              // unbounded, like yaw: nothing stops
     /* Velocity for the throw, smoothed. A raw last-sample delta is noisy -
        one slow final move before lifting off and the object stops dead
        even though the gesture was a flick - so it is a rolling blend. */
@@ -4026,6 +4136,7 @@ function startModelViewer(stage, src) {
     else if (e.key === 'ArrowDown') pitchVel += push;
     else return;
     idle = 0;
+    homed = false;
     e.preventDefault();
   });
 
