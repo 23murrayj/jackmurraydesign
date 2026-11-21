@@ -1581,6 +1581,43 @@ things follow from the packer and both are load-bearing:
   and alt.9 had to be swapped in all four languages when the poster moved
   ahead of the render.
 
+**FOUR THINGS ABOUT `pot-clip`'S WALL WERE WRONG ON THE FIRST PASS**, and
+all four are the same mistake: deciding by eye what the files could have
+been asked.
+
+- **THE ORDER WAS AN ASSUMPTION, NOT THE PROCESS.** The Blender capture sat
+  fourth, between the paper profiles and the spray booth, because that is
+  how a digital designer's process usually runs. Jack: *"I did the 3D model
+  last, but its picture of in Blender is in the middle."* **The EXIF dates
+  settle it**: sketches and paper studies 6 October, foam and first coats 13
+  October, finishing and the final object 20 October — and **every Blender
+  screenshot is 20–21 November**, weeks later. The physical model came
+  first and the digital one was built from it.
+  **The write-up carried the same error**, in all four languages: it said
+  "a model built in Blender, and then the physical one". That is a false
+  claim about how he made his own object, published under his name. **Read
+  the capture dates before narrating a process.**
+- **ONE POSTER WAS A MISREAD OF THE PROJECT.** Jack: *"I'm a digital
+  creative, so I feel like we need more emphasis on the posters that I
+  created. And I created so many posters, and we only put one in there."*
+  There are five now — three as a run of their own, two flanking the model.
+  The posters are an output of the project, not a footnote to the object.
+- **A PHOTOGRAPH ARRIVED ON ITS SIDE AND STAYED THAT WAY.** The notebook
+  page carrying the orthographic views and the dimensions (26 / 45 / 31 /
+  19 mm) was shot in portrait with the page turned, so everything on it
+  reads vertically. It was not in the project at all, which is how it went
+  unnoticed. Rotated 90° ANTICLOCKWISE — verified by rendering both
+  directions and reading the labels, because the other way is upside down —
+  and baked to orientation 1 rather than tagged, per the double-rotation
+  gotcha in `assets/README.md`.
+- **CLICK-TO-ZOOM IS NOW ALL-OR-ONE.** It was on two tiles out of nine and
+  looked arbitrary, because it was: `full` had been added only where the
+  source happened to be large. Every tile carries `full` now **except the
+  3D one**, and that exception is principled rather than lazy — a lightbox
+  there would fight the drag handler for the same pointer, and the still is
+  only 1536×1024, so opening it larger would be the bigger blur that
+  `full` is opt-in to avoid. **13 of 14 zoom; the fourteenth turns.**
+
 ## Routing
 
 The case studies and the about page are overlays, but they are **real URLs**:

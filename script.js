@@ -192,36 +192,72 @@ const projectData = {
     role: 'Design & Fabrication',
     // MASONRY, NOT MIXED, AND THE REASON IS ARITHMETIC. mixed divides one
     // 956px row between however many tiles it is given: easter-riverside's
-    // three come out 383x311 and sandcastles' two 472x380, but nine squashed
-    // these to 109x88 - thumbnails too small to read, for a project whose
-    // process IS the argument. masonry packs a curated sequence into rows of
-    // three columns and gives the write-up a sticky sidebar, which is what a
-    // nine-step build wants.
-    // ORDER IS LOAD-BEARING TWICE OVER. The packer walks the list in order
-    // and pairs a landscape with a portrait, so the sequence below alternates
-    // deliberately: feature, then L+P, L+P, three portraits, and a closing
-    // landscape - five full rows and no holes. And alt text is positional
-    // (resolveAlt uses index + 1), so proj.pot-clip.alt.N tracks this array;
-    // alt.8 and alt.9 were swapped when the poster moved ahead of the render.
+    // three come out 383x311 and sandcastles' two 472x380, but fourteen
+    // would be unreadable. masonry packs a curated sequence into rows of
+    // three columns and gives the write-up a sticky sidebar.
+    //
+    // THE ORDER IS THE PROCESS, AND IT WAS WRONG ON THE FIRST PASS. The
+    // Blender capture sat fourth, between the paper profiles and the spray
+    // booth, because that is the order a digital designer's process USUALLY
+    // runs. Jack: "I did the 3D model last, but its picture of in Blender is
+    // in the middle." He is right and the files say so - the process photos
+    // are EXIF-dated 6, 13 and 20 October and every Blender screenshot is
+    // 20-21 November. The physical model came first and the digital one was
+    // built from it, which is the opposite of the assumption, and the
+    // write-up had the same error until this commit.
+    //
+    // PACKING. The packer walks in order and pairs a landscape with a
+    // portrait (L+P = 2+1, three portraits = 1+1+1, a lone landscape = full
+    // width). With 5 landscapes and 9 portraits this lays out as
+    // feature / L+P / L+P / P+P+P / L+P / P+P+P / feature - seven full rows
+    // and no holes. Change one entry's orientation and the whole wall
+    // re-packs, so re-check it in the page rather than by eye.
+    //
+    // ALT TEXT IS POSITIONAL: resolveAlt uses index + 1, so
+    // proj.pot-clip.alt.N tracks this array in all four languages. Moving an
+    // entry silently moves its description onto a different photograph.
     layout: 'masonry',
     photos: [
       { src: '/assets/projects/pot-clip/01-hero.jpg', w: 1414, h: 795,
         full: '/assets/projects/pot-clip/01-hero-full.jpg' },
       { src: '/assets/projects/pot-clip/02-sketches.jpg', w: 1400, h: 1211,
         full: '/assets/projects/pot-clip/02-sketches-full.jpg' },
-      { src: '/assets/projects/pot-clip/03-profiles.jpg', w: 800, h: 1200 },
-      { src: '/assets/projects/pot-clip/04-model.jpg', w: 1400, h: 879 },
-      { src: '/assets/projects/pot-clip/05-spray.jpg', w: 800, h: 1200 },
-      { src: '/assets/projects/pot-clip/06-finishing.jpg', w: 800, h: 1200 },
-      { src: '/assets/projects/pot-clip/07-hand.jpg', w: 800, h: 1200 },
-      { src: '/assets/projects/pot-clip/08-poster.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/08-poster-full.jpg' },
-      // The still render is the poster and the fallback; SECTION 19 puts a
-      // canvas over it when WebGL is available. This slot rather than the
-      // hero because it is where the case study arrives at the finished
-      // form, and because a feature-width item is the only one big enough
-      // to be worth turning.
-      { src: '/assets/projects/pot-clip/09-object.jpg', w: 1400, h: 933,
+      { src: '/assets/projects/pot-clip/03-profiles.jpg', w: 800, h: 1200,
+        full: '/assets/projects/pot-clip/03-profiles-full.jpg' },
+      // Shot in portrait with the page turned, so it arrived on its side and
+      // stayed that way for a release. Rotated 90 degrees anticlockwise and
+      // baked to orientation 1 - see the double-rotation gotcha in
+      // assets/README.md for why the EXIF tag is not the way to do it.
+      { src: '/assets/projects/pot-clip/04-measurements.jpg', w: 1399, h: 779,
+        full: '/assets/projects/pot-clip/04-measurements-full.jpg' },
+      { src: '/assets/projects/pot-clip/05-foam.jpg', w: 800, h: 1200,
+        full: '/assets/projects/pot-clip/05-foam-full.jpg' },
+      { src: '/assets/projects/pot-clip/06-finishing.jpg', w: 800, h: 1200,
+        full: '/assets/projects/pot-clip/06-finishing-full.jpg' },
+      { src: '/assets/projects/pot-clip/07-hand.jpg', w: 800, h: 1200,
+        full: '/assets/projects/pot-clip/07-hand-full.jpg' },
+      // FIVE POSTERS, NOT ONE. Jack: "I'm a digital creative, so I feel like
+      // we need more emphasis on the posters that I created." One was a
+      // misread of the project - the posters are the output, not a footnote.
+      // Three of them sit together as a run; the other two flank the model.
+      { src: '/assets/projects/pot-clip/08-poster-a.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/08-poster-a-full.jpg' },
+      { src: '/assets/projects/pot-clip/09-model.jpg', w: 1400, h: 879,
+        full: '/assets/projects/pot-clip/09-model-full.jpg' },
+      { src: '/assets/projects/pot-clip/10-poster-b.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/10-poster-b-full.jpg' },
+      { src: '/assets/projects/pot-clip/11-poster-c.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/11-poster-c-full.jpg' },
+      { src: '/assets/projects/pot-clip/12-poster-d.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/12-poster-d-full.jpg' },
+      { src: '/assets/projects/pot-clip/13-poster-e.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/13-poster-e-full.jpg' },
+      // THE ONLY TILE WITHOUT `full`, and deliberately. Everything else
+      // zooms on click; this one turns instead. A lightbox here would fight
+      // the drag handler for the same pointer, and the still is only
+      // 1536x1024 anyway - opening it larger would be a bigger blur, which
+      // is the whole reason `full` is opt-in.
+      { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933,
         model: '/assets/projects/pot-clip/model.jmm' },
     ],
   },
