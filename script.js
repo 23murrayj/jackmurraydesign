@@ -288,16 +288,6 @@ const projectData = {
       poster: { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933 },
       // index into the alt.N series, 0-based — 13 resolves proj.…alt.14
       altIndex: 13,
-      /* TEMPORARY, AND THE WHOLE BLOCK COMES OUT AGAIN. A side-by-side
-         against Google's <model-viewer> so Jack can see what the
-         hand-rolled renderer is and is not giving up. Same mesh, built by
-         tools/jmm-to-glb.js, so the only variable is the lighting model.
-         It is OFF for visitors - see wantsCompare() - because it costs a
-         673KB mesh plus a ~250KB library from a CDN, on a page whose
-         first rule is no dependencies. Deleting this key, the
-         `.stage-compare` CSS, renderCompareStage() and the .glb removes
-         every trace. */
-      compare: '/assets/projects/pot-clip/model-compare.glb',
     },
   },
   'easter-riverside': {
@@ -815,67 +805,13 @@ const projectStage = document.getElementById('projectStage');
    layout rather than being a cell in one of them.
    The <img> is the poster AND the fallback - a dead fetch, a lost context
    or no WebGL at all leaves a working photograph rather than a hole. */
-/* ---- the <model-viewer> comparison. TEMPORARY; see `compare` in projectData.
-   A second stage under the real one, running Google's viewer on the same
-   object, so the difference can be looked at rather than argued about.
-
-   IT IS UN-GATED ON PURPOSE, FOR NOW. It sat behind ?compare so a visitor
-   never paid for a CDN library and a second copy of the mesh, which was
-   the right instinct and the wrong call: Jack asked twice to see the two
-   side by side, and a flag he has to remember cost three rounds of "I
-   still only see one" - the last of them after the flag turned out not to
-   survive a deep link anyway, because the router strips the query before
-   the stage renders.
-   So this is LIVE WEIGHT until he has looked - about 920KB on a portfolio
-   page whose first rule is no dependencies - and it comes out as soon as
-   he has. Removing it is this block, the `compare` key in projectData,
-   the `.stage-compare` CSS, model-compare.glb and tools/jmm-to-glb.js. */
-const COMPARE_LIB = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js';
-let compareLibAdded = false;
-function wantsCompare() { return true; }
-function renderCompareStage(src) {
-  if (!compareLibAdded) {
-    const s = document.createElement('script');
-    s.type = 'module';
-    s.src = COMPARE_LIB;
-    document.head.appendChild(s);
-    compareLibAdded = true;
-  }
-  /* camera-orbit mirrors our own opening view so the two are showing the
-     same thing: theta 115deg is HOME_YAW (2.0 rad), and phi 57deg is
-     HOME_PITCH (+0.58 rad) measured from the pole rather than the horizon,
-     so 90 - 33. rotation-per-second and the delay mirror IDLE_SPIN and
-     IDLE_AFTER. */
-  return `
-    <div class="stage-compare">
-      <p class="stage-label">Google &lt;model-viewer&gt; — library ~250KB + 673KB mesh</p>
-      <model-viewer
-        src="${escapeAttr(src)}"
-        alt="The same pot clip mesh, rendered by Google's model-viewer for comparison"
-        loading="eager"
-        camera-controls
-        auto-rotate
-        auto-rotate-delay="6000"
-        rotation-per-second="11.5deg"
-        camera-orbit="115deg 57deg auto"
-        environment-image="neutral"
-        shadow-intensity="1"
-        exposure="1"
-        touch-action="pan-y"></model-viewer>
-    </div>`;
-}
-
 function renderProjectStage(data) {
   const m = data.model;
   projectDetailEl.classList.toggle('has-stage', !!m);
   if (!m) { projectStage.innerHTML = ''; return; }
   const poster = mediaTag(m.poster, data.id, m.altIndex || 0, data.title, true);
-  const compare = (m.compare && wantsCompare()) ? renderCompareStage(m.compare) : '';
-  projectDetailEl.classList.toggle('has-compare', !!compare);
   projectStage.innerHTML =
-    (compare ? '<p class="stage-label">This site — hand-rolled WebGL, 392KB mesh, no library</p>' : '') +
-    `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>` +
-    compare;
+    `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>`;
   setupModelStages(projectStage);
 }
 
@@ -4072,7 +4008,18 @@ const MODEL_LOOK = {
    yaw, exactly as their adjustOrbit is, so the resting drift keeps running
    underneath it instead of being paused and restarted. */
 const PROMPT_AFTER = 3000;      // ms of stillness before the first nudge
-const PROMPT_LOOP = 5000;       // ms per nudge cycle
+const PROMPT_LOOP = 5000;       // ms the timeline itself takes to play
+/* AND THEN IT WAITS. Jack asked for the nudge "50 percent slower... if it
+   comes every 5 seconds make it 7-8" - which is about how OFTEN it
+   appears, not how fast it moves. Those are different knobs and it
+   matters: PROMPT_LOOP is the denominator the keyframes are expressed
+   against, so stretching it to 7500 would have slowed the fade-in from
+   385ms to 578ms and the rock with it, which is not what was asked for.
+   Instead the timeline still plays over its 5s and then holds at its own
+   end for the remainder. That costs nothing extra to implement because
+   both curves finish on 0 and hold - clamping the phase at 1 IS the
+   quiet gap. */
+const PROMPT_EVERY = 7500;      // ms between one nudge starting and the next
 const PROMPT_SWING = Math.PI / 16;   // how far the object rocks, theirs exactly
 const promptEase = (t) => (t < 0.5 ? 2 * t * t : (4 - 2 * t) * t - 1);
 function promptTimeline(initial, keys) {
@@ -4489,7 +4436,8 @@ function startModelViewer(stage, src) {
     if (!drag && dt && !prefersReducedMotion) {
       promptClock += dt * 1000;
       if (promptClock > PROMPT_AFTER) {
-        const pt = ((promptClock - PROMPT_AFTER) / PROMPT_LOOP) % 1;
+        const cycle = (promptClock - PROMPT_AFTER) % PROMPT_EVERY;
+        const pt = Math.min(cycle / PROMPT_LOOP, 1);
         const w = promptWiggle(pt);
         want = promptFade(pt);
         hand.style.transform = 'translate(-50%,0) translateX(' +

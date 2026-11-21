@@ -903,36 +903,6 @@ a { color: inherit; text-decoration: none; }
   .project-stage { height: 360px; margin-bottom: 28px; }
 }
 
-/* ======================================================================
-   TEMPORARY — the <model-viewer> side-by-side.
-   Everything in this block goes when the comparison does, along with the
-   `compare` key in projectData, renderCompareStage(), tools/jmm-to-glb.js
-   and model-compare.glb. It is only ever rendered on a local server or
-   with ?compare in the URL, so no visitor sees it.
-   ====================================================================== */
-.project-detail.has-compare .project-stage { height: auto; }
-.project-detail.has-compare .project-stage .model-stage {
-  height: clamp(360px, 62vh, 640px);
-}
-.stage-label {
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 10px;
-}
-.stage-compare { margin-top: 34px; }
-.stage-compare model-viewer {
-  display: block;
-  width: 100%;
-  height: clamp(360px, 62vh, 640px);
-  /* transparent, so the two sit on the same page ground and the only
-     difference on screen is the shading */
-  background-color: transparent;
-}
-@media (max-width: 760px) {
-  .project-detail.has-compare .project-stage .model-stage,
-  .stage-compare model-viewer { height: 360px; }
-}
-
 /* THE CONTACT SHADOW IS IN THE RENDERER, not here. There was a
    `radial-gradient` ellipse at this spot for one commit and it was the
    wrong answer: it could not know the shape casting it, so it sat there
