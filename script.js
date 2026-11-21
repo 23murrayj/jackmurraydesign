@@ -3865,16 +3865,16 @@ vec3 env(vec3 d, float blur){
      bright line that sweeps round as the object turns - most of the sense of
      motion, and most of what says "metal" rather than "grey plastic". */
   float hw = mix(0.012, 0.30, blur);
-  c += uHorizon * 1.05 * exp(-(y * y) / (hw * hw));
+  c += uHorizon * 1.25 * exp(-(y * y) / (hw * hw));
   float s = mix(0.015, 0.55, blur);
   /* key: a tall softbox high and to the left, the main shape on the form */
-  c += vec3(1.00, 1.00, 1.00) * 2.00 * panel(d, normalize(vec3(-0.40, 0.76, 0.51)), vec2(0.30, 0.17), s);
+  c += vec3(1.00, 1.00, 1.00) * 2.40 * panel(d, normalize(vec3(-0.40, 0.76, 0.51)), vec2(0.30, 0.17), s);
   /* fill: a wide low panel on the right, so the shadow side is not dead */
-  c += vec3(0.93, 0.96, 1.00) * 1.15 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
+  c += vec3(0.93, 0.96, 1.00) * 1.30 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
   /* rim: behind and slightly under, which separates the silhouette */
-  c += vec3(1.00, 0.95, 0.88) * 0.85 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
+  c += vec3(1.00, 0.95, 0.88) * 0.95 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
   /* a narrow overhead strip - the ceiling light, catching the top edges */
-  c += vec3(1.00, 1.00, 1.00) * 0.90 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
+  c += vec3(1.00, 1.00, 1.00) * 1.35 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
   return c;
 }
 
@@ -3924,10 +3924,65 @@ function parseMesh(buf) {
    Picked by porting the fragment shader to Node (it is thirty lines of
    vector maths) and rendering the real mesh at a dozen settings, rather
    than guessing one value per browser reload. */
+/* BRIGHTER AGAIN, toward what the IBL viewer gives for free. Jack, with
+   both on screen: "the other one's lighting is a little bit better."
+   A real environment map carries far more light than four analytic panels
+   do, so the honest half of that gap is simply level - the cyc is lifted,
+   the overhead strip is up by half, and the floor comes up a little so the
+   underside is modelled instead of black. Roughness 0.32 -> 0.30 for a
+   slightly tighter horizon streak. Compared side by side against the same
+   mesh rendered offline, not nudged one value per reload. */
 const MODEL_LOOK = {
-  light: { top: [0.92,0.95,1.05], horizon: [0.40,0.42,0.48], bottom: [0.075,0.075,0.092], exposure: 0.95 },
-  dark:  { top: [0.82,0.85,0.95], horizon: [0.34,0.36,0.42], bottom: [0.055,0.055,0.070], exposure: 0.90 },
+  light: { top: [1.14,1.18,1.30], horizon: [0.50,0.52,0.60], bottom: [0.090,0.090,0.110], exposure: 1.02 },
+  dark:  { top: [1.02,1.06,1.18], horizon: [0.44,0.46,0.54], bottom: [0.070,0.070,0.088], exposure: 0.97 },
 };
+
+/* THE NUDGE — THE FINGER THAT APPEARS AND ROCKS THE OBJECT.
+   Jack asked for the one <model-viewer> does: "it'll have this like little
+   finger pop up, and it'll show you that you can kind of rotate it back and
+   forth a little bit, and then it goes back to rotating."
+   These numbers are READ OUT OF THEIR MINIFIED BUNDLE rather than eyeballed,
+   because "similar" is not a spec and the feel of this is entirely in the
+   timings. From @google/model-viewer@4.0.0:
+     interactionPromptThreshold = 3e3   — 3s since the last input
+     (now - promptStart) / 5e3 % 1      — a 5s loop
+     finger x = wiggle * canvas.width * 0.05
+     camera  += (wiggle - previous) * Math.PI / 16
+   and two keyframe timelines, in arbitrary "frames" that divide the 5s:
+     wiggle  0→-1 (5), hold (1), -1→+1 (8), hold (1), +1→0 (5), hold 0 (18)
+     opacity 0→1 (1), hold (5), 1→0 (1), hold 0 (6)
+   The default easing is theirs too, and it is NOT linear — a quadratic
+   in-out, which is why the rock reads as a hand moving rather than a slider
+   being dragged. So the finger fades in over ~385ms, the object rocks left
+   then right then settles, the finger is gone by ~2.7s, and the remaining
+   ~2.3s of the loop is still before it all happens again.
+   Ours differs in one way, deliberately: the wiggle is applied as a DELTA to
+   yaw, exactly as their adjustOrbit is, so the resting drift keeps running
+   underneath it instead of being paused and restarted. */
+const PROMPT_AFTER = 3000;      // ms of stillness before the first nudge
+const PROMPT_LOOP = 5000;       // ms per nudge cycle
+const PROMPT_SWING = Math.PI / 16;   // how far the object rocks, theirs exactly
+const promptEase = (t) => (t < 0.5 ? 2 * t * t : (4 - 2 * t) * t - 1);
+function promptTimeline(initial, keys) {
+  const curves = [], ends = [];
+  let prev = initial, acc = 0;
+  for (const k of keys) {
+    const from = prev, to = k.v;
+    curves.push((u) => from + (to - from) * promptEase(u));
+    ends.push(acc += k.n);
+    prev = to;
+  }
+  const total = ends[ends.length - 1];
+  return (t) => {
+    const x = Math.min(Math.max(t, 0), 1) * total;
+    let i = ends.findIndex((e) => e >= x);
+    if (i < 0) i = ends.length - 1;
+    const lo = i < 1 ? 0 : ends[i - 1];
+    return curves[i]((x - lo) / (ends[i] - lo || 1));
+  };
+}
+const promptWiggle = promptTimeline(0, [{n:5,v:-1},{n:1,v:-1},{n:8,v:1},{n:1,v:1},{n:5,v:0},{n:18,v:0}]);
+const promptFade = promptTimeline(0, [{n:1,v:1},{n:5,v:1},{n:1,v:0},{n:6,v:0}]);
 
 function startModelViewer(stage, src) {
   const canvas = document.createElement('canvas');
@@ -3943,6 +3998,29 @@ function startModelViewer(stage, src) {
      angle Jack's own product render (14-object.jpg, the poster behind this
      canvas) was shot at. Picked by rendering a yaw sweep offline and
      comparing against that photograph, not by nudging it in the browser. */
+  /* the hand. Built here rather than in the markup so the whole prompt is
+     one thing to find, and aria-hidden because the stage already carries a
+     label saying it can be dragged. */
+  const hand = document.createElement('div');
+  hand.className = 'model-hand';
+  hand.setAttribute('aria-hidden', 'true');
+  /* Built from a ring, a finger and a palm rather than one clever path:
+     the first attempt was a single <path> with arcs in it and it rendered
+     as a stray squiggle, which is what hand-written arc flags do. These
+     three primitives cannot be malformed. The palm is WIDE, 28x16: at
+     19x19 its corner radius made it a circle, and ring + stem + circle
+     reads as a map pin rather than a finger resting on a pad.
+     The colours are deliberately theme-independent, the same way the
+     loader and the pong board are: it is drawn over a light metal object
+     on either ground, so it wants a pale fill and a dark outline in both. */
+  hand.innerHTML =
+    '<svg viewBox="0 0 36 46" aria-hidden="true">' +
+      '<rect x="4" y="26" width="28" height="16" rx="7" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.3"/>' +
+      '<rect x="14.8" y="11" width="6.6" height="19" rx="3.3" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.3"/>' +
+      '<circle cx="18.5" cy="6.5" r="4.6" fill="none" stroke="#1A1A18" stroke-width="2.3"/>' +
+    '</svg>';
+  stage.appendChild(hand);
+
   const FOV = 0.62;                // vertical, radians
   let radius = 1.5;                // bounding sphere, measured from the mesh on load
   let mesh = null, prog = null, raf = 0, yaw = 2.0, pitch = -0.28;
@@ -3955,6 +4033,7 @@ function startModelViewer(stage, src) {
      Velocities in radians/second, integrated in the frame loop, so the feel
      does not change with the input device's event rate. */
   let yawVel = 0, pitchVel = 0;
+  let promptClock = 0, lastWiggle = 0;
   let idle = Infinity;                          // seconds since the last input; it has been still since the page loaded
   let drag = null, dpr = 1;
 
@@ -3981,7 +4060,7 @@ function startModelViewer(stage, src) {
      band is handled by the same arithmetic.
      It is recomputed here rather than fixed, so a different export or a
      reshaped stage cannot reintroduce this. */
-  const FIT_MARGIN = 1.06;         // a sliver of air, so it never kisses the edge
+  const FIT_MARGIN = 1.22;         // air around it — Jack asked for it smaller in the band
   let dist = 4.0;                  // until the mesh is loaded and radius is known
   let fitDirty = true;             // forces a refit once the real radius is known
   function size() {
@@ -4030,7 +4109,7 @@ function startModelViewer(stage, src) {
      -0.28 / -0.38 / -0.46 / -0.56 offline against the real mesh: past -0.5
      the two legs start to foreshorten into each other and the notch
      between them closes up, which is the feature that explains the object. */
-  const HOME_PITCH = -0.40;
+  const HOME_PITCH = -0.52;
   /* 0.20 rad/s, about 11 deg/s - one revolution every 31 seconds.
      It was 0.30, which Jack called a little fast, and then 0.14, which he
      read as not rotating at all. Measured in the page, 0.14 is 8 deg/s on
@@ -4114,6 +4193,21 @@ function startModelViewer(stage, src) {
       }
     }
 
+    /* the nudge rides on top of whatever the motion above decided, so the
+       drift carries on underneath it. Reduced motion gets none of it: it is
+       decorative movement, and the stage is labelled as draggable anyway. */
+    if (!drag && dt && !prefersReducedMotion) {
+      promptClock += dt * 1000;
+      if (promptClock > PROMPT_AFTER) {
+        const pt = ((promptClock - PROMPT_AFTER) / PROMPT_LOOP) % 1;
+        const w = promptWiggle(pt);
+        hand.style.opacity = promptFade(pt);
+        hand.style.transform = 'translate(-50%,0) translateX(' + (w * stage.clientWidth * 0.05) + 'px)';
+        yaw += (w - lastWiggle) * PROMPT_SWING;
+        lastWiggle = w;
+      }
+    }
+
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     if (theme !== lastTheme) { lastTheme = theme; look(); }
     size();
@@ -4168,8 +4262,8 @@ function startModelViewer(stage, src) {
     buffer(mesh.pos, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aPos'), gl.SHORT);
     buffer(mesh.nor, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aNor'), gl.BYTE);
     buffer(mesh.idx, gl.ELEMENT_ARRAY_BUFFER);
-    gl.uniform3fv(U('uBase'), [0.78, 0.79, 0.82]);
-    gl.uniform1f(U('uRough'), 0.32);
+    gl.uniform3fv(U('uBase'), [0.82, 0.83, 0.86]);
+    gl.uniform1f(U('uRough'), 0.30);
     look();
     size();
     stage.appendChild(canvas);
@@ -4196,6 +4290,7 @@ function startModelViewer(stage, src) {
     yawVel = pitchVel = 0;     // catching a spinning object stops it dead, as it should
     idle = 0;
     homed = false;             // it has been moved, so it owes a trip home
+    promptClock = 0; lastWiggle = 0; hand.style.opacity = '0';
     stage.setPointerCapture(e.pointerId);
     e.preventDefault();
   });
@@ -4245,6 +4340,7 @@ function startModelViewer(stage, src) {
     else return;
     idle = 0;
     homed = false;
+    promptClock = 0; lastWiggle = 0; hand.style.opacity = '0';
     e.preventDefault();
   });
 
