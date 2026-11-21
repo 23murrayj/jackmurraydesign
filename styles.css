@@ -843,6 +843,33 @@ a { color: inherit; text-decoration: none; }
    one that leaves a hairline of paper around it as it goes. */
 .sk-card { margin: -1.5px; }
 
+/* ==========================================================================
+   THE 3D VIEWER'S STAGE
+
+   The still render stays in the DOM underneath: it is the poster while the
+   385KB mesh is in flight, and it is what a browser without WebGL keeps.
+   .is-live is added only once the canvas has actually drawn, so a failed
+   fetch or a dead context leaves a working image rather than a hole.
+   touch-action: none or a drag turns into a page scroll - the same rule the
+   pong canvas carries, for the same reason.
+   ========================================================================== */
+.model-stage { position: relative; display: block; touch-action: none; cursor: grab; }
+.model-stage:active { cursor: grabbing; }
+.model-stage .model-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity .45s var(--theme-ease, ease);
+}
+.model-stage.is-live .model-canvas { opacity: 1; }
+/* the poster fades out under the canvas rather than being removed, so the
+   item never changes height and the wall never reflows */
+.model-stage.is-live img { opacity: 0; transition: opacity .45s var(--theme-ease, ease); }
+.model-stage:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .model-stage .model-canvas, .model-stage.is-live img { transition: none; }
+}
+
 /* Tracks .hero-grid's stacking breakpoint, which moved to 1280 when the
    standing role line made a 162px side column unusable. If these two drift
    apart the loader shows a two-column hero and the page then renders a

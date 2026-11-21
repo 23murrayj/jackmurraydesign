@@ -95,6 +95,22 @@ it. Fill these in for anything where the image content carries meaning.
 
 Purely decorative artwork should set `alt: ''` explicitly on the entry.
 
+## 3D models
+
+```
+node tools/pack-model.js <in.glb> assets/projects/<id>/model.jmm [grid]
+```
+
+Then put `model: '/assets/projects/<id>/model.jmm'` on the `photos` entry
+that should carry it, **alongside its `src`** — the still image stays as the
+poster and as the fallback for anything without WebGL.
+
+Export from Blender as GLB. Textures are ignored: the viewer shades one
+metallic material procedurally, so a textured model will lose its maps.
+Keep the mesh under 65,535 vertices after decimation (the tool throws if
+not) and expect ~385KB at grid 80. The model loads only when the project
+panel is opened, so it costs the home page nothing.
+
 ## Video
 
 ```js

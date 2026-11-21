@@ -2654,6 +2654,63 @@ up from there. Markup holds the truth, JS holds the animation — not the other
 way round. If you add another count-up, ticker or type-on effect, do it the
 same way.
 
+## The 3D viewer
+
+Jack modelled the pot clip in Blender and wanted it rotatable on the page.
+`<model-viewer>` and three.js are both ruled out by the first line of this
+file, and that rule earned itself here rather than being obeyed: **the
+library was also the bigger answer.** The GLB is 18.3MB — 684,604 triangles,
+**no textures at all**, one metallic grey material — so a library would have
+added ~250KB on top of shipping that. What goes to the browser instead is
+**385KB of mesh (289KB gzipped) and about 180 lines** in `script.js`
+SECTION 19. The geometry was the problem, and a library does not fix
+geometry.
+
+- **`node tools/pack-model.js <in.glb> <out.jmm> [grid]`** regenerates it,
+  and reproduces the committed file byte for byte (verified by sha256).
+  Clustering decimation on a grid, averaging each cell: 684,604 → **37,724
+  triangles at grid 80**, which is the number in the repo. Not quadric
+  edge-collapse, because this form has no sharp creases to protect — every
+  feature is a smooth fillet, exactly where a grid average is
+  indistinguishable from the expensive algorithm. Grid 64 gives 24,485 and
+  is visibly fine too; above ~128 the vertex count passes 65,535 and uint16
+  indices stop being possible, which the tool **throws** on rather than
+  silently truncating (grid 200 reports "too many vertices: 103088").
+- **The container carries its own index offset**, because the first version
+  computed padding from the normals block alone — which is 2 mod 4 whenever
+  the vertex count is odd, so reader and writer could disagree about where
+  the indices start. Positions are int16 across the bounding box (~15
+  microns on a 100mm object), normals int8.
+- **THE MATERIAL TOOK THREE PASSES OF ONE LESSON: contrast, not gradient.**
+  A smooth sky-to-floor ramp rendered as matte grey plastic twice. A
+  polished surface is almost entirely a mirror, so a mirror of something
+  featureless is featureless. What reads as metal is a **hard cyc edge**,
+  three distinct sources, and a thin horizon streak — and the streak is most
+  of the sense of motion, because it is the highlight that sweeps as the
+  form turns. The result is satin rather than chrome, which is **correct**:
+  the physical piece is sprayed silver and Blender's own material is
+  roughness 0.48.
+- **Blender is Z-up, WebGL is Y-up.** Without the `ZUP` rotation the clip
+  stands on its dome, which is how the first render came out.
+- **The still render is the poster AND the fallback.** The `09-object`
+  entry keeps its `src`; `model` only adds a stage around it. `.is-live`
+  goes on once the canvas has drawn, so a failed fetch, a dead context or no
+  WebGL at all leaves a working image rather than a hole — and the item
+  never changes height, so the masonry wall never reflows.
+- **It only runs while the panel is open.** `renderProjectMedia` starts it
+  and both it and `closeProject` call `stopModelStages()`. A
+  `requestAnimationFrame` left running behind a closed overlay is a phone
+  battery spent on something nobody is looking at. Verified that reopening
+  gives exactly one canvas rather than stacking them.
+- Theme is **polled in the frame** rather than hooked: there is no
+  `themeChanged` list in this codebase, and four uniform writes on a change
+  the visitor makes by hand is cheaper than another global to keep in step.
+  Light and dark get different studios, because a metal object reflects the
+  room it is in.
+- Reduced motion gets a **still object it can still drag**, not a disabled
+  one; arrow keys rotate it, because a drag-only control is one a keyboard
+  cannot reach.
+
 ## Performance
 
 Measured 2026-11-07. The first load is ~1.5MB and images are almost all of
@@ -2733,7 +2790,11 @@ fonts about 45KB.
 - Tokens over literals. Hardcoded hex is a bug unless it's deliberately
   theme-independent, and then it needs a comment saying so.
 - Prefer CSS over JS for anything declarative.
-- No dependencies. No build step. Keep it that way.
+- No dependencies. No build step. Keep it that way. **The 3D viewer is the
+  worked example**: the library answer (`<model-viewer>`, three.js) was also
+  the heavier one, because the 18MB of geometry was the actual problem. Before
+  reaching for a package, check whether it solves the thing that is costing
+  you.
 - Commit messages are long and explain the reasoning and the verification, in
   the same voice as the code comments.
 

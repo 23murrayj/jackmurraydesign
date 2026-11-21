@@ -17,7 +17,7 @@
                                       18  EASTER EGGS
                                       19  ROUTING BOOT (must stay last)
 
-   THE ONE ORDERING RULE: the routing boot block is SECTION 19 and must
+   THE ONE ORDERING RULE: the routing boot block is SECTION 20 and must
    remain the last thing in this file. Moved higher it throws "Cannot
    access 'dialogStack' before initialization", and the failure is quiet -
    a deep link looks like it works and shares as the home page.
@@ -216,7 +216,13 @@ const projectData = {
       { src: '/assets/projects/pot-clip/07-hand.jpg', w: 800, h: 1200 },
       { src: '/assets/projects/pot-clip/08-poster.jpg', w: 848, h: 1200,
         full: '/assets/projects/pot-clip/08-poster-full.jpg' },
-      { src: '/assets/projects/pot-clip/09-object.jpg', w: 1400, h: 933 },
+      // The still render is the poster and the fallback; SECTION 19 puts a
+      // canvas over it when WebGL is available. This slot rather than the
+      // hero because it is where the case study arrives at the finished
+      // form, and because a feature-width item is the only one big enough
+      // to be worth turning.
+      { src: '/assets/projects/pot-clip/09-object.jpg', w: 1400, h: 933,
+        model: '/assets/projects/pot-clip/model.jmm' },
     ],
   },
   'easter-riverside': {
@@ -727,6 +733,8 @@ function generatePlaceholderSvg(i) {
 const projectDetailEl = document.querySelector('.project-detail');
 
 function renderProjectMedia(data) {
+  // anything still spinning belongs to the panel we are replacing
+  stopModelStages();
   projectMedia.className = `project-media layout-${data.layout}`;
   // masonry projects get the full-page sticky-scroll treatment: photos
   // flow with the page on the left, info panel pinned on the right
@@ -782,9 +790,17 @@ function renderProjectMedia(data) {
         sizes[i] = 'tall'; i += 1;
       }
     }
-    projectMedia.innerHTML = items.map((entry, i2) =>
-      `<div class="masonry-item size-${sizes[i2]}">${mediaTag(entry, data.id, i2, data.title)}</div>`
-    ).join('');
+    // An entry carrying `model` keeps its <img> and gets a stage around it:
+    // the still render IS the poster and the no-WebGL fallback, so nothing
+    // has to be duplicated and nothing disappears if the canvas never starts.
+    projectMedia.innerHTML = items.map((entry, i2) => {
+      const media = mediaTag(entry, data.id, i2, data.title);
+      const inner = (entry && entry.model)
+        ? `<div class="model-stage" data-model="${escapeAttr(entry.model)}">${media}</div>`
+        : media;
+      return `<div class="masonry-item size-${sizes[i2]}">${inner}</div>`;
+    }).join('');
+    setupModelStages(projectMedia);
     return;
   }
 
@@ -952,6 +968,9 @@ function openProject(id) {
 
 function closeProject() {
   openProjectId = null;
+  // a requestAnimationFrame left running behind a closed overlay is a phone
+  // battery spent on something nobody is looking at
+  stopModelStages();
   projectOverlay.classList.remove('open');
   document.body.style.overflow = '';
   deactivateDialog(projectOverlay);
@@ -3542,7 +3561,283 @@ setInert(lightbox, true);
    a glitch. Leaving triggers immediately - resuming late feels broken.
    ========================================================================== */
 /* ==========================================================================
-   SECTION 19 · BOOT THE ROUTE — and this has to be the LAST thing in the file.
+   SECTION 19 · THE 3D VIEWER — 37k triangles of hand-rolled WebGL
+
+   Jack modelled the pot clip in Blender and wanted it rotatable on the page.
+   The obvious answer is <model-viewer> or three.js, and both are ruled out by
+   the first line of CLAUDE.md: no dependencies. That rule is not decoration
+   here - the site is a work sample, and "I wrote the renderer" is a better
+   sample than "I imported one".
+
+   IT IS ALSO THE SMALLER ANSWER, which is the part worth knowing. The GLB is
+   18.3MB: 684,604 triangles, no textures at all, one metallic grey material.
+   model-viewer would have added ~250KB of library ON TOP of shipping that.
+   What goes to the browser instead is 385KB of mesh and about 180 lines of
+   code, because the geometry was the problem and a library does not fix
+   geometry.
+
+   WHAT WAS THROWN AWAY, AND WHY IT COSTS NOTHING. tools/pack-model.js
+   clusters vertices onto a grid and averages each cell, taking 684,604
+   triangles to 37,724 - roughly 5%. Clustering rather than quadric
+   edge-collapse because this form has no sharp creases to protect: every
+   feature is a smooth fillet, which is exactly where a grid average is
+   indistinguishable from the expensive algorithm. Positions then quantise to
+   int16 across the bounding box (a ~15 micron step on a 100mm object, far
+   finer than a 600px viewport resolves) and normals to int8. The container
+   carries its own index offset in the header so the parser cannot drift from
+   the packer - the first version computed padding from the normals block
+   alone, which is 2 mod 4 for an odd vertex count.
+
+   THE MATERIAL IS THREE PASSES OF ONE LESSON: contrast, not gradient. A
+   smooth sky-to-floor ramp rendered as matte grey plastic twice, because a
+   polished surface is almost entirely a mirror and a mirror of nothing
+   featureless is featureless. What reads as metal is a hard cyc edge, three
+   distinct sources, and a thin horizon streak - the streak is most of the
+   sense of motion, since it is the highlight that sweeps as the form turns.
+   The result is satin rather than chrome, which is correct: the physical
+   piece is sprayed silver, and Blender's own material is roughness 0.48.
+
+   Blender is Z-up and WebGL is Y-up. Without the ZUP rotation below the clip
+   stands on its dome, which is how the first render came out.
+   ========================================================================== */
+
+/* A 4x4 just big enough for one object on a turntable. No general-purpose
+   matrix library, because this needs exactly a perspective, two rotations
+   and a translate, and a general one is most of a dependency. */
+const M4 = {
+  ident: () => new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]),
+  persp(fov, aspect, near, far) {
+    const t = 1 / Math.tan(fov / 2);
+    return new Float32Array([t/aspect,0,0,0, 0,t,0,0, 0,0,(far+near)/(near-far),-1, 0,0,2*far*near/(near-far),0]);
+  },
+  mul(a, b) {
+    const o = new Float32Array(16);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      let v = 0; for (let k = 0; k < 4; k++) v += a[k*4+j] * b[i*4+k];
+      o[i*4+j] = v;
+    }
+    return o;
+  },
+  trans(x, y, z) { const m = M4.ident(); m[12]=x; m[13]=y; m[14]=z; return m; },
+  rotX(r) { const c=Math.cos(r), s=Math.sin(r), m=M4.ident(); m[5]=c; m[6]=s; m[9]=-s; m[10]=c; return m; },
+  rotY(r) { const c=Math.cos(r), s=Math.sin(r), m=M4.ident(); m[0]=c; m[2]=-s; m[8]=s; m[10]=c; return m; },
+};
+
+const MODEL_VS = `
+attribute vec3 aPos; attribute vec3 aNor;
+uniform mat4 uProj, uView, uModel; uniform mat3 uNormal;
+varying vec3 vN, vW;
+void main(){
+  vec4 w = uModel * vec4(aPos, 1.0);
+  vW = w.xyz; vN = normalize(uNormal * aNor);
+  gl_Position = uProj * uView * w;
+}`;
+
+const MODEL_FS = `
+precision highp float;
+varying vec3 vN, vW;
+uniform vec3 uEye, uBase, uTop, uHorizon, uBottom;
+uniform float uRough, uExposure;
+vec3 env(vec3 d, float blur){
+  float y = d.y;
+  float h = smoothstep(-0.20, 0.06, y);
+  vec3 c = mix(uBottom, uHorizon, h);
+  c = mix(c, uTop, smoothstep(0.10, 0.95, y));
+  float key  = pow(max(dot(d, normalize(vec3(-0.42, 0.70, 0.58))), 0.0), mix(160.0, 5.0, blur));
+  float box  = pow(max(dot(d, normalize(vec3( 0.12, 0.95,-0.28))), 0.0), mix( 60.0, 4.0, blur));
+  float kick = pow(max(dot(d, normalize(vec3( 0.86, 0.06, 0.50))), 0.0), mix( 90.0, 6.0, blur));
+  c += vec3(1.00,1.00,1.00) * key  * mix(5.5, 0.8, blur);
+  c += vec3(0.97,0.98,1.00) * box  * mix(3.0, 0.5, blur);
+  c += vec3(1.00,0.99,0.96) * kick * mix(2.2, 0.3, blur);
+  c += vec3(1.0) * pow(1.0 - abs(y), 40.0) * (1.0 - blur * 0.8) * 0.9;
+  return c;
+}
+void main(){
+  vec3 N = normalize(vN);
+  if (!gl_FrontFacing) N = -N;
+  vec3 V = normalize(uEye - vW);
+  vec3 R = reflect(-V, N);
+  float NoV = clamp(dot(N, V), 0.0, 1.0);
+  vec3 refl = mix(env(R, uRough), env(N, 1.0), uRough * 0.22);
+  vec3 F = uBase + (1.0 - uBase) * pow(1.0 - NoV, 5.0);
+  vec3 col = refl * F * uExposure;
+  col = col / (col + vec3(0.9));
+  gl_FragColor = vec4(pow(col, vec3(1.0/2.2)), 1.0);
+}`;
+
+function parseMesh(buf) {
+  const dv = new DataView(buf);
+  const tag = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
+  if (tag !== 'JMM1') throw new Error('not a JMM1 mesh');
+  const nv = dv.getUint32(4, true), nt = dv.getUint32(8, true);
+  const idxOff = dv.getUint32(28, true);
+  return {
+    nv, nt,
+    pos: new Int16Array(buf, 32, nv * 3),
+    nor: new Int8Array(buf, 32 + nv * 6, nv * 3),
+    idx: new Uint16Array(buf, idxOff, nt * 3),
+  };
+}
+
+/* Light and dark get different studios. The page ground is warm ivory and
+   the dark ground is near-black, and a metal object reflects the room it is
+   in - leaving one environment for both would put a bright studio behind an
+   object sitting on a black page. */
+const MODEL_LOOK = {
+  light: { top: [2.30,2.34,2.50], horizon: [0.92,0.94,1.02], bottom: [0.20,0.20,0.24], exposure: 1.00 },
+  dark:  { top: [2.05,2.09,2.26], horizon: [0.70,0.72,0.82], bottom: [0.13,0.13,0.17], exposure: 0.92 },
+};
+
+function startModelViewer(stage, src) {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'model-canvas';
+  const gl = canvas.getContext('webgl', { antialias: true, alpha: true, depth: true });
+  if (!gl) return false;                       // the poster <img> stays, untouched
+
+  let mesh = null, prog = null, raf = 0, yaw = 0.95, pitch = -0.18;
+  let spin = !prefersReducedMotion;            // reduced motion gets a still object it can still drag
+  let drag = null, dpr = 1;
+
+  const compile = (type, srcText) => {
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, srcText); gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+    return sh;
+  };
+  const U = (n) => gl.getUniformLocation(prog, n);
+
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(stage.clientWidth * dpr));
+    const h = Math.max(1, Math.round(stage.clientHeight * dpr));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+      gl.uniformMatrix4fv(U('uProj'), false, M4.persp(0.62, w / h, 0.1, 20));
+    }
+  }
+
+  function look() {
+    const l = MODEL_LOOK[document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'];
+    gl.uniform3fv(U('uTop'), l.top);
+    gl.uniform3fv(U('uHorizon'), l.horizon);
+    gl.uniform3fv(U('uBottom'), l.bottom);
+    gl.uniform1f(U('uExposure'), l.exposure);
+  }
+
+  const ZUP = M4.rotX(-Math.PI / 2);
+  const DIST = 3.55;
+  let last = 0, lastTheme = null;
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+    last = now;
+    if (spin) yaw += dt * 0.35;
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    if (theme !== lastTheme) { lastTheme = theme; look(); }
+    size();
+    const model = M4.mul(M4.mul(M4.rotX(pitch), M4.rotY(yaw)), ZUP);
+    gl.uniformMatrix4fv(U('uModel'), false, model);
+    gl.uniformMatrix4fv(U('uView'), false, M4.trans(0, 0, -DIST));
+    gl.uniformMatrix3fv(U('uNormal'), false, new Float32Array([
+      model[0], model[1], model[2], model[4], model[5], model[6], model[8], model[9], model[10]]));
+    gl.uniform3f(U('uEye'), 0, 0, DIST);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.drawElements(gl.TRIANGLES, mesh.nt * 3, gl.UNSIGNED_SHORT, 0);
+  }
+
+  fetch(src).then((r) => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.arrayBuffer();
+  }).then((buf) => {
+    mesh = parseMesh(buf);
+    prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, MODEL_VS));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, MODEL_FS));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    gl.useProgram(prog);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.clearColor(0, 0, 0, 0);
+
+    const buffer = (data, target, loc, type) => {
+      const b = gl.createBuffer();
+      gl.bindBuffer(target, b);
+      gl.bufferData(target, data, gl.STATIC_DRAW);
+      if (loc !== undefined) { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 3, type, true, 0, 0); }
+    };
+    buffer(mesh.pos, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aPos'), gl.SHORT);
+    buffer(mesh.nor, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aNor'), gl.BYTE);
+    buffer(mesh.idx, gl.ELEMENT_ARRAY_BUFFER);
+    gl.uniform3fv(U('uBase'), [0.78, 0.79, 0.82]);
+    gl.uniform1f(U('uRough'), 0.26);
+    look();
+    size();
+    stage.appendChild(canvas);
+    stage.classList.add('is-live');
+    raf = requestAnimationFrame(frame);
+  }).catch(() => { /* poster image stays; nothing to clean up */ });
+
+  /* Pointer events, so one path covers finger, pen and mouse — the same
+     reason pong does. touch-action is none in CSS or a drag scrolls the
+     page instead of turning the object. */
+  stage.addEventListener('pointerdown', (e) => {
+    if (!mesh) return;
+    drag = { x: e.clientX, y: e.clientY };
+    spin = false;
+    stage.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    yaw += (e.clientX - drag.x) * 0.01;
+    pitch = Math.max(-1.3, Math.min(1.3, pitch + (e.clientY - drag.y) * 0.01));
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  const release = () => { drag = null; };
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', release);
+
+  /* A drag-only control is a control a keyboard cannot reach. */
+  stage.addEventListener('keydown', (e) => {
+    const step = 0.22;
+    if (e.key === 'ArrowLeft') yaw -= step;
+    else if (e.key === 'ArrowRight') yaw += step;
+    else if (e.key === 'ArrowUp') pitch = Math.max(-1.3, pitch - step);
+    else if (e.key === 'ArrowDown') pitch = Math.min(1.3, pitch + step);
+    else return;
+    spin = false;
+    e.preventDefault();
+  });
+
+  /* Stop the loop when the panel it lives in is closed. A requestAnimationFrame
+     left running behind a closed overlay is a phone battery being spent on a
+     thing nobody is looking at. */
+  return {
+    stop() { if (raf) cancelAnimationFrame(raf); raf = 0; last = 0; },
+    start() { if (mesh && !raf) { last = 0; raf = requestAnimationFrame(frame); } },
+  };
+}
+
+const liveModels = [];
+function setupModelStages(root) {
+  while (liveModels.length) { const m = liveModels.pop(); if (m && m.stop) m.stop(); }
+  root.querySelectorAll('[data-model]').forEach((stage) => {
+    stage.tabIndex = 0;
+    stage.setAttribute('role', 'application');
+    const label = T.t('a11y.modelViewer');
+    if (label) stage.setAttribute('aria-label', label);
+    const v = startModelViewer(stage, stage.getAttribute('data-model'));
+    if (v) liveModels.push(v);
+  });
+}
+function stopModelStages() {
+  liveModels.forEach((m) => m && m.stop && m.stop());
+}
+
+/* ==========================================================================
+   SECTION 20 · BOOT THE ROUTE — and this has to be the LAST thing in the file.
 
    It was 200 lines higher to begin with, next to the other i18n wiring, and
    that threw "Cannot access 'dialogStack' before initialization": opening a
