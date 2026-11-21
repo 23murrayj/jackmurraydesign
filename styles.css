@@ -853,6 +853,42 @@ a { color: inherit; text-decoration: none; }
    touch-action: none or a drag turns into a page scroll - the same rule the
    pong canvas carries, for the same reason.
    ========================================================================== */
+/* THE TURNTABLE'S OWN BAND, AND THE POINT IS THAT IT IS NOT A BOX.
+   It used to be the fourteenth cell of the masonry wall, so it wore the
+   grid's 4px border and 6px of black padding — a thing you turn, framed
+   exactly like the thirteen things you only look at. Jack: "it shouldn't
+   be in a box. It should be in its own area... put it at like the very
+   top." So: no border, no background, no frame of any kind. What makes it
+   an area is height and air, which is also the only treatment that cannot
+   accidentally become a second box.
+   It sits under the title and above the photographs, so the page opens
+   with its own name and then the one thing on it you can pick up.
+   The height is viewport-relative because the object is the subject here
+   rather than an illustration of it, with a cap so a tall desktop window
+   does not hand it most of a screen. */
+.project-stage {
+  height: clamp(320px, 52vh, 560px);
+  margin-bottom: 40px;
+}
+.project-detail:not(.has-stage) .project-stage { display: none; }
+.project-stage .model-stage { width: 100%; height: 100%; }
+/* contain, not cover: the poster is a render of the whole object and this
+   band is a different shape from it, so cropping would cut the legs off
+   the fallback — which is the state a visitor with no WebGL is left in.
+   Overrides the global .project-media img cover rule's intent for this one
+   image; it is outside .project-media, so this is the only rule on it. */
+.project-stage .model-stage img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+}
+@media (max-width: 760px) {
+  /* A phone's viewport height is mostly browser chrome, and the object has
+     to stay big enough to be worth dragging. Fixed, so an address bar
+     sliding away mid-scroll cannot resize the canvas under the finger. */
+  .project-stage { height: 320px; margin-bottom: 28px; }
+}
+
 .model-stage { position: relative; display: block; touch-action: none; cursor: grab; }
 .model-stage:active { cursor: grabbing; }
 .model-stage .model-canvas {
@@ -2877,6 +2913,8 @@ body.is-loading { overflow: hidden; }
 }
 /* the title runs the full measure above both columns, same as the button */
 .project-detail.has-sidebar.is-title-top .project-head { grid-column: 1 / -1; }
+/* and so does the turntable — it is a band, not a column */
+.project-detail.has-sidebar .project-stage { grid-column: 1 / -1; }
 /* Row gap off for this one layout, and ONLY where the title is on top.
    There are three rows here then - button, title, columns - and both row
    gaps are already owned by a margin: the back button's 36px and

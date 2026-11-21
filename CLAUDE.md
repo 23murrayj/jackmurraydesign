@@ -21,7 +21,10 @@ Bash. **Git:** `/Library/Developer/CommandLineTools/usr/bin/git` — the plain
 `git` is an Xcode shim that refuses. Both are explained under *Environment*.
 
 **Check it:** `node tools/audit.js` and `node tools/field-check.js`, before
-any commit touching more than one file. Neither replaces driving the page.
+any commit touching more than one file, plus `node tools/model-check.js`
+when you touch the 3D viewer or repack its mesh. None replaces driving the
+page — and the model checker is the one that replaces *watching* it, since
+the pane freezes `requestAnimationFrame`.
 A `git config core.hooksPath .githooks` in a fresh clone turns the
 pre-commit hook on; `audit.js` tells you if you have not.
 
@@ -47,6 +50,7 @@ to mirror the hero exactly, so moving anything in the hero is a two-file job
 | touch a button, card or chip | **UX rules** → Hover, lift and touch targets | the hover pad, and 44px on touch |
 | write anything a crawler reads | **Machine readers are an audience** | the eggs stay unnamed there |
 | touch the easter eggs | **Machine readers** → the three layers | `curl` the page and grep for their names |
+| touch the 3D viewer, or repack its mesh | **The 3D viewer** | `node tools/model-check.js` — the pane freezes rAF, so motion cannot be checked by looking |
 | publish a file, or touch a photo | **Safety constraints** | read the file first |
 | measure anything in the browser | **Environment** → the pane lies | sanity-check the probe first |
 
@@ -1668,13 +1672,12 @@ been asked.
   directions and reading the labels, because the other way is upside down —
   and baked to orientation 1 rather than tagged, per the double-rotation
   gotcha in `assets/README.md`.
-- **CLICK-TO-ZOOM IS NOW ALL-OR-ONE.** It was on two tiles out of nine and
+- **CLICK-TO-ZOOM IS ALL OF THEM.** It was on two tiles out of nine and
   looked arbitrary, because it was: `full` had been added only where the
-  source happened to be large. Every tile carries `full` now **except the
-  3D one**, and that exception is principled rather than lazy — a lightbox
-  there would fight the drag handler for the same pointer, and the still is
-  only 1536×1024, so opening it larger would be the bigger blur that
-  `full` is opt-in to avoid. **13 of 14 zoom; the fourteenth turns.**
+  source happened to be large. Every tile carries `full` now, and there is
+  no exception left to explain — the 3D object used to be the fourteenth
+  cell and the one tile that turned instead of zooming, and it is not in
+  the wall at all any more (see *The 3D viewer*). **13 tiles, 13 zoom.**
 
 ## Routing
 
@@ -2754,23 +2757,57 @@ same way.
 Jack modelled the pot clip in Blender and wanted it rotatable on the page.
 `<model-viewer>` and three.js are both ruled out by the first line of this
 file, and that rule earned itself here rather than being obeyed: **the
-library was also the bigger answer.** The GLB is 18.3MB — 684,604 triangles,
-**no textures at all**, one metallic grey material — so a library would have
-added ~250KB on top of shipping that. What goes to the browser instead is
-**385KB of mesh (289KB gzipped) and about 180 lines** in `script.js`
-SECTION 19. The geometry was the problem, and a library does not fix
-geometry.
+library was also the bigger answer.** The export is 23MB — 832,256
+triangles, **no textures**, one metallic grey material — so a library would
+have added ~250KB on top of shipping that. What goes to the browser instead
+is **392KB of mesh and about 250 lines** in `script.js` SECTION 19. The
+geometry was the problem, and a library does not fix geometry.
+
+**`node tools/model-check.js` checks all of it** — the container, the
+indices, the normals, the winding, and the motion model. Run it after any
+repack and after any change to the viewer. Both halves fail invisibly, and
+the motion half cannot be checked any other way: **the browser pane freezes
+`requestAnimationFrame`** (measured, 2 ticks in 1500ms), so looking at the
+page will not tell you whether the object still turns.
 
 - **`node tools/pack-model.js <in.glb> <out.jmm> [grid]`** regenerates it,
-  and reproduces the committed file byte for byte (verified by sha256).
-  Clustering decimation on a grid, averaging each cell: 684,604 → **37,724
-  triangles at grid 80**, which is the number in the repo. Not quadric
-  edge-collapse, because this form has no sharp creases to protect — every
-  feature is a smooth fillet, exactly where a grid average is
-  indistinguishable from the expensive algorithm. Grid 64 gives 24,485 and
-  is visibly fine too; above ~128 the vertex count passes 65,535 and uint16
-  indices stop being possible, which the tool **throws** on rather than
-  silently truncating (grid 200 reports "too many vertices: 103088").
+  deterministically (same input, same sha256). Clustering decimation on a
+  grid, averaging each cell: 832,256 → **38,380 triangles at grid 72**,
+  which is the number in the repo. Not quadric edge-collapse, because this
+  form has no sharp creases to protect — every feature is a smooth fillet,
+  exactly where a grid average is indistinguishable from the expensive
+  algorithm. Grid 64 gives 30,833; above ~128 the vertex count passes
+  65,535 and uint16 indices stop being possible, which the tool **throws**
+  on rather than silently truncating.
+- **THE PACKER APPLIES THE glTF NODE TRANSFORM, and not doing so cost a
+  whole orientation bug.** A glTF mesh lives in its node's local space and
+  the node carries the transform that puts it in the world; this script
+  read the accessors straight out of the file and threw that away. It got
+  away with it for exactly one export. Blender bakes the Z-up → Y-up
+  conversion into the root node as a +90° X rotation, so the old file's
+  mesh data was still Z-up and the viewer's own `ZUP` constant put it back
+  — two errors cancelling, which is the worst kind of working.
+  `AlessiPlease2.glb` carries `[0,0,-1,0]` instead, a 180° turn about Z,
+  because the object is rotated in the scene rather than by the export.
+  Dropped, that is the clip standing on its head.
+  So the packer composes T·R·S down the scene graph and emits in glTF
+  **world** space, which the spec says is Y-up. **`ZUP` is gone from the
+  viewer** and there is no per-file constant left to get wrong. A mirroring
+  transform would also need the winding reversed; the packer **throws**
+  rather than shipping inside-out triangles.
+- **WINDING IS RE-DERIVED, NOT INHERITED, and this is what the dark specks
+  were.** Clustering moves all three corners of a triangle to cell
+  centroids, so on a thin or curved patch the moved triangle can face the
+  other way — the source winding was right for the source positions and
+  means nothing for the new ones. `AlessiPlease2` produced **200** of them,
+  and with back-face culling on each one is a pinhole: the object rendered
+  covered in small dark specks and scratches, which reads as a bad material
+  rather than as bad data. Each surviving triangle is now oriented against
+  the averaged vertex normals, which are the one piece of orientation
+  information that survives decimation intact.
+  **Culling is off in the viewer as well**, belt and braces: 38k triangles
+  of overdraw costs nothing measurable, and the shader has always carried
+  `if (!gl_FrontFacing) N = -N;`, which was dead code while culling was on.
 - **The container carries its own index offset**, because the first version
   computed padding from the normals block alone — which is 2 mod 4 whenever
   the vertex count is odd, so reader and writer could disagree about where
@@ -2785,26 +2822,96 @@ geometry.
   form turns. The result is satin rather than chrome, which is **correct**:
   the physical piece is sprayed silver and Blender's own material is
   roughness 0.48.
-- **Blender is Z-up, WebGL is Y-up.** Without the `ZUP` rotation the clip
-  stands on its dome, which is how the first render came out.
-- **The still render is the poster AND the fallback.** The `09-object`
-  entry keeps its `src`; `model` only adds a stage around it. `.is-live`
-  goes on once the canvas has drawn, so a failed fetch, a dead context or no
-  WebGL at all leaves a working image rather than a hole — and the item
-  never changes height, so the masonry wall never reflows.
-- **It only runs while the panel is open.** `renderProjectMedia` starts it
-  and both it and `closeProject` call `stopModelStages()`. A
-  `requestAnimationFrame` left running behind a closed overlay is a phone
-  battery spent on something nobody is looking at. Verified that reopening
-  gives exactly one canvas rather than stacking them.
+
+### How it turns
+
+- **IT IS A TURNTABLE, NOT AN ARCBALL, and that is what satisfies both
+  halves of the brief.** Jack asked for two things that sound opposed —
+  *"you should be able to rotate it any way you want"* and *"make sure that
+  it's upright when it's turning"*. A turntable gives both: `rotX(pitch) ·
+  rotY(yaw)` spins the object about its own vertical axis and raises the
+  eye, and no composition of the two introduces roll. An arcball would let
+  you tip it onto its head. `model-check` asserts the no-roll property over
+  46k yaw/pitch pairs rather than taking the matrix algebra on trust.
+- **Yaw is unbounded and pitch is the only axis that can stop**, at 83°,
+  short of the 90 where the horizon would flip.
+- **THERE WERE THREE STOPPING POINTS AND ALL THREE ARE GONE.** Jack: *"you
+  can rotate a full 360, but it has like stopping points."* Pitch hit a
+  hard `Math.max/min` wall at ±1.3 and stopped dead; a release stopped the
+  object dead because there was no momentum; and `spin = false` was
+  permanent, so the resting turntable never came back after the first drag.
+  Now pitch meets **resistance** instead of a wall — past `PITCH_SOFT` an
+  incoming delta is scaled by how much room is left, so it goes heavy in
+  the hand and arrives asymptotically — a release **coasts** on its
+  velocity, and the turntable **eases back** after `IDLE_AFTER`.
+- **MOMENTUM AND THE RETURN TO THE TURNTABLE ARE ONE DECISION, not two
+  that run at once.** Written as two — a decay every frame plus a blend
+  toward `IDLE_SPIN` — they fight, and yaw settles at the fixed point of
+  the pair rather than at `IDLE_SPIN`. Measured, 0.077 rad/s against the
+  0.30 asked for: the object crept. It is one branch or the other now.
+- **EVERY RATE IS `exp(-k·dt)` AND EVERY POSITION IS INTEGRATED IN CLOSED
+  FORM.** A per-frame multiplier is twice as fast at 120Hz as at 60, and
+  even with exponential rates a `yaw += vel · dt` Riemann sum is not
+  framerate-independent — that one alone left 60Hz and 144Hz **0.022 rad**
+  apart after a single second. Displacement under an exponentially decaying
+  velocity has an exact form, so the loop uses it and the two rates now
+  agree **to zero**.
+- **Drag speed is per fraction of the stage, not per pixel.** A flat
+  0.01 rad/px turned the object a different amount on a phone than on a
+  desktop, and much less once the stage became a full-width band. A full
+  sweep is ~1.1 turns at any size.
+- **The arrow keys nudge the velocity, not the angle**, so a held key
+  accelerates into a smooth turn and coasts on release instead of stepping
+  in 0.22 rad jumps. A drag-only control is one a keyboard cannot reach.
+- A tap is not a throw (under 0.02 rad of travel kills the velocity, or
+  click jitter would launch it), and a throw is capped at 9 rad/s so a fast
+  swipe on a phone cannot turn it into a blur.
+- Reduced motion gets **no drift of its own** but still coasts a drag the
+  visitor asked for — and can still turn it with the keyboard.
+
+### Where it sits
+
+- **IT IS NOT A TILE IN THE PHOTO WALL ANY MORE, and that is the point.**
+  It was the fourteenth cell of the masonry grid, so it wore the grid's 4px
+  border and 6px of black padding like every photograph beside it — a thing
+  you turn, framed exactly like the thirteen things you only look at. Jack:
+  *"it shouldn't be in a box. It should be in its own area… put it at like
+  the very top."* So `.project-stage` is a band of its own between the
+  title and the photographs, with **no border, no background and no frame
+  of any kind**. What makes it an area is height and air, which is also the
+  only treatment that cannot accidentally become a second box.
+- `clamp(320px, 52vh, 560px)` tall, and a flat 320 at ≤760px — fixed on a
+  phone, so an address bar sliding away mid-scroll cannot resize the canvas
+  under the finger.
+- **The still render is the poster AND the fallback.** The stage holds an
+  `<img>` and the canvas sits over it; `.is-live` goes on once the canvas
+  has drawn, so a failed fetch, a dead context or no WebGL at all leaves a
+  working photograph rather than a hole. `object-fit: contain`, because the
+  band is a different shape from the render and cropping would cut the legs
+  off the one thing a visitor without WebGL ever sees.
+- **The opening view is chosen, not inherited.** `yaw 2.0 / pitch −0.28` is
+  the three-quarter from slightly above that Jack's own product shot
+  (`14-object.jpg`, the poster behind the canvas) was taken at. The old
+  `0.95 / −0.18` was tuned for the old mesh and opens square onto the flat
+  side of this one, where the saddle, the legs and the notch between them
+  are all invisible. Picked by rendering a yaw sweep offline and comparing
+  against the photograph.
+- **`setupModelStages` appends, it does not reset.** It used to stop and
+  drop everything first, which was fine while one call site existed and
+  silently wrong the moment a second arrived: the panel sets up
+  `.project-media` and then `#projectStage`, and a self-clearing setup
+  would have had the second call kill the viewer the first one started.
+  Tearing down is `stopModelStages`' job, which `renderProjectMedia`
+  already calls — so `renderProjectStage` must run **after** it.
+- **It only runs while the panel is open.** A `requestAnimationFrame` left
+  running behind a closed overlay is a phone battery spent on something
+  nobody is looking at. Verified that reopening gives exactly one canvas
+  rather than stacking them.
 - Theme is **polled in the frame** rather than hooked: there is no
   `themeChanged` list in this codebase, and four uniform writes on a change
   the visitor makes by hand is cheaper than another global to keep in step.
   Light and dark get different studios, because a metal object reflects the
   room it is in.
-- Reduced motion gets a **still object it can still drag**, not a disabled
-  one; arrow keys rotate it, because a drag-only control is one a keyboard
-  cannot reach.
 
 ## Performance
 

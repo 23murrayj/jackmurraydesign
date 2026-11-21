@@ -257,14 +257,24 @@ const projectData = {
         full: '/assets/projects/pot-clip/12-poster-d-full.jpg' },
       { src: '/assets/projects/pot-clip/13-poster-e.jpg', w: 848, h: 1200,
         full: '/assets/projects/pot-clip/13-poster-e-full.jpg' },
-      // THE ONLY TILE WITHOUT `full`, and deliberately. Everything else
-      // zooms on click; this one turns instead. A lightbox here would fight
-      // the drag handler for the same pointer, and the still is only
-      // 1536x1024 anyway - opening it larger would be a bigger blur, which
-      // is the whole reason `full` is opt-in.
-      { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933,
-        model: '/assets/projects/pot-clip/model.jmm' },
     ],
+    // THE 3D OBJECT IS NOT A TILE IN THE WALL ANY MORE. It was the
+    // fourteenth cell, so it wore the masonry grid's 4px border and 6px of
+    // black padding like every photograph beside it - a thing you turn,
+    // presented as a thing you look at, in a box. Jack: "it shouldn't be in
+    // a box. It should be in its own area... put it at like the very top."
+    // So it is a band of its own under the title, above the photographs,
+    // with no frame at all. Rendered by renderProjectStage into
+    // #projectStage, a sibling of .project-media.
+    //   The still is the poster AND the no-WebGL fallback, exactly as before,
+    // and it keeps alt.14 - it was photo 14 and the other thirteen did not
+    // renumber, so no alt text moved.
+    model: {
+      src: '/assets/projects/pot-clip/model.jmm',
+      poster: { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933 },
+      // index into the alt.N series, 0-based — 13 resolves proj.…alt.14
+      altIndex: 13,
+    },
   },
   'easter-riverside': {
     bg: '#8fc0e0',
@@ -773,6 +783,23 @@ function generatePlaceholderSvg(i) {
 }
 
 const projectDetailEl = document.querySelector('.project-detail');
+const projectStage = document.getElementById('projectStage');
+
+/* The turntable's own band, above the photographs. Separate from
+   renderProjectMedia because it is not media: it is one interactive object
+   that happens to have a still behind it, and it has to survive every
+   layout rather than being a cell in one of them.
+   The <img> is the poster AND the fallback - a dead fetch, a lost context
+   or no WebGL at all leaves a working photograph rather than a hole. */
+function renderProjectStage(data) {
+  const m = data.model;
+  projectDetailEl.classList.toggle('has-stage', !!m);
+  if (!m) { projectStage.innerHTML = ''; return; }
+  const poster = mediaTag(m.poster, data.id, m.altIndex || 0, data.title, true);
+  projectStage.innerHTML =
+    `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>`;
+  setupModelStages(projectStage);
+}
 
 function renderProjectMedia(data) {
   // anything still spinning belongs to the panel we are replacing
@@ -1012,6 +1039,9 @@ function openProject(id) {
   // stamped on so the media helpers can build proj.<id>.alt.<n> keys
   data.id = id;
   renderProjectMedia(data);
+  // after the media, never before: renderProjectMedia opens with
+  // stopModelStages(), which would tear down a stage set up ahead of it
+  renderProjectStage(data);
   // renderProjectMedia returns early per layout, so the zoom affordances are
   // applied here — its single call site — rather than before each return
   markZoomableImages();
@@ -3756,9 +3786,27 @@ function startModelViewer(stage, src) {
   const gl = canvas.getContext('webgl', { antialias: true, alpha: true, depth: true });
   if (!gl) return false;                       // the poster <img> stays, untouched
 
-  let mesh = null, prog = null, raf = 0, yaw = 0.95, pitch = -0.18;
-  let spin = !prefersReducedMotion;            // reduced motion gets a still object it can still drag
+  /* THE OPENING VIEW IS CHOSEN, not inherited. 0.95 / -0.18 was tuned for
+     the old mesh and on this one it opens square onto the flat side, where
+     the object reads as a lump: the saddle, the two legs and the notch
+     between them - the whole form - are all invisible from there.
+     2.0 / -0.28 is the three-quarter from slightly above, which is the
+     angle Jack's own product render (14-object.jpg, the poster behind this
+     canvas) was shot at. Picked by rendering a yaw sweep offline and
+     comparing against that photograph, not by nudging it in the browser. */
+  let mesh = null, prog = null, raf = 0, yaw = 2.0, pitch = -0.28;
+  /* MOTION STATE. It used to be `yaw += delta` straight out of pointermove
+     with a hard clamp on pitch, and Jack's read of that was "you can rotate
+     a full 360, but it has like stopping points." Three of them, in fact:
+     pitch hit a wall at ±1.3 rad and stopped dead, a release stopped the
+     object dead because there was no momentum, and `spin = false` was
+     permanent, so the turntable never came back.
+     Velocities in radians/second, integrated in the frame loop, so the feel
+     does not change with the input device's event rate. */
+  let yawVel = 0, pitchVel = 0;
+  let idle = 0;                                 // seconds since the last input
   let drag = null, dpr = 1;
+  const reduce = prefersReducedMotion;
 
   const compile = (type, srcText) => {
     const sh = gl.createShader(type);
@@ -3787,18 +3835,83 @@ function startModelViewer(stage, src) {
     gl.uniform1f(U('uExposure'), l.exposure);
   }
 
-  const ZUP = M4.rotX(-Math.PI / 2);
   const DIST = 3.55;
+
+  /* UPRIGHT IS THE WHOLE POINT, so this is a TURNTABLE and not an arcball.
+     Jack asked for two things that sound opposed - "rotate it any way you
+     want" and "make sure that it's upright when it's turning" - and a
+     turntable is what satisfies both: yaw spins the object about its own
+     vertical axis, pitch raises and lowers the eye, and no composition of
+     the two ever introduces roll. An arcball would let you tip it onto its
+     head, which is the thing he asked not to happen.
+     So yaw is free and unbounded - a genuine, endless 360 - and pitch is
+     the only axis that can stop, because past vertical you are looking at
+     the object from behind its own pole and the horizon flips.
+     PITCH_MAX is 1.45 rad, 83 deg: high enough to see the top of the clip,
+     short of the 90 where it would invert. */
+  const PITCH_MAX = 1.45;
+  const PITCH_SOFT = 1.10;      // resistance starts here, well before the wall
+  const IDLE_SPIN = 0.30;       // rad/s, the resting turntable
+  const IDLE_AFTER = 2.2;       // seconds of stillness before it drifts back
+  const THROW_DECAY = 1.8;      // a flick is down to ~2% of itself by IDLE_AFTER
+  const IDLE_EASE = 1.2;        // how fast the resting drift is taken up
+
+  /* Resistance instead of a wall. Past PITCH_SOFT an incoming delta is
+     scaled by how much room is left, so the axis goes heavy in the hand and
+     arrives at the limit asymptotically rather than hitting it. The old
+     Math.max/min did the arithmetic correctly and felt like a stop, which
+     is the whole complaint. */
+  function addPitch(d) {
+    const over = (Math.abs(pitch) - PITCH_SOFT) / (PITCH_MAX - PITCH_SOFT);
+    if (over > 0 && Math.sign(d) === Math.sign(pitch)) d *= Math.max(0, 1 - over) ** 2;
+    pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch + d));
+  }
+
   let last = 0, lastTheme = null;
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
     last = now;
-    if (spin) yaw += dt * 0.35;
+
+    if (!drag && dt) {
+      idle += dt;
+      /* MOMENTUM AND THE RETURN TO THE TURNTABLE ARE ONE DECISION, not two
+         that run at once. Written as two - a decay every frame, plus a
+         blend toward IDLE_SPIN - they fight: the decay eats the idle
+         velocity as fast as the blend adds it, and yaw settles at the
+         fixed point of the pair rather than at IDLE_SPIN. Measured, that
+         was 0.077 rad/s against the 0.30 asked for, so the object crept.
+         So it is one or the other. Before the idle delay the throw runs
+         down; after it, the velocity eases to the resting drift from
+         wherever the throw left it.
+         BOTH ARE `1 - exp(-k·dt)`, which is what makes them
+         framerate-independent: exponentials compose, so a second's worth
+         of frames gives exp(-k) whatever dt is. The linear
+         `min(1, dt * 0.8)` this replaces did not - 60Hz and 144Hz had
+         drifted 0.022 rad apart after a single second. */
+      if (!reduce && idle > IDLE_AFTER) {
+        const e = Math.exp(-IDLE_EASE * dt);
+        yaw += IDLE_SPIN * dt + (yawVel - IDLE_SPIN) * (1 - e) / IDLE_EASE;
+        yawVel = IDLE_SPIN + (yawVel - IDLE_SPIN) * e;
+      } else {
+        const e = Math.exp(-THROW_DECAY * dt);
+        yaw += yawVel * (1 - e) / THROW_DECAY;
+        yawVel *= e;
+      }
+      const ep = Math.exp(-THROW_DECAY * dt);    // pitch only ever runs down
+      if (pitchVel) addPitch(pitchVel * (1 - ep) / THROW_DECAY);
+      pitchVel *= ep;
+      /* the spring that recovers an overshoot, and the only thing that
+         moves pitch when nothing else is: settle back inside the soft
+         limit rather than resting against the hard one */
+      const over = Math.abs(pitch) - PITCH_SOFT;
+      if (over > 0) pitch = Math.sign(pitch) * (PITCH_SOFT + over * Math.exp(-3.0 * dt));
+    }
+
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     if (theme !== lastTheme) { lastTheme = theme; look(); }
     size();
-    const model = M4.mul(M4.mul(M4.rotX(pitch), M4.rotY(yaw)), ZUP);
+    const model = M4.mul(M4.rotX(pitch), M4.rotY(yaw));
     gl.uniformMatrix4fv(U('uModel'), false, model);
     gl.uniformMatrix4fv(U('uView'), false, M4.trans(0, 0, -DIST));
     gl.uniformMatrix3fv(U('uNormal'), false, new Float32Array([
@@ -3820,7 +3933,14 @@ function startModelViewer(stage, src) {
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
     gl.useProgram(prog);
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
+    /* NO BACK-FACE CULLING, deliberately. A decimated mesh cannot promise
+       its winding: the packer re-orients every triangle against the
+       averaged normals now, which fixed the specks this used to cause, but
+       "every triangle a cluster pass could get wrong" is not a guarantee I
+       want a visible hole to depend on. The depth test does the real work,
+       38k triangles of overdraw costs nothing measurable, and the shader
+       has always carried `if (!gl_FrontFacing) N = -N;` - which was dead
+       code while culling was on, and is the thing that makes this safe. */
     gl.clearColor(0, 0, 0, 0);
 
     const buffer = (data, target, loc, type) => {
@@ -3844,32 +3964,68 @@ function startModelViewer(stage, src) {
   /* Pointer events, so one path covers finger, pen and mouse — the same
      reason pong does. touch-action is none in CSS or a drag scrolls the
      page instead of turning the object. */
+  /* DRAG SPEED IS PER FRACTION OF THE STAGE, not per pixel. It was a flat
+     0.01 rad/px, so the same gesture turned the object a different amount
+     on a phone than on a desktop, and after the stage grew to a full-width
+     band it turned it much less. A full sweep across the stage is now
+     about 1.1 turns whatever the stage measures. */
+  const SWEEP = Math.PI * 2.2;
+  let moved = 0;
+
   stage.addEventListener('pointerdown', (e) => {
     if (!mesh) return;
-    drag = { x: e.clientX, y: e.clientY };
-    spin = false;
+    drag = { x: e.clientX, y: e.clientY, t: performance.now() };
+    moved = 0;
+    yawVel = pitchVel = 0;     // catching a spinning object stops it dead, as it should
+    idle = 0;
     stage.setPointerCapture(e.pointerId);
     e.preventDefault();
   });
   stage.addEventListener('pointermove', (e) => {
     if (!drag) return;
-    yaw += (e.clientX - drag.x) * 0.01;
-    pitch = Math.max(-1.3, Math.min(1.3, pitch + (e.clientY - drag.y) * 0.01));
-    drag = { x: e.clientX, y: e.clientY };
+    const w = stage.clientWidth || 1, h = stage.clientHeight || 1;
+    const dx = (e.clientX - drag.x) / w * SWEEP;
+    const dy = (e.clientY - drag.y) / h * SWEEP;
+    const now = performance.now();
+    const dt = Math.max(now - drag.t, 1) / 1000;
+    yaw += dx;
+    addPitch(dy);
+    /* Velocity for the throw, smoothed. A raw last-sample delta is noisy -
+       one slow final move before lifting off and the object stops dead
+       even though the gesture was a flick - so it is a rolling blend. */
+    yawVel += ((dx / dt) - yawVel) * 0.3;
+    pitchVel += ((dy / dt) - pitchVel) * 0.3;
+    moved += Math.abs(dx) + Math.abs(dy);
+    drag = { x: e.clientX, y: e.clientY, t: now };
   });
-  const release = () => { drag = null; };
+  const release = () => {
+    if (!drag) return;
+    drag = null;
+    idle = 0;
+    // a tap is not a throw: without this, the jitter of a click would
+    // launch the object at whatever the last two samples implied
+    if (moved < 0.02) { yawVel = 0; pitchVel = 0; }
+    // and a throw has a ceiling, so a fast swipe on a phone cannot turn it
+    // into a blur nobody asked for
+    const CAP = 9;
+    yawVel = Math.max(-CAP, Math.min(CAP, yawVel));
+    pitchVel = Math.max(-CAP, Math.min(CAP, pitchVel));
+  };
   stage.addEventListener('pointerup', release);
   stage.addEventListener('pointercancel', release);
 
-  /* A drag-only control is a control a keyboard cannot reach. */
+  /* A drag-only control is a control a keyboard cannot reach. The arrows
+     nudge the velocity rather than the angle, so a held key accelerates
+     into a smooth turn and coasts to a stop on release - the same motion
+     the pointer gets, instead of a series of 0.22 rad jumps. */
   stage.addEventListener('keydown', (e) => {
-    const step = 0.22;
-    if (e.key === 'ArrowLeft') yaw -= step;
-    else if (e.key === 'ArrowRight') yaw += step;
-    else if (e.key === 'ArrowUp') pitch = Math.max(-1.3, pitch - step);
-    else if (e.key === 'ArrowDown') pitch = Math.min(1.3, pitch + step);
+    const push = 1.5;
+    if (e.key === 'ArrowLeft') yawVel -= push;
+    else if (e.key === 'ArrowRight') yawVel += push;
+    else if (e.key === 'ArrowUp') pitchVel -= push;
+    else if (e.key === 'ArrowDown') pitchVel += push;
     else return;
-    spin = false;
+    idle = 0;
     e.preventDefault();
   });
 
@@ -3883,8 +4039,13 @@ function startModelViewer(stage, src) {
 }
 
 const liveModels = [];
+/* APPENDS, it does not reset. It used to stop and drop everything first,
+   which was fine while one call site existed and silently wrong the moment
+   a second arrived: the panel now sets up .project-media and then
+   #projectStage, and a self-clearing setup would have had the second call
+   kill the viewer the first one had just started. Tearing down is
+   stopModelStages' job, and renderProjectMedia already calls it. */
 function setupModelStages(root) {
-  while (liveModels.length) { const m = liveModels.pop(); if (m && m.stop) m.stop(); }
   root.querySelectorAll('[data-model]').forEach((stage) => {
     stage.tabIndex = 0;
     stage.setAttribute('role', 'application');
@@ -3895,7 +4056,7 @@ function setupModelStages(root) {
   });
 }
 function stopModelStages() {
-  liveModels.forEach((m) => m && m.stop && m.stop());
+  while (liveModels.length) { const m = liveModels.pop(); if (m && m.stop) m.stop(); }
 }
 
 /* ==========================================================================

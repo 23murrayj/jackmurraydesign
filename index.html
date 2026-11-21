@@ -628,6 +628,10 @@
          while the treatment is being tried out on one - see .project-head in
          styles.css. Stays collapsed (:empty) for everything else. -->
     <div class="project-head"></div>
+    <!-- Empty slot. A project carrying a `model` in projectData gets a
+         turntable here, above the photographs and in no frame at all.
+         renderProjectStage fills it; collapsed for everything else. -->
+    <div class="project-stage" id="projectStage"></div>
     <div class="project-media" id="projectMedia"></div>
     <div class="project-body">
       <span class="project-cat" id="projectCat"></span>

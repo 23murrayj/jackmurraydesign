@@ -101,16 +101,43 @@ function decimate(pos, nor, idx, grid) {
     let L = Math.hypot(a[3], a[4], a[5]) || 1;
     outNor[r*3] = a[3]/L; outNor[r*3+1] = a[4]/L; outNor[r*3+2] = a[5]/L;
   }
-  // rebuild triangles, dropping any that collapsed into one or two cells
+  /* Rebuild triangles, dropping any that collapsed into one or two cells.
+     WINDING HAS TO BE RE-DERIVED, NOT INHERITED, and that was a real bug
+     rather than a precaution. Clustering moves all three corners to cell
+     centroids, and on a thin or highly curved patch the moved triangle can
+     come out facing the other way - the source winding was right for the
+     source positions and means nothing for the new ones. With CULL_FACE on
+     every such triangle is a pinhole, and the object rendered covered in
+     small dark specks and scratches.
+     So each surviving triangle is oriented against the averaged vertex
+     normals, which the cluster pass has already computed and which are the
+     one piece of orientation information that survives decimation intact.
+     A near-degenerate sliver, where the geometric normal is noise, is
+     dropped rather than guessed at - it is a few square microns of surface
+     and a coin flip on which way it faces. */
   const seen = new Set(); const tris = [];
+  let flipped = 0, slivers = 0;
   for (let t = 0; t < idx.length; t += 3) {
     const a = key[idx[t]], b = key[idx[t+1]], c = key[idx[t+2]];
     if (a === b || b === c || a === c) continue;
     const s = [a,b,c].sort((x,y)=>x-y).join(',');
     if (seen.has(s)) continue;
     seen.add(s);
-    tris.push(a, b, c);
+    const ax = outPos[a*3], ay = outPos[a*3+1], az = outPos[a*3+2];
+    const e1 = [outPos[b*3]-ax, outPos[b*3+1]-ay, outPos[b*3+2]-az];
+    const e2 = [outPos[c*3]-ax, outPos[c*3+1]-ay, outPos[c*3+2]-az];
+    const gx = e1[1]*e2[2] - e1[2]*e2[1];
+    const gy = e1[2]*e2[0] - e1[0]*e2[2];
+    const gz = e1[0]*e2[1] - e1[1]*e2[0];
+    const area = Math.hypot(gx, gy, gz);
+    if (area < 1e-12) { slivers++; continue; }
+    const nx = outNor[a*3] + outNor[b*3] + outNor[c*3];
+    const ny = outNor[a*3+1] + outNor[b*3+1] + outNor[c*3+1];
+    const nz = outNor[a*3+2] + outNor[b*3+2] + outNor[c*3+2];
+    if (gx*nx + gy*ny + gz*nz < 0) { tris.push(a, c, b); flipped++; }
+    else tris.push(a, b, c);
   }
+  if (flipped || slivers) console.log(`  winding: ${flipped} triangles re-oriented, ${slivers} slivers dropped`);
   // drop vertices no surviving triangle references
   const used = new Int32Array(acc.length).fill(-1);
   for (const v of tris) used[v] = 1;
@@ -125,14 +152,113 @@ function decimate(pos, nor, idx, grid) {
   return { pos: P, nor: N, idx: I, min, size };
 }
 
+/* THE NODE TRANSFORM IS NOT OPTIONAL, AND IGNORING IT COST A WHOLE
+   ORIENTATION BUG. A glTF mesh lives in its node's local space; the node
+   carries the transform that puts it in the world. This script read the
+   accessors straight out of the file and threw that away, so what it
+   wrote was whatever space the exporter happened to leave the mesh in.
+
+   It got away with it for exactly one file. Blender's exporter bakes the
+   Z-up -> Y-up conversion into the root node as a +90 deg X rotation, so
+   3DModel.glb's mesh data was still Z-up and the viewer's own `ZUP`
+   constant - a -90 deg X - put it back. Two errors cancelling, which is
+   the worst kind of working.
+
+   AlessiPlease2.glb carries [0,0,-1,0] instead, a 180 deg turn about Z,
+   because the object is rotated in the scene rather than by the export.
+   Dropped, that is the clip standing on its head.
+
+   So: compose T * R * S down the scene graph, transform the positions by
+   it and the normals by its rotation (uniform scale here, so the
+   inverse-transpose is the rotation itself), and emit in glTF WORLD space,
+   which the spec says is Y-up. The viewer then needs no per-file constant
+   and `ZUP` is gone with it. A flipped determinant would also need the
+   winding reversed; none of these exports has one, and the script says so
+   rather than silently shipping inside-out triangles. */
+function quatMat(q) {
+  const [x, y, z, w] = q;
+  return [
+    1-2*(y*y+z*z), 2*(x*y+z*w),   2*(x*z-y*w),
+    2*(x*y-z*w),   1-2*(x*x+z*z), 2*(y*z+x*w),
+    2*(x*z+y*w),   2*(y*z-x*w),   1-2*(x*x+y*y),
+  ];                                            // column-major 3x3
+}
+function nodeMatrix(n) {
+  if (n.matrix) {                               // column-major 4x4, already composed
+    const m = n.matrix;
+    return { r: [m[0],m[1],m[2], m[4],m[5],m[6], m[8],m[9],m[10]], t: [m[12],m[13],m[14]] };
+  }
+  const s = n.scale || [1, 1, 1];
+  const r = quatMat(n.rotation || [0, 0, 0, 1]);
+  for (let c = 0; c < 3; c++) for (let k = 0; k < 3; k++) r[c*3+k] *= s[c];
+  return { r, t: n.translation || [0, 0, 0] };
+}
+function mulRT(a, b) {                          // a applied after b
+  const r = new Array(9);
+  for (let c = 0; c < 3; c++) for (let k = 0; k < 3; k++)
+    r[c*3+k] = a[k] * b[c*3] + a[3+k] * b[c*3+1] + a[6+k] * b[c*3+2];
+  const t = [0, 1, 2].map((k) =>
+    a[k] * b.t[0] + a[3+k] * b.t[1] + a[6+k] * b.t[2] + a.t[k]);
+  r.t = t;
+  return Object.assign(r, { t });
+}
+// the world transform of the first node that carries a mesh
+function meshWorldTransform(g) {
+  const parentOf = new Map();
+  (g.nodes || []).forEach((n, i) => (n.children || []).forEach((c) => parentOf.set(c, i)));
+  let idx = (g.nodes || []).findIndex((n) => n.mesh !== undefined);
+  if (idx < 0) return null;
+  const chain = [];
+  for (let i = idx; i !== undefined; i = parentOf.get(i)) chain.unshift(i);
+  let acc = { r: [1,0,0, 0,1,0, 0,0,1], t: [0,0,0] };
+  for (const i of chain) {
+    const m = nodeMatrix(g.nodes[i]);
+    const r = new Array(9);
+    for (let c = 0; c < 3; c++) for (let k = 0; k < 3; k++)
+      r[c*3+k] = acc.r[k]*m.r[c*3] + acc.r[3+k]*m.r[c*3+1] + acc.r[6+k]*m.r[c*3+2];
+    const t = [0,1,2].map((k) => acc.r[k]*m.t[0] + acc.r[3+k]*m.t[1] + acc.r[6+k]*m.t[2] + acc.t[k]);
+    acc = { r, t };
+  }
+  return acc;
+}
+function applyTransform(pos, nor, w) {
+  const { r, t } = w;
+  // normals take the rotation without the translation. Length is restored
+  // per-vertex, which also absorbs any uniform scale in r.
+  for (let i = 0; i < pos.length; i += 3) {
+    const x = pos[i], y = pos[i+1], z = pos[i+2];
+    pos[i]   = r[0]*x + r[3]*y + r[6]*z + t[0];
+    pos[i+1] = r[1]*x + r[4]*y + r[7]*z + t[1];
+    pos[i+2] = r[2]*x + r[5]*y + r[8]*z + t[2];
+    const nx = nor[i], ny = nor[i+1], nz = nor[i+2];
+    let ax = r[0]*nx + r[3]*ny + r[6]*nz;
+    let ay = r[1]*nx + r[4]*ny + r[7]*nz;
+    let az = r[2]*nx + r[5]*ny + r[8]*nz;
+    const L = Math.hypot(ax, ay, az) || 1;
+    nor[i] = ax/L; nor[i+1] = ay/L; nor[i+2] = az/L;
+  }
+}
+
 const [, , inFile, outFile, gridArg] = process.argv;
 const grid = +(gridArg || 80);
 const { json, bin } = readGLB(inFile);
 const p = json.meshes[0].primitives[0];
-const d = decimate(
-  accessor(json, bin, p.attributes.POSITION),
-  accessor(json, bin, p.attributes.NORMAL),
-  accessor(json, bin, p.indices), grid);
+
+// Float32Array copies, because the accessor may be a view straight onto the
+// GLB's own buffer and applyTransform writes in place.
+const rawPos = Float32Array.from(accessor(json, bin, p.attributes.POSITION));
+const rawNor = Float32Array.from(accessor(json, bin, p.attributes.NORMAL));
+const world = meshWorldTransform(json);
+if (world) {
+  const r = world.r;
+  const det = r[0]*(r[4]*r[8]-r[5]*r[7]) - r[3]*(r[1]*r[8]-r[2]*r[7]) + r[6]*(r[1]*r[5]-r[2]*r[4]);
+  if (det < 0) throw new Error('node transform mirrors the mesh (det ' + det.toFixed(3) + '); triangle winding would need reversing');
+  applyTransform(rawPos, rawNor, world);
+  const rot = (json.nodes.find((n) => n.mesh !== undefined) || {}).rotation;
+  if (rot) console.log('  node rotation applied:', rot.map((v) => +v.toFixed(4)).join(', '));
+}
+
+const d = decimate(rawPos, rawNor, accessor(json, bin, p.indices), grid);
 
 const nv = d.pos.length / 3, nt = d.idx.length / 3;
 if (nv > 65535) throw new Error('too many vertices for uint16 indices: ' + nv);

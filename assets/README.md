@@ -101,14 +101,37 @@ Purely decorative artwork should set `alt: ''` explicitly on the entry.
 node tools/pack-model.js <in.glb> assets/projects/<id>/model.jmm [grid]
 ```
 
-Then put `model: '/assets/projects/<id>/model.jmm'` on the `photos` entry
-that should carry it, **alongside its `src`** — the still image stays as the
-poster and as the fallback for anything without WebGL.
+Then give the PROJECT (not a `photos` entry) a `model` block:
+
+```js
+model: {
+  src: '/assets/projects/<id>/model.jmm',
+  poster: { src: '/assets/projects/<id>/<n>-object.jpg', w: 1400, h: 933 },
+  altIndex: 13,          // 0-based index into the alt.N series; 13 -> alt.14
+},
+```
+
+It renders into `#projectStage`, a band of its own between the title and
+the photographs, with no frame around it. The still is the poster **and**
+the fallback for anything without WebGL, so give it one. It used to hang
+off a `photos` entry and was therefore a cell in the masonry wall, wearing
+the grid's border — don't put it back there.
+
+**Run `node tools/model-check.js` after every repack.** It checks the
+container, the indices, the normals and the winding, and then the motion
+model, which cannot be checked by looking: the browser pane freezes
+`requestAnimationFrame`.
 
 Export from Blender as GLB. Textures are ignored: the viewer shades one
 metallic material procedurally, so a textured model will lose its maps.
+**Orientation needs nothing from you** — the packer applies the glTF node
+transform and emits in world space, which is Y-up, so whatever rotation
+the export put on the node is handled. (It used to ignore that transform
+and the viewer carried a hardcoded `ZUP` to compensate, which worked for
+exactly one file.) If the object still lands on its side, the model itself
+is lying down in Blender; fix it there.
 Keep the mesh under 65,535 vertices after decimation (the tool throws if
-not) and expect ~385KB at grid 80. The model loads only when the project
+not) and expect ~390KB at grid 72. The model loads only when the project
 panel is opened, so it costs the home page nothing.
 
 ## Video
