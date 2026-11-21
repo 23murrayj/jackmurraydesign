@@ -179,6 +179,46 @@ const projectData = {
     ]
   },
 
+  'pot-clip': {
+    // The photograph's own backdrop, so the card does not flash a colour the
+    // image then contradicts while it loads.
+    bg: '#dedcd7',
+    thumb: { src: '/assets/projects/pot-clip/thumb.jpg', w: 1280, h: 960, small: '/assets/projects/pot-clip/thumb-800.jpg' },
+    category: 'PRODUCT',
+    title: 'POT CLIP UTENSIL REST',
+    desc: "Movable rests that clip to a pot rim in pairs and keep the spoon out of the pot.",
+    type: 'Product Design',
+    year: '2026',
+    role: 'Design & Fabrication',
+    // MASONRY, NOT MIXED, AND THE REASON IS ARITHMETIC. mixed divides one
+    // 956px row between however many tiles it is given: easter-riverside's
+    // three come out 383x311 and sandcastles' two 472x380, but nine squashed
+    // these to 109x88 - thumbnails too small to read, for a project whose
+    // process IS the argument. masonry packs a curated sequence into rows of
+    // three columns and gives the write-up a sticky sidebar, which is what a
+    // nine-step build wants.
+    // ORDER IS LOAD-BEARING TWICE OVER. The packer walks the list in order
+    // and pairs a landscape with a portrait, so the sequence below alternates
+    // deliberately: feature, then L+P, L+P, three portraits, and a closing
+    // landscape - five full rows and no holes. And alt text is positional
+    // (resolveAlt uses index + 1), so proj.pot-clip.alt.N tracks this array;
+    // alt.8 and alt.9 were swapped when the poster moved ahead of the render.
+    layout: 'masonry',
+    photos: [
+      { src: '/assets/projects/pot-clip/01-hero.jpg', w: 1414, h: 795,
+        full: '/assets/projects/pot-clip/01-hero-full.jpg' },
+      { src: '/assets/projects/pot-clip/02-sketches.jpg', w: 1400, h: 1211,
+        full: '/assets/projects/pot-clip/02-sketches-full.jpg' },
+      { src: '/assets/projects/pot-clip/03-profiles.jpg', w: 800, h: 1200 },
+      { src: '/assets/projects/pot-clip/04-model.jpg', w: 1400, h: 879 },
+      { src: '/assets/projects/pot-clip/05-spray.jpg', w: 800, h: 1200 },
+      { src: '/assets/projects/pot-clip/06-finishing.jpg', w: 800, h: 1200 },
+      { src: '/assets/projects/pot-clip/07-hand.jpg', w: 800, h: 1200 },
+      { src: '/assets/projects/pot-clip/08-poster.jpg', w: 848, h: 1200,
+        full: '/assets/projects/pot-clip/08-poster-full.jpg' },
+      { src: '/assets/projects/pot-clip/09-object.jpg', w: 1400, h: 933 },
+    ],
+  },
   'easter-riverside': {
     bg: '#8fc0e0',
     // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,

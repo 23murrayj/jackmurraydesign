@@ -820,11 +820,18 @@ a { color: inherit; text-decoration: none; }
    A COPY CHANGE IS A SKELETON CHANGE here exactly as it is for the badge. */
 .sk-filters { --sk-chip: 0.8rem; }
 .sk-chip { height: 40px; flex: none; }
+/* ALL / UX/UI / PRODUCT / GRAPHICS / PHOTOGRAPHY / MOTION, each a multiple
+   of the chips own 0.8rem, measured in the page at 1440. PRODUCT was added
+   on 2026-11-21 and went in at position 3 rather than on the end, so the row
+   reads discipline-first; the other five multiples were re-measured at the
+   same time and are unchanged, which is the check that the insert did not
+   disturb them. A copy change is a skeleton change here. */
 .sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.195); }
 .sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.351); }
-.sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.765); }
-.sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 11.37); }
-.sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 7.556); }
+.sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.392); }
+.sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.765); }
+.sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 11.37); }
+.sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.556); }
 /* The cards take whatever is left of the viewport. No aspect ratio to track:
    the loader is a fixed full-viewport box with overflow: hidden, and only
    the top ~60px of the first row is ever on screen. */
@@ -2287,6 +2294,31 @@ body.is-loading { overflow: hidden; }
   .filter-btn:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 4px 4px 0 var(--black); }
 }
 .filter-btn.active { background: var(--black); color: var(--white); }
+/* A SIXTH CHIP WOULD HAVE COST THE PHONE ITS CARD PEEK, so the chips get
+   tighter rather than the row getting taller. Adding PRODUCT on 2026-11-21
+   took the row from two rows to THREE at 390 - 174px against 92 - and that
+   is the one measurement the 66vh hero exists to protect: the first card
+   went from +24.5px above the fold to 27.5px BELOW it, which is exactly the
+   "illusion of completeness" the shorter hero was cut to avoid.
+   The lever is horizontal padding, not height: the chips are already at the
+   12.8px floor for legibility, and their 44px touch target is drawn by a
+   pseudo-element (see SECTION 02c) rather than by the box, so narrowing them
+   costs nothing a thumb can feel. Measured at 390 after the change. */
+@media (max-width: 600px) {
+  .filters, .sk-filters { gap: 8px; }
+  .filter-btn { padding-left: 10px; padding-right: 10px; }
+  /* The multiples above are the chips INK plus its desktop padding, so the
+     skeleton has to lose exactly what the real chip lost: 18px a side
+     becomes 10px, which is 16px off every chip. Without this the loader
+     draws six chips wider than the six it hands over to, and on the width
+     where the row wraps that is a different number of rows. */
+  .sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.195 - 16px); }
+  .sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.351 - 16px); }
+  .sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.392 - 16px); }
+  .sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.765 - 16px); }
+  .sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 11.37 - 16px); }
+  .sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.556 - 16px); }
+}
 
 .card.hidden-card { display: none; }
 

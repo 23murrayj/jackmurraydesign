@@ -1,7 +1,7 @@
 # Jack Murray — UX Designer
 
 > Portfolio of Jack Murray, a UX design student at Bradley University,
-> currently on exchange at NABA in Milan. Six case studies spanning UX
+> currently on exchange at NABA in Milan. Seven case studies spanning UX
 > research, event and series identity, VR interface design, photography and
 > 3D animation. Built by hand: no framework, no build step, four languages.
 
@@ -24,7 +24,7 @@ Contact: the form or the address in the contact section of the site.
 
 ## What the work actually is
 
-Six case studies, all real, none speculative or invented:
+Seven case studies, all real, none speculative or invented:
 
 - **Caterpillar UX Challenge** — UX research and design for heavy
   equipment operators, a three-person team partnered with Caterpillar through
@@ -32,6 +32,15 @@ Six case studies, all real, none speculative or invented:
   Seven weeks of review with Caterpillar's UX team, two rounds of iteration,
   usability testing with five participants, and an on-site visit in Peoria.
   This is the strongest evidence of process on the site.
+- **Pot Clip Utensil Rest** — a product design exercise at NABA in Milan:
+  a pair of movable rests that clip to a pot rim and hold a utensil above the
+  pot, so drips fall back in and the counter stays clean. Sketched, modelled
+  in Blender, then built as a physical appearance model sculpted from foam and
+  sprayed to read as metal. Set as a student brief referencing Alessi; **not
+  affiliated with, commissioned by or reviewed by Alessi, and not a NABA
+  product.** The accompanying posters are classroom art direction, not a real
+  campaign. The write-up is candid about what does not work — heat transfer in
+  real metal, non-standard pot rims, a friction-only grip.
 - **Partners in Crime** — asymmetric VR/PC co-op heist built by a 17-person
   team for Bradley's FUSE program and exhibited at the Peoria Riverfront
   Museum. Jack was in the group that originated the concept, then designed
@@ -82,6 +91,7 @@ Every case study has its own URL, and so does the about page:
 - https://jackmurraydesign.com/ - home: selected projects, about, contact
 - https://jackmurraydesign.com/about - the long about page, timeline, skills
 - https://jackmurraydesign.com/work/cat-coaching
+- https://jackmurraydesign.com/work/pot-clip
 - https://jackmurraydesign.com/work/easter-riverside
 - https://jackmurraydesign.com/work/fuse-partners-in-crime
 - https://jackmurraydesign.com/work/sandcastles
@@ -93,9 +103,9 @@ paths to the same document and the page opens the right panel from the URL -
 but they are real addresses: linkable, shareable and each with its own title
 and canonical.
 
-The six projects are written out in the HTML of the home page - titles,
+The seven projects are written out in the HTML of the home page - titles,
 categories, one-line descriptions, the full case study write-ups and these
 URLs - and the script replaces that list with the real cards once it runs.
-So a reader that does not execute JavaScript gets the same six projects and
+So a reader that does not execute JavaScript gets the same seven projects and
 the same text a visitor reads, in English; the four-language version and the
 photography are the parts that need the script.

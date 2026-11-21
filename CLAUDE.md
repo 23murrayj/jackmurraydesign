@@ -536,11 +536,31 @@ four languages whenever you size display type.**
   At 1024×768 the hero is content-bound rather than height-bound and the
   cards stay below the fold; that is the floor, not a bug.
   **A phone needed two more numbers**, because at 390 the chip row is two
-  deep (92px against 40) and the heading is on two lines, which puts 294.5px
-  between the hero's foot and the first card where a desktop has 242.5 — so
-  66vh alone still left the card 7.5px below the fold at 390×844. At ≤760px
+  deep and the heading is on two lines, which puts ~294.5px between the
+  hero's foot and the first card where a desktop has 242.5 — so 66vh alone
+  still left the card 7.5px below the fold at 390×844. At ≤760px
   `.filters` drops to 20px of top padding and `#work .section-head` to 28,
-  which is 32px of photograph and takes the peek to **+24.5**.
+  which is 32px of photograph and takes the peek to **+28.5** (it was +24.5
+  until the chips tightened — see the sixth-chip note below).
+  **A SIXTH FILTER CHIP ALMOST TOOK THAT BACK, and the lesson is that the
+  chip row is part of this measurement.** Adding PRODUCT on 2026-11-21 took
+  the row from two rows to THREE at 390 — 174px against 92 — and the first
+  card went from +24.5px above the fold to **27.5px BELOW** it. That is the
+  whole point of 66vh undone by a button.
+  The fix is horizontal padding, not height: at ≤600px the chips go to 10px
+  a side and the row gap to 8px (`.filters, .sk-filters`, so the loader
+  tracks it). The chips are already at the 12.8px type floor and their 44px
+  touch target is drawn by a pseudo-element rather than by the box, so
+  nothing a thumb can feel changed. **Measured after: 390×844 two rows (4+2)
+  and +28.5, 360×740 two rows (3+3) and −39.9 against a five-chip baseline
+  of −41.9** — i.e. 360 came out 2px BETTER than before the chip was added,
+  because the tighter gap more than paid for the extra button.
+  **320×568 is the exception and is left as-is**: three rows there against
+  two before. The peek was already lost at that size and the chips have no
+  padding left to give; six filters on a 320px screen is three rows.
+  **Re-measure this whenever a category is added, renamed or translated** —
+  the row is a function of the label widths, so it is the same class of
+  dependency as the skeleton's chip multiples.
   **One thing measured false before it shipped.** The obvious next move was
   to drop the 40px bias on stacked layouts, on the reasoning that a stacked
   hero is content-bound so there is no centring to bias. At 390×844 it is
@@ -1537,6 +1557,29 @@ correct when someone wrote it down.
   The one deliberate exception is the first title bar, which is 6px short
   because that gap is taken out of its height and given back as its margin,
   so the pair measures exactly two lines.
+
+### Which detail layout, and why it is arithmetic
+
+`mixed` divides ONE 956px row between however many tiles it is given, so
+the tile count is not a free choice: easter-riverside's three come out
+383×311 and sandcastles' two 472×380, which is roughly the ~311px the
+export spec assumes. **Nine tiles came out 109×88** — thumbnails too small
+to read, on the project whose process is the whole argument. That is what
+sent `pot-clip` to `masonry` instead.
+**`masonry` is the layout for a SEQUENCE**: it packs rows of three columns,
+keeps the photos in order, and gives the write-up a sticky sidebar. Two
+things follow from the packer and both are load-bearing:
+- **It pairs a landscape with a portrait** (landscape + portrait = 2 + 1,
+  three portraits = 1 + 1 + 1, a lone landscape = full width), so the
+  ORDER of `photos` decides whether the wall has holes in it. pot-clip is
+  feature, L+P, L+P, P+P+P, feature — five full rows. Square crops defeat
+  this entirely: `isLandscape` is `w >= h`, so a square is a landscape and
+  nine of them become nine full-width rows.
+- **Alt text is positional.** `resolveAlt` uses `index + 1`, and masonry
+  passes the array index, so `proj.<id>.alt.N` tracks the `photos` array.
+  Reordering the array reorders the alt text silently — pot-clip's alt.8
+  and alt.9 had to be swapped in all four languages when the poster moved
+  ahead of the render.
 
 ## Routing
 
@@ -2705,6 +2748,17 @@ fonts about 45KB.
   banner). Jack has cleared the ones currently live.
 - **Caterpillar material is blocked** pending the professor's confidentiality
   reply. Do not add CAT Figma frames or research artifacts.
+- **`pot-clip` carries a real trademark and is NOT a client project.** It was
+  a student brief at NABA in Milan that referenced Alessi; Jack confirmed it
+  is "not at all related to Alessi… not affiliated with Alessi at all", and
+  it is not a NABA product either. The posters carry the ALESSI and NABA
+  marks because the exercise asked for them. **The disclaimer is the last
+  paragraph of `proj.pot-clip.body`, in all four languages, and therefore
+  also in the markup fallback and the JSON-LD description** — that is what
+  keeps a summary from inventing a client relationship. Do not shorten it,
+  do not move it to small print, and do not put "Alessi" in the project
+  title or the URL. If more of this work is ever added, the same paragraph
+  comes with it.
 - Placeholder/fake projects must never ship live.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.

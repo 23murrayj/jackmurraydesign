@@ -30,8 +30,15 @@ and nothing errors, so nobody finds out.
 6. Add it to `llms.txt`
 7. Add it to the JSON-LD block in `index.html`
 
-Steps 3, 5, 6 and 7 are the "four files" rule in CLAUDE.md. They are
-checkable against each other in one command:
+Steps 3, 5, 6 and 7 are the "five files" rule in CLAUDE.md — the fifth is
+the `.gallery-fallback` list in `index.html`, and you do NOT write that by
+hand: `.githooks/pre-commit` regenerates it on every commit, and
+`node tools/audit.js` re-derives it to prove it is current.
+A sixth thing to check that is not a file: **if the project needs a new
+CATEGORY, the filter row gets another chip** — and at 390px the row height
+feeds the hero's card peek, so re-measure it (CLAUDE.md, the sixth-chip
+note under Layout). The skeleton's chip widths are measured multiples too.
+They are checkable against each other in one command:
 
 ```
 grep -o "/work/[a-z-]*" sitemap.xml llms.txt | sed 's/.*work\///' | sort -u
