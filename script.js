@@ -4153,7 +4153,15 @@ function startModelViewer(stage, src) {
       '<path d="M16 42V11a4 4 0 0 1 8 0v12a3.6 3.6 0 0 1 7.2 0v3a3.6 3.6 0 0 1 7.2 0v11' +
         'c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5a3.8 3.8 0 0 1 5.6-5l4.4 4.3Z" ' +
         'fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
-      '<path d="M24 24.5v6.5M31.2 27.5v5.5" fill="none" stroke="#1A1A18" stroke-width="2.6" stroke-linecap="round"/>' +
+      /* The index/middle separation is 5.0 and not 6.5. At 6.5 it ran past
+         the knuckle it belongs to and well down into the palm, which reads
+         as a crease in the hand rather than a gap between two fingers -
+         Jack: "the interior line goes down a little bit too far." Ending
+         at y29.5 puts it level with where the middle/ring line ends, so
+         the two read as a pair. Compared at 250px against 6.5 and 4.0,
+         where 4.0 is short enough that the index finger starts to merge
+         back into the hand. */
+      '<path d="M24 24.5v5M31.2 27.5v5.5" fill="none" stroke="#1A1A18" stroke-width="2.6" stroke-linecap="round"/>' +
     '</svg>';
   stage.appendChild(hand);
 
