@@ -822,10 +822,19 @@ const projectStage = document.getElementById('projectStage');
    /work/pot-clip?compare=1 anywhere, including the deployed site. */
 const COMPARE_LIB = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js';
 let compareLibAdded = false;
-function wantsCompare() {
-  return /[?&]compare(=|&|$)/.test(location.search) ||
-    location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-}
+/* READ ONCE, HERE, BEFORE THE ROUTER TOUCHES THE ADDRESS BAR. The boot
+   block in SECTION 20 normalises a deep link: landing on
+   /work/pot-clip?compare=1 it replaceStates "/" and then pushes
+   "/work/pot-clip", and neither carries the query — so by the time the
+   panel opens and the stage renders, location.search is empty. Reading it
+   at render time worked on localhost (which passes on hostname alone) and
+   silently did nothing on the live site, which is exactly how it was
+   reported: pushed, and only one viewer.
+   This file executes top to bottom well before that boot block, so the
+   value here is the URL the visitor actually arrived on. */
+const COMPARE_ON = /[?&]compare(=|&|$)/.test(location.search) ||
+  location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+function wantsCompare() { return COMPARE_ON; }
 function renderCompareStage(src) {
   if (!compareLibAdded) {
     const s = document.createElement('script');
