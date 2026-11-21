@@ -933,29 +933,14 @@ a { color: inherit; text-decoration: none; }
   .stage-compare model-viewer { height: 360px; }
 }
 
-/* THE CONTACT SHADOW, which is most of why a product render reads as a
-   photograph rather than a cut-out. <model-viewer> projects a real one;
-   this is a soft ellipse on the ground plane, which is cheap, costs no
-   shader work and does the same job at a glance. It does NOT track the
-   object as it tumbles — a real projected shadow would, and if that ever
-   starts to show, the honest fix is a second depth pass, not a bigger
-   blur. The object stays near the centre of the band, so at rest and
-   through the resting drift the two agree.
-   Pure black rather than a token: a shadow is an absence of light, not a
-   colour, and it has to read on both the ivory ground and the near-black
-   one. */
-.model-stage::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 13%;
-  width: 40%;
-  height: 7%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center,
-    rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.26) 42%, rgba(0,0,0,0.08) 68%, transparent 78%);
-  pointer-events: none;
-}
+/* THE CONTACT SHADOW IS IN THE RENDERER, not here. There was a
+   `radial-gradient` ellipse at this spot for one commit and it was the
+   wrong answer: it could not know the shape casting it, so it sat there
+   unchanged while the object turned. Jack: "that doesn't look like it was
+   coded in… it's just an ellipses." See SHADOW_COV_VS in script.js — it is
+   a coverage pass into a 256px texture and a blurred quad on the floor
+   plane, so the shadow has the notch between the legs in it and swings
+   with the form. Do not put a CSS one back. */
 /* The hand that appears to say the object can be turned. Timings and
    travel are <model-viewer>'s own — see PROMPT_AFTER in script.js. Opacity
    and transform are written every frame from JS, so no transition here:
@@ -968,8 +953,8 @@ a { color: inherit; text-decoration: none; }
   bottom: 25%;
   /* 46 wide, not 36: at 36 the ring, finger and palm collapse into
      something that reads as a map pin rather than a hand */
-  width: 46px;
-  height: 59px;
+  width: 42px;
+  height: 53px;
   transform: translate(-50%, 0);
   opacity: 0;
   pointer-events: none;

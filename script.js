@@ -842,9 +842,10 @@ function renderCompareStage(src) {
     compareLibAdded = true;
   }
   /* camera-orbit mirrors our own opening view so the two are showing the
-     same thing: theta 115deg is HOME_YAW (2.0 rad), phi 67deg is
-     HOME_PITCH (-0.40 rad) measured from the pole instead of the horizon.
-     rotation-per-second and the delay mirror IDLE_SPIN and IDLE_AFTER. */
+     same thing: theta 115deg is HOME_YAW (2.0 rad), and phi 57deg is
+     HOME_PITCH (+0.58 rad) measured from the pole rather than the horizon,
+     so 90 - 33. rotation-per-second and the delay mirror IDLE_SPIN and
+     IDLE_AFTER. */
   return `
     <div class="stage-compare">
       <p class="stage-label">Google &lt;model-viewer&gt; — library ~250KB + 673KB mesh</p>
@@ -855,8 +856,8 @@ function renderCompareStage(src) {
         camera-controls
         auto-rotate
         auto-rotate-delay="6000"
-        rotation-per-second="11deg"
-        camera-orbit="115deg 67deg auto"
+        rotation-per-second="11.5deg"
+        camera-orbit="115deg 57deg auto"
         environment-image="neutral"
         shadow-intensity="1"
         exposure="1"
@@ -3865,16 +3866,16 @@ vec3 env(vec3 d, float blur){
      bright line that sweeps round as the object turns - most of the sense of
      motion, and most of what says "metal" rather than "grey plastic". */
   float hw = mix(0.012, 0.30, blur);
-  c += uHorizon * 1.25 * exp(-(y * y) / (hw * hw));
+  c += uHorizon * 1.20 * exp(-(y * y) / (hw * hw));
   float s = mix(0.015, 0.55, blur);
   /* key: a tall softbox high and to the left, the main shape on the form */
   c += vec3(1.00, 1.00, 1.00) * 2.40 * panel(d, normalize(vec3(-0.40, 0.76, 0.51)), vec2(0.30, 0.17), s);
   /* fill: a wide low panel on the right, so the shadow side is not dead */
-  c += vec3(0.93, 0.96, 1.00) * 1.30 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
+  c += vec3(0.93, 0.96, 1.00) * 0.80 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
   /* rim: behind and slightly under, which separates the silhouette */
-  c += vec3(1.00, 0.95, 0.88) * 0.95 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
+  c += vec3(1.00, 0.95, 0.88) * 0.60 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
   /* a narrow overhead strip - the ceiling light, catching the top edges */
-  c += vec3(1.00, 1.00, 1.00) * 1.35 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
+  c += vec3(1.00, 1.00, 1.00) * 1.05 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
   return c;
 }
 
@@ -3897,6 +3898,82 @@ void main(){
   vec3 F = uBase + (1.0 - uBase) * pow(1.0 - NoV, 5.0);
   vec3 col = refl * F * uExposure;
   gl_FragColor = vec4(pow(aces(col), vec3(1.0/2.2)), 1.0);
+}`;
+
+/* THE SHADOW IS RENDERED, NOT DRAWN IN CSS, and the first attempt deserved
+   what it got. It was a `radial-gradient` ellipse parked under the canvas,
+   and Jack: "that doesn't look like it was coded in. That looks really bad
+   because when you rotate it, it stays the same... it's just an ellipses."
+   Correct on both counts - a shadow that ignores the shape casting it is a
+   decal, and the object is a saddle with two legs, so its real shadow is a
+   blob with a notch bitten out of it that swings as the form turns.
+
+   It is a two-pass planar shadow and the whole thing is about 50 lines.
+   PASS 1 renders the mesh into a 256x256 texture through an orthographic
+   camera looking straight down the floor's normal - no depth buffer and no
+   shading, every covered fragment just writes 1, so this is a coverage
+   map, not a depth map. PASS 2 draws a quad on the floor plane sampling
+   that map through a 16-tap disc blur, as black with the blur for alpha.
+
+   THE ONE PIECE OF GEOMETRY THAT IS EASY TO GET WRONG: the viewer rotates
+   the OBJECT and leaves the camera still, so a floor plane in that space
+   is exactly edge-on to the viewer and renders as a line. The floor has to
+   take the pitch and NOT the yaw - rotX(pitch) only - which is the same
+   scene as a camera pitching over a fixed floor, and is why the shadow
+   foreshortens correctly as the eye rises. The coverage pass takes the yaw
+   and NOT the pitch, for the matching reason: it is looking down the
+   floor's own normal.
+   The ortho extent is 1.35x the bounding radius so the blur has margin to
+   spread into and never samples the clamped edge of the texture. */
+const SHADOW_RES = 256;
+const SHADOW_STRENGTH = 0.46;   // peak alpha under the object
+
+const SHADOW_COV_VS = `
+attribute vec3 aPos;
+uniform mat4 uSpin;        // yaw only: the floor does not spin with the object
+uniform float uExtent;
+void main(){
+  vec3 p = (uSpin * vec4(aPos, 1.0)).xyz;
+  gl_Position = vec4(p.x / uExtent, p.z / uExtent, 0.0, 1.0);
+}`;
+const SHADOW_COV_FS = `
+precision mediump float;
+void main(){ gl_FragColor = vec4(1.0); }`;
+
+const SHADOW_QUAD_VS = `
+attribute vec2 aCorner;
+uniform mat4 uProj, uView, uTip;   // uTip is pitch only
+uniform float uExtent, uFloor;
+varying vec2 vUv;
+void main(){
+  vec3 p = vec3(aCorner.x * uExtent, uFloor, aCorner.y * uExtent);
+  vUv = aCorner * 0.5 + 0.5;
+  gl_Position = uProj * uView * uTip * vec4(p, 1.0);
+}`;
+const SHADOW_QUAD_FS = `
+precision mediump float;
+uniform sampler2D uCov;
+uniform float uStrength;
+varying vec2 vUv;
+/* 16 taps on two rings plus the centre. A box blur banded visibly on a
+   shape with a notch in it; two rings at different radii cost the same
+   and read as a penumbra. */
+const int N = 8;
+void main(){
+  float a = texture2D(uCov, vUv).r;
+  for (int i = 0; i < N; i++) {
+    float t = (float(i) / float(N)) * 6.2831853;
+    vec2 d = vec2(cos(t), sin(t));
+    a += texture2D(uCov, vUv + d * 0.030).r;
+    a += texture2D(uCov, vUv + d * 0.065).r;
+  }
+  a /= float(N * 2 + 1);
+  /* darkest where the object actually sits, falling away fast - a contact
+     shadow is not a uniform puddle */
+  a = pow(a, 1.35) * uStrength;
+  /* and the quad's own edge must not show, so fade the corners out */
+  float edge = 1.0 - smoothstep(0.55, 0.92, length(vUv - 0.5) * 2.0);
+  gl_FragColor = vec4(0.0, 0.0, 0.0, a * edge);
 }`;
 
 function parseMesh(buf) {
@@ -3932,9 +4009,18 @@ function parseMesh(buf) {
    underside is modelled instead of black. Roughness 0.32 -> 0.30 for a
    slightly tighter horizon streak. Compared side by side against the same
    mesh rendered offline, not nudged one value per reload. */
+/* DARKER AGAIN, and this one is a correction rather than a step. Chasing
+   model-viewer's level took the studio bright enough that the object was
+   mostly one pale value with highlights on top of it - Jack: "the lighting,
+   I think the fix that the lighting needs is it needs to be darker."
+   What a polished object in a dark room actually looks like is a bright lit
+   top and legs that fall away to almost nothing, and that contrast is the
+   subject. So the cyc comes down by a third, the fill and the rim by more,
+   and the floor goes nearly black; the key panel does NOT move, because the
+   highlights were never the problem. */
 const MODEL_LOOK = {
-  light: { top: [1.14,1.18,1.30], horizon: [0.50,0.52,0.60], bottom: [0.090,0.090,0.110], exposure: 1.02 },
-  dark:  { top: [1.02,1.06,1.18], horizon: [0.44,0.46,0.54], bottom: [0.070,0.070,0.088], exposure: 0.97 },
+  light: { top: [0.80,0.83,0.93], horizon: [0.33,0.35,0.41], bottom: [0.022,0.022,0.030], exposure: 0.90 },
+  dark:  { top: [0.72,0.75,0.84], horizon: [0.29,0.31,0.37], bottom: [0.016,0.016,0.022], exposure: 0.86 },
 };
 
 /* THE NUDGE — THE FINGER THAT APPEARS AND ROCKS THE OBJECT.
@@ -4004,26 +4090,54 @@ function startModelViewer(stage, src) {
   const hand = document.createElement('div');
   hand.className = 'model-hand';
   hand.setAttribute('aria-hidden', 'true');
-  /* Built from a ring, a finger and a palm rather than one clever path:
-     the first attempt was a single <path> with arcs in it and it rendered
-     as a stray squiggle, which is what hand-written arc flags do. These
-     three primitives cannot be malformed. The palm is WIDE, 28x16: at
-     19x19 its corner radius made it a circle, and ring + stem + circle
-     reads as a map pin rather than a finger resting on a pad.
-     The colours are deliberately theme-independent, the same way the
-     loader and the pong board are: it is drawn over a light metal object
-     on either ground, so it wants a pale fill and a dark outline in both. */
+  /* A HAND, AND THIS ONE WAS LOOKED AT BEFORE IT SHIPPED. The previous
+     two were assembled out of a ring, a stem and a pad on the theory
+     that primitives cannot be malformed - true, and beside the point:
+     Jack, "it looks like a joystick. It looks really bad." He was right,
+     a circle on a stick is a joystick however correct its geometry.
+     Drawn as three paths now - index finger, folded fingers, palm - and
+     the process is the fix rather than the shape: it was rendered at
+     150px next to two alternatives and compared before going anywhere
+     near the page. An icon is the one thing here that cannot be checked
+     by measuring it.
+     Theme-independent colours, like the loader and the pong board: it is
+     drawn over a light metal object on either ground, so it wants a pale
+     fill and a dark outline in both. */
   hand.innerHTML =
-    '<svg viewBox="0 0 36 46" aria-hidden="true">' +
-      '<rect x="4" y="26" width="28" height="16" rx="7" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.3"/>' +
-      '<rect x="14.8" y="11" width="6.6" height="19" rx="3.3" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.3"/>' +
-      '<circle cx="18.5" cy="6.5" r="4.6" fill="none" stroke="#1A1A18" stroke-width="2.3"/>' +
+    '<svg viewBox="0 0 44 56" aria-hidden="true">' +
+      '<path d="M16 30V11a4 4 0 0 1 8 0v15" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<path d="M24 26v-3a3.6 3.6 0 0 1 7.2 0v5" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<path d="M31.2 28v-2a3.6 3.6 0 0 1 7.2 0v11c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5a3.8 3.8 0 0 1 5.6-5l4.4 4.3" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>' +
     '</svg>';
   stage.appendChild(hand);
 
   const FOV = 0.62;                // vertical, radians
   let radius = 1.5;                // bounding sphere, measured from the mesh on load
-  let mesh = null, prog = null, raf = 0, yaw = 2.0, pitch = -0.28;
+  /* THE OPENING POSE AND THE RESTING POSE ARE ONE PAIR OF NUMBERS, and
+     for three rounds they were two. HOME_YAW / HOME_PITCH governed the
+     RETURN, while the view a visitor actually arrives on came from a
+     separate literal here - and since the viewer starts already homed,
+     the return never runs on load, so the constants had no effect on
+     anything anyone saw. Every tilt change went into the one that only
+     applies after you have dragged it. Jack kept reporting the angle as
+     unchanged and he was right: it was.
+     Declared above the state that reads them, because a const is in the
+     temporal dead zone until its own line.
+
+     POSITIVE PITCH, which is the other half of the same confusion. The
+     first offline check "proved" negative, but it ran through the crude
+     preview renderer whose two-sided normal flip shades upward faces
+     dark - so the flat top was in frame looking like an underside, and I
+     read the picture instead of the geometry. The mesh settles it:
+     upward-facing surface (normal.y > 0.85) sits at mean y 0.817 of a
+     -0.83..0.83 range, so the top is at HIGH y and the eye must be ABOVE
+     it. Re-rendered -0.52 / 0 / +0.52 through the shader-accurate
+     renderer: +0.5-ish is the one with the saddle in view and the notch
+     between the legs still readable. */
+  const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
+  const HOME_PITCH = 0.58;      // positive = looking down onto the flat top
+
+  let mesh = null, prog = null, raf = 0, yaw = HOME_YAW, pitch = HOME_PITCH;
   /* MOTION STATE. It used to be `yaw += delta` straight out of pointermove
      with a hard clamp on pitch, and Jack's read of that was "you can rotate
      a full 360, but it has like stopping points." Three of them, in fact:
@@ -4034,6 +4148,8 @@ function startModelViewer(stage, src) {
      does not change with the input device's event rate. */
   let yawVel = 0, pitchVel = 0;
   let promptClock = 0, lastWiggle = 0;
+  let covProg = null, quadProg = null, shadowFbo = null, shadowTex = null, quadBuf = null;
+  let posBuf = null, norBuf = null;
   let idle = Infinity;                          // seconds since the last input; it has been still since the page loaded
   let drag = null, dpr = 1;
 
@@ -4076,6 +4192,7 @@ function startModelViewer(stage, src) {
       const halfX = Math.atan(Math.tan(halfY) * aspect);
       dist = (radius / Math.sin(Math.min(halfX, halfY))) * FIT_MARGIN;
       gl.uniformMatrix4fv(U('uProj'), false, M4.persp(FOV, aspect, 0.1, dist + radius + 1));
+      gl.useProgram(prog);   // size() can be reached mid-pass; put the object's program back
     }
   }
 
@@ -4101,7 +4218,6 @@ function startModelViewer(stage, src) {
      That is strictly better than the clamp: every angle is reachable, there
      is no edge to hit, and the object still spends all of its unattended
      life the right way up. */
-  const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
   /* -0.40, not -0.28: Jack wanted the eye a little higher so the flat top
      of the clip reads - "we should be able to see the top a little bit,
      the flat part... but it's really close". Negative pitch tips the far
@@ -4109,7 +4225,6 @@ function startModelViewer(stage, src) {
      -0.28 / -0.38 / -0.46 / -0.56 offline against the real mesh: past -0.5
      the two legs start to foreshorten into each other and the notch
      between them closes up, which is the feature that explains the object. */
-  const HOME_PITCH = -0.52;
   /* 0.20 rad/s, about 11 deg/s - one revolution every 31 seconds.
      It was 0.30, which Jack called a little fast, and then 0.14, which he
      read as not rotating at all. Measured in the page, 0.14 is 8 deg/s on
@@ -4141,6 +4256,97 @@ function startModelViewer(stage, src) {
      not a wait on arrival - nothing has been touched yet, so there is
      nothing to wait for and nowhere to return from. */
   let homed = true;             // true once it has arrived and is just drifting
+
+  /* built once the mesh is in, because the ortho extent comes off its
+     radius. A failure here must not take the object down with it - the
+     shadow is the first thing to lose on a context that will not give us
+     a float-free RGBA framebuffer. */
+  function setupShadow() {
+    try {
+      covProg = gl.createProgram();
+      gl.attachShader(covProg, compile(gl.VERTEX_SHADER, SHADOW_COV_VS));
+      gl.attachShader(covProg, compile(gl.FRAGMENT_SHADER, SHADOW_COV_FS));
+      gl.linkProgram(covProg);
+      quadProg = gl.createProgram();
+      gl.attachShader(quadProg, compile(gl.VERTEX_SHADER, SHADOW_QUAD_VS));
+      gl.attachShader(quadProg, compile(gl.FRAGMENT_SHADER, SHADOW_QUAD_FS));
+      gl.linkProgram(quadProg);
+      if (!gl.getProgramParameter(covProg, gl.LINK_STATUS) ||
+          !gl.getProgramParameter(quadProg, gl.LINK_STATUS)) throw new Error('shadow link');
+      shadowTex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, shadowTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, SHADOW_RES, SHADOW_RES, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      /* CLAMP_TO_EDGE and not REPEAT: a blur tap that wrapped would paint
+         the far side of the object onto the near edge of the shadow. */
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      shadowFbo = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, shadowFbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, shadowTex, 0);
+      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) throw new Error('fbo');
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      quadBuf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    } catch (e) {
+      covProg = quadProg = shadowFbo = null;   // object still draws, just unshadowed
+    }
+  }
+
+  /* PASS 1: the coverage map. Yaw only - this camera looks straight down
+     the floor's normal, so pitch would tilt the thing it is measuring. */
+  function drawCoverage(spin, extent) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, shadowFbo);
+    gl.viewport(0, 0, SHADOW_RES, SHADOW_RES);
+    gl.disable(gl.DEPTH_TEST);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(covProg);
+    const loc = gl.getAttribLocation(covProg, 'aPos');
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 3, gl.SHORT, true, 0, 0);
+    gl.uniformMatrix4fv(gl.getUniformLocation(covProg, 'uSpin'), false, spin);
+    gl.uniform1f(gl.getUniformLocation(covProg, 'uExtent'), extent);
+    gl.drawElements(gl.TRIANGLES, mesh.nt * 3, gl.UNSIGNED_SHORT, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.enable(gl.DEPTH_TEST);
+  }
+
+  /* PASS 2: the floor. Pitch only, no depth write - it is behind
+     everything and the object is drawn over it. */
+  function drawShadowQuad(projM, viewM, tipM, extent, floorY, strength) {
+    gl.useProgram(quadProg);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    const loc = gl.getAttribLocation(quadProg, 'aCorner');
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const Q = (n) => gl.getUniformLocation(quadProg, n);
+    gl.uniformMatrix4fv(Q('uProj'), false, projM);
+    gl.uniformMatrix4fv(Q('uView'), false, viewM);
+    gl.uniformMatrix4fv(Q('uTip'), false, tipM);
+    gl.uniform1f(Q('uExtent'), extent);
+    gl.uniform1f(Q('uFloor'), floorY);
+    gl.uniform1f(Q('uStrength'), strength);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, shadowTex);
+    gl.uniform1i(Q('uCov'), 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+    /* hand the mesh attributes back to the object's program */
+    gl.useProgram(prog);
+    const pl = gl.getAttribLocation(prog, 'aPos'), nl = gl.getAttribLocation(prog, 'aNor');
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(pl); gl.vertexAttribPointer(pl, 3, gl.SHORT, true, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, norBuf);
+    gl.enableVertexAttribArray(nl); gl.vertexAttribPointer(nl, 3, gl.BYTE, true, 0, 0);
+  }
 
   let last = 0, lastTheme = null;
   function frame(now) {
@@ -4211,13 +4417,28 @@ function startModelViewer(stage, src) {
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     if (theme !== lastTheme) { lastTheme = theme; look(); }
     size();
-    const model = M4.mul(M4.rotX(pitch), M4.rotY(yaw));
+    const spin = M4.rotY(yaw);
+    const tip = M4.rotX(pitch);
+    const model = M4.mul(tip, spin);
+    const view = M4.trans(0, 0, -dist);
+    const projM = M4.persp(FOV, canvas.width / canvas.height, 0.1, dist + radius + 1);
+
+    /* the shadow goes down first: coverage into its own buffer, then the
+       floor quad, then the object over the top of both */
+    if (shadowFbo) {
+      const extent = radius * 1.35;
+      drawCoverage(spin, extent);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    if (shadowFbo) {
+      drawShadowQuad(projM, view, tip, radius * 1.35, -radius * 0.98, SHADOW_STRENGTH);
+    }
     gl.uniformMatrix4fv(U('uModel'), false, model);
-    gl.uniformMatrix4fv(U('uView'), false, M4.trans(0, 0, -dist));
+    gl.uniformMatrix4fv(U('uView'), false, view);
     gl.uniformMatrix3fv(U('uNormal'), false, new Float32Array([
       model[0], model[1], model[2], model[4], model[5], model[6], model[8], model[9], model[10]]));
     gl.uniform3f(U('uEye'), 0, 0, dist);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, mesh.nt * 3, gl.UNSIGNED_SHORT, 0);
   }
 
@@ -4258,11 +4479,13 @@ function startModelViewer(stage, src) {
       gl.bindBuffer(target, b);
       gl.bufferData(target, data, gl.STATIC_DRAW);
       if (loc !== undefined) { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 3, type, true, 0, 0); }
+      return b;
     };
-    buffer(mesh.pos, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aPos'), gl.SHORT);
-    buffer(mesh.nor, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aNor'), gl.BYTE);
+    posBuf = buffer(mesh.pos, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aPos'), gl.SHORT);
+    norBuf = buffer(mesh.nor, gl.ARRAY_BUFFER, gl.getAttribLocation(prog, 'aNor'), gl.BYTE);
     buffer(mesh.idx, gl.ELEMENT_ARRAY_BUFFER);
-    gl.uniform3fv(U('uBase'), [0.82, 0.83, 0.86]);
+    setupShadow();
+    gl.uniform3fv(U('uBase'), [0.80, 0.81, 0.85]);
     gl.uniform1f(U('uRough'), 0.30);
     look();
     size();
