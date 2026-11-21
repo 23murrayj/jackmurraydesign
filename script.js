@@ -4148,20 +4148,36 @@ function startModelViewer(stage, src) {
      entering rather than a hoop balanced on top of it.
      Theme-independent colours, like the loader and the pong board. */
   hand.innerHTML =
-    '<svg viewBox="0 -6 44 62" aria-hidden="true">' +
+    '<svg viewBox="0 -6 46 62" aria-hidden="true">' +
       '<circle cx="20" cy="8" r="8.6" fill="none" stroke="#1A1A18" stroke-width="2.6"/>' +
-      '<path d="M16 42V11a4 4 0 0 1 8 0v12a3.6 3.6 0 0 1 7.2 0v3a3.6 3.6 0 0 1 7.2 0v11' +
-        'c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5a3.8 3.8 0 0 1 5.6-5l4.4 4.3Z" ' +
+      /* THE LEFT EDGE STOPS AT 36.8, WHICH IS WHERE THE OUTLINE COMES
+         BACK TO IT. It started at 42 - and the outline's last point is
+         (16, 36.8), so Z drew a second stroke over the gap and left a
+         5.2-unit tail hanging down past the thumb junction into the
+         palm. Jack: "the middle line... on the left side of the pointer
+         finger... goes a little bit too far down towards the bottom of
+         the hand." Closing the path on its own start point removes it.
+         42 was a leftover from when the fingers were separate shapes that
+         had to run under the palm to avoid a gap; the silhouette has been
+         one closed path since, and a number that was load-bearing for the
+         old construction was still sitting in the new one.
+
+         THREE FOLDED KNUCKLES, not two. Asked to check this against
+         established icons, and that is the one place it was off: the
+         macOS link cursor, Material's touch_app and Font Awesome's
+         hand-pointer all show an index finger plus THREE folded fingers,
+         and at two the hand reads as having three fingers in total. The
+         folded ones narrow from 3.6 to 3.3/3.3/3.0 so the third fits
+         without the palm growing - 46 units wide against 44.
+         Everything else measured in convention: the index is about half
+         the overall height, the palm is four finger-widths across, and
+         the knuckles step down evenly, which is where they already were. */
+      '<path d="M16 36.8V11a4 4 0 0 1 8 0v12a3.3 3.3 0 0 1 6.6 0v3a3.3 3.3 0 0 1 6.6 0' +
+        'v3a3 3 0 0 1 6 0v8c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5' +
+        'a3.8 3.8 0 0 1 5.6-5l4.4 4.3Z" ' +
         'fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
-      /* The index/middle separation is 5.0 and not 6.5. At 6.5 it ran past
-         the knuckle it belongs to and well down into the palm, which reads
-         as a crease in the hand rather than a gap between two fingers -
-         Jack: "the interior line goes down a little bit too far." Ending
-         at y29.5 puts it level with where the middle/ring line ends, so
-         the two read as a pair. Compared at 250px against 6.5 and 4.0,
-         where 4.0 is short enough that the index finger starts to merge
-         back into the hand. */
-      '<path d="M24 24.5v5M31.2 27.5v5.5" fill="none" stroke="#1A1A18" stroke-width="2.6" stroke-linecap="round"/>' +
+      /* the three separations, all drawn the same way so none reads odd */
+      '<path d="M24 24.5v5M30.6 27.5v5M37.2 30.5v4.5" fill="none" stroke="#1A1A18" stroke-width="2.6" stroke-linecap="round"/>' +
     '</svg>';
   stage.appendChild(hand);
 
