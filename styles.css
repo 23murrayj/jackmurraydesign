@@ -948,9 +948,12 @@ a { color: inherit; text-decoration: none; }
 .model-hand {
   position: absolute;
   left: 50%;
-  /* over the lower part of the object, where a thumb would actually land,
-     and clear of the contact shadow below it */
-  bottom: 25%;
+  /* UP ON THE BODY OF THE OBJECT, not down by its feet. It sat at 25%,
+     which put it over the legs and near the shadow — Jack: "it looks a bit
+     low… put it a little bit more in the middle of where the product is."
+     40% lands it on the mass of the form, which is also where a thumb
+     would actually go. */
+  bottom: 40%;
   /* 46 wide, not 36: at 36 the ring, finger and palm collapse into
      something that reads as a map pin rather than a hand */
   /* 44x62 viewBox: the ring needed room above the finger, so the box
