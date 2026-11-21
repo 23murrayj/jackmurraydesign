@@ -4130,18 +4130,28 @@ function startModelViewer(stage, src) {
      drawn over a light metal object on either ground, so it wants a pale
      fill and a dark outline in both. */
   hand.innerHTML =
-    '<svg viewBox="0 0 44 56" aria-hidden="true">' +
-      /* the touch ring, FIRST so the fingertip draws over its lower edge
-         and reads as being inside it rather than under it. Jack: "I like
-         the one with the little circle next to the finger, or like in the
-         finger... so that way you kind of know to touch." Compared against
-         a tap-ripple pair of arcs and a solid cap at 132px before
-         choosing: the arcs read as cluttered at 42px and the solid cap
-         just makes the finger look longer. */
-      '<circle cx="20" cy="7" r="6" fill="none" stroke="#1A1A18" stroke-width="2.4"/>' +
-      '<path d="M16 30V11a4 4 0 0 1 8 0v15" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
-      '<path d="M24 26v-3a3.6 3.6 0 0 1 7.2 0v5" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
+    /* THE VIEWBOX STARTS AT -6 so the ring has somewhere to be. It is
+       bigger than it was (r 6 -> 8.6) because Jack asked for it bigger,
+       and at r 6 on a 20-wide finger it read as a cap rather than a
+       target. Drawn LAST, so it sits over the fingertip. */
+    '<svg viewBox="0 -6 44 62" aria-hidden="true">' +
+      /* THE FINGERS RUN DOWN INTO THE PALM, and that is a fix rather than
+         a style. Each of these is an OPEN subpath, so its fill closes
+         itself with a straight line from the last point back to the
+         first - and the index finger's closing line (24,26)->(16,30) did
+         not meet the palm's own closing line (16,36.8)->(31.2,28). The
+         wedge between them belonged to neither path, so the page showed
+         through it: Jack, "a little transparent rectangle inside of it
+         next to the index finger and the thumb." Invisible on the ivory
+         ground and obvious the moment it is drawn on red, which is how
+         it was found.
+         Running the fingers to y=42 puts their fill well under the palm,
+         which paints after them and covers both the overlap and the
+         stroke that comes with it. */
+      '<path d="M16 42V11a4 4 0 0 1 8 0v31" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<path d="M24 42V23a3.6 3.6 0 0 1 7.2 0v19" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round"/>' +
       '<path d="M31.2 28v-2a3.6 3.6 0 0 1 7.2 0v11c0 8-5.4 14-13.5 14h-3.5c-4 0-6.6-1.8-9.2-5.2L6 37.5a3.8 3.8 0 0 1 5.6-5l4.4 4.3" fill="#F7F3EB" stroke="#1A1A18" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="20" cy="6" r="8.6" fill="none" stroke="#1A1A18" stroke-width="2.6"/>' +
     '</svg>';
   stage.appendChild(hand);
 
@@ -4169,7 +4179,7 @@ function startModelViewer(stage, src) {
      renderer: +0.5-ish is the one with the saddle in view and the notch
      between the legs still readable. */
   const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
-  const HOME_PITCH = 0.46;      // positive = looking down onto the flat top
+  const HOME_PITCH = 0.36;      // positive = looking down onto the flat top
 
   let mesh = null, prog = null, raf = 0, yaw = HOME_YAW, pitch = HOME_PITCH;
   /* MOTION STATE. It used to be `yaw += delta` straight out of pointermove

@@ -953,8 +953,10 @@ a { color: inherit; text-decoration: none; }
   bottom: 25%;
   /* 46 wide, not 36: at 36 the ring, finger and palm collapse into
      something that reads as a map pin rather than a hand */
-  width: 42px;
-  height: 53px;
+  /* 44x62 viewBox: the ring needed room above the finger, so the box
+     starts at y=-6 and the element follows its ratio */
+  width: 46px;
+  height: 65px;
   transform: translate(-50%, 0);
   opacity: 0;
   pointer-events: none;
