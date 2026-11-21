@@ -240,7 +240,11 @@ function checkMotion(K) {
     if (d < -Math.PI) d += Math.PI * 2;
     return d;
   };
-  const sim = () => ({ yaw: K.HOME_YAW, pitch: K.HOME_PITCH, yawVel: 0, pitchVel: 0, idle: 0, homed: false });
+  // mirrors the viewer's initial state exactly: nothing has been touched,
+  // so it is already home and already idle, and drifts from frame one
+  const sim = () => ({ yaw: K.HOME_YAW, pitch: K.HOME_PITCH, yawVel: 0, pitchVel: 0, idle: Infinity, homed: true });
+  // the state a pointerdown leaves behind
+  const touched = (s) => { s.idle = 0; s.homed = false; return s; };
   const step = (s, dt, reduce) => {
     s.idle += dt;
     if (!reduce && s.idle > K.IDLE_AFTER) {
@@ -265,7 +269,7 @@ function checkMotion(K) {
 
   // 1. NOTHING STOPS, IN EITHER AXIS. This is the one Jack reported twice.
   {
-    const s = sim(); s.idle = -1e9;            // hold off the homing phase
+    const s = touched(sim()); s.idle = -1e9;   // mid-drag: homing held off
     let minY = Infinity, minP = Infinity;
     for (let i = 0; i < 2000; i++) {
       const y0 = s.yaw, p0 = s.pitch;
@@ -281,7 +285,7 @@ function checkMotion(K) {
   }
   // 2. it comes home from anywhere, the short way, and then drifts
   {
-    const s = sim();
+    const s = touched(sim());
     s.yaw = K.HOME_YAW + 11.3;                 // nearly two extra turns
     s.pitch = 2.9;                             // tumbled past upside down
     s.idle = K.IDLE_AFTER + 1e-9;
@@ -294,22 +298,45 @@ function checkMotion(K) {
   }
   // 3. the return takes the SHORT way - it must not unwind the turns given
   {
-    const s = sim();
+    const s = touched(sim());
     s.yaw = K.HOME_YAW + Math.PI * 2 * 3 + 0.2;   // three turns plus a little
     s.idle = K.IDLE_AFTER + 1e-9;
     const travel0 = s.yaw;
-    for (let i = 0; i < 600; i++) step(s, 1/60, false);
-    T('the trip home does not unwind whole turns', Math.abs(travel0 - s.yaw) < 1.0,
-      `moved ${Math.abs(travel0 - s.yaw).toFixed(2)} rad to get home, not ${(Math.PI*6).toFixed(1)}`);
+    // measure at the moment it ARRIVES, not after; past that it is drifting
+    // away again on purpose, and folding that in is what made this read 1.25
+    let onArrival = null;
+    for (let i = 0; i < 600; i++) { step(s, 1/60, false); if (s.homed && onArrival === null) onArrival = s.yaw; }
+    T('the trip home does not unwind whole turns', Math.abs(travel0 - onArrival) < 0.5,
+      `moved ${Math.abs(travel0 - onArrival).toFixed(3)} rad to get home, not ${(Math.PI*6).toFixed(1)}`);
   }
   // 4. the resting drift is slow, and is the speed it says it is
   {
-    const s = sim(); s.idle = K.IDLE_AFTER + 1e-9; s.homed = true;
+    const s = sim();
     const y0 = s.yaw;
     for (let i = 0; i < 600; i++) step(s, 1/60, false);
     const rate = (s.yaw - y0) / 10;
-    T('the resting spin is slow and accurate', Math.abs(rate - K.IDLE_SPIN) < 1e-6 && rate < 0.2,
-      `${rate.toFixed(4)} rad/s — one revolution every ${(2 * Math.PI / rate).toFixed(0)}s`);
+    /* The ceiling is 0.30 because that is the speed Jack called "a little
+       fast", and the floor is 0.16 because 0.14 measured as 8 deg/s and he
+       read it as not rotating at all. Both ends are his, not mine. */
+    T('the resting spin is calm but visible', Math.abs(rate - K.IDLE_SPIN) < 1e-6 && rate < 0.30 && rate > 0.16,
+      `${rate.toFixed(4)} rad/s, ${(rate * 180 / Math.PI).toFixed(1)}°/s — one revolution every ${(2 * Math.PI / rate).toFixed(0)}s`);
+
+    /* AND IT STARTS AT ONCE. The spin sits behind IDLE_AFTER, and that gate
+       used to apply to a freshly loaded page too, so the object stood dead
+       still for six seconds before it did anything - the other half of
+       "it's not rotating when you leave it". */
+    const fresh = sim();
+    const before = fresh.yaw;
+    step(fresh, 1/60, false);
+    T('it drifts from the very first frame, with no dead wait', fresh.yaw > before,
+      `moved ${((fresh.yaw - before) * 1000).toFixed(2)} mrad on frame one; the gate is a pause after letting go, not a wait on arrival`);
+
+    /* and a pointerdown does reinstate the pause */
+    const held = touched(sim());
+    const h0 = held.yaw;
+    for (let i = 0; i < Math.round(K.IDLE_AFTER * 60) - 2; i++) step(held, 1/60, false);
+    T('touching it reinstates the pause before it moves again', Math.abs(held.yaw - h0) < 1e-9,
+      `still after ${K.IDLE_AFTER}s of being left alone following a touch`);
   }
   // 5. same motion at any refresh rate
   {
@@ -317,7 +344,7 @@ function checkMotion(K) {
     a.yawVel = b.yawVel = 5;
     for (let i = 0; i < 60; i++) step(a, 1/60, false);
     for (let i = 0; i < 144; i++) step(b, 1/144, false);
-    const c = sim(), d = sim();
+    const c = touched(sim()), d = touched(sim());
     c.yaw = d.yaw = K.HOME_YAW + 4; c.idle = d.idle = K.IDLE_AFTER + 1e-9;
     for (let i = 0; i < 60; i++) step(c, 1/60, false);
     for (let i = 0; i < 144; i++) step(d, 1/144, false);
@@ -327,7 +354,7 @@ function checkMotion(K) {
   }
   // 6. reduced motion never moves on its own, and never homes on its own
   {
-    const s = sim(); s.yaw += 3; s.pitch = 1.9;
+    const s = touched(sim()); s.yaw += 3; s.pitch = 1.9;
     for (let t = 0; t < 20; t += 1/60) step(s, 1/60, true);
     T('reduced motion leaves it exactly where it was put',
       Math.abs(s.yaw - (K.HOME_YAW + 3)) < 1e-9 && Math.abs(s.pitch - 1.9) < 1e-9,

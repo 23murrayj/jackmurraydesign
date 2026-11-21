@@ -288,6 +288,16 @@ const projectData = {
       poster: { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933 },
       // index into the alt.N series, 0-based — 13 resolves proj.…alt.14
       altIndex: 13,
+      /* TEMPORARY, AND THE WHOLE BLOCK COMES OUT AGAIN. A side-by-side
+         against Google's <model-viewer> so Jack can see what the
+         hand-rolled renderer is and is not giving up. Same mesh, built by
+         tools/jmm-to-glb.js, so the only variable is the lighting model.
+         It is OFF for visitors - see wantsCompare() - because it costs a
+         673KB mesh plus a ~250KB library from a CDN, on a page whose
+         first rule is no dependencies. Deleting this key, the
+         `.stage-compare` CSS, renderCompareStage() and the .glb removes
+         every trace. */
+      compare: '/assets/projects/pot-clip/model-compare.glb',
     },
   },
   'easter-riverside': {
@@ -805,13 +815,58 @@ const projectStage = document.getElementById('projectStage');
    layout rather than being a cell in one of them.
    The <img> is the poster AND the fallback - a dead fetch, a lost context
    or no WebGL at all leaves a working photograph rather than a hole. */
+/* ---- the <model-viewer> comparison. TEMPORARY; see `compare` in projectData.
+   It is shown only on a local server or when the URL asks for it, so a
+   visitor never pays for a CDN library and a second copy of the mesh on a
+   portfolio page whose first rule is no dependencies. Jack can see it at
+   /work/pot-clip?compare=1 anywhere, including the deployed site. */
+const COMPARE_LIB = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js';
+let compareLibAdded = false;
+function wantsCompare() {
+  return /[?&]compare(=|&|$)/.test(location.search) ||
+    location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+function renderCompareStage(src) {
+  if (!compareLibAdded) {
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.src = COMPARE_LIB;
+    document.head.appendChild(s);
+    compareLibAdded = true;
+  }
+  /* camera-orbit mirrors our own opening view so the two are showing the
+     same thing: theta 115deg is HOME_YAW (2.0 rad), phi 67deg is
+     HOME_PITCH (-0.40 rad) measured from the pole instead of the horizon.
+     rotation-per-second and the delay mirror IDLE_SPIN and IDLE_AFTER. */
+  return `
+    <div class="stage-compare">
+      <p class="stage-label">Google &lt;model-viewer&gt; — library ~250KB + 673KB mesh</p>
+      <model-viewer
+        src="${escapeAttr(src)}"
+        alt="The same pot clip mesh, rendered by Google's model-viewer for comparison"
+        camera-controls
+        auto-rotate
+        auto-rotate-delay="6000"
+        rotation-per-second="11deg"
+        camera-orbit="115deg 67deg auto"
+        environment-image="neutral"
+        shadow-intensity="1"
+        exposure="1"
+        touch-action="pan-y"></model-viewer>
+    </div>`;
+}
+
 function renderProjectStage(data) {
   const m = data.model;
   projectDetailEl.classList.toggle('has-stage', !!m);
   if (!m) { projectStage.innerHTML = ''; return; }
   const poster = mediaTag(m.poster, data.id, m.altIndex || 0, data.title, true);
+  const compare = (m.compare && wantsCompare()) ? renderCompareStage(m.compare) : '';
+  projectDetailEl.classList.toggle('has-compare', !!compare);
   projectStage.innerHTML =
-    `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>`;
+    (compare ? '<p class="stage-label">This site — hand-rolled WebGL, 392KB mesh, no library</p>' : '') +
+    `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>` +
+    compare;
   setupModelStages(projectStage);
 }
 
@@ -3865,9 +3920,8 @@ function startModelViewer(stage, src) {
      Velocities in radians/second, integrated in the frame loop, so the feel
      does not change with the input device's event rate. */
   let yawVel = 0, pitchVel = 0;
-  let idle = 0;                                 // seconds since the last input
+  let idle = Infinity;                          // seconds since the last input; it has been still since the page loaded
   let drag = null, dpr = 1;
-  const reduce = prefersReducedMotion;
 
   const compile = (type, srcText) => {
     const sh = gl.createShader(type);
@@ -3934,8 +3988,20 @@ function startModelViewer(stage, src) {
      is no edge to hit, and the object still spends all of its unattended
      life the right way up. */
   const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
-  const HOME_PITCH = -0.28;
-  const IDLE_SPIN = 0.14;       // rad/s - a 45-second revolution. "very slowly"
+  /* -0.40, not -0.28: Jack wanted the eye a little higher so the flat top
+     of the clip reads - "we should be able to see the top a little bit,
+     the flat part... but it's really close". Negative pitch tips the far
+     side down, which is what shows the upper surface. Chosen by rendering
+     -0.28 / -0.38 / -0.46 / -0.56 offline against the real mesh: past -0.5
+     the two legs start to foreshorten into each other and the notch
+     between them closes up, which is the feature that explains the object. */
+  const HOME_PITCH = -0.40;
+  /* 0.20 rad/s, about 11 deg/s - one revolution every 31 seconds.
+     It was 0.30, which Jack called a little fast, and then 0.14, which he
+     read as not rotating at all. Measured in the page, 0.14 is 8 deg/s on
+     a smooth and nearly symmetric object: genuinely moving and genuinely
+     imperceptible. 0.20 is the middle and is visible without being busy. */
+  const IDLE_SPIN = 0.20;
   const IDLE_AFTER = 6.0;       // "like 5 or 10 seconds" before it heads home
   const THROW_DECAY = 1.8;      // a flick is down to ~2% of itself in 2s
   const RETURN_EASE = 1.1;      // how briskly it travels back
@@ -3953,7 +4019,14 @@ function startModelViewer(stage, src) {
     return d;
   };
 
-  let homed = false;            // true once it has arrived and is just drifting
+  /* TRUE AT THE START, so it drifts from the first frame. This was the
+     other half of "it's not rotating when you leave it": the spin is
+     gated behind IDLE_AFTER, and that gate was applied to a page that had
+     only just loaded, so the object sat dead still for six seconds before
+     doing anything. The delay is meant to be a pause after you LET GO,
+     not a wait on arrival - nothing has been touched yet, so there is
+     nothing to wait for and nowhere to return from. */
+  let homed = true;             // true once it has arrived and is just drifting
 
   let last = 0, lastTheme = null;
   function frame(now) {
@@ -3963,7 +4036,7 @@ function startModelViewer(stage, src) {
 
     if (!drag && dt) {
       idle += dt;
-      if (!reduce && idle > IDLE_AFTER) {
+      if (!prefersReducedMotion && idle > IDLE_AFTER) {
         /* HOME, THEN DRIFT. Two phases rather than one blend, because they
            want opposite things: getting back wants a target, drifting wants
            a rate, and running both at once is what made the previous build
