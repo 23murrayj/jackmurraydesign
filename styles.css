@@ -2965,27 +2965,11 @@ body.is-loading { overflow: hidden; }
   top: 110px;
   align-self: start;
 }
-/* the title runs the full measure above both columns, same as the button */
-.project-detail.has-sidebar.is-title-top .project-head { grid-column: 1 / -1; }
 /* and so does the turntable — it is a band, not a column */
 .project-detail.has-sidebar .project-stage { grid-column: 1 / -1; }
-/* Row gap off for this one layout, and ONLY where the title is on top.
-   There are three rows here then - button, title, columns - and both row
-   gaps are already owned by a margin: the back button's 36px and
-   .project-head's 34px. The 50px stacked on them, so the heading sat 86px
-   under the button and 84px above the media, against 36 and 34 in normal
-   flow. Same element, same page, two different rhythms.
-   Without the title up top there are only two rows and the 50px is the
-   gap under the button, which is what every sidebar project has always
-   had - hence the .is-title-top, rather than changing it outright. */
-.project-detail.has-sidebar.is-title-top { row-gap: 0; }
 @media (max-width: 900px) {
   .project-detail.has-sidebar { grid-template-columns: 1fr; }
   .project-detail.has-sidebar .project-body { position: static; }
-  /* Stacked, media and body are two rows rather than two columns, so the
-     row-gap zeroed above was the only thing between them. The margin
-     .project-media carries on every other layout is exactly this gap. */
-  .project-detail.has-sidebar.is-title-top .project-media { margin-bottom: 40px; }
 }
 
 /* Video layout: film full width, then the write-up and the poster side by
@@ -3094,23 +3078,6 @@ body.is-loading { overflow: hidden; }
   }
 }
 
-/* THE TITLE ABOVE THE MEDIA — ONE PROJECT ONLY, FOR NOW.
-   Home for the chip and the <h2> is the top of .project-body, which is
-   where all six have always had them and where five of them still do.
-   A project carrying `titleTop: true` in projectData has fillProjectDetail
-   move both nodes into .project-head instead, and renderProjectMedia put
-   .is-title-top on .project-detail so the CSS can follow.
-   It is worth it on a sidebar layout: .project-body is a ~360px sticky
-   column there, so the name of the work was set at clamp(1.7rem, 3vw,
-   2.6rem) beside the photographs - a caption, not a title. Up here it
-   takes the full 956px measure and the full 4.6rem, and the back button
-   is no longer followed by 36px of nothing.
-   The chip comes with it. Left behind, it would have sat directly on the
-   description, labelling the thing the heading above it had just named.
-   Collapsed when nothing moved into it, so it never costs the other five
-   a grid row or 34px of air. */
-.project-head { margin-bottom: 34px; }
-.project-detail:not(.is-title-top) .project-head { display: none; }
 .project-cat {
   display: inline-block;
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
@@ -3118,16 +3085,11 @@ body.is-loading { overflow: hidden; }
   padding: 6px 12px; margin-bottom: 18px;
 }
 .project-body h2,
-.project-head h2 {
+.cs-title-slot h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
   letter-spacing: -0.02em; margin-bottom: 22px;
 }
-/* Up top the heading is two lines at 73.6px and the margin below it belongs
-   to .project-head, not to the h2 inside it. 0.95 rather than the default,
-   because at this size a normal line box opens a visible gap between the
-   two lines of a wrapped title. */
-.project-head h2 { margin-bottom: 0; line-height: 0.95; }
 .project-desc {
   font-size: 1.1rem; font-weight: 400; line-height: 1.6; max-width: 640px; margin-bottom: 40px;
 }
@@ -3138,6 +3100,325 @@ body.is-loading { overflow: hidden; }
 .project-meta > div { display: flex; flex-direction: column; gap: 6px; }
 .meta-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); }
 .project-meta span:last-child { font-weight: 700; font-size: 1rem; }
+
+/* ------------------------------------------------------------------------
+   SECTION 11b · THE CASE-STUDY LAYOUT
+
+   ONE PROJECT HAS IT, and the flag is the whole point: there is a single
+   overlay behind all seven case studies, so a change made in the shared
+   markup lands on all seven. Everything here hangs off .is-case, which
+   renderCaseStudy puts on .project-detail, and off .cs-* classes that exist
+   nowhere else. The other six render exactly as they did.
+
+   THE MEASURE IS WIDER HERE AND ONLY HERE. .project-detail is 1100px, which
+   leaves 956px of content at 1100 and up - right for one column of
+   photographs with a write-up beside it, and too narrow for a page that is
+   a masthead, a row of three and a contents column plus a text column.
+   Jack: "you probably have to widen out the sides of the borders, because
+   right now I think they're too small." 1380 gives 1236px of content at
+   1440, which the grid below splits into a 240px contents column and a
+   ~924px text column. Scoped rather than changed outright, because widening
+   .project-detail would reflow the other six - and the instruction when
+   this work started was not to touch them.
+   ------------------------------------------------------------------------ */
+.project-detail.is-case { max-width: 1380px; }
+/* The write-up column and the photo wall are both replaced by this layout.
+   Hidden rather than left empty: .project-body still gets filled by
+   fillProjectDetail (the chip and the <h2> are moved OUT of it, the rest is
+   written into it as usual), so there is real content in there to hide. */
+.project-detail.is-case .project-media,
+.project-detail.is-case .project-body { display: none; }
+/* AND THE SLOT ITSELF IS display:none WHEN NOTHING IS IN IT. An empty div
+   is still a grid item: .has-sidebar is a two-column grid, so an empty
+   .project-case took the first cell and swapped the photographs with the
+   write-up on cat-coaching and monmouth-retreat, and cost oasis-journey a
+   40px row. Caught by diffing every landmark against the committed build;
+   nothing about the markup looks wrong, and the old .project-head rule
+   carried this same note for this same reason. */
+.project-detail:not(.is-case) .project-case { display: none; }
+
+/* ---- the masthead ------------------------------------------------------
+   Asymmetric on purpose - 1.15fr of text against 1fr of photograph - so it
+   is the same split the hero uses rather than a tidy half and half. */
+.cs-mast {
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px;
+  align-items: start; margin-bottom: 56px;
+}
+.cs-eyebrow {
+  display: block;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--accent-ink);
+  margin-bottom: 18px;
+}
+/* The chip and the <h2> are moved in here by fillProjectDetail rather than
+   written twice - the heading is the overlay's aria-labelledby target, so
+   there can only be one of it. The h2's own size comes from the
+   .project-body h2 rule it shares; only the line-height changes, because at
+   73.6px a normal line box opens a visible gap between two lines of a
+   wrapped title. */
+.cs-title-slot h2 { margin-bottom: 20px; line-height: 0.95; }
+.cs-lede {
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5;
+  max-width: 34ch; margin-bottom: 36px;
+}
+/* A 3px rule above and 1px between: the heavy one says where the block
+   starts, the light ones only separate rows inside it. Four facts in two
+   columns rather than a list, so the block reads as a table of contents for
+   the project itself. */
+.cs-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 3px solid var(--black);
+}
+.cs-meta > div { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--line); }
+.cs-meta > div:nth-child(2n) { padding-right: 0; }
+.cs-meta-k {
+  display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 1.4px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.cs-meta-v { font-size: 0.92rem; font-weight: 500; line-height: 1.45; margin: 0; }
+
+/* ---- the three summary cards ------------------------------------------
+   The label is a filled strip rather than tracked text above the box,
+   because that filled chip is already the page's word for "this is what
+   kind of thing you are looking at" (.project-cat, the filter buttons).
+   ONE colour across all three, not a hue each. The about stats went through
+   exactly this and came back: four figures in four colours is four separate
+   things, and you count the colours before you read the words. */
+.cs-cards {
+  list-style: none; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-bottom: 56px;
+}
+.cs-card { border: 3px solid var(--black); display: flex; flex-direction: column; }
+.cs-card-t {
+  background: var(--black); color: var(--white);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
+  text-transform: uppercase; padding: 9px 14px;
+}
+.cs-card-b { font-size: 0.98rem; line-height: 1.55; padding: 18px 16px 20px; margin: 0; }
+
+/* ---- the brief, as the page's one dark band ---------------------------
+   --ink and --paper, which is the group of tokens that do NOT invert: the
+   loader, the about slab and the footer are a dark surface with light type
+   in both themes, and this is one more of them. It is also why the heading
+   can be --accent here - coral on near-black is 5.3:1 either way round. */
+.cs-brief {
+  background: var(--ink); color: var(--paper);
+  padding: 36px 40px; margin-bottom: 64px;
+}
+.cs-brief-t {
+  font-family: var(--ff-display); font-size: 0.95rem; letter-spacing: 1.4px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+}
+.cs-brief-b { font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.5; max-width: 54ch; margin: 0; }
+
+/* ---- contents beside the sections ------------------------------------- */
+.cs-main { display: grid; grid-template-columns: 240px 1fr; gap: 72px; align-items: start; }
+/* Sticky inside the overlay, which is the scrolling ancestor - the same
+   thing .project-back relies on, so this needs no JS either. 76px clears
+   that button: it sits at top:14 and stands about 45px tall. */
+.cs-toc { position: sticky; top: 76px; }
+.cs-toc-label {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.6px;
+  text-transform: uppercase; color: var(--muted);
+  padding-bottom: 12px; border-bottom: 3px solid var(--black); margin-bottom: 4px;
+}
+.cs-toc ol { list-style: none; counter-reset: cstoc; }
+.cs-toc li { counter-increment: cstoc; border-bottom: 1px solid var(--line); }
+.cs-toc a {
+  display: flex; text-decoration: none; color: var(--black);
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.6px;
+  text-transform: uppercase;
+  /* min-height rather than padding arithmetic: 12px either side of a
+     0.82rem line box measured 41px, and the number moves again in Japanese
+     and with any change of size. A centred 44px box is 44 whatever the text
+     does - the same reason .nav-logo's touch extender sets a height. */
+  min-height: 44px; align-items: center;
+  padding: 6px 0 6px 16px;
+  border-left: 3px solid transparent;
+  transition: border-color .2s, color .2s;
+}
+.cs-toc a::before {
+  content: counter(cstoc) " ";
+  color: var(--muted); font-weight: 400; margin-right: 6px;
+}
+@media (hover: hover) {
+  .cs-toc a:hover { border-left-color: var(--accent); color: var(--accent-ink); }
+}
+.cs-toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+/* ---- the sections -----------------------------------------------------
+   A 3px rule over every one, including the first: the rule is what makes
+   the column read as a set of chapters rather than a long page with bigger
+   type in places. scroll-margin is for the contents links - without it the
+   heading lands hard against the top of the overlay, under the sticky back
+   button. */
+.cs-section { border-top: 3px solid var(--black); padding-top: 40px; margin-top: 64px; scroll-margin-top: 72px; }
+.cs-section:first-child { margin-top: 0; }
+.cs-section:focus { outline: none; }
+.cs-h {
+  font-family: var(--ff-display); font-size: clamp(1.5rem, 3vw, 2.2rem);
+  letter-spacing: -0.01em; line-height: 1.05; margin-bottom: 26px;
+}
+.cs-prose, .cs-prose-p { font-size: 1.02rem; line-height: 1.7; max-width: 64ch; }
+.cs-prose p + p, .cs-prose-p + .cs-prose-p { margin-top: 18px; }
+.cs-prose ul { list-style: none; margin-top: 20px; }
+.cs-prose li { padding-left: 20px; position: relative; margin-bottom: 14px; }
+/* The page's own mark again, at a fifth size: the full stop after MURRAY,
+   the nav wordmark, the badge dot and the section marks are all this same
+   slightly wide rectangle. A round bullet would be the one disc on a page
+   that has decided its punctuation is square. */
+.cs-prose li::before {
+  content: ""; position: absolute; left: 0; top: 0.62em;
+  width: 8px; height: 7.5px; background: var(--accent);
+}
+.cs-prose strong { font-weight: 700; }
+
+/* A definition list for the research notes and the limitations: a term and
+   what it means, which is what both of those actually are. The row variant
+   goes two-up where there is room, because the limitations are four short
+   pairs and a single column of them reads as a longer list than it is. */
+.cs-defs { margin-top: 22px; max-width: 64ch; }
+.cs-defs dt {
+  font-family: var(--ff-display); font-size: 0.88rem; letter-spacing: 0.6px;
+  text-transform: uppercase; padding-top: 16px;
+  border-top: 1px solid var(--line); margin-bottom: 8px;
+}
+.cs-defs dd { font-size: 0.98rem; line-height: 1.6; margin-bottom: 18px; }
+/* The term column is fixed, not 1fr: at 1fr a two-word term took 450px
+   and left the sentence beside it 180px to wrap in, which is a column of
+   six-word lines next to a column of white. */
+.cs-defs-row { display: grid; grid-template-columns: 190px 1fr; gap: 0 36px; max-width: none; }
+.cs-defs-row dt { grid-column: 1; }
+.cs-defs-row dd { grid-column: 2; padding-top: 16px; border-top: 1px solid var(--line); margin-bottom: 0; }
+.cs-defs-row dd { margin-bottom: 18px; }
+
+/* THE PAGE'S ONE PULL QUOTE, and it is the "how might we" line - the
+   question every section after it answers. 6px of --accent down the side
+   rather than quotation marks: the line is not a quotation, it is the
+   project's own hinge. */
+.cs-quote {
+  font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 500;
+  border-left: 6px solid var(--accent); padding-left: 26px;
+  margin: 34px 0 0; max-width: 46ch;
+}
+
+/* ---- the turntable's slot --------------------------------------------
+   #projectStage is MOVED in here by renderProjectStage rather than rebuilt,
+   so the canvas, the poster and the still fallback are all the same ones.
+   Its own margin-bottom is dropped: the section below supplies the gap. */
+.cs-stage-slot { margin-top: 30px; }
+.cs-stage-slot .project-stage { margin-bottom: 0; }
+/* :has() rather than a sibling selector, because .is-live lands on
+   .model-stage - a grandchild of #projectStage, which is itself moved in
+   here at runtime. The hint is also ordered before the stage in the
+   markup and pulled under it with flex, so renderProjectStage can append
+   without having to know what else is in the slot. */
+.cs-stage-slot { display: flex; flex-direction: column; }
+.cs-stage-hint {
+  order: 2; margin-top: 14px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
+  text-transform: uppercase; color: var(--muted);
+  opacity: 0; transition: opacity .4s ease;
+}
+.cs-stage-slot:has(.is-live) .cs-stage-hint { opacity: 1; }
+.cs-stage-slot .project-stage { order: 1; }
+
+/* ---- the numbered process -------------------------------------------- */
+.cs-steps { list-style: none; counter-reset: csstep; margin-top: 8px; }
+.cs-step {
+  counter-increment: csstep;
+  display: grid; grid-template-columns: 52px 1fr; gap: 0 20px;
+  padding-top: 30px; margin-top: 30px; border-top: 1px solid var(--line);
+}
+.cs-step:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.cs-step::before {
+  content: counter(csstep);
+  font-family: var(--ff-display); font-size: 1.75rem; line-height: 0.9;
+  color: var(--accent); grid-row: 1 / span 2;
+}
+.cs-step-txt { font-size: 1.02rem; line-height: 1.65; max-width: 58ch; }
+.cs-step-txt strong { font-weight: 700; }
+.cs-step .cs-figs { grid-column: 2; margin-top: 20px; }
+
+/* ---- the two test figures --------------------------------------------
+   One colour across both, for the reason the summary cards are one colour:
+   two numbers in two hues are two subjects. --accent because it is the
+   colour of the full stop in the name, which is the only accent on this
+   page that means anything. */
+.cs-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
+.cs-stat { border-top: 3px solid var(--black); padding-top: 14px; }
+.cs-stat-num {
+  display: block; font-family: var(--ff-display);
+  font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1; color: var(--accent);
+  margin-bottom: 10px;
+}
+.cs-stat-txt { display: block; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+
+/* ---- photographs ------------------------------------------------------
+   NATURAL RATIOS, ALIGNED AT THE TOP, AND NOTHING CROPPED. Equal-height
+   rows were the obvious alternative and they cost the pictures: a 1000x1778
+   spray booth forced into 3:2 loses 44% of its height, and the thing a
+   process photo is for is the part that gets cropped. Ragged bottoms are
+   what an editorial page does with photographs of different shapes.
+   A LONE PORTRAIT IS CAPPED. At the column's full ~924px a 1000x1778 source
+   draws 1643px tall - two and a half screens of one photograph. Landscapes
+   run the full column; only the tall ones need the limit. */
+.cs-figs { display: grid; gap: 18px; align-items: start; margin-top: 26px; }
+.cs-figs-2 { grid-template-columns: repeat(2, 1fr); }
+.cs-figs-3 { grid-template-columns: repeat(3, 1fr); }
+.cs-figs-1 .cs-fig.is-portrait { max-width: 400px; }
+.cs-fig { border: 3px solid var(--black); background: var(--white); line-height: 0; }
+.cs-fig img { width: 100%; height: auto; display: block; }
+/* The masthead photograph fills its column whatever its shape - it is the
+   opening frame, so the cap above would be the wrong rule here. */
+.cs-mast-media .cs-fig.is-portrait { max-width: none; }
+
+/* ---- the disclaimer --------------------------------------------------
+   NOT SMALL PRINT. pot-clip carries a real trademark and is not a client
+   project; this paragraph is what stops a reader - or a summary of the page
+   - inventing a relationship with the brand. It is the last paragraph of
+   proj.<id>.body, which is what the markup fallback and the JSON-LD
+   description are built from, so audit.js asserts the two match. Muted and
+   set small because it is an aside, bordered because it is a statement. */
+.cs-disclaimer {
+  margin-top: 72px; padding-top: 22px; border-top: 3px solid var(--black);
+  font-size: 0.86rem; line-height: 1.6; color: var(--muted); max-width: 76ch;
+}
+
+/* ---- narrow ----------------------------------------------------------
+   1100 is where the masthead's side column stops being wide enough for the
+   photograph AND the four facts, so the two stack. The contents column goes
+   with it: sticky is worth nothing once it is a box above the thing it
+   points at, so it becomes exactly that - a bordered block, in flow. */
+@media (max-width: 1100px) {
+  .cs-mast { grid-template-columns: 1fr; gap: 36px; }
+  .cs-mast-media { order: -1; }
+  .cs-lede { max-width: none; }
+  .cs-main { grid-template-columns: 1fr; gap: 40px; }
+  .cs-toc { position: static; border: 3px solid var(--black); padding: 18px 20px; }
+  .cs-toc-label { border-bottom-width: 2px; }
+  .cs-toc ol { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 24px; }
+}
+@media (max-width: 760px) {
+  .cs-cards { grid-template-columns: 1fr; gap: 14px; margin-bottom: 44px; }
+  .cs-brief { padding: 26px 22px; margin-bottom: 44px; }
+  .cs-meta { grid-template-columns: 1fr; }
+  .cs-meta > div { padding-right: 0; }
+  .cs-section { margin-top: 48px; padding-top: 30px; }
+  .cs-defs-row { grid-template-columns: 1fr; gap: 0; }
+  .cs-defs-row dt, .cs-defs-row dd { grid-column: 1; }
+  .cs-defs-row dd { border-top: 0; padding-top: 0; }
+  .cs-stats { grid-template-columns: 1fr; gap: 18px; }
+  .cs-quote { padding-left: 18px; border-left-width: 4px; }
+  /* Two photographs side by side at 390px are 170px wide, which is a
+     thumbnail of a process shot rather than a photograph of one. */
+  .cs-figs-2, .cs-figs-3 { grid-template-columns: 1fr; }
+  .cs-figs-1 .cs-fig.is-portrait { max-width: none; }
+  .cs-step { grid-template-columns: 38px 1fr; gap: 0 14px; }
+  .cs-step::before { font-size: 1.4rem; }
+  .cs-toc ol { grid-template-columns: 1fr; }
+  .cs-disclaimer { margin-top: 48px; }
+}
 
 /* ------------------------------------------------------------------------
    SECTION 12 · FULL ABOUT PAGE OVERLAY
@@ -5020,7 +5301,17 @@ html[lang="ja"] .timeline-role,
 html[lang="ja"] .magnetic-letter,
 html[lang="ja"] .contact-statement,
 html[lang="ja"] .chaos-play-btn-large,
-html[lang="ja"] .pong-end-msg {
+html[lang="ja"] .pong-end-msg,
+/* The case study's display type. These three DO hold Japanese - the
+   section headings, the brief's label and the definition terms are all
+   translated - and Japanese falls through to Noto Sans JP, which carries
+   real weights, so this is a real 900 rather than a smear.
+   NOT .cs-stat-num and NOT the step numbers, for the reason the about
+   stats are excluded below: "約50%" is three Archivo Black digits beside
+   one Japanese glyph, and a counter is Latin in every language. */
+html[lang="ja"] .cs-h,
+html[lang="ja"] .cs-brief-t,
+html[lang="ja"] .cs-defs dt {
   font-weight: 900;
 }
 
@@ -5063,7 +5354,20 @@ html[lang="ja"] .hero-name,
 html[lang="ja"] .section-head h2,
 html[lang="ja"] .contact-statement,
 html[lang="ja"] .about-page-intro h2,
-html[lang="ja"] .magnetic-letter {
+html[lang="ja"] .magnetic-letter,
+/* Every tracked line in the case study that is translated. The tracking
+   on these is there to open up uppercase Latin; Japanese sets without
+   word spaces, so the same value reads as broken spacing rather than as
+   emphasis. The step counters are left alone - they are digits. */
+html[lang="ja"] .cs-h,
+html[lang="ja"] .cs-eyebrow,
+html[lang="ja"] .cs-card-t,
+html[lang="ja"] .cs-brief-t,
+html[lang="ja"] .cs-toc-label,
+html[lang="ja"] .cs-toc a,
+html[lang="ja"] .cs-meta-k,
+html[lang="ja"] .cs-defs dt,
+html[lang="ja"] .cs-stage-hint {
   letter-spacing: 0;
   line-break: strict;
 }

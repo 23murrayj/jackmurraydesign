@@ -9,7 +9,7 @@ described the card hover as `translate(-7,-14)` with an 18px shadow five days
 after Jack rejected that and it became `-4,-6` on 8px). **If a fact about how
 the site should look belongs anywhere, it belongs in CLAUDE.md, not here.**
 
-**Last updated:** 2026-11-12
+**Last updated:** 2026-11-21
 
 ---
 
@@ -58,6 +58,17 @@ in one of them rather than in a scratch file.
 3. **Caterpillar confidentiality** — professor emailed ~2026-10-22, no reply.
    Worth a nudge. Until it lands, CAT Figma frames and research artifacts
    stay out.
+4. **`cs-store.jpg` needs clearing.** The Alessi shopfront photograph in the
+   pot-clip case study has identifiable bystanders. Live now; same question
+   as the Easter team, the CAT team and the Milan courtyard.
+5. **Two numbers in the pot-clip masthead came from the wireframe, not from
+   Jack's copy**, which left them as placeholders: Duration "8 weeks" and
+   Tools "Blender, Illustrator, Canva". They are his own wireframe's words,
+   so they are a reasonable default rather than an invention — but he is the
+   only one who knows if they are right.
+6. **The other six projects still use the old layouts.** The case-study
+   layout is behind a `caseStudy` flag and only pot-clip carries it; Jack:
+   "later, we might use it to do other projects".
 
 ## Open — worth doing, ranked
 

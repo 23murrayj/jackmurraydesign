@@ -190,74 +190,160 @@ const projectData = {
     type: 'Product Design',
     year: '2026',
     role: 'Design & Fabrication',
-    // The chip and the title move above the media instead of opening the
-    // sidebar. ONLY THIS PROJECT HAS IT while the treatment is being judged
-    // on one page - the other five keep the title at the top of the write-up
-    // column, exactly as they were. See .project-head in styles.css.
-    titleTop: true,
-    // MASONRY, NOT MIXED, AND THE REASON IS ARITHMETIC. mixed divides one
-    // 956px row between however many tiles it is given: easter-riverside's
-    // three come out 383x311 and sandcastles' two 472x380, but fourteen
-    // would be unreadable. masonry packs a curated sequence into rows of
-    // three columns and gives the write-up a sticky sidebar.
-    //
-    // THE ORDER IS THE PROCESS, AND IT WAS WRONG ON THE FIRST PASS. The
-    // Blender capture sat fourth, between the paper profiles and the spray
-    // booth, because that is the order a digital designer's process USUALLY
-    // runs. Jack: "I did the 3D model last, but its picture of in Blender is
-    // in the middle." He is right and the files say so - the process photos
-    // are EXIF-dated 6, 13 and 20 October and every Blender screenshot is
-    // 20-21 November. The physical model came first and the digital one was
-    // built from it, which is the opposite of the assumption, and the
-    // write-up had the same error until this commit.
-    //
-    // PACKING. The packer walks in order and pairs a landscape with a
-    // portrait (L+P = 2+1, three portraits = 1+1+1, a lone landscape = full
-    // width). With 5 landscapes and 9 portraits this lays out as
-    // feature / L+P / L+P / P+P+P / L+P / P+P+P / feature - seven full rows
-    // and no holes. Change one entry's orientation and the whole wall
-    // re-packs, so re-check it in the page rather than by eye.
-    //
-    // ALT TEXT IS POSITIONAL: resolveAlt uses index + 1, so
-    // proj.pot-clip.alt.N tracks this array in all four languages. Moving an
-    // entry silently moves its description onto a different photograph.
-    layout: 'masonry',
-    photos: [
-      { src: '/assets/projects/pot-clip/01-hero.jpg', w: 1414, h: 795,
-        full: '/assets/projects/pot-clip/01-hero-full.jpg' },
-      { src: '/assets/projects/pot-clip/02-sketches.jpg', w: 1400, h: 1211,
-        full: '/assets/projects/pot-clip/02-sketches-full.jpg' },
-      { src: '/assets/projects/pot-clip/03-profiles.jpg', w: 800, h: 1200,
-        full: '/assets/projects/pot-clip/03-profiles-full.jpg' },
-      // Shot in portrait with the page turned, so it arrived on its side and
-      // stayed that way for a release. Rotated 90 degrees anticlockwise and
-      // baked to orientation 1 - see the double-rotation gotcha in
-      // assets/README.md for why the EXIF tag is not the way to do it.
-      { src: '/assets/projects/pot-clip/04-measurements.jpg', w: 1399, h: 779,
-        full: '/assets/projects/pot-clip/04-measurements-full.jpg' },
-      { src: '/assets/projects/pot-clip/05-foam.jpg', w: 800, h: 1200,
-        full: '/assets/projects/pot-clip/05-foam-full.jpg' },
-      { src: '/assets/projects/pot-clip/06-finishing.jpg', w: 800, h: 1200,
-        full: '/assets/projects/pot-clip/06-finishing-full.jpg' },
-      { src: '/assets/projects/pot-clip/07-hand.jpg', w: 800, h: 1200,
-        full: '/assets/projects/pot-clip/07-hand-full.jpg' },
-      // FIVE POSTERS, NOT ONE. Jack: "I'm a digital creative, so I feel like
-      // we need more emphasis on the posters that I created." One was a
-      // misread of the project - the posters are the output, not a footnote.
-      // Three of them sit together as a run; the other two flank the model.
-      { src: '/assets/projects/pot-clip/08-poster-a.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/08-poster-a-full.jpg' },
-      { src: '/assets/projects/pot-clip/09-model.jpg', w: 1400, h: 879,
-        full: '/assets/projects/pot-clip/09-model-full.jpg' },
-      { src: '/assets/projects/pot-clip/10-poster-b.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/10-poster-b-full.jpg' },
-      { src: '/assets/projects/pot-clip/11-poster-c.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/11-poster-c-full.jpg' },
-      { src: '/assets/projects/pot-clip/12-poster-d.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/12-poster-d-full.jpg' },
-      { src: '/assets/projects/pot-clip/13-poster-e.jpg', w: 848, h: 1200,
-        full: '/assets/projects/pot-clip/13-poster-e-full.jpg' },
-    ],
+    /* THE CASE-STUDY LAYOUT. This project had a 13-tile masonry wall with a
+       sticky write-up beside it; `docs/pot-clip-masonry.md` holds it verbatim.
+       Jack asked for the page to be redesigned around his own long-form copy
+       and a wireframe he drew: a masthead with the facts beside the opening
+       photograph, three summary cards, then a table of contents alongside
+       seven sections with the photographs placed inside them.
+
+       ONLY THIS PROJECT HAS IT, and that is the same reason `titleTop` is a
+       flag: there is ONE overlay behind all seven case studies, so anything
+       tried on one page lands on all seven unless it opts in. Jack, after the
+       first pass moved the title on every project at once: "we're just doing
+       the pot clip rest... don't change any of the other ones right now."
+
+       EVERY STRING IS A FULL KEY RATHER THAN A SUFFIX THE RENDERER BUILDS.
+       Two reasons. A second project adopting this layout brings its own keys
+       and needs no code change - which is what Jack asked for ("later, we
+       might use it to do other projects"). And audit.js finds a key by
+       looking for the literal: a key composed at runtime from a prefix is
+       invisible to it, which is how 19 dead translations once survived.
+
+       ALT TEXT IS BY KEY HERE, NOT BY POSITION. The masonry wall was one
+       ordered sequence, so resolveAlt's proj.<id>.alt.<n> was right for it.
+       These photographs are spread across seven sections, so moving one from
+       Process to Testing would silently hand it another photo's description.
+       `altKey` on an entry says which description belongs to which picture.
+
+       `full` is the file's own path for the new photographs. They are
+       1000-1600px sources rendered 300-600px wide, so opening one at full
+       size genuinely shows more - the usual objection to a zoom that shows no
+       more detail does not apply - and there is no second file to download. */
+    layout: 'case',
+    caseStudy: {
+      eyebrow: 'proj.pot-clip.cs.eyebrow',
+      lede: 'proj.pot-clip.cs.lede',
+      tocLabel: 'proj.pot-clip.cs.toc',
+      hero: { src: '/assets/projects/pot-clip/cs-hero.jpg', w: 1600, h: 1600,
+        full: '/assets/projects/pot-clip/cs-hero.jpg',
+        altKey: 'proj.pot-clip.cs.alt.hero' },
+      meta: [
+        ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
+        ['proj.pot-clip.cs.meta.duration', 'proj.pot-clip.cs.meta.durationV'],
+        ['proj.pot-clip.cs.meta.role', 'proj.pot-clip.cs.meta.roleV'],
+        ['proj.pot-clip.cs.meta.tools', 'proj.pot-clip.cs.meta.toolsV'],
+      ],
+      cards: [
+        ['proj.pot-clip.cs.card1.t', 'proj.pot-clip.cs.card1.b'],
+        ['proj.pot-clip.cs.card2.t', 'proj.pot-clip.cs.card2.b'],
+        ['proj.pot-clip.cs.card3.t', 'proj.pot-clip.cs.card3.b'],
+      ],
+      brief: ['proj.pot-clip.cs.brief.t', 'proj.pot-clip.cs.brief.b'],
+      sections: [
+        { id: 'research', title: 'proj.pot-clip.cs.research.t',
+          html: 'proj.pot-clip.cs.research.grid',
+          figures: [
+            { src: '/assets/projects/pot-clip/cs-store.jpg', w: 1200, h: 1500,
+              full: '/assets/projects/pot-clip/cs-store.jpg',
+              altKey: 'proj.pot-clip.cs.alt.store' },
+            { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1600, h: 1200,
+              full: '/assets/projects/pot-clip/cs-sketches.jpg',
+              altKey: 'proj.pot-clip.cs.alt.sketches' },
+          ],
+          after: 'proj.pot-clip.cs.research.close' },
+
+        { id: 'problem', title: 'proj.pot-clip.cs.problem.t',
+          html: 'proj.pot-clip.cs.problem.b',
+          // the one line the whole project answers, set as the page's only
+          // pull quote so it reads as the hinge rather than a fourth bullet
+          quote: 'proj.pot-clip.cs.problem.hmw' },
+
+        // the turntable's band. `stage: true` relocates #projectStage into
+        // this section rather than duplicating it - there is one canvas and
+        // one poster, and renderProjectStage owns both.
+        { id: 'design', title: 'proj.pot-clip.cs.design.t',
+          html: 'proj.pot-clip.cs.design.b', stage: true },
+
+        // four steps, each with its own photographs. Step 2 carries two
+        // because it IS two operations - sculpted, then finished - and the
+        // spray booth is where it stops being foam.
+        { id: 'process', title: 'proj.pot-clip.cs.process.t', steps: [
+          { text: 'proj.pot-clip.cs.process.1', figures: [
+            { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
+              full: '/assets/projects/pot-clip/cs-profiles.jpg',
+              altKey: 'proj.pot-clip.cs.alt.profiles' },
+            // Shot in portrait with the page turned, so it arrived on its
+            // side and stayed that way for a release. Rotated 90 degrees
+            // anticlockwise and baked to orientation 1 - see the
+            // double-rotation gotcha in assets/README.md.
+            { src: '/assets/projects/pot-clip/04-measurements.jpg', w: 1399, h: 779,
+              full: '/assets/projects/pot-clip/04-measurements-full.jpg',
+              altKey: 'proj.pot-clip.alt.4' },
+          ] },
+          { text: 'proj.pot-clip.cs.process.2', figures: [
+            { src: '/assets/projects/pot-clip/cs-foam.jpg', w: 1200, h: 1500,
+              full: '/assets/projects/pot-clip/cs-foam.jpg',
+              altKey: 'proj.pot-clip.cs.alt.foam' },
+            { src: '/assets/projects/pot-clip/cs-booth.jpg', w: 1000, h: 1778,
+              full: '/assets/projects/pot-clip/cs-booth.jpg',
+              altKey: 'proj.pot-clip.cs.alt.booth' },
+          ] },
+          { text: 'proj.pot-clip.cs.process.3', figures: [
+            { src: '/assets/projects/pot-clip/cs-blender.jpg', w: 1400, h: 895,
+              full: '/assets/projects/pot-clip/cs-blender.jpg',
+              altKey: 'proj.pot-clip.cs.alt.blender' },
+          ] },
+          { text: 'proj.pot-clip.cs.process.4', figures: [
+            { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933,
+              full: '/assets/projects/pot-clip/14-object.jpg',
+              altKey: 'proj.pot-clip.alt.14' },
+          ] },
+        ] },
+
+        { id: 'testing', title: 'proj.pot-clip.cs.testing.t',
+          stats: [
+            ['proj.pot-clip.cs.testing.s1n', 'proj.pot-clip.cs.testing.s1t'],
+            ['proj.pot-clip.cs.testing.s2n', 'proj.pot-clip.cs.testing.s2t'],
+          ],
+          html: 'proj.pot-clip.cs.testing.b',
+          figures: [
+            { src: '/assets/projects/pot-clip/cs-rim.jpg', w: 1000, h: 1778,
+              full: '/assets/projects/pot-clip/cs-rim.jpg',
+              altKey: 'proj.pot-clip.cs.alt.rim' },
+          ] },
+
+        // FIVE POSTERS WERE THE POINT ONCE. Jack: "I'm a digital creative, so
+        // I feel like we need more emphasis on the posters that I created."
+        // Three here, the three that are not variations of each other.
+        { id: 'posters', title: 'proj.pot-clip.cs.posters.t',
+          text: 'proj.pot-clip.cs.posters.b',
+          figures: [
+            { src: '/assets/projects/pot-clip/cs-poster-1.jpg', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-1.jpg',
+              altKey: 'proj.pot-clip.cs.alt.poster1' },
+            { src: '/assets/projects/pot-clip/cs-poster-2.jpg', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-2.jpg',
+              altKey: 'proj.pot-clip.cs.alt.poster2' },
+            { src: '/assets/projects/pot-clip/cs-poster-3.jpg', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-3.jpg',
+              altKey: 'proj.pot-clip.cs.alt.poster3' },
+          ] },
+
+        { id: 'limits', title: 'proj.pot-clip.cs.limits.t',
+          html: 'proj.pot-clip.cs.limits.b',
+          after: 'proj.pot-clip.cs.limits.close' },
+      ],
+      /* THE DISCLAIMER IS A SAFETY CONSTRAINT, NOT A FOOTNOTE. pot-clip
+         carries a real trademark and is not a client project; the paragraph
+         that says so is the last one of proj.pot-clip.body, which is what the
+         markup fallback and the JSON-LD description are built from. Hiding
+         .project-body for this layout would have taken it off the page while
+         leaving it in both machine-readable copies, so it is its own key here
+         - and audit.js asserts the two are the same string in all four
+         languages, because a disclaimer that can drift will. */
+      disclaimer: 'proj.pot-clip.cs.disclaimer',
+    },
     // THE 3D OBJECT IS NOT A TILE IN THE WALL ANY MORE. It was the
     // fourteenth cell, so it wore the masonry grid's 4px border and 6px of
     // black padding like every photograph beside it - a thing you turn,
@@ -557,6 +643,16 @@ function resolveAlt(entry, projectId, index, projectTitle) {
   if (entry && typeof entry === 'object' && typeof entry.alt === 'string') {
     return entry.alt;
   }
+  /* AN EXPLICIT KEY, for a photograph whose place in an array is not what
+     names it. The positional scheme below is right for a wall that is one
+     ordered sequence - which is what it was written for - and wrong for the
+     case-study layout, where the photographs are spread across seven
+     sections: moving one from Process to Testing would silently hand it
+     another picture's description. */
+  if (entry && typeof entry === 'object' && entry.altKey) {
+    const byKey = T.t(entry.altKey);
+    if (byKey) return byKey;
+  }
   const key = 'proj.' + projectId + '.alt.' + (index + 1);
   const translated = T.t(key);
   if (translated) return translated;
@@ -602,8 +698,14 @@ function mediaTag(entry, projectId, index, projectTitle, eager) {
   // the tilt listeners bound to the cards at load. A literal `alt` written
   // into projectData is left alone: it isn't translatable by definition.
   const literal = (entry && typeof entry === 'object' && typeof entry.alt === 'string');
-  const track = literal ? '' :
-    ` data-alt-p="${escapeAttr(projectId || '')}" data-alt-i="${index}"`;
+  /* A KEYED alt needs no help from refreshAltText: i18n.js's own apply()
+     pass walks [data-i18n-alt] on every language change. The positional pair
+     is the one that needs tracking, because the key it resolves is computed
+     rather than written down anywhere. */
+  const keyed = !literal && entry && typeof entry === 'object' && entry.altKey;
+  const track = literal ? ''
+    : keyed ? ` data-i18n-alt="${escapeAttr(entry.altKey)}"`
+    : ` data-alt-p="${escapeAttr(projectId || '')}" data-alt-i="${index}"`;
   // a larger source to open in the lightbox; without one the image isn't
   // zoomable, since a "zoom" that shows no more detail is just a bigger blur
   const full = (entry && typeof entry === 'object' && entry.full)
@@ -781,7 +883,6 @@ const projectMedia = document.getElementById('projectMedia');
 const projectCat = document.getElementById('projectCat');
 const projectTitle = document.getElementById('projectTitle');
 const projectDesc = document.getElementById('projectDesc');
-const projectHead = document.querySelector('.project-head');
 const projectType = document.getElementById('projectType');
 const projectYear = document.getElementById('projectYear');
 const projectRole = document.getElementById('projectRole');
@@ -812,9 +913,192 @@ function renderProjectStage(data) {
   const poster = mediaTag(m.poster, data.id, m.altIndex || 0, data.title, true);
   projectStage.innerHTML =
     `<div class="model-stage" data-model="${escapeAttr(m.src)}">${poster}</div>`;
+  /* THE BAND MOVES INTO THE CASE STUDY'S "DESIGN" SECTION rather than being
+     built again there. There is one canvas and one poster and this function
+     owns both, the same reason the <h2> is moved rather than duplicated.
+       And moved BACK for everything else: the overlay is a single reused
+     panel, so without the else the first case-study project would leave the
+     turntable buried mid-page for every project opened after it. Exactly the
+     bug the titleTop branch was written to avoid, one slot along. */
+  const stageSlot = projectCase.querySelector('.cs-stage-slot');
+  if (stageSlot) stageSlot.append(projectStage);
+  else if (projectStage.parentElement !== projectDetailEl) {
+    projectDetailEl.insertBefore(projectStage, projectCase);
+  }
   setupModelStages(projectStage);
 }
 
+/* ------------------------------------------------------------------------
+   THE CASE-STUDY LAYOUT
+
+   One project has it and the note on `caseStudy` in SECTION 03 says why it
+   is a flag. Everything is built into #projectCase, and .is-case hides
+   .project-media and .project-body, so the other six render byte for byte
+   as they did.
+
+   EVERY GENERATED NODE CARRIES data-i18n OR data-i18n-html, so a language
+   change is i18n.js's own apply() pass over the document rather than a
+   re-render here. That is not tidiness. The turntable lives inside the
+   Design section, and re-rendering the page to change language would tear
+   the canvas down and rebuild it under the visitor - which is the one thing
+   SECTION 19 is careful never to do. The text is ALSO written at creation,
+   because apply() ran on DOMContentLoaded, long before these nodes existed.
+   ------------------------------------------------------------------------ */
+const projectCase = document.getElementById('projectCase');
+
+/* <tag class=... data-i18n=key>translated</tag> - the shape every string in
+   this layout takes. `html` picks the attribute that sets innerHTML, for the
+   keys that are authored markup (the definition lists and the bullets); the
+   rest go in as text, escaped. No key here is user-supplied. */
+function csText(tag, cls, key, html) {
+  if (!key) return '';
+  const raw = T.t(key) || '';
+  return '<' + tag + ' class="' + cls + '"'
+    + ' data-i18n' + (html ? '-html' : '') + '="' + escapeAttr(key) + '">'
+    + (html ? raw : escapeAttr(raw))
+    + '</' + tag + '>';
+}
+
+const FIG_ROW = { 1: 'cs-figs-1', 2: 'cs-figs-2', 3: 'cs-figs-3' };
+
+function renderCaseStudy(data) {
+  const cs = data.caseStudy;
+  projectDetailEl.classList.toggle('is-case', !!cs);
+  /* PARK THE BORROWED NODES BEFORE WIPING, or the wipe destroys them.
+     This layout MOVES three permanent elements into itself - the chip, the
+     <h2> and #projectStage - and the next render starts by replacing all
+     of projectCase's markup. Opening pot-clip, closing it and opening
+     anything at all (pot-clip included) therefore removed the heading from
+     the document, and since it is the overlay's aria-labelledby target the
+     panel lost its accessible name with it. Found by driving open/close
+     four times rather than once: the first open is the one case that
+     cannot fail, because nothing has been moved yet.
+       They go home rather than being detached and held: .project-body is
+     where the chip and the heading belong and the slot before projectCase
+     is where the stage belongs, so if anything below here throws, the
+     panel is still a working panel. */
+  projectDesc.before(projectCat, projectTitle);
+  if (projectStage.parentElement !== projectDetailEl) {
+    projectDetailEl.insertBefore(projectStage, projectCase);
+  }
+  if (!cs) { projectCase.innerHTML = ''; return; }
+
+  /* The orientation goes on the figure because the CSS needs it and cannot
+     ask: a lone portrait is capped so a 1000x1778 source does not draw
+     1643px tall in a 924px column, and a landscape runs the full width.
+     Same trick the mixed layout uses, for the same reason. */
+  const fig = (e, eager) => {
+    const o = (e && e.w && e.h) ? (e.w >= e.h ? ' is-landscape' : ' is-portrait') : '';
+    return '<figure class="cs-fig' + o + '">'
+      + mediaTag(e, data.id, 0, data.title, eager) + '</figure>';
+  };
+  /* The row class is a lookup rather than 'cs-figs-' + length, and both
+     reasons are real. audit.js finds a class by looking for the literal, so
+     a name composed at runtime reads as dead CSS - it failed exactly that
+     way first time. And a fourth photograph in one row would have generated
+     a class with no rule behind it; this way it lands on the three-up. */
+  const figs = (list) => (list && list.length)
+    ? '<div class="cs-figs ' + (FIG_ROW[list.length] || 'cs-figs-3') + '">'
+      + list.map(fig).join('') + '</div>'
+    : '';
+
+  /* tabindex on the section is for the table of contents: a link that only
+     scrolls leaves a keyboard visitor's focus where it was, so the next Tab
+     goes back to the second item in the list rather than into the section
+     they just asked for. Same fix as the hero's tabindex="-1". */
+  const section = (sec) => {
+    let out = '<section class="cs-section" id="cs-' + escapeAttr(sec.id)
+      + '" tabindex="-1">' + csText('h3', 'cs-h', sec.title);
+    if (sec.stats) {
+      out += '<div class="cs-stats">' + sec.stats.map((p) =>
+        '<div class="cs-stat">' + csText('span', 'cs-stat-num', p[0])
+        + csText('span', 'cs-stat-txt', p[1]) + '</div>').join('') + '</div>';
+    }
+    if (sec.html) out += csText('div', 'cs-prose', sec.html, true);
+    if (sec.text) out += csText('p', 'cs-prose-p', sec.text);
+    if (sec.quote) out += csText('blockquote', 'cs-quote', sec.quote);
+    /* The caption says out loud what the finger nudge only hints at, and
+       three seconds of stillness is a long time to wait to find out an
+       object turns. It is hidden until the canvas is actually live - the
+       poster is the no-WebGL fallback, and telling someone to drag a
+       photograph is worse than saying nothing. */
+    if (sec.stage) {
+      out += '<div class="cs-stage-slot">'
+        + csText('p', 'cs-stage-hint', 'proj.pot-clip.cs.design.hint')
+        + '</div>';
+    }
+    if (sec.steps) {
+      out += '<ol class="cs-steps">' + sec.steps.map((st) =>
+        '<li class="cs-step">' + csText('div', 'cs-step-txt', st.text, true)
+        + figs(st.figures) + '</li>').join('') + '</ol>';
+    }
+    out += figs(sec.figures);
+    if (sec.after) out += csText('p', 'cs-after', sec.after);
+    return out + '</section>';
+  };
+
+  const toc = '<nav class="cs-toc" aria-labelledby="csTocLabel">'
+    + '<p class="cs-toc-label" id="csTocLabel" data-i18n="'
+    + escapeAttr(cs.tocLabel) + '">' + escapeAttr(T.t(cs.tocLabel) || '') + '</p>'
+    + '<ol>' + cs.sections.map((sec) => '<li><a href="#cs-'
+      + escapeAttr(sec.id) + '" data-i18n="' + escapeAttr(sec.title) + '">'
+      + escapeAttr(T.t(sec.title) || '') + '</a></li>').join('')
+    + '</ol></nav>';
+
+  /* The three cards are labelled with spans, not headings, on purpose. They
+     read as headings and they are not sections: PROBLEM / SOLUTION /
+     OUTCOME each restate a section further down, so as <h3>s they would put
+     every one of those words in a screen reader's heading list twice and
+     make the outline look like fourteen sections. */
+  projectCase.innerHTML =
+    '<header class="cs-mast">'
+    + '<div class="cs-mast-text">'
+      + csText('span', 'cs-eyebrow', cs.eyebrow)
+      // the chip and the <h2>, moved in by fillProjectDetail
+      + '<div class="cs-title-slot"></div>'
+      + csText('p', 'cs-lede', cs.lede)
+      + '<dl class="cs-meta">' + cs.meta.map((p) => '<div>'
+        + csText('dt', 'cs-meta-k', p[0]) + csText('dd', 'cs-meta-v', p[1])
+        + '</div>').join('') + '</dl>'
+    + '</div>'
+    // eager: the opening photograph is on screen before anything is
+    // scrolled, and an image the visitor can already see has no business
+    // waiting on the browser's lazy distance - which NARROWS on a slow
+    // connection, exactly when a blank frame is most likely.
+    + '<div class="cs-mast-media">' + fig(cs.hero, true) + '</div>'
+    + '</header>'
+    + '<ul class="cs-cards">' + cs.cards.map((p) => '<li class="cs-card">'
+      + csText('span', 'cs-card-t', p[0]) + csText('p', 'cs-card-b', p[1])
+      + '</li>').join('') + '</ul>'
+    + '<div class="cs-brief">' + csText('h3', 'cs-brief-t', cs.brief[0])
+      + csText('p', 'cs-brief-b', cs.brief[1]) + '</div>'
+    + '<div class="cs-main">' + toc
+      + '<div class="cs-flow">' + cs.sections.map(section).join('') + '</div>'
+    + '</div>'
+    + csText('p', 'cs-disclaimer', cs.disclaimer);
+}
+
+/* THE TABLE OF CONTENTS SCROLLS AND DOES NOT NAVIGATE, and the default is
+   cancelled for modified clicks too. A hash really would work - the overlay
+   is the scrolling ancestor, so #cs-design scrolls inside it - but it also
+   adds a history entry, and closing a panel is history.back(). One click on
+   the contents and Back stops closing the panel and starts stepping through
+   the sections instead, which is SECTION 07's whole invariant gone.
+     Still an <a href>: it is in-page navigation, it tells an AT what it is,
+   and the href names the target instead of leaving it in a data attribute.
+   Bound once, out here, rather than per render - the element is permanent
+   and a listener added on every open would stack. */
+projectCase.addEventListener('click', (e) => {
+  const link = e.target.closest('.cs-toc a');
+  if (!link) return;
+  e.preventDefault();
+  const target = projectCase.querySelector(link.getAttribute('href'));
+  if (!target) return;
+  target.scrollIntoView({
+    behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start',
+  });
+  target.focus({ preventScroll: true });
+});
 function renderProjectMedia(data) {
   // anything still spinning belongs to the panel we are replacing
   stopModelStages();
@@ -827,13 +1111,15 @@ function renderProjectMedia(data) {
   projectDetailEl.classList.toggle('has-sidebar',
     data.layout === 'masonry' || data.sidebar === true);
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
-  // the chip and the <h2> sit above the media rather than opening the
-  // write-up column. Per project (`titleTop`) while it is tried on one.
-  projectDetailEl.classList.toggle('is-title-top', data.titleTop === true);
+  // the whole page, built from `caseStudy`. Hides .project-media and
+  // .project-body, so this returns before any of the layouts below.
+  renderCaseStudy(data);
   // The poster-beside-the-text treatment only works for a single still. With
   // more than one the strip needs full width, so those projects stack instead.
   projectDetailEl.classList.toggle('is-video-aside',
     data.layout === 'video' && (data.detailImages || []).length === 1);
+
+  if (data.layout === 'case') return;
 
   if (data.layout === 'masonry') {
     const sizeCycle = ['large', 'small', 'medium', 'small', 'medium', 'large', 'small', 'small', 'medium', 'large', 'small', 'medium', 'small', 'large', 'small', 'medium', 'small', 'small', 'large', 'medium'];
@@ -1008,19 +1294,30 @@ function fillProjectDetail(id) {
   projectCat.textContent = T.t('cat.' + data.category) || data.category;
   projectTitle.textContent = data.title;
 
-  // WHERE THE TITLE SITS IS PER PROJECT, for now. Its home is the top of
-  // .project-body - the write-up column - which is where all six have always
-  // had it. A project carrying `titleTop: true` gets the chip and the heading
-  // moved into .project-head instead, above the media, where they take the
-  // full 956px measure rather than a ~360px sidebar's.
-  //   Moving the nodes rather than duplicating them: the <h2> is the
-  // overlay's aria-labelledby target, so there can only ever be one of it.
-  //   Both branches run on every open, not just the opt-in one. The overlay
-  // is a single reused panel, so whatever the last project did to the DOM is
-  // the state the next one inherits - without the else the first titleTop
-  // project would leave the heading up top for everything opened after it.
-  if (data.titleTop) {
-    projectHead.append(projectCat, projectTitle);
+  /* WHERE THE TITLE SITS. Its home is the top of .project-body - the
+     write-up column - which is where six of the seven have it. A project
+     with a `caseStudy` gets the chip and the heading moved into the
+     masthead instead, where they take the full measure rather than a ~360px
+     sidebar's, and the back button is no longer followed by 36px of nothing.
+       Moving the nodes rather than duplicating them, because the <h2> is the
+     overlay's aria-labelledby target and there can only ever be one of it.
+       Both branches run on every open, not just the opt-in one. The overlay
+     is a single reused panel, so whatever the last project did to the DOM is
+     the state the next one inherits - without the else the first case-study
+     project would leave the heading in a masthead that is no longer there. */
+  const titleSlot = data.caseStudy && projectCase.querySelector('.cs-title-slot');
+  if (titleSlot) {
+    /* THE CHIP DOES NOT COME UP WITH THE HEADING HERE, and that is the one
+       place this layout differs from the treatment it replaced. The chip
+       says PRODUCT; the masthead's eyebrow above it says PRODUCT DESIGN,
+       2026 - strictly more, in the same spot. Two labels stacked is the
+       thing the brief calls an unnecessary description, and it is what
+       sent the numbered section eyebrows off the home page.
+         It is left in .project-body rather than hidden on the spot, so it
+       is back where it belongs for the next project opened - .project-body
+       is display:none for this layout, so nothing shows. */
+    projectDesc.before(projectCat);
+    titleSlot.append(projectTitle);
   } else {
     projectDesc.before(projectCat, projectTitle);
   }
@@ -3656,13 +3953,18 @@ function closeLightbox() {
   lightboxImg.removeAttribute('src');
 }
 
-// delegated: project media is re-rendered on every open and on language
-// change, so binding per-image would go stale
-projectMedia?.addEventListener('click', (e) => {
+/* Delegated, and bound to the WHOLE panel rather than to .project-media:
+   the media is re-rendered on every open and on every language change, so
+   binding per-image would go stale - and the case-study layout puts its
+   photographs in #projectCase instead, which left thirteen pictures looking
+   zoomable (cursor, role, tab stop, all set) and doing nothing when clicked.
+   The selector already requires data-full, so the turntable's poster and
+   anything else in here is unaffected. */
+projectDetailEl?.addEventListener('click', (e) => {
   const img = e.target.closest('img[data-full]');
   if (img) openLightbox(img);
 });
-projectMedia?.addEventListener('keydown', (e) => {
+projectDetailEl?.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter' && e.key !== ' ') return;
   const img = e.target.closest('img[data-full]');
   if (img) { e.preventDefault(); openLightbox(img); }
@@ -3677,7 +3979,7 @@ lightbox?.addEventListener('click', (e) => {
 // zoomable images need to be reachable and operable by keyboard, and they're
 // generated markup, so this runs whenever the media is (re)built
 function markZoomableImages() {
-  document.querySelectorAll('#projectMedia img[data-full]').forEach((img) => {
+  document.querySelectorAll('.project-detail img[data-full]').forEach((img) => {
     img.tabIndex = 0;
     img.setAttribute('role', 'button');
     img.style.cursor = 'zoom-in';

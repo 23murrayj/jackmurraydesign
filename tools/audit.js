@@ -97,11 +97,13 @@ console.log('\n— i18n');
 {
   const langs = ['en', 'es', 'ja', 'it'];
   const blocks = {};
+  const slices = {};
   for (const lang of langs) {
     const a = i18n.indexOf('\n    ' + lang + ': {');
     let b = i18n.indexOf('\n    },', a);
     if (b < 0) b = i18n.indexOf('\n    }', a);        // the last block has no trailing comma
-    blocks[lang] = [...i18n.slice(a, b).matchAll(/^      '([^']+)'\s*:/gm)].map(m => m[1]);
+    slices[lang] = i18n.slice(a, b);
+    blocks[lang] = [...slices[lang].matchAll(/^      '([^']+)'\s*:/gm)].map(m => m[1]);
   }
   const counts = langs.map(l => blocks[l].length);
   say('key counts equal', new Set(counts).size === 1, counts.join(' / '));
@@ -129,6 +131,39 @@ console.log('\n— i18n');
   say('every referenced key exists', missingKeys.length === 0, missingKeys.join(' '));
   const unusedKeys = blocks.en.filter(k => !used.has(k) && !markup.includes("'" + k + "'") && !markup.includes('"' + k + '"'));
   say('every key is referenced', unusedKeys.length === 0, unusedKeys.join(' '));
+  /* THE DISCLAIMER CANNOT DRIFT. pot-clip carries a real trademark and is
+     not a client project; the paragraph that says so is the last one of
+     proj.<id>.body, which is what the markup fallback and the JSON-LD
+     description are built from. The case-study layout hides .project-body,
+     so it needs that paragraph as a key of its own - and two copies of a
+     safety-critical string in four languages is eight chances to edit one
+     and not the other. Checked here rather than written down as a step
+     somebody has to remember. */
+  const valueOf = (lang, key) => {
+    const pat = new RegExp("^      '" + key.replace(/\./g, '\\.') + "': (\".*\"),$", 'm');
+    const m = slices[lang].match(pat);
+    return m ? JSON.parse(m[1]) : null;
+  };
+  for (const id of LIVE_IDS) {
+    /* THE SAME TEMPERED-LAZY BUG THIS FILE HAS NOW SHIPPED THREE TIMES:
+       a lazy run between a record's start and a field inside it does not
+       stop at the end of the record, so cat-coaching matched its own
+       opening brace and then pot-clip's disclaimer six projects later and
+       reported four languages wrong. If you match one record out of many,
+       forbid the record's own start token inside the run. */
+    const m = js.match(new RegExp(
+      "^  '" + id + "':(?:(?!^  ')[\\s\\S])*?^      disclaimer: '([\\w.-]+)'", 'm'));
+    if (!m) continue;
+    const bad = [];
+    for (const lang of langs) {
+      const body = valueOf(lang, 'proj.' + id + '.body');
+      const disc = valueOf(lang, m[1]);
+      if (!body || !disc) { bad.push(lang + ' (key missing)'); continue; }
+      if (body.split('\n\n').pop() !== disc) bad.push(lang);
+    }
+    say(id + ": the disclaimer matches the write-up's last paragraph",
+      bad.length === 0, bad.join(' '));
+  }
   console.log('       ' + counts[0] + ' keys x 4 languages');
 }
 

@@ -45,6 +45,7 @@ to mirror the hero exactly, so moving anything in the hero is a two-file job
 | change the hero's vertical rhythm | **Layout** → the min-height note | `.hero` centres its group, so half of what you remove comes back as space above — and its height is the field's coordinate space |
 | touch the theme switch | **Animation** → The theme switch | the browser-pane warning |
 | add / rename / remove a project | **Routing** (last line) | `assets/README.md` — a 7-step checklist, not 3 |
+| touch the pot-clip case study | **The case-study layout** | `node tools/audit.js`, then diff the other six — one overlay serves all seven |
 | add any user-facing string | **UX rules** → four languages | all four, exact parity, `audit.js` checks it |
 | add an image | **Performance** | every inline jpg needs a webp sibling |
 | touch a button, card or chip | **UX rules** → Hover, lift and touch targets | the hover pad, and 44px on touch |
@@ -68,6 +69,7 @@ to mirror the hero exactly, so moving anything in the hero is a two-file job
 | **Layout** | the hero's proportions, the marquee's removal, breakpoints |
 | **Animation** | hover gating, the hero shape field (the longest thing here), the seam ring, the theme switch |
 | **The loading skeleton** | every bar derived from the rule it stands in for, and how to diff it |
+| **The case-study layout** | the one project with its own page, and the three things that bit |
 | **Routing** | real URLs for overlays, and the three things that break them |
 | **UX rules** | state, copy, the red mark, the hover pad, touch targets, i18n |
 | **Accessibility** | what is already right, and two things that only looked broken |
@@ -1562,63 +1564,146 @@ correct when someone wrote it down.
   because that gap is taken out of its height and given back as its margin,
   so the pair measures exactly two lines.
 
-### Where the project title sits — `titleTop`, one project at a time
+### The case-study layout — one project, and the flag is the point
 
-**Only `pot-clip` has the title above the media. The other five keep it at
-the top of `.project-body` and must stay that way until Jack says
-otherwise** — his instruction on 2026-11-21 was to settle the treatment on
-one page first: *"we're just doing the pot clip rest… don't change any of
-the other ones right now."* The first pass moved it in the shared markup
-and so moved it on all six at once, which is the trap this whole section
-exists to flag: **there is ONE overlay behind every case study, so a change
-to `index.html` here is a change to all six whether you meant it or not.**
-Anything tried on one project needs an opt-in.
+**`pot-clip` is the only project with it, and it replaces that project's
+whole page.** `caseStudy` in `projectData` describes a masthead, three
+summary cards, a brief band, a sticky table of contents beside seven
+sections, and a disclaimer; `renderCaseStudy` builds all of it into
+`#projectCase`, and `.project-detail.is-case` hides `.project-media` and
+`.project-body`. Jack: *"we're going to redesign the entire page for the
+project. Later, we might use it to do other projects, but right now we're
+just going to work on this one."*
 
-The opt-in is `titleTop: true` in `projectData` and it costs three places:
-`fillProjectDetail` moves the chip and the `<h2>` into `.project-head`
-(and moves them BACK otherwise — the overlay is one reused panel, so
-without the else branch the first opted-in project leaves the heading up
-top for everything opened after it), `renderProjectMedia` puts
-`.is-title-top` on `.project-detail`, and the CSS hangs off that class.
-The nodes MOVE rather than being duplicated, because the `<h2>` is the
-overlay's `aria-labelledby` target and there can only be one of it.
+**THERE IS ONE OVERLAY BEHIND ALL SEVEN CASE STUDIES**, which is the whole
+reason this is a flag and not a rewrite of the shared markup. The treatment
+it replaces — `titleTop`, which moved the chip and the heading above the
+media — started as an unflagged change and moved the title on all six
+projects at once. That is the trap every experiment here falls into. Proof
+rather than assertion: every landmark of the other six was diffed against
+the committed build at **1440, 900 and 390, and all six are identical.**
 
-**Why it is worth it on a sidebar layout.** `.project-body` is a ~360px
-sticky column there, so `.has-sidebar .project-body h2` drops the title to
-`clamp(1.7rem, 3vw, 2.6rem)` — the name of the work set as a caption
-beside the photographs. In `.project-head` it takes the full 956px measure
-and the full 4.6rem, and the back button is no longer followed by 36px of
-nothing. The chip comes with it: left behind it would have sat directly on
-the description, labelling the thing the heading above it had just named.
-That sidebar reduction needs no `:not()` — with the title moved it is not
-in `.project-body` any more, so the selector stops matching on its own.
+**`titleTop` IS GONE**, absorbed by this: the case study puts the title at
+the top on the full measure, which is what that flag existed to try. The
+`.project-head` div, `.is-title-top` and their CSS went with it rather than
+being left idle.
 
-**Measured on pot-clip at 1440×900:** head 956px wide, title 73.6px on two
-lines, 36px under the back button and 34px above the photo wall; 880 and
-390 hold the same 36/34 with 40 between media and body.
+**Three things that bit, all of them invisible in the markup:**
 
-**It needed `row-gap: 0`, and only under `.is-title-top`.**
-`.has-sidebar` is `gap: 50px`; with a title row there are three rows and
-both row gaps are already owned by a margin (the back button's 36, the
-head's 34), so the 50 stacked on them for 86 and 84. Without the title
-there are two rows and that 50px IS the gap under the button, which is
-what every sidebar project has always had — so it is scoped, not changed.
-Zeroing it also removed the only thing separating media from body once the
-sidebar stacks at ≤900, hence the 40px margin back on `.project-media`
-there, likewise scoped.
+- **An empty `<div>` is still a grid item.** `.has-sidebar` is a
+  two-column grid, so an empty `#projectCase` took the first cell and
+  **swapped the photographs with the write-up** on cat-coaching and
+  monmouth-retreat, and cost oasis-journey a 40px row. Hence
+  `.project-detail:not(.is-case) .project-case { display: none; }`. The old
+  `.project-head` rule carried this same note for this same reason, which
+  is how it was recognised.
+- **`innerHTML` destroys what you moved in.** The layout MOVES three
+  permanent elements into itself — the chip, the `<h2>` and
+  `#projectStage` — and the next render starts by replacing all of
+  `#projectCase`. So opening pot-clip, closing it and opening **anything**
+  removed the heading from the document, and since it is the overlay's
+  `aria-labelledby` target the panel lost its accessible name with it.
+  `renderCaseStudy` now parks all three back home before it wipes.
+  **The first open is the one case that cannot fail**, because nothing has
+  been moved yet — so drive open/close four times, not once.
+- **The lightbox was bound to `#projectMedia`.** Thirteen photographs had
+  the cursor, the role, the tab stop and the title and did nothing when
+  clicked. It is delegated from `.project-detail` now, and
+  `markZoomableImages` walks the same root.
 
-**`.project-head` is `display: none` when the project has not opted in**,
-off the class rather than `:empty`. An empty div is still a grid item, so
-left alive it would take a row in `.has-sidebar` and push the media down
-on the five that did not ask for any of this.
+**Strings are FULL KEYS in `projectData`, not suffixes the renderer builds.**
+A second project adopting this layout brings its own keys and needs no code
+change, which is what Jack asked for. And `audit.js` finds a key by looking
+for the literal, so a key composed from a prefix at runtime reads as dead —
+which is how 19 dead translations once survived. The same rule caught
+`cs-figs-' + list.length`: the row class is a lookup table so the three
+names appear as literals.
 
-**One change here is deliberately NOT scoped**, because it is a bug rather
-than a treatment: `html[lang="ja"] .project-body h2` is gone from the
-900-weight list. `fillProjectDetail` never translates a title — these are
-the names of actual works — so all six are Latin in every language, and
-asking Archivo Black's single 400 face for a 900 gets synthetic bold.
-Same bug `.stat-num` is excluded from that block for. It changes nothing
-in English.
+**Alt text is BY KEY here, not by position.** `resolveAlt`'s
+`proj.<id>.alt.<n>` is right for a wall that is one ordered sequence and
+wrong for seven sections — moving a figure from Process to Testing would
+silently hand it another picture's description. An entry carries `altKey`,
+`mediaTag` stamps `data-i18n-alt`, and **i18n.js's own `apply()` pass
+refreshes it on a language change** with nothing in `script.js` involved.
+
+**EVERY GENERATED NODE CARRIES `data-i18n` OR `data-i18n-html`**, for the
+same reason: a language change is then `apply()` walking the document, not
+a re-render. That is not tidiness — the turntable lives inside the Design
+section, and re-rendering to change language would tear the canvas down
+under the visitor.
+
+**The turntable MOVED here rather than being rebuilt.** `renderProjectStage`
+appends `#projectStage` into `.cs-stage-slot` and puts it back for every
+other project. One canvas, one poster, one owner. Verified across four
+open/close cycles: exactly one `.model-canvas` each time.
+**It is in "The design", not at the very top**, which is a change from
+*"put it at like the very top"* — that instruction was about it not being
+a tile in the photo wall, and the wireframe Jack drew afterwards places it
+in that section. It still has no frame, no border and no background.
+
+**The contents links scroll and do not navigate, and the default is
+cancelled for modified clicks too.** A hash would work — the overlay is the
+scrolling ancestor — but it also adds a history entry, and closing a panel
+is `history.back()`. One click on the contents and Back stops closing the
+panel and starts stepping through the sections, which is the Routing
+invariant gone. Measured: history length unchanged, hash empty, pathname
+intact, focus on the section (it carries `tabindex="-1"` so a keyboard
+visitor continues from where they asked to be), and the heading lands at
+y 72 under a sticky back button whose bottom is at 60.
+
+**THE DISCLAIMER IS A SAFETY CONSTRAINT AND IS NOW CHECKED.** `pot-clip`
+carries a real trademark and is not a client project; the paragraph that
+says so is the last one of `proj.pot-clip.body`, which is what the markup
+fallback and the JSON-LD description are built from. This layout hides
+`.project-body`, so the paragraph needs a key of its own —
+`proj.pot-clip.cs.disclaimer` — and two copies of a safety-critical string
+in four languages is eight chances to edit one and not the other.
+`audit.js` asserts they are the same string per language, and the check was
+made to fail before being trusted. **Automated, not written down as a step.**
+
+**Measured on the page, 1440×900:** `.project-detail` 1380 wide (the other
+six keep 1100), 1236px of content, split 240 / 72 / 924 between contents,
+gap and text column. Masthead 1.15fr / 1fr. Contrast: **0 failures across
+82 text elements in both themes**, tightest `.cs-brief-t` at 4.60 (accent on
+ink, light) and `.cs-stat-num` at 3.21 against its 3 bar, which is the
+display-type split the palette already documents. All seven contents links
+are 44px tall in English and in Japanese.
+
+**The measure is wider HERE AND ONLY HERE.** Jack: *"you probably have to
+widen out the sides of the borders, because right now I think they're too
+small."* `.project-detail` is 1100 and stays 1100; `.is-case` is 1380.
+Widening the base would reflow the other six, and the instruction when this
+work started was not to touch them.
+
+**Japanese needed two additions, and one deliberate omission.** `.cs-h`,
+`.cs-brief-t` and `.cs-defs dt` join the `font-weight: 900` list — their
+content IS Japanese, and Japanese falls through to Noto Sans JP, which
+carries real weights. **`.cs-stat-num` and the step counters are excluded**
+for the reason `.stat-num` is: "約50%" is three Archivo Black digits beside
+one Japanese glyph, and a counter is Latin in every language, so a 900 there
+is synthetic bold and a smeared glyph. Nine tracked classes also reset
+`letter-spacing`, since tracking tuned for uppercase Latin reads as broken
+spacing in a script with no word spaces.
+
+**Photographs keep their natural ratios and nothing is cropped.**
+Equal-height rows were the obvious alternative and they cost the pictures: a
+1000×1778 spray booth forced into 3:2 loses 44% of its height, and the part
+a process photo is for is the part that gets cropped. Ragged bottoms are
+what an editorial page does with photographs of different shapes. **A lone
+portrait is capped at 400px** — at the column's full 924 a 1000×1778 source
+draws 1643px tall, two and a half screens of one photograph.
+
+**The photographs are the new `Final Alessi Flow` set**, exported as
+`cs-*.jpg` + `.webp` (11 of them, 1.18MB of webp), plus two survivors of the
+old wall: `04-measurements` (the dimensioned notebook page, the one that
+arrived on its side) and `14-object` (the render, which is also the
+turntable's poster). **`cs-store.jpg` has identifiable bystanders** — the
+Milan shopfront — so it falls under the safety constraint below.
+
+**The old photo wall is in `docs/pot-clip-masonry.md`**, verbatim, with the
+48 alt-text lines that came out of `i18n.js` and the list of 11 photographs
+left unreferenced on disk. Gitignored, like the other restore notes;
+`git revert` is the other route.
 
 ### Which detail layout, and why it is arithmetic
 
@@ -1627,13 +1712,15 @@ the tile count is not a free choice: easter-riverside's three come out
 383×311 and sandcastles' two 472×380, which is roughly the ~311px the
 export spec assumes. **Nine tiles came out 109×88** — thumbnails too small
 to read, on the project whose process is the whole argument. That is what
-sent `pot-clip` to `masonry` instead.
+sent `pot-clip` to `masonry` — **and `pot-clip` has since left both**, for
+the case-study layout above. The arithmetic is unchanged and still decides
+the other six; the worked example is now historical.
 **`masonry` is the layout for a SEQUENCE**: it packs rows of three columns,
 keeps the photos in order, and gives the write-up a sticky sidebar. Two
 things follow from the packer and both are load-bearing:
 - **It pairs a landscape with a portrait** (landscape + portrait = 2 + 1,
   three portraits = 1 + 1 + 1, a lone landscape = full width), so the
-  ORDER of `photos` decides whether the wall has holes in it. pot-clip is
+  ORDER of `photos` decides whether the wall has holes in it. pot-clip ran
   feature, L+P, L+P, P+P+P, feature — five full rows. Square crops defeat
   this entirely: `isLandscape` is `w >= h`, so a square is a landscape and
   nine of them become nine full-width rows.
@@ -1645,7 +1732,9 @@ things follow from the packer and both are load-bearing:
 
 **FOUR THINGS ABOUT `pot-clip`'S WALL WERE WRONG ON THE FIRST PASS**, and
 all four are the same mistake: deciding by eye what the files could have
-been asked.
+been asked. **The wall itself is gone** — see the case-study layout above —
+but three of the four are facts about the project rather than about the
+layout, so they travelled with the photographs and are still true.
 
 - **THE ORDER WAS AN ASSUMPTION, NOT THE PROCESS.** The Blender capture sat
   fourth, between the paper profiles and the spray booth, because that is
@@ -1674,10 +1763,12 @@ been asked.
   gotcha in `assets/README.md`.
 - **CLICK-TO-ZOOM IS ALL OF THEM.** It was on two tiles out of nine and
   looked arbitrary, because it was: `full` had been added only where the
-  source happened to be large. Every tile carries `full` now, and there is
-  no exception left to explain — the 3D object used to be the fourteenth
-  cell and the one tile that turned instead of zooming, and it is not in
-  the wall at all any more (see *The 3D viewer*). **13 tiles, 13 zoom.**
+  source happened to be large. The rule survived the redesign: every figure
+  in the case study carries `full`, and **13 of the 14 images in the panel
+  zoom** — the fourteenth is the turntable's poster, which is a fallback
+  rather than a photograph. For the new exports `full` is the file's own
+  path: they are 1000–1600px sources drawn 300–600px wide, so opening one at
+  full size really does show more, and there is no second file to fetch.
 
 ## Routing
 
@@ -3087,6 +3178,15 @@ fonts about 45KB.
   do not move it to small print, and do not put "Alessi" in the project
   title or the URL. If more of this work is ever added, the same paragraph
   comes with it.
+  **It now exists twice**, because the case-study layout hides
+  `.project-body`: `proj.pot-clip.cs.disclaimer` is the on-page copy and
+  `proj.pot-clip.body` still feeds the two machine-readable files. Two
+  copies in four languages is eight chances to edit one and not the other,
+  so **`audit.js` asserts they are the same string per language** rather
+  than this being a step anyone has to remember.
+  The case study also carries **`cs-store.jpg`, the Alessi shopfront in
+  Milan, which has identifiable bystanders** — the same clearance question
+  as the photographs listed above.
 - Placeholder/fake projects must never ship live.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.
