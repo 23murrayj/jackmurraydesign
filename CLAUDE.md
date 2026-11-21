@@ -1558,6 +1558,36 @@ correct when someone wrote it down.
   because that gap is taken out of its height and given back as its margin,
   so the pair measures exactly two lines.
 
+### The title opens the page, above the media
+
+`.project-head` — the category chip and the `<h2>` — sits between the back
+button and `.project-media`, in **every** layout, so all six case studies
+open the same way. It used to be the first thing in `.project-body`, which
+is the write-up column, and on the two sidebar layouts that meant the name
+of the work was a ~360px sidebar heading set at `clamp(1.7rem, 3vw,
+2.6rem)` beside the photographs — a caption, not a title. Above the media
+it gets the full 956px measure and the full 4.6rem, and the back button is
+no longer followed by 36px of nothing.
+**The chip comes with it.** Left behind it would have sat on top of the
+description, naming the thing the heading above it had just named.
+**The spacing is 36 above / 34 below in six of the seven layouts**, and
+getting there took one unrelated fix: `.project-detail.has-sidebar` was
+`gap: 50px`, so on the sidebar pages the row-gap stacked on the back
+button's own 36px margin and on the head's 34 — 86 and 84 against 36 and
+34 on the flow pages, the same element on the same page keeping three
+different rhythms. It is `column-gap` now, and the two row gaps are owned
+by the margins that were already there. **That gap was also the only thing
+separating media from body once the sidebar stacks**, so ≤900 gives
+`.project-media` back the 40px margin it carries everywhere else.
+`is-video-aside` stays at 40/40, because its `row-gap` legitimately owns
+the frame-to-write-up gap as well (`display: contents` killed the
+wrapper's margin) and 4px is not worth unpicking that for.
+**`html[lang="ja"] .project-body h2` went at the same time** and should
+never have existed: `fillProjectDetail` never translates a title — these
+are the names of actual works — so all six are Latin in every language,
+and a 900 on Archivo Black's single 400 face is synthetic bold. Same bug
+the stat numbers are excluded for.
+
 ### Which detail layout, and why it is arithmetic
 
 `mixed` divides ONE 956px row between however many tiles it is given, so
