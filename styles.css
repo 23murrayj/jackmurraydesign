@@ -2854,13 +2854,7 @@ body.is-loading { overflow: hidden; }
      the declared split and inverting it — the media column came out 419px
      against the sidebar's 487px, ratio 0.86 where 1.5 was asked for. */
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  /* Column gap only. There are three rows - button, title, then the two
-     columns - and both row gaps are already owned by a margin: the back
-     button's 36px and .project-head's 34px. A row-gap stacked on top of
-     them, so the title sat 86px under the button here against 36px on the
-     flow layouts, and 84px above the media against 34px. Same element,
-     same page, three different rhythms. */
-  column-gap: 50px;
+  gap: 50px;
   align-items: start;
 }
 /* 1 / -1 so the button owns its own row above both columns, but justify-self
@@ -2868,23 +2862,38 @@ body.is-loading { overflow: hidden; }
    a 922px bar in the two sidebar projects (Caterpillar, Monmouth) against a
    178px button everywhere else. Same control, same size, every layout. */
 .project-detail.has-sidebar .project-back { grid-column: 1 / -1; justify-self: start; }
-/* the title runs the full measure above both columns, same as the button */
-.project-detail.has-sidebar .project-head { grid-column: 1 / -1; }
 .project-detail.has-sidebar .project-media { margin-bottom: 0; }
+/* the sidebar is ~360px wide; the full-size project title is set for a
+   956px column and simply doesn't belong at that scale here. Does not
+   apply where the title has moved up top — there it is not in .project-body
+   at all, so the selector stops matching on its own. */
+.project-detail.has-sidebar .project-body h2 {
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+}
 .project-detail.has-sidebar .project-body {
   position: sticky;
   top: 110px;
   align-self: start;
 }
+/* the title runs the full measure above both columns, same as the button */
+.project-detail.has-sidebar.is-title-top .project-head { grid-column: 1 / -1; }
+/* Row gap off for this one layout, and ONLY where the title is on top.
+   There are three rows here then - button, title, columns - and both row
+   gaps are already owned by a margin: the back button's 36px and
+   .project-head's 34px. The 50px stacked on them, so the heading sat 86px
+   under the button and 84px above the media, against 36 and 34 in normal
+   flow. Same element, same page, two different rhythms.
+   Without the title up top there are only two rows and the 50px is the
+   gap under the button, which is what every sidebar project has always
+   had - hence the .is-title-top, rather than changing it outright. */
+.project-detail.has-sidebar.is-title-top { row-gap: 0; }
 @media (max-width: 900px) {
   .project-detail.has-sidebar { grid-template-columns: 1fr; }
   .project-detail.has-sidebar .project-body { position: static; }
-  /* Stacked, media and body are two rows rather than two columns, and the
-     column-gap above does nothing for them. The margin .project-media
-     carries on every other layout is exactly this gap, so it comes back
-     here rather than a row-gap, which would also reopen the hole under
-     the title that the margins now own. */
-  .project-detail.has-sidebar .project-media { margin-bottom: 40px; }
+  /* Stacked, media and body are two rows rather than two columns, so the
+     row-gap zeroed above was the only thing between them. The margin
+     .project-media carries on every other layout is exactly this gap. */
+  .project-detail.has-sidebar.is-title-top .project-media { margin-bottom: 40px; }
 }
 
 /* Video layout: film full width, then the write-up and the poster side by
@@ -2906,23 +2915,23 @@ body.is-loading { overflow: hidden; }
   margin-bottom: 0;          /* row-gap owns this spacing now */
 }
 .project-detail.is-video-aside .project-media.layout-video { display: contents; }
-/* the head takes row 2 and pushed everything below it down one */
-.project-detail.is-video-aside .project-head {
-  grid-column: 1 / -1; grid-row: 2;
-  margin-bottom: 0;          /* row-gap owns this spacing too */
-}
-.project-detail.is-video-aside .project-video-frame { grid-column: 1 / -1; grid-row: 3; }
-.project-detail.is-video-aside .project-body { grid-column: 1; grid-row: 4; }
+.project-detail.is-video-aside .project-video-frame { grid-column: 1 / -1; grid-row: 2; }
+.project-detail.is-video-aside .project-body { grid-column: 1; grid-row: 3; }
 .project-detail.is-video-aside .project-video-details {
-  grid-column: 2; grid-row: 4;
+  grid-column: 2; grid-row: 3;
   margin-top: 0;             /* the 12px strip gap would double the row-gap */
+}
+/* the title is set for a 956px column and doesn't fit a ~500px one — same
+   reduction .has-sidebar already makes for its sidebar. If this layout ever
+   opts into titleTop, these rows renumber and this rule goes. */
+.project-detail.is-video-aside .project-body h2 {
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
 }
 @media (max-width: 900px) {
   /* back to normal flow; the wrapper needs its box back so its margin returns */
   .project-detail.is-video-aside { display: block; }
   .project-detail.is-video-aside .project-media.layout-video { display: block; }
   .project-detail.is-video-aside .project-back { margin-bottom: 36px; }
-  .project-detail.is-video-aside .project-head { margin-bottom: 34px; }
   .project-detail.is-video-aside .project-video-details { margin-top: 12px; }
 }
 
@@ -2993,28 +3002,40 @@ body.is-loading { overflow: hidden; }
   }
 }
 
-/* THE TITLE OPENS THE PAGE. It used to live at the top of .project-body,
-   which is the write-up column - so on the two-column layouts it was a
-   sidebar heading set at clamp(1.7rem, 3vw, 2.6rem), reading as a caption
-   beside the photographs rather than as the name of the work. Above the
-   media it gets the full 956px measure and the full 4.6rem, and the back
-   button is no longer followed by 36px of nothing.
-   The category chip comes with it: it is the title's eyebrow, and left
-   behind it would have sat on top of the description naming the same
-   thing the heading above it already named. */
+/* THE TITLE ABOVE THE MEDIA — ONE PROJECT ONLY, FOR NOW.
+   Home for the chip and the <h2> is the top of .project-body, which is
+   where all six have always had them and where five of them still do.
+   A project carrying `titleTop: true` in projectData has fillProjectDetail
+   move both nodes into .project-head instead, and renderProjectMedia put
+   .is-title-top on .project-detail so the CSS can follow.
+   It is worth it on a sidebar layout: .project-body is a ~360px sticky
+   column there, so the name of the work was set at clamp(1.7rem, 3vw,
+   2.6rem) beside the photographs - a caption, not a title. Up here it
+   takes the full 956px measure and the full 4.6rem, and the back button
+   is no longer followed by 36px of nothing.
+   The chip comes with it. Left behind, it would have sat directly on the
+   description, labelling the thing the heading above it had just named.
+   Collapsed when nothing moved into it, so it never costs the other five
+   a grid row or 34px of air. */
 .project-head { margin-bottom: 34px; }
+.project-detail:not(.is-title-top) .project-head { display: none; }
 .project-cat {
   display: inline-block;
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
   background: var(--black); color: var(--white);
   padding: 6px 12px; margin-bottom: 18px;
 }
+.project-body h2,
 .project-head h2 {
   font-family: var(--ff-display);
   font-size: clamp(2.3rem, 6.5vw, 4.6rem);
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  letter-spacing: -0.02em; margin-bottom: 22px;
 }
+/* Up top the heading is two lines at 73.6px and the margin below it belongs
+   to .project-head, not to the h2 inside it. 0.95 rather than the default,
+   because at this size a normal line box opens a visible gap between the
+   two lines of a wrapped title. */
+.project-head h2 { margin-bottom: 0; line-height: 0.95; }
 .project-desc {
   font-size: 1.1rem; font-weight: 400; line-height: 1.6; max-width: 640px; margin-bottom: 40px;
 }

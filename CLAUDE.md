@@ -1558,35 +1558,63 @@ correct when someone wrote it down.
   because that gap is taken out of its height and given back as its margin,
   so the pair measures exactly two lines.
 
-### The title opens the page, above the media
+### Where the project title sits — `titleTop`, one project at a time
 
-`.project-head` — the category chip and the `<h2>` — sits between the back
-button and `.project-media`, in **every** layout, so all six case studies
-open the same way. It used to be the first thing in `.project-body`, which
-is the write-up column, and on the two sidebar layouts that meant the name
-of the work was a ~360px sidebar heading set at `clamp(1.7rem, 3vw,
-2.6rem)` beside the photographs — a caption, not a title. Above the media
-it gets the full 956px measure and the full 4.6rem, and the back button is
-no longer followed by 36px of nothing.
-**The chip comes with it.** Left behind it would have sat on top of the
-description, naming the thing the heading above it had just named.
-**The spacing is 36 above / 34 below in six of the seven layouts**, and
-getting there took one unrelated fix: `.project-detail.has-sidebar` was
-`gap: 50px`, so on the sidebar pages the row-gap stacked on the back
-button's own 36px margin and on the head's 34 — 86 and 84 against 36 and
-34 on the flow pages, the same element on the same page keeping three
-different rhythms. It is `column-gap` now, and the two row gaps are owned
-by the margins that were already there. **That gap was also the only thing
-separating media from body once the sidebar stacks**, so ≤900 gives
-`.project-media` back the 40px margin it carries everywhere else.
-`is-video-aside` stays at 40/40, because its `row-gap` legitimately owns
-the frame-to-write-up gap as well (`display: contents` killed the
-wrapper's margin) and 4px is not worth unpicking that for.
-**`html[lang="ja"] .project-body h2` went at the same time** and should
-never have existed: `fillProjectDetail` never translates a title — these
-are the names of actual works — so all six are Latin in every language,
-and a 900 on Archivo Black's single 400 face is synthetic bold. Same bug
-the stat numbers are excluded for.
+**Only `pot-clip` has the title above the media. The other five keep it at
+the top of `.project-body` and must stay that way until Jack says
+otherwise** — his instruction on 2026-11-21 was to settle the treatment on
+one page first: *"we're just doing the pot clip rest… don't change any of
+the other ones right now."* The first pass moved it in the shared markup
+and so moved it on all six at once, which is the trap this whole section
+exists to flag: **there is ONE overlay behind every case study, so a change
+to `index.html` here is a change to all six whether you meant it or not.**
+Anything tried on one project needs an opt-in.
+
+The opt-in is `titleTop: true` in `projectData` and it costs three places:
+`fillProjectDetail` moves the chip and the `<h2>` into `.project-head`
+(and moves them BACK otherwise — the overlay is one reused panel, so
+without the else branch the first opted-in project leaves the heading up
+top for everything opened after it), `renderProjectMedia` puts
+`.is-title-top` on `.project-detail`, and the CSS hangs off that class.
+The nodes MOVE rather than being duplicated, because the `<h2>` is the
+overlay's `aria-labelledby` target and there can only be one of it.
+
+**Why it is worth it on a sidebar layout.** `.project-body` is a ~360px
+sticky column there, so `.has-sidebar .project-body h2` drops the title to
+`clamp(1.7rem, 3vw, 2.6rem)` — the name of the work set as a caption
+beside the photographs. In `.project-head` it takes the full 956px measure
+and the full 4.6rem, and the back button is no longer followed by 36px of
+nothing. The chip comes with it: left behind it would have sat directly on
+the description, labelling the thing the heading above it had just named.
+That sidebar reduction needs no `:not()` — with the title moved it is not
+in `.project-body` any more, so the selector stops matching on its own.
+
+**Measured on pot-clip at 1440×900:** head 956px wide, title 73.6px on two
+lines, 36px under the back button and 34px above the photo wall; 880 and
+390 hold the same 36/34 with 40 between media and body.
+
+**It needed `row-gap: 0`, and only under `.is-title-top`.**
+`.has-sidebar` is `gap: 50px`; with a title row there are three rows and
+both row gaps are already owned by a margin (the back button's 36, the
+head's 34), so the 50 stacked on them for 86 and 84. Without the title
+there are two rows and that 50px IS the gap under the button, which is
+what every sidebar project has always had — so it is scoped, not changed.
+Zeroing it also removed the only thing separating media from body once the
+sidebar stacks at ≤900, hence the 40px margin back on `.project-media`
+there, likewise scoped.
+
+**`.project-head` is `display: none` when the project has not opted in**,
+off the class rather than `:empty`. An empty div is still a grid item, so
+left alive it would take a row in `.has-sidebar` and push the media down
+on the five that did not ask for any of this.
+
+**One change here is deliberately NOT scoped**, because it is a bug rather
+than a treatment: `html[lang="ja"] .project-body h2` is gone from the
+900-weight list. `fillProjectDetail` never translates a title — these are
+the names of actual works — so all six are Latin in every language, and
+asking Archivo Black's single 400 face for a 900 gets synthetic bold.
+Same bug `.stat-num` is excluded from that block for. It changes nothing
+in English.
 
 ### Which detail layout, and why it is arithmetic
 

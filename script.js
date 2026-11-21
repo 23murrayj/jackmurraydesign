@@ -190,6 +190,11 @@ const projectData = {
     type: 'Product Design',
     year: '2026',
     role: 'Design & Fabrication',
+    // The chip and the title move above the media instead of opening the
+    // sidebar. ONLY THIS PROJECT HAS IT while the treatment is being judged
+    // on one page - the other five keep the title at the top of the write-up
+    // column, exactly as they were. See .project-head in styles.css.
+    titleTop: true,
     // MASONRY, NOT MIXED, AND THE REASON IS ARITHMETIC. mixed divides one
     // 956px row between however many tiles it is given: easter-riverside's
     // three come out 383x311 and sandcastles' two 472x380, but fourteen
@@ -752,6 +757,7 @@ const projectMedia = document.getElementById('projectMedia');
 const projectCat = document.getElementById('projectCat');
 const projectTitle = document.getElementById('projectTitle');
 const projectDesc = document.getElementById('projectDesc');
+const projectHead = document.querySelector('.project-head');
 const projectType = document.getElementById('projectType');
 const projectYear = document.getElementById('projectYear');
 const projectRole = document.getElementById('projectRole');
@@ -780,6 +786,9 @@ function renderProjectMedia(data) {
   projectDetailEl.classList.toggle('has-sidebar',
     data.layout === 'masonry' || data.sidebar === true);
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
+  // the chip and the <h2> sit above the media rather than opening the
+  // write-up column. Per project (`titleTop`) while it is tried on one.
+  projectDetailEl.classList.toggle('is-title-top', data.titleTop === true);
   // The poster-beside-the-text treatment only works for a single still. With
   // more than one the strip needs full width, so those projects stack instead.
   projectDetailEl.classList.toggle('is-video-aside',
@@ -957,6 +966,23 @@ function fillProjectDetail(id) {
   // names of actual works, not descriptions of them.
   projectCat.textContent = T.t('cat.' + data.category) || data.category;
   projectTitle.textContent = data.title;
+
+  // WHERE THE TITLE SITS IS PER PROJECT, for now. Its home is the top of
+  // .project-body - the write-up column - which is where all six have always
+  // had it. A project carrying `titleTop: true` gets the chip and the heading
+  // moved into .project-head instead, above the media, where they take the
+  // full 956px measure rather than a ~360px sidebar's.
+  //   Moving the nodes rather than duplicating them: the <h2> is the
+  // overlay's aria-labelledby target, so there can only ever be one of it.
+  //   Both branches run on every open, not just the opt-in one. The overlay
+  // is a single reused panel, so whatever the last project did to the DOM is
+  // the state the next one inherits - without the else the first titleTop
+  // project would leave the heading up top for everything opened after it.
+  if (data.titleTop) {
+    projectHead.append(projectCat, projectTitle);
+  } else {
+    projectDesc.before(projectCat, projectTitle);
+  }
   projectDesc.textContent = T.t('proj.' + id + '.desc') || data.desc;
   projectType.textContent = T.t('proj.' + id + '.type') || data.type;
   projectYear.textContent = data.year;

@@ -622,14 +622,16 @@
 <div class="project-overlay" id="projectOverlay" role="dialog" aria-modal="true" aria-labelledby="projectTitle">
   <div class="project-detail">
     <button class="project-back" id="projectBack" data-i18n="project.back">← BACK TO WORK</button>
-    <!-- The title opens the page, above the photographs, rather than sitting
-         in the write-up column beside them. See .project-head in styles.css. -->
-    <div class="project-head">
-      <span class="project-cat" id="projectCat"></span>
-      <h2 id="projectTitle"></h2>
-    </div>
+    <!-- Empty slot. A project carrying `titleTop: true` has fillProjectDetail
+         move the chip and the <h2> up here, above the photographs, instead of
+         leaving them at the top of the write-up column. Opt-in per project
+         while the treatment is being tried out on one - see .project-head in
+         styles.css. Stays collapsed (:empty) for everything else. -->
+    <div class="project-head"></div>
     <div class="project-media" id="projectMedia"></div>
     <div class="project-body">
+      <span class="project-cat" id="projectCat"></span>
+      <h2 id="projectTitle"></h2>
       <p class="project-desc" id="projectDesc"></p>
       <!-- long-form write-up. Hidden entirely when a project has no
            proj.<id>.body key, so shorter entries don't leave a gap. -->
