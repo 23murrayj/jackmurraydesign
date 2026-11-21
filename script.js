@@ -3871,9 +3871,9 @@ vec3 env(vec3 d, float blur){
   /* key: a tall softbox high and to the left, the main shape on the form */
   c += vec3(1.00, 1.00, 1.00) * 2.40 * panel(d, normalize(vec3(-0.40, 0.76, 0.51)), vec2(0.30, 0.17), s);
   /* fill: a wide low panel on the right, so the shadow side is not dead */
-  c += vec3(0.93, 0.96, 1.00) * 0.80 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
+  c += vec3(0.93, 0.96, 1.00) * 1.60 * panel(d, normalize(vec3( 0.80, 0.16, 0.58)), vec2(0.20, 0.44), s);
   /* rim: behind and slightly under, which separates the silhouette */
-  c += vec3(1.00, 0.95, 0.88) * 0.60 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
+  c += vec3(1.00, 0.95, 0.88) * 1.18 * panel(d, normalize(vec3( 0.05,-0.30,-0.95)), vec2(0.46, 0.26), s);
   /* a narrow overhead strip - the ceiling light, catching the top edges */
   c += vec3(1.00, 1.00, 1.00) * 1.05 * panel(d, normalize(vec3(0.10, 0.97, -0.10)), vec2(0.5, 0.07), s);
   return c;
@@ -4017,10 +4017,19 @@ function parseMesh(buf) {
    top and legs that fall away to almost nothing, and that contrast is the
    subject. So the cyc comes down by a third, the fill and the rim by more,
    and the floor goes nearly black; the key panel does NOT move, because the
-   highlights were never the problem. */
+   highlights were never the problem.
+   Then the SIDES came back up, because taking the whole studio down took
+   them with it: "the sides look a lot darker. Maybe turn it up just a
+   little bit, just slightly, but I like how darker it got." Two levers,
+   and the second is the one that mattered. The fill and rim panels went
+   0.80 to 1.60 and 0.60 to 1.18 - they are the only things lighting the
+   flanks. But the LEGS point down and outward, so most of what they see is
+   the floor, and the floor had been taken to 0.022: a void. Lifting it to
+   0.075 is a bounce card, and it is what actually took the legs off black
+   while the lit top and the contrast it is there for both stay. */
 const MODEL_LOOK = {
-  light: { top: [0.80,0.83,0.93], horizon: [0.33,0.35,0.41], bottom: [0.022,0.022,0.030], exposure: 0.90 },
-  dark:  { top: [0.72,0.75,0.84], horizon: [0.29,0.31,0.37], bottom: [0.016,0.016,0.022], exposure: 0.86 },
+  light: { top: [0.90,0.93,1.04], horizon: [0.42,0.44,0.51], bottom: [0.075,0.075,0.092], exposure: 0.94 },
+  dark:  { top: [0.81,0.84,0.94], horizon: [0.37,0.39,0.46], bottom: [0.058,0.058,0.072], exposure: 0.90 },
 };
 
 /* THE NUDGE — THE FINGER THAT APPEARS AND ROCKS THE OBJECT.
@@ -4135,7 +4144,7 @@ function startModelViewer(stage, src) {
      renderer: +0.5-ish is the one with the saddle in view and the notch
      between the legs still readable. */
   const HOME_YAW = 2.0;         // the opening three-quarter, matching 14-object.jpg
-  const HOME_PITCH = 0.58;      // positive = looking down onto the flat top
+  const HOME_PITCH = 0.46;      // positive = looking down onto the flat top
 
   let mesh = null, prog = null, raf = 0, yaw = HOME_YAW, pitch = HOME_PITCH;
   /* MOTION STATE. It used to be `yaw += delta` straight out of pointermove
@@ -4147,7 +4156,7 @@ function startModelViewer(stage, src) {
      Velocities in radians/second, integrated in the frame loop, so the feel
      does not change with the input device's event rate. */
   let yawVel = 0, pitchVel = 0;
-  let promptClock = 0, lastWiggle = 0;
+  let promptClock = 0, lastWiggle = 0, handAlpha = 0;
   let covProg = null, quadProg = null, shadowFbo = null, shadowTex = null, quadBuf = null;
   let posBuf = null, norBuf = null;
   let idle = Infinity;                          // seconds since the last input; it has been still since the page loaded
@@ -4402,16 +4411,31 @@ function startModelViewer(stage, src) {
     /* the nudge rides on top of whatever the motion above decided, so the
        drift carries on underneath it. Reduced motion gets none of it: it is
        decorative movement, and the stage is labelled as draggable anyway. */
+    let want = 0;
     if (!drag && dt && !prefersReducedMotion) {
       promptClock += dt * 1000;
       if (promptClock > PROMPT_AFTER) {
         const pt = ((promptClock - PROMPT_AFTER) / PROMPT_LOOP) % 1;
         const w = promptWiggle(pt);
-        hand.style.opacity = promptFade(pt);
-        hand.style.transform = 'translate(-50%,0) translateX(' + (w * stage.clientWidth * 0.05) + 'px)';
+        want = promptFade(pt);
+        hand.style.transform = 'translate(-50%,0) translateX(' +
+          (w * stage.clientWidth * 0.05).toFixed(2) + 'px)';
         yaw += (w - lastWiggle) * PROMPT_SWING;
         lastWiggle = w;
       }
+    }
+    /* ONE EASED ALPHA RATHER THAN THE CURVE WRITTEN STRAIGHT OUT. The
+       timeline's own fade is kept - the ease is fast enough (83ms time
+       constant against its 385ms ramp) to track it closely - but it also
+       covers the two edges the curve does not: grabbing the object
+       mid-prompt used to blank the hand on the same frame, and a tab
+       returning from the background used to resume it at full opacity.
+       Both are now a short dissolve. Rounded to 3dp so an unchanged value
+       does not dirty the style attribute every frame. */
+    const eased = handAlpha + (want - handAlpha) * (1 - Math.exp(-14 * (dt || 0)));
+    if (Math.abs(eased - handAlpha) > 0.0005 || (want === 0 && handAlpha !== 0)) {
+      handAlpha = eased < 0.002 ? 0 : eased;
+      hand.style.opacity = handAlpha.toFixed(3);
     }
 
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -4432,7 +4456,22 @@ function startModelViewer(stage, src) {
     }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     if (shadowFbo) {
-      drawShadowQuad(projM, view, tip, radius * 1.35, -radius * 0.98, SHADOW_STRENGTH);
+      /* THE SHADOW GOES WHEN YOU GO UNDER THE FLOOR, which is what the
+         other viewer does and what a floor plane physically means. After
+         rotX(pitch) the floor's normal is (0, cos p, sin p) and the eye
+         looks down -Z, so the plane faces the camera exactly while
+         sin(pitch) > 0: edge-on at 0, and underneath below it. Drawing a
+         contact shadow while the visitor is looking up at the object from
+         below is the thing that gives away that it is painted on.
+         Faded rather than switched, over the last ~8 degrees, so tumbling
+         through the floor is a dissolve and not a pop. */
+      const facing = Math.sin(pitch);
+      const t = Math.max(0, Math.min(1, facing / 0.14));
+      const underFade = t * t * (3 - 2 * t);
+      if (underFade > 0.001) {
+        drawShadowQuad(projM, view, tip, radius * 1.35, -radius * 0.98,
+          SHADOW_STRENGTH * underFade);
+      }
     }
     gl.uniformMatrix4fv(U('uModel'), false, model);
     gl.uniformMatrix4fv(U('uView'), false, view);
@@ -4486,7 +4525,7 @@ function startModelViewer(stage, src) {
     buffer(mesh.idx, gl.ELEMENT_ARRAY_BUFFER);
     setupShadow();
     gl.uniform3fv(U('uBase'), [0.80, 0.81, 0.85]);
-    gl.uniform1f(U('uRough'), 0.30);
+    gl.uniform1f(U('uRough'), 0.31);
     look();
     size();
     stage.appendChild(canvas);
@@ -4513,7 +4552,7 @@ function startModelViewer(stage, src) {
     yawVel = pitchVel = 0;     // catching a spinning object stops it dead, as it should
     idle = 0;
     homed = false;             // it has been moved, so it owes a trip home
-    promptClock = 0; lastWiggle = 0; hand.style.opacity = '0';
+    promptClock = 0; lastWiggle = 0;   // the eased alpha fades the hand out
     stage.setPointerCapture(e.pointerId);
     e.preventDefault();
   });
@@ -4563,7 +4602,7 @@ function startModelViewer(stage, src) {
     else return;
     idle = 0;
     homed = false;
-    promptClock = 0; lastWiggle = 0; hand.style.opacity = '0';
+    promptClock = 0; lastWiggle = 0;   // the eased alpha fades the hand out
     e.preventDefault();
   });
 

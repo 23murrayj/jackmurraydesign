@@ -960,6 +960,9 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.30));
   z-index: 2;
+  /* both are written every frame from JS, so promote the layer once and
+     let the compositor move it rather than repainting the stage */
+  will-change: transform, opacity;
 }
 .model-hand svg { width: 100%; height: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) { .model-hand { display: none; } }
