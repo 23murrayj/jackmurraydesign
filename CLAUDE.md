@@ -1687,7 +1687,12 @@ is synthetic bold and a smeared glyph. Nine tracked classes also reset
 `letter-spacing`, since tracking tuned for uppercase Latin reads as broken
 spacing in a script with no word spaces.
 
-**Photographs keep their natural ratios and nothing is cropped.**
+**Photographs keep their natural ratios inside a row, and nothing is
+cropped to even a row up.** Individual frames ARE cropped, where the
+photograph has room in that direction and the page needs a shape — the
+masthead, the render, both of card 1's and the rim shot all are, each noted
+where it is set. What stays banned is cropping to make two pictures the same
+height as each other.
 Equal-height rows were the obvious alternative and they cost the pictures: a
 1000×1778 spray booth forced into 3:2 loses 44% of its height, and the part
 a process photo is for is the part that gets cropped. Ragged bottoms are
@@ -1793,8 +1798,8 @@ already answered — sitting directly above a process card that is itself a
 photograph of a notebook page. The files stay in `assets/`;
 `proj.pot-clip.alt.4` and the rest are in the restore note.
 
-**RESEARCH PUTS ITS PHOTOGRAPH BESIDE ITS PROSE**, off an `aside` flag and
-`.cs-split`. Jack: *"move the alessi photo to the right of the research
+**TWO SECTIONS PUT THEIR PHOTOGRAPH BESIDE THEIR PROSE**, off an `aside`
+flag and `.cs-split`. Jack: *"move the alessi photo to the right of the research
 text to help that section visually."* That section is four definition pairs,
 so it is the tallest column of plain text on the page, and the storefront
 was a portrait sitting under all of it doing nothing for the shape. The
@@ -1865,6 +1870,32 @@ the entry shapes with `/assets/projects/x/01.jpg` as an example.
 **A flag, not a rule**: it only pays where the prose is tall enough to stand
 a column beside it. Under a short paragraph the same photograph is a small
 picture in a wide gap.
+**TESTING IS THE SECOND, AND IT COST A CROP RATHER THAN ANY CODE.** Jack:
+*"move the current photo under it to the right of the text, but you may have
+to crop the height because it is quite tall."* The rim shot shipped as the
+full 9:16 phone frame, 1000×1778, and the object only occupies the middle of
+it — so under the prose it drew a screenful of photograph at the end of a
+three-point argument. Re-cropped near-square from the original it is 340×321
+against 256 of English prose, and the section went **835px tall to 556**.
+**Near-square is as tight as that subject goes**: its own bounding box is
+2244×2001 in the source, aspect 1.12, so a frame letterboxed enough to match
+the prose exactly would have no margin left to put around it. Measured in
+all four languages the prose runs 228–284 against the photograph's 321, so
+it is 37–93px over — Research's is 34 over. **The sibling column may be a
+little taller than the prose; it must not be twice it.**
+**THE COPY IS METHOD / FINDING / IMPLICATION**, in Jack's words, replacing a
+two-item list headed "Fit testing" and "Product photography" — which named
+what he DID twice and what he LEARNED nowhere. The rim is the finding and
+the next section opens on rim fit, so the implication is the hinge between
+them. It is a `<ul>` with `<strong>` leads, the same shape as The problem,
+because three labelled sentences in a 548px column is exactly what that
+pattern is for.
+**One thing it leaves doubled**: the second stat still reads "held utensils
+securely through a full product shoot" and the finding now ends "including
+through a full product shoot", about 100px apart. The stats band is a
+different register and a scanner reads one or the other, so both stay —
+but it is the closest this page comes to the brief's "unnecessary
+descriptions", and it is Jack's sentence, so it is his to cut.
 **The photo column is a fixed 340px, not a fraction**, because it is the
 supporting half and should not widen with the viewport at the expense of the
 text it supports. **It stacks at 900, and 760 was wrong**: measured across
@@ -1889,23 +1920,34 @@ tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
 **The masthead photograph is cropped 1.55× tighter than the frame**, from
-the original rather than the export: a 1950px window at 80,810 of the
-3024×3024 source. It has moved in and left three times — 1.00, then 1.24 at
-left 584, then 1.24 at left 284, now 1.55 at left 80 — on *"zoom in on it
-just a bit and center the product"*, then *"have it to the right more so we
-see more white space on the left"*, then *"even more zoomed in and even more
-to the right"*.
+the original rather than the export: a 1950px window at 80,670 of the
+3024×3024 source. It has moved four times — 1.00, then 1.24 at left 584,
+then 1.24 at left 284, then 1.55 at 80,810, now the same window 140px higher
+up the source — on *"zoom in on it just a bit and center the product"*, then
+*"have it to the right more so we see more white space on the left"*, then
+*"even more zoomed in and even more to the right"*, then *"bring it down a
+bit in the frame so we get a bit more white space in the top"*.
 **THE TWO ASKS PULL THE SAME WAY**, which is why they keep arriving
 together. Moving the WINDOW left moves the SUBJECT right, and zooming in
 means a smaller window — so both are paid for out of the right edge, where
 the bowl was already running off the source when the shot was taken. **That
 is the cheapest thing in the frame, and protecting every pixel of it is what
 made the first version wrong.**
-**Vertical is re-centred on the subject each time** rather than left where it
-was. The rod's top is at y 1081 and the shadow ends about 2490, so there was
-far more air above and below than beside it, and a zoom should come out of
-that before it comes out of the object. 16% of the frame over the rod and
-under the shadow.
+**VERTICAL IS MEASURED NOW, AND WHAT WAS WRITTEN HERE WAS WRONG.** This note
+said the shadow ended about 2490 and claimed 16% of clear frame above the
+rod and below it. Profiled across the window's own x range, the rod's top
+edge is y 1025 and the bowl's cast shadow runs to **2745** — so at top 810
+there were 215 source px of air above the rod and **15** below the shadow.
+The frame was not balanced, it was flush to the bottom, and that is what
+Jack was looking at when he asked for white space at the top. **A number in
+here that nobody re-measured survived two crops of the thing it describes.**
+**140px up, paid for out of the shadow's tail.** Moving the window up moves
+the subject DOWN, so the top gains exactly what the bottom gives, and what
+the bottom gives is the faintest 140px of a diffuse shadow — the row the cut
+lands on is 30 levels off the paper. Air over the rod goes from **11% of the
+output frame to 18%**, and the bowl's foot lands at 83% where it was 76%.
+**190px was rendered and rejected**: the bowl is 91% down the frame there
+and reads as resting on the edge rather than standing on ground.
 **1.55 and not more.** 1.68 was rendered and rejected: the bowl stops reading
 as a bowl and becomes a fragment running off two edges, so the picture reads
 as a crop of a photograph rather than a composed one. At 1.55 the clip is

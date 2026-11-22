@@ -3274,8 +3274,8 @@ body.is-loading { overflow: hidden; }
 .cs-prose strong { font-weight: 700; }
 
 /* ---- prose with a photograph beside it --------------------------------
-   Only Research uses it, off the `aside` flag. A fixed 340px column rather
-   than a fraction: the picture is the supporting half, so it should not
+   Research and Testing use it, off the `aside` flag. A fixed 340px
+   column rather than a fraction: the picture is the supporting half, so it should not
    widen with the viewport and push the text it supports into a narrow
    measure. That leaves the prose 548px at 1440, which is where it wants to
    be anyway.

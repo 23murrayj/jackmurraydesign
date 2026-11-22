@@ -226,34 +226,48 @@ const projectData = {
       lede: 'proj.pot-clip.cs.lede',
       tocLabel: 'proj.pot-clip.cs.toc',
       /* CROPPED 1.55x TIGHTER THAN THE FRAME, from the original HEIC rather
-         than from the 1600px export: a 1950px window at 80,810 of the
-         3024x3024 source. It has moved in and left three times - 1.00, then
-         1.24 at left 584, then 1.24 at left 284, now this. Jack each time:
-         "zoom in on it just a bit and center the product", then "have it to
-         the right more so we see more white space on the left", then "even
-         more zoomed in and even more to the right".
+         than from the 1600px export: a 1950px window at 80,670 of the
+         3024x3024 source. It has moved four times - 1.00, then 1.24 at
+         left 584, then 1.24 at left 284, then 1.55 at 80,810, now 140px
+         higher up the source. Jack each time: "zoom in on it just a bit and
+         center the product", then "have it to the right more so we see more
+         white space on the left", then "even more zoomed in and even more
+         to the right", then "bring it down a bit in the frame so we get a
+         bit more white space in the top".
            THE TWO ASKS PULL THE SAME WAY, which is why they arrive together.
          Moving the WINDOW left moves the SUBJECT right, and zooming in means
          a smaller window - so both are paid for out of the right edge, where
          the bowl was already running off the source when the photograph was
          taken. That is the cheapest thing in the frame; protecting every
          pixel of it is what made the first version wrong.
-           VERTICAL IS RE-CENTRED ON THE SUBJECT each time rather than left
-         where it was: the rod's top is at y 1081 and the shadow ends about
-         2490, so there was far more air above and below than beside, and a
-         zoom should come out of that before it comes out of the object.
-         This leaves 16% of the frame over the rod and under the shadow.
+           VERTICAL IS MEASURED NOW, AND THE OLD NUMBER IN HERE WAS WRONG.
+         This comment said the shadow ended about 2490 and claimed 16% of
+         clear frame above the rod and below it. Profiled across the window's
+         own x range, the rod's top edge is y 1025 and the bowl's cast shadow
+         runs to 2745 - so at top 810 the air above the rod was 215 source
+         px and the air under the shadow 15. The frame was not balanced, it
+         was flush to the bottom, which is what Jack was looking at: "bring
+         it down a bit in the frame so we get a bit more white space in the
+         top."
+           140px UP, AND IT IS PAID FOR OUT OF THE SHADOW'S TAIL. Moving the
+         window up moves the subject DOWN, so the top gains what the bottom
+         gives, and what the bottom gives is the faintest 140px of a diffuse
+         shadow (its last row cut sits 30 levels off the paper). The air over
+         the rod goes from 11% of the output frame to 18%; the bowl's foot
+         lands at 83% where it was 76%. 190px was rendered and rejected - the
+         bowl is 91% down the frame there and reads as resting on the edge.
            1.55 AND NOT MORE. 1.68 was rendered and rejected - the bowl stops
          reading as a bowl and becomes a fragment running off two edges, so
          the picture reads as a crop of a photograph rather than a composed
          one. At 1.55 the clip is the subject, the bowl is still a bowl, and
          the left edge carries 299px of the 1600 in clear ground.
-           THIS IS THE SECOND RENAME IN TWO COMMITS, which is the signal: a
-         third pass at this crop should move to the mesh's ?v= content hash
-         instead of inventing a third filename. See the cache note in
-         CLAUDE.md for why the bytes cannot change at a live path. */
-      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=efbfbfe5', w: 1600, h: 1600,
-        full: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=efbfbfe5',
+           THE FILENAME STOPPED MOVING AT THE THIRD PASS. It went cs-hero ->
+         cs-hero-bowl -> cs-hero-clip, one name per crop, until the ?v=
+         content hash landed; this fourth crop changes the bytes in place and
+         tools/asset-rev.js rewrites the query from the file itself. See the
+         cache note in CLAUDE.md. */
+      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=8579a9d8', w: 1600, h: 1600,
+        full: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=8579a9d8',
         altKey: 'proj.pot-clip.cs.alt.hero' },
       meta: [
         ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
@@ -393,15 +407,41 @@ const projectData = {
             ] },
           ] },
 
+        /* THE SECOND SECTION TO TAKE ITS PHOTOGRAPH BESIDE THE PROSE, and
+           the flag paid for itself here rather than needing anything new.
+           Jack: "move the current photo under it to the right of the text,
+           but you may have to crop the height because it is quite tall."
+           The rim shot was shipped at 1000x1778 - the full 9:16 frame - so
+           under the prose it drew 924px tall on a 924px column, a screen of
+           one photograph at the end of a three-point argument.
+             METHOD / FINDING / IMPLICATION, in Jack's own words. It was a
+           two-item list - "fit testing" and "product photography" - which
+           named what he DID twice and what he LEARNED nowhere. The rim is
+           the finding, and the next section opens on rim fit, so the
+           implication is the hinge between them. */
         { id: 'testing', title: 'proj.pot-clip.cs.testing.t',
           stats: [
             ['proj.pot-clip.cs.testing.s1n', 'proj.pot-clip.cs.testing.s1t'],
             ['proj.pot-clip.cs.testing.s2n', 'proj.pot-clip.cs.testing.s2t'],
           ],
-          html: 'proj.pot-clip.cs.testing.b',
+          html: 'proj.pot-clip.cs.testing.b', aside: true,
+          /* OUT OF ITS PHONE FRAME. The source is 3213x5712 held upright
+             and the object only occupies y 2877-4850 of it, so the top 45%
+             of the 9:16 export was empty ground - which is why it drew 600
+             tall beside 256 of prose. A 2613x2465 window at 600,2631 of the
+             original puts 10% of clear frame above and below the bowl and
+             leaves the rod's left end 47px of air at output scale; the bowl
+             runs off the right edge in the source, so that edge stays flush
+             the way the masthead's does.
+               NEAR-SQUARE IS AS TIGHT AS THIS SUBJECT GOES. The object's own
+             bounding box is 2244x2001, aspect 1.12, so a frame letterboxed
+             enough to match the prose exactly would have no margin left to
+             give it. At 340x321 it sits 37-93px over the prose depending on
+             the language, against Research's 34 - the same ragged bottom,
+             not a column of photograph. */
           figures: [
-            { src: '/assets/projects/pot-clip/cs-rim.jpg?v=8f0f0861', w: 1000, h: 1778,
-              full: '/assets/projects/pot-clip/cs-rim.jpg?v=8f0f0861',
+            { src: '/assets/projects/pot-clip/cs-rim.jpg?v=1d1c3603', w: 1000, h: 943,
+              full: '/assets/projects/pot-clip/cs-rim.jpg?v=1d1c3603',
               altKey: 'proj.pot-clip.cs.alt.rim' },
           ] },
 
@@ -1112,15 +1152,21 @@ function renderCaseStudy(data) {
         '<div class="cs-stat">' + csText('span', 'cs-stat-num', p[0])
         + csText('span', 'cs-stat-txt', p[1]) + '</div>').join('') + '</div>';
     }
-    /* `aside` puts the figures BESIDE the prose instead of under it. One
-       section wants it - Research, which is four definition pairs and so
-       the tallest column of plain text on the page, with a portrait
-       photograph that was sitting below all of it doing nothing for the
-       shape. Jack: "move the alessi photo to the right of the research
-       text to help that section visually."
+    /* `aside` puts the figures BESIDE the prose instead of under it. Two
+       sections want it. Research is four definition pairs and so the
+       tallest column of plain text on the page, with a portrait photograph
+       that was sitting below all of it doing nothing for the shape: "move
+       the alessi photo to the right of the research text to help that
+       section visually." Testing is three short paragraphs with one very
+       tall photograph: "move the current photo under it to the right of
+       the text, but you may have to crop the height because it is quite
+       tall."
          A flag rather than a rule, because it only pays where the prose is
        tall enough to stand a column beside it; under a short paragraph the
-       same photograph would just be a small picture in a wide gap. */
+       same photograph would just be a small picture in a wide gap. And the
+       SIBLING has to be cropped to suit - a 9:16 frame in the 340 column
+       draws 600px beside 256px of prose, which is the shape this flag is
+       supposed to fix rather than a use of it. */
     const prose = (sec.html ? csText('div', 'cs-prose', sec.html, true) : '')
       + (sec.text ? csText('p', 'cs-prose-p', sec.text) : '');
     out += sec.aside
