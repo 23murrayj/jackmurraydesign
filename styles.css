@@ -3354,6 +3354,94 @@ body.is-loading { overflow: hidden; }
 .cs-stage-slot:has(.is-live) .cs-stage-hint { opacity: 1; }
 .cs-stage-slot .project-stage { order: 1; }
 
+/* ---- the turntable and the painted piece, side by side ----------------
+   Jack: "move it to the left and put in a new photo I added called
+   newpaintedmodel to the right of it to use the space better."
+   A RATIO HERE, WHERE .cs-split USES A FIXED 340. That rule is fixed
+   because its other column is TEXT and a fraction would squeeze the
+   measure as the viewport narrows. This column's partner is a canvas, and
+   the constraint runs the other way: the turntable is the subject and must
+   stay the larger of the two at every width. Fixed at 340 it did not -
+   measured at 901 the stage came out 435 beside a 507-tall photograph, the
+   supporting picture winning the row. 1.6fr/1fr reproduces the 1440 answer
+   almost exactly (546 and 341 against 548 and 340) and holds the order all
+   the way down.
+     The slot was a flex column (hint ordered before the stage in the
+   markup and pulled under it), so the pair re-places all three by hand. */
+.cs-stage-pair {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 36px;
+  align-items: start;
+}
+.cs-stage-pair .project-stage { grid-column: 1; grid-row: 1; }
+.cs-stage-pair .cs-stage-hint { grid-column: 1; grid-row: 2; }
+.cs-stage-pair .cs-figs       { grid-column: 2; grid-row: 1 / span 2; }
+/* .cs-figs carries a 26px top margin for the rows it was written for, and
+   here it staggered the photograph 26px below the canvas. That happened to
+   bring their BOTTOMS within 15px of each other, which is a tidier
+   rectangle and still the wrong call: the grid says align-items: start,
+   the two objects are hard-edged frames in one row, and a reader takes the
+   row's top edge as the line. Tops level, bottoms 41px ragged - the same
+   ragged bottom Research (34) and Testing (65) already have. */
+.cs-stage-pair .cs-figs       { margin-top: 0; }
+/* STACKS AT 900 with .cs-split, and it has to: the photo column is a
+   FIXED 340px, so without this the 1fr beside it keeps shrinking and the
+   stage squeezes to nothing. Measured before the rule existed, a 390px
+   phone drew the stage at 50x50 inside a 426px-wide slot - narrower than
+   the thumbnail it sat next to and wider than the screen. A fixed track
+   in a grid does not stack itself. */
+@media (max-width: 900px) {
+  .cs-stage-pair { grid-template-columns: 1fr; column-gap: 0; }
+  .cs-stage-pair .cs-figs { grid-column: 1; grid-row: 3; margin-top: 26px; }
+}
+
+/* THE STAGE IS SQUARE HERE, AND THAT IS THE WHOLE ANSWER TO "IT SAYS YOU
+   CAN DRAG IT PRETTY FAR FROM THE MODEL". The draggable area is the
+   canvas, and the camera fits the mesh's BOUNDING SPHERE at the worst
+   orientation (SECTION 19), so the object never fills it: measured
+   through the viewer's own matrices at the resting pose, it covers 52% of
+   the height whatever shape the box is. What the box shape decides is the
+   WIDTH. At 924x558 the object drew 311x290 - 34% of the width, so 613px
+   of the band was canvas you could drag and nothing to drag. Square, it
+   is 305x285 in 548 - the object is the same size and the dead area falls
+   from 83% of the box to 71%.
+     So this is not a smaller stage, it is the same stage with the empty
+   two thirds taken off the side. Shortening it instead would have gone
+   the wrong way: 548x460 measures 76% dead against 71%, because a box
+   wider than it is tall spends the difference on margin.
+     min(100%, 560px) rather than a bare aspect-ratio: stacked below 900
+   the column is the whole measure, and an 810px-wide square stage at a
+   900px viewport is a screenful of grey. 560 is the widest the split
+   itself ever makes it. */
+.cs-stage-slot .project-stage {
+  width: min(100%, 560px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+}
+
+/* THE FRAME SAYS WHERE YOU CAN DRAG, which is why this one is not the
+   page's hard rule. Jack: "the 3d model should be given a boarder around
+   to see where you can drag, but it should be a light grey border,
+   different from the others."
+   It overturns the note that put this band here - "no border, no
+   background and no frame of any kind" - and only for the reason that
+   note did not cover: that was about the stage not being a TILE in the
+   photo wall, wearing the same 3px black as the thirteen things you only
+   look at. A grey frame says the opposite thing. Black frame, a picture;
+   grey frame, a region that answers the pointer - and the photograph
+   beside it wearing the black one is what makes the difference legible.
+   --line is the page's own light-divider token and it flips, measuring
+   1.47:1 on the light ground and 1.51:1 on the dark one - a 0.04 spread,
+   so the frame is equally quiet in both themes without a second value.
+   Same 3px as .cs-fig: the weight matches its neighbour, the colour is
+   what differs. */
+.cs-stage-slot .project-stage {
+  border: 3px solid var(--line);
+  background: var(--white);
+}
+
 /* ---- the process, as four cards in a 2x2 -------------------------------
    Jack, with a mock-up: "turn the process part into some cards like this to
    make them a bit more condensed and scannable." It was four numbered

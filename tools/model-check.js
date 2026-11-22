@@ -183,8 +183,15 @@ function checkFraming(file, K) {
   }
   const r = Math.sqrt(r2);
   console.log(`\nFRAMING   bounding sphere ${r.toFixed(4)}   FOV ${K.FOV} rad   margin ${K.FIT_MARGIN}`);
-  // the stage shapes in use: wide desktop band, tablet, phone, and a square
-  const cases = [[956, 468], [792, 468], [351, 320], [468, 468], [320, 560]];
+  /* THE STAGE IS SQUARE EVERYWHERE NOW - it shares the Design band with a
+     photograph, so it is the column's width by the same height: 542 inside
+     its border at 1440, 429 at 901, 554 stacked, 345 on a phone. Square
+     makes the two half-angles equal, so all four reduce to one sum; they
+     are listed anyway because a wrong one would otherwise be invisible.
+     The last two are NOT in use and are the guard: a band and a tall slot,
+     so that putting the stage back to either shape has to pass here. */
+  const cases = [[542, 542], [429, 429], [554, 554], [345, 345],
+                 [924, 558], [320, 560]];
   let worst = 0, worstAt = '';
   for (const [w, h] of cases) {
     const halfY = K.FOV / 2;
@@ -205,7 +212,7 @@ function checkFraming(file, K) {
      viewer's own matrices at a grid of orientations and finds the furthest
      any of them lands from centre in clip space. Anything over 1.0 is a
      pixel off the edge of the canvas. */
-  const [w, h] = [956, 468];
+  const [w, h] = [542, 542];
   const halfY = K.FOV / 2;
   const halfX = Math.atan(Math.tan(halfY) * (w / h));
   const dist = (r / Math.sin(Math.min(halfX, halfY))) * K.FIT_MARGIN;

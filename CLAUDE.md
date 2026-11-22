@@ -1641,7 +1641,50 @@ open/close cycles: exactly one `.model-canvas` each time.
 **It is in "The design", not at the very top**, which is a change from
 *"put it at like the very top"* — that instruction was about it not being
 a tile in the photo wall, and the wireframe Jack drew afterwards places it
-in that section. It still has no frame, no border and no background.
+in that section.
+
+**IT SHARES THAT BAND WITH THE PAINTED PIECE, AND IT HAS A FRAME NOW.**
+Both on Jack's word, and both overturn something written here, so the
+reasons matter.
+*"Move it to the left and put in a new photo I added called
+newpaintedmodel to the right of it to use the space better."* So the slot
+is a 1.6fr/1fr grid — turntable left, photograph right, tops level, the
+drag hint still under the canvas. **It is the same object twice**, which
+is why it belongs in this section rather than in Process: left, the
+digital model you can turn; right, the physical one it was scanned from,
+hanging in the spray booth in its silver finish. The section asks what the
+thing is, and that pair answers it.
+**A ratio here where `.cs-split` uses a fixed 340**, and the difference is
+what the other column holds. There it is TEXT, and a fraction would
+squeeze the measure as the viewport narrows. Here it is a canvas, and the
+constraint runs the other way: the turntable is the subject and has to
+stay the larger of the two. Fixed at 340 it did not — measured at 901 the
+stage came out **435 beside a 507-tall photograph**, the supporting
+picture winning the row. 1.6fr/1fr reproduces the 1440 answer almost
+exactly (546 / 342 against 548 / 340) and holds the order all the way
+down: the stage is the taller of the two at 1440, 1100 and 901.
+**A FIXED TRACK IN A GRID DOES NOT STACK ITSELF**, and leaving that out
+was the one real break this change shipped and caught. With `1fr 340px`
+and no media query a 390px phone drew the stage at **50×50 inside a
+426px-wide slot** — narrower than the thumbnail beside it and wider than
+the screen. It stacks at 900 with `.cs-split`.
+
+**THE FRAME IS LIGHT GREY, AND THAT IS NOT THE BOX THE VIEWER NOTE BANS.**
+Jack: *"the 3d model should be given a boarder around to see where you can
+drag, but it should be a light grey border, different from the others."*
+The *Where it sits* note says no border, no background, no frame of any
+kind — and it was written against the stage being **a tile in the photo
+wall**, wearing the same hard 3px black as the thirteen things you only
+look at. A grey frame says the opposite thing: black frame, a picture;
+grey frame, a region that answers the pointer. The photograph beside it
+wearing the black one is what makes that legible, which is the one reason
+this could only work once the band held a pair.
+**`--line`, the page's own light-divider token, because it flips**:
+1.47:1 on the light ground and 1.51:1 on the dark one, a 0.04 spread, so
+the frame is equally quiet in both themes with no second value. Same 3px
+as `.cs-fig` — the weight matches its neighbour and only the colour
+differs. **Do not give it the hard rule**; that is the thing the viewer
+note is about.
 
 **The contents links scroll and do not navigate, and the default is
 cancelled for modified clicks too.** A hash would work — the overlay is the
@@ -3230,8 +3273,9 @@ page will not tell you whether the object still turns.
   away, which is the same two-forces-fighting bug as the momentum one
   below, and it would simply never drift.
 - **Timings, all of them on Jack's ear:** `IDLE_AFTER` 6s (he said "5 or
-  10"), `IDLE_SPIN` **0.14 rad/s — one revolution every 45 seconds**, which
-  is "very slowly"; it was 0.30. Drag is 0.75 of a turn per full sweep of
+  10"), `IDLE_SPIN` **0.2 rad/s — one revolution every 31 seconds**, which
+  is "very slowly"; it was 0.30. (This read 0.14 and 45 seconds until
+  2026-11-22; the code has said 0.2 for longer than that.) Drag is 0.75 of a turn per full sweep of
   the stage, down from 1.1, because he asked for it slower in the hand too.
 - **Drag speed is per fraction of the stage, not per pixel**, so the same
   gesture turns it the same amount on a phone and on a desktop.
@@ -3288,13 +3332,34 @@ page will not tell you whether the object still turns.
   you turn, framed exactly like the thirteen things you only look at. Jack:
   *"it shouldn't be in a box. It should be in its own area… put it at like
   the very top."* So `.project-stage` is a band of its own between the
-  title and the photographs, with **no border, no background and no frame
-  of any kind**. What makes it an area is height and air, which is also the
-  only treatment that cannot accidentally become a second box.
-- `clamp(360px, 62vh, 640px)` tall, and a flat 360 at ≤760px — fixed on a
-  phone, so an address bar sliding away mid-scroll cannot resize the canvas
-  under the finger. It is taller than it looks like it needs to be; see
-  *What stops it being clipped* for why.
+  title and the photographs, and it does not wear the photo wall's hard
+  black rule. **It carries a light grey one now**, on Jack's request — the
+  case-study note holds the words and the reasoning — and what is still
+  banned is the hard frame that made it read as a tile.
+- **IT IS SQUARE IN THE CASE STUDY, AND THAT IS THE ANSWER TO "IT SAYS YOU
+  CAN DRAG IT PRETTY FAR FROM THE MODEL".** The draggable area is the
+  canvas, and the camera fits the bounding SPHERE at the worst orientation,
+  so the object never fills it: measured through the viewer's own matrices
+  at the resting pose, **it covers 52% of the height whatever shape the box
+  is.** What the box shape decides is the WIDTH. At 924×558 the object drew
+  311×290 — 34% of the width, so 613px of that band was canvas you could
+  drag with nothing in it. Square, it is 305×285 in 548: **the object is
+  the same size and the dead area falls from 83% of the box to 71%.**
+  So this is not a smaller stage, it is the same stage with the empty two
+  thirds taken off the side. **Shortening it would have gone the wrong
+  way** — 548×460 measures 76% dead against 71%, because a box wider than
+  it is tall spends the difference on margin.
+  `width: min(100%, 560px); aspect-ratio: 1`, not a vh clamp: stacked below
+  900 the column is the whole measure, and an 810px square stage at a 900px
+  viewport is a screenful of grey. The old `clamp(360px, 62vh, 640px)` and
+  the flat 360 at ≤760px still stand for any stage outside the case study —
+  there is none today.
+  **The remaining lever is `FIT_MARGIN`, and it is deliberately untouched.**
+  Square, the empirical worst vertex reaches 80.5% of the way to the edge
+  where the wide band had it at 93.5%, so there is headroom: dropping 1.22
+  toward the checker's 1.042 floor would take the object from 52% of the
+  height to about 61%. That is a change to air Jack tuned himself, on a
+  request that was about the BOX, so it waits to be asked for.
 - **The still render is the poster AND the fallback.** The stage holds an
   `<img>` and the canvas sits over it; `.is-live` goes on once the canvas
   has drawn, so a failed fetch, a dead context or no WebGL at all leaves a

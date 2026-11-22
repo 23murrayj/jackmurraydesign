@@ -320,8 +320,24 @@ const projectData = {
            above the first process card, which is a photograph of a notebook
            page. The file stays in assets/; the alt text is in the restore
            note. */
+        /* THE TURNTABLE SHARES ITS BAND WITH THE PAINTED PIECE. Jack:
+           "move it to the left and put in a new photo I added called
+           newpaintedmodel to the right of it to use the space better."
+           The stage was 924px wide and the object draws 311 of that at
+           rest, so two thirds of the band was empty canvas - which is also
+           the third thing he asked about, below.
+             IT IS THE SAME OBJECT TWICE, which is why it belongs here
+           rather than in Process. Left, the digital model you can turn;
+           right, the physical one it was scanned from, hanging in the
+           spray booth in its silver finish. The section is about what the
+           thing IS, and that is the pair that answers it. */
         { id: 'design', title: 'proj.pot-clip.cs.design.t',
-          html: 'proj.pot-clip.cs.design.b', stage: true },
+          html: 'proj.pot-clip.cs.design.b', stage: true,
+          figures: [
+            { src: '/assets/projects/pot-clip/cs-painted.jpg?v=cd181494', w: 1000, h: 1500,
+              full: '/assets/projects/pot-clip/cs-painted.jpg?v=cd181494',
+              altKey: 'proj.pot-clip.cs.alt.painted' },
+          ] },
 
         /* FOUR CARDS: one photograph and one line each. Jack, with a
            mock-up: "turn the process part into some cards like this to make
@@ -1179,8 +1195,16 @@ function renderCaseStudy(data) {
        poster is the no-WebGL fallback, and telling someone to drag a
        photograph is worse than saying nothing. */
     if (sec.stage) {
-      out += '<div class="cs-stage-slot">'
+      /* The figures go INSIDE the slot when a staged section has any, so
+         the photograph can sit beside the canvas rather than under the
+         whole band. The hint stays with the stage - it names what the
+         stage does, not what the section contains - and CSS puts it back
+         under the canvas, since renderProjectStage appends #projectStage
+         here afterwards and must not have to know what else is in the
+         slot. */
+      out += '<div class="cs-stage-slot' + (sec.figures ? ' cs-stage-pair' : '') + '">'
         + csText('p', 'cs-stage-hint', 'proj.pot-clip.cs.design.hint')
+        + (sec.figures ? figs(sec.figures) : '')
         + '</div>';
     }
     if (sec.steps) {
@@ -1196,7 +1220,9 @@ function renderCaseStudy(data) {
         + csText('p', 'cs-step-txt', st.text) + '</li>').join('')
         + '</ol>';
     }
-    if (!sec.aside) out += figs(sec.figures);
+    // aside put them beside the prose and stage put them beside the
+    // canvas; either way they are already on the page
+    if (!sec.aside && !sec.stage) out += figs(sec.figures);
     if (sec.after) out += csText('p', 'cs-after', sec.after);
     return out + '</section>';
   };
