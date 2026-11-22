@@ -3299,7 +3299,31 @@ body.is-loading { overflow: hidden; }
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
   text-transform: uppercase; padding: 9px 14px;
 }
-.cs-card-b { font-size: 0.98rem; line-height: 1.55; padding: 18px 16px 20px; margin: 0; }
+/* NO WIDOW ON THE LAST LINE - AND `balance` HERE, WHERE THE BRIEF TAKES
+   `pretty`. Jack: "the solution box has a widow; fix it." At 1320 the
+   Solution card broke to "...so drips fall / back in.", and at 1000 and
+   900 all three cards ended on a two-word fragment.
+   PRETTY WAS TRIED FIRST AND DID NOT FIX IT. Chrome only rebalances the
+   last few lines and only so far; measured at 1320 it left "back in."
+   exactly where it was, and at 1200 it still left "a utensil." and
+   "thin-rimmed pots." hanging. The brief's note explains why a rule beats
+   a non-breaking space, and that reasoning is unchanged - it is the choice
+   of rule that differs.
+   BALANCE IS THE RIGHT ONE FOR A SHORT BLOCK IN A NARROW COLUMN, which is
+   exactly what a card is: two to four lines where the last one is a large
+   fraction of the whole, so an even rag reads as set rather than as
+   spilled. The brief is one wide paragraph at display size where only the
+   last line was wrong, and balancing it would re-rag three lines that are
+   already right.
+   AND IT COSTS NOTHING, which pretty could not promise: balance evens the
+   lines WITHIN the line count normal wrapping already produced, so the
+   row's height is identical to the unbalanced one at every width measured
+   - 174 at 1440, 1320 and 1200, 198 at 1000, 223 at 900. The cards are
+   grid items in one row, so all three take the tallest's height anyway. */
+.cs-card-b {
+  font-size: 0.98rem; line-height: 1.55; padding: 18px 16px 20px; margin: 0;
+  text-wrap: balance;
+}
 
 /* ---- the brief, as the page's one dark band ---------------------------
    --ink and --paper, which is the group of tokens that do NOT invert: the

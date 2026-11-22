@@ -2207,9 +2207,8 @@ carried on — and the brief is the one block early enough to belong there
 and short enough to fit. Measured after: the two columns end within 34px
 of each other. In the column it takes its 36px gap above instead of below,
 since the masthead's own 56px is what separates it from the summary cards.
-**AND IT CARRIES `text-wrap: pretty`, THE ONLY RULE ON THE PAGE THAT
-DOES.** Jack: *"in The brief section dont let there be a hanging widow or
-whatever its called."* English broke "…on a store / **shelf.**" — one word
+**AND IT CARRIES `text-wrap: pretty`.** Jack: *"in The brief section dont
+let there be a hanging widow or whatever its called."* English broke "…on a store / **shelf.**" — one word
 alone under two full lines, in the one block here set at display size on a
 54ch measure, where a short last line shows most.
 **A rule rather than a non-breaking space in the string**, because the
@@ -2226,6 +2225,29 @@ load-bearing now that two photographs are sized from them, and a last-line
 rule that can add a line does not belong under a measurement unless it is
 asked for. Where the property is unsupported the paragraph wraps exactly as
 it does today, so there is nothing to fall back to.
+
+**THE SUMMARY CARDS TAKE `balance`, NOT `pretty`, AND THE DIFFERENCE IS
+THE SHAPE OF THE BLOCK.** Jack: *"the solution box has a widow; fix it."*
+At 1320 the Solution card broke to "…so drips fall / **back in.**", and at
+1000 and 900 all three cards ended on a two-word fragment.
+**`pretty` was tried first and did not fix it**, which is worth knowing
+before reaching for it again: Chrome only rebalances the last few lines
+and only so far — measured at 1320 it left "back in." exactly where it
+was, and at 1200 it still left "a utensil." and "thin-rimmed pots."
+hanging.
+**`balance` is the right rule for a short block in a narrow column**,
+which is what a card is: two to four lines where the last one is a large
+fraction of the whole, so an even rag reads as set rather than as spilled.
+The brief is one wide paragraph at display size where only the last line
+was wrong, and balancing it would re-rag three lines that are already
+right.
+**And it costs no height**, which `pretty` could not promise: `balance`
+evens the lines WITHIN the line count normal wrapping already produced, so
+the row measures the same with it as without — **174px at 1440, 1320 and
+1200, 198 at 1000, 223 at 900.** Measured across those widths plus 390 and
+320 in all four languages, every last line now carries three words or more
+(or a full CJK run), and the three cards stay level with each other
+wherever they are a row.
 **AND IT CARRIES THE CARDS' OWN 3px `--black` FRAME, WHICH ONLY SHOWS IN
 DARK.** Jack: *"on dark mode, the outline on the box for The brief
 disappears or blends in."* He is reading the tokens exactly right —
