@@ -3249,11 +3249,21 @@ body.is-loading { overflow: hidden; }
    tracked caps; this one is a line of prose that happens to be small.
    .contact-statement is the other deliberate exception, for its own
    reason. */
+/* AND IT CARRIES text-wrap: pretty, FOR THE PHONE. The credit line is 62
+   characters now, so at 390 it takes two lines - and it broke
+   "...NABA Milan / 2026" in English and the same way in Japanese, a 29.5px
+   last line under a 336px one. That is the widow Jack has now caught twice,
+   so it is fixed the same way .cs-brief-b fixes it, for the same reason a
+   rule beats a non-breaking space in four strings; see the note there.
+   Measured at 390 it becomes "NABA Milan 2026" (97.9px) in English and
+   "NABAミラノ 2026" (98.9) in Japanese, Spanish and Italian are untouched,
+   and above 1101 every language is one line so there is nothing to do. */
 .cs-eyebrow {
   display: block;
   font-size: 0.75rem; font-weight: 700;
   color: var(--accent-ink);
   margin-bottom: 36px;
+  text-wrap: pretty;
 }
 /* The chip and the <h2> are moved in here by fillProjectDetail rather than
    written twice - the heading is the overlay's aria-labelledby target, so
@@ -3262,9 +3272,27 @@ body.is-loading { overflow: hidden; }
    73.6px a normal line box opens a visible gap between two lines of a
    wrapped title. */
 .cs-title-slot h2 { margin-bottom: 14px; line-height: 0.95; }
+/* THE LEDE SETS ON ONE LINE, AND IT CARRIES NO MEASURE CAP IN ORDER TO.
+   It was max-width: 34ch, which is 453.2px at 1512 against the 562.8 the
+   sentence needs - so "Designed, hand-sculpted, digitally modeled, and
+   tested." broke in half on Jack's own machine. A measure cap is there to
+   stop a PARAGRAPH running past about 75 characters; this is one
+   55-character sentence, so its own length IS the measure and the cap could
+   only ever fold it.
+   Uncapped, the masthead's text column binds, and that column is wide
+   enough at every width where the masthead is two columns: 519.4 at 1101
+   (the narrowest, where the clamp has bottomed out at 17.6px) through 658.5
+   at 1387 and 639.6 at 1728, against 476.2 and 562.8 of English sentence.
+   SPANISH IS THE BINDING LANGUAGE at both ends - 508.4 and 600.9 - so the
+   slack is 11.0px at 1101 and 38.7px at the widest. Below 1101 the lede
+   already had no cap; the stacked rule that said so is gone with the cap it
+   was undoing.
+   If the copy ever grows past the column it wraps there, and the column is
+   46ch at 1101 and 48-49ch above 1387 - inside the 45-75 a measure is for,
+   so the failure mode is a long second line and not a bad one. */
 .cs-lede {
   font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5;
-  max-width: 34ch; margin-bottom: 36px;
+  margin-bottom: 36px;
 }
 /* A 3px rule above and 1px between: the heavy one says where the block
    starts, the light ones only separate rows inside it. Four facts in two
@@ -4025,7 +4053,6 @@ body.is-loading { overflow: hidden; }
      .is-portrait and specificity beats source order - the trap this file
      has now recorded four times. */
   .cs-mast-media .cs-fig.is-portrait { max-width: 440px; }
-  .cs-lede { max-width: none; }
   .cs-main { grid-template-columns: 1fr; gap: 40px; }
   .cs-toc { position: static; border: 3px solid var(--black); padding: 18px 20px; }
   .cs-toc-label { border-bottom-width: 2px; }
@@ -6012,6 +6039,19 @@ html[lang="ja"] .cs-stage-hint {
   letter-spacing: 0;
   line-break: strict;
 }
+/* AND JAPANESE OPTS OUT OF THE EYEBROW'S text-wrap: pretty. Pretty fixes a
+   short last line by re-breaking the lines BEFORE it, and in a script that
+   may break between any two kana "before it" includes the middle of a word:
+   measured at 390 it took the clean "NABAミラノ / 2026" and made it
+   "NABAミラ / ノ 2026", splitting ミラノ across the break. A 44.5px last
+   line is not worth a split proper noun, and the 29.5px one it replaces is
+   four digits in a 12px credit line rather than a word hanging under
+   display type - which is the case the brief's rule was written for.
+   text-wrap: wrap, not auto: it is the shorthand, so it resets the style
+   half to auto, and it is the keyword every engine that has pretty also
+   has. Latin keeps the rule; only this one line in this one script does
+   not. */
+html[lang="ja"] .cs-eyebrow { text-wrap: wrap; }
 /* the hero name is the one string that stays Latin in every language
    ("JACK MURRAY" is a person, not a phrase), so it keeps its own tracking */
 html[lang="ja"] .hero-name { letter-spacing: -0.04em; }

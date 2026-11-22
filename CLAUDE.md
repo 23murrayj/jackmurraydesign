@@ -2315,6 +2315,30 @@ line**; the masthead is 746.1 tall before and after in every language
 problem section and every landmark below are identical. What moved is
 the text column's foot — see the brief note below for the numbers.
 
+**AND IT SETS ON ONE LINE NOW, WHICH TOOK DELETING ITS MEASURE CAP.**
+Jack, looking at it on his own machine: *"the 'Designed, hand-sculpted,
+digitally modeled, and tested.' in the pot clip page should stay in one
+line."* It was folding at 1512 because `.cs-lede` carried
+`max-width: 34ch` — 453.2px against the 562.8 the sentence needs — in a
+column 651.6 wide. **A measure cap is for a PARAGRAPH**, to stop a block
+of prose running past about 75 characters; this is one 55-character
+sentence, so its own length IS the measure and the cap could only ever
+fold it in half.
+Uncapped, the masthead's text column binds, and it is wide enough at
+every width where the masthead is two columns: 519.4 at 1101, 658.5 at
+1387, 639.6 at 1728, against **Spanish, the longest of the four**, at
+508.4 and 600.9 — so the slack is 11.0px at the narrow end and 38.7 at
+the wide. Measured one line in all four languages at 1101, 1200 and
+1512. On a phone it is two, where the measure is 345 and the sentence
+wants 476, and that is unchanged: the stacked rule had already set the
+cap to `none`, and it is gone now with the cap it was undoing.
+**What this moves depends on which half of the masthead is taller, and
+the page has both regimes.** At 1512 the poster binds, so every landmark
+in all four languages is identical to the committed build to the pixel.
+At 1101 the TEXT binds — the masthead is 605 there against 741.5 at
+1512 — so losing a line takes 26.4px off the masthead and pulls
+everything below it up by the same, in every language.
+
 **THE EYEBROW IS A CREDIT LINE UNDER THE TITLE, NOT A LABEL OVER IT.**
 Jack: *"move the red eyebrow to under the title and have it read as A
 product concept for Alessi, NABA Milan 2026."* Over the title it said
@@ -2345,13 +2369,47 @@ that Japanese list for its `line-break: strict` half, which still decides
 where a Japanese sentence may break.
 **So the page now has two kinds of small coral line and that is correct**:
 the meta keys and the card headers are LABELS and stay tracked caps; this
-one is a line of prose that happens to be small. Measured, the ink went
-from about 380px to **269.8** in English — one line in all four languages
-at 1440 and 390, two in es/it/ja at 320, and no overflow anywhere.
+one is a line of prose that happens to be small. Measured at the time,
+the ink went from about 380px to **269.8** in English — one line in all
+four languages at 1440 and 390, two in es/it/ja at 320, and no overflow
+anywhere. Those numbers are superseded by the rewrite below.
 **"Alessi" in it is not a client claim**: the disclaimer that says the
 project is not affiliated is unchanged at the foot of the page, and the
 title and the URL still carry no brand name, which is what the safety
 constraint actually asks for.
+
+**AND IT NAMES A STYLE RATHER THAN A CLIENT.** Jack: *"instead of 'A
+product concept for Alessi, NABA Milan 2026', change it to 'A product
+concept developed in Alessi's style, NABA Milan 2026'."* **It closes a
+gap rather than opening one.** The write-up has always said the brief
+was to design kitchenware *"in the spirit of Alessi"*, and until now the
+one line on the page that named the brand said "for Alessi" — a
+preposition a reader can take as a commission. The disclaimer, the title
+and the URL are all unchanged; this is the opening line no longer
+needing them.
+It is 62 characters where it was 44, so the ink goes **269.8 → 368.6**
+in English (431.2 es, 420 it, 383 ja) — still one line in all four
+languages at 1101, 1200 and 1512, since the column is 519.4 even at its
+narrowest. **It is two lines on a phone**, which is new, and costs 15.5px
+of masthead at 390.
+**And two lines is what put a widow in it.** English and Japanese both
+broke with "2026" alone on a 29.5px second line — the widow Jack has
+caught twice elsewhere — so `.cs-eyebrow` takes `text-wrap: pretty`,
+the same answer `.cs-brief-b` uses, for the same reason a rule beats a
+non-breaking space in four strings. Measured at 390: English becomes
+"Milan 2026" (63.8), Spanish "NABA Milán 2026" (97.9), Italian
+"Milano 2026" (71.1).
+**JAPANESE OPTS OUT, AND THAT IS THE HALF WORTH READING.** Pretty fixes a
+short last line by re-breaking the lines BEFORE it, and in a script that
+may break between any two kana, "before it" includes the middle of a
+word: at 390 it took the clean "NABAミラノ / 2026" and made it
+"NABAミラ / ノ 2026", splitting ミラノ across the break. A split proper
+noun is worse than four digits alone in a 12px credit line, so
+`html[lang="ja"] .cs-eyebrow { text-wrap: wrap; }` takes the rule back
+off for that one script — `wrap` and not `auto` because the shorthand
+resets the style half, and because every engine that has `pretty` has
+`wrap`. **Measure what a last-line rule does to Japanese before shipping
+it**: it is a different failure there, not a smaller one.
 
 **THE THREE SUMMARY CARDS ARE PROBLEM / SOLUTION / OUTCOME, AND THE
 OUTCOME IS DELIVERABLES NOW.** Jack rewrote all three on 2026-11-22. The
@@ -2359,10 +2417,16 @@ first two got longer and more specific — the problem names the small
 kitchen it happens in, the solution says what the clips do rather than
 only where they sit — and the third stopped being results and became what
 the project produced: *"A sculpted appearance model, an interactive 3D
-model, and a three-poster campaign, with the core idea proven on
+model, and a three-poster campaign, with the core idea working on
 thin-rimmed pots."* That last clause is the only claim in it, and it is
 the one Testing's Finding supports word for word, so the card and the
-section cannot drift apart. **The `~50%` left the page with it** — see the
+section cannot drift apart.
+**It read "proven" until 2026-11-23**, when Jack changed the one word,
+and it is the more honest verb for exactly that reason: the Finding says
+the rim *decided whether it works* and that on thin rims it held, which
+is a thing working rather than a thing proved. One word and no reflow —
+the cards measure 147.7 at 1512 and 171.3 at 1101 in English before and
+after, and the other three languages are unchanged at both widths too. **The `~50%` left the page with it** — see the
 Testing-figures note above for where the half still lives. The cards grew
 from **126px to 150** in English at 1440 (measured by putting the old
 strings back into the live nodes) and the three stay level with each
@@ -4130,7 +4194,11 @@ fonts about 45KB.
   also in the markup fallback and the JSON-LD description** — that is what
   keeps a summary from inventing a client relationship. Do not shorten it,
   do not move it to small print, and do not put "Alessi" in the project
-  title or the URL. If more of this work is ever added, the same paragraph
+  title or the URL. **The eyebrow under the title says "developed in
+  Alessi's style" as of 2026-11-23**, not "for Alessi" — that preposition
+  was the one place on the page a reader could take as a commission, and
+  the new wording matches what the write-up has always said ("in the
+  spirit of Alessi"). Keep it that way. If more of this work is ever added, the same paragraph
   comes with it.
   **It now exists twice**, because the case-study layout hides
   `.project-body`: `proj.pot-clip.cs.disclaimer` is the on-page copy and
