@@ -3663,6 +3663,48 @@ body.is-loading { overflow: hidden; }
   margin: 26px 0 0; max-width: 46ch;
 }
 
+/* THE DRIPPING SPATULA SITS IN THE PROBLEM'S RIGHT MARGIN. Jack drew it
+   and asked for it "to the right inside of The problem section"; the
+   reasoning for which section and why it is Jack's own file is in the
+   the art entry in script.js.
+   IT IS PAINTED, NOT PLACED. The png is a flat silhouette with 83% of it
+   transparent and the spatula's own slots transparent too, so its ALPHA is
+   the drawing and the colour here is var(--black) - #1A1A18 in light,
+   which is the exact ink Jack drew it in, and #F4F2F5 in dark. One file,
+   right in both themes, where an <img> would be a near-black drawing on a
+   near-black ground the moment the page flips. The url arrives as --art
+   from script.js so tools/asset-rev.js can hash it; a url() written here
+   could never carry a ?v=.
+   THE MARGIN IT SITS IN IS THE 66ch MEASURE'S LEFTOVER, and the width is
+   that leftover rather than a number of its own: the prose caps at 690.3
+   and the pull quote at 711.5, so 100% - 734 is the gap past the wider
+   of the two with 22.5px of air in front of the drawing. At 1440 the
+   column is 924 and that comes to exactly 190; the min() is the guard for
+   a column wider than this page has today.
+   AND IT IS DESKTOP-ONLY, which is honest rather than lazy. The column is
+   840 at 1280 and the drawing 106 wide; a step narrower and it is a speck,
+   and at 1101 the prose takes the whole column and there is no margin at
+   all. Decoration that would have to shrink past reading belongs off the
+   page, the same call the hero field makes when it thins on a phone.
+   Bottom-aligned, so it ends on the quote's last line; the section has no
+   bottom padding, so bottom: 0 is that line. 190 x 333.5 against a
+   section 391.7 tall in English and 474.9 in Italian - the tallest it ever
+   draws still clears the heading above it. */
+.cs-has-art { position: relative; }
+.cs-art { display: none; }
+@media (min-width: 1280px) {
+  .cs-art {
+    display: block; position: absolute; right: 0; bottom: 0;
+    width: min(190px, calc(100% - 734px));
+    aspect-ratio: var(--art-ar);
+    background: var(--black);
+    -webkit-mask: var(--art) no-repeat center / contain;
+    mask: var(--art) no-repeat center / contain;
+    /* the section is not a drop target and the drawing is not a control */
+    pointer-events: none;
+  }
+}
+
 /* ---- the turntable's slot --------------------------------------------
    #projectStage is MOVED in here by renderProjectStage rather than rebuilt,
    so the canvas, the poster and the still fallback are all the same ones.

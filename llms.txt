@@ -32,7 +32,7 @@ Seven case studies, all real, none speculative or invented:
   Seven weeks of review with Caterpillar's UX team, two rounds of iteration,
   usability testing with five participants, and an on-site visit in Peoria.
   This is the strongest evidence of process on the site.
-- **Pot Clip Utensil Rest** — a product design exercise at NABA in Milan:
+- **Pot Clip** — a product design exercise at NABA in Milan:
   a pair of movable rests that clip to a pot rim and hold a utensil above the
   pot, so drips fall back in and the counter stays clean. Sketched, modelled
   in Blender, then built as a physical appearance model sculpted from foam and

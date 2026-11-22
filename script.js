@@ -217,14 +217,14 @@ const projectData = {
          altKey, because pot-clip's positional alt.N keys went with the
        masonry wall and nothing replaced them for the card - so the one
        image representing this project in the gallery had been falling
-       through to the generic "Photo 1 from POT CLIP UTENSIL REST". */
+       through to the generic "Photo 1 from POT CLIP". */
     bg: '#7B1610',
     thumb: { src: '/assets/projects/pot-clip/thumb.jpg?v=51f18351', w: 1400, h: 1050,
       small: '/assets/projects/pot-clip/thumb-800.jpg?v=03bb7618',
       altKey: 'proj.pot-clip.alt.thumb' },
     category: 'PRODUCT',
-    title: 'POT CLIP UTENSIL REST',
-    desc: "Movable rests that clip to a pot rim in pairs and keep the spoon out of the pot.",
+    title: 'POT CLIP',
+    desc: "Designed, hand-sculpted, digitally modeled, and tested.",
     type: 'Product Design',
     year: '2026',
     role: 'Design & Fabrication',
@@ -334,8 +334,33 @@ const projectData = {
               altKey: 'proj.pot-clip.cs.alt.store' },
           ] },
 
+        /* THE DRIPPING SPATULA IS DRAWN IN THIS SECTION'S RIGHT MARGIN.
+           Jack drew it ("Logo Inner Line Update.png") and asked for it
+           "to the right inside of The problem section". It belongs here
+           rather than anywhere else on the page: a utensil with a drip
+           coming off it IS the second item in the list, and it is the
+           same line-art family as the four utensils drawn around the
+           render on the gallery card - so the card and the section it
+           opens are drawn in one hand.
+             IT IS A MASK, NOT A PICTURE. The file is a flat silhouette
+           whose ink is #1A1A18 - which is --black's own light value, so
+           Jack drew it in the page's ink without being asked - and 83% of
+           it is fully transparent with the spatula's slots transparent
+           too. So the alpha channel IS the drawing, and CSS paints it
+           with var(--black): one file, correct in both themes, where an
+           <img> would have been a near-black drawing on a near-black
+           ground in dark mode. See .cs-art in styles.css.
+             THE PATH IS HANDED TO CSS RATHER THAN WRITTEN THERE, the same
+           shape as --fig-ar above. tools/asset-rev.js only rewrites ?v=
+           hashes in script.js, so a url() living in the stylesheet could
+           never carry one - and this is a live path under /assets/, which
+           is an hour of freshness and a WEEK of stale-while-revalidate.
+             Decorative, so aria-hidden and no alt text: it restates the
+           Dripping item beside it, and a screen reader reading "spatula
+           with a drip" there is the list said twice. */
         { id: 'problem', title: 'proj.pot-clip.cs.problem.t',
           html: 'proj.pot-clip.cs.problem.b',
+          art: { src: '/assets/projects/pot-clip/cs-drip.png?v=2540d5fe', w: 380, h: 667 },
           // the one line the whole project answers, set as the page's only
           // pull quote so it reads as the hinge rather than a fourth bullet
           quote: 'proj.pot-clip.cs.problem.hmw' },
@@ -1279,7 +1304,8 @@ function renderCaseStudy(data) {
        above it belongs to .cs-section, the contents links scroll to the
        section, and the heading order is unchanged. */
     const head = csText('h3', 'cs-h', sec.title);
-    let out = '<section class="cs-section" id="cs-' + escapeAttr(sec.id)
+    let out = '<section class="cs-section' + (sec.art ? ' cs-has-art' : '')
+      + '" id="cs-' + escapeAttr(sec.id)
       + '" tabindex="-1">' + (sec.asideTop ? '' : head);
     /* `aside` puts the figures BESIDE the prose instead of under it. Two
        sections want it. Research is four definition pairs and so the
@@ -1344,6 +1370,15 @@ function renderCaseStudy(data) {
     // canvas; either way they are already on the page
     if (!sec.aside && !sec.stage) out += figs(sec.figures);
     if (sec.textBelow) out += prose;
+    /* LAST IN THE SECTION, and that is document order rather than
+       layout: it is absolutely positioned in the margin, so nothing moves
+       wherever it is written, and the one thing its position costs is
+       what a parser reads first. Same reasoning as .chaos-work-cover
+       being the last child of #work. The element is empty - the drawing
+       is a mask on its background - so there is nothing in it to read. */
+    if (sec.art) out += '<span class="cs-art" aria-hidden="true" style="'
+      + "--art: url('" + escapeAttr(sec.art.src) + "'); --art-ar: "
+      + sec.art.w + ' / ' + sec.art.h + '"></span>';
     return out + '</section>';
   };
 
