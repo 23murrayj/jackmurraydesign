@@ -244,14 +244,20 @@ const projectData = {
         // the storefront sits in the column beside the notes; the sketch
         // spread went down to the first process card, which is where the
         // sketching actually happens in the story
+        /* A NEW FILENAME, NOT NEW BYTES AT THE OLD ONE. vercel.json gives
+           everything under /assets/ an hour of freshness and a week of
+           stale-while-revalidate, so replacing a photograph in place shows
+           returning visitors the old one for up to a week. Harmless for a
+           re-crop, which only looks slightly different; this is a different
+           photograph, taller on purpose (9:16 as shot, against the old 4:5)
+           so the column beside the notes is about as deep as they are. */
         { id: 'research', title: 'proj.pot-clip.cs.research.t',
           html: 'proj.pot-clip.cs.research.grid', aside: true,
           figures: [
-            { src: '/assets/projects/pot-clip/cs-store.jpg', w: 1200, h: 1500,
-              full: '/assets/projects/pot-clip/cs-store.jpg',
+            { src: '/assets/projects/pot-clip/cs-storefront.jpg', w: 1000, h: 1778,
+              full: '/assets/projects/pot-clip/cs-storefront.jpg',
               altKey: 'proj.pot-clip.cs.alt.store' },
-          ],
-          after: 'proj.pot-clip.cs.research.close' },
+          ] },
 
         { id: 'problem', title: 'proj.pot-clip.cs.problem.t',
           html: 'proj.pot-clip.cs.problem.b',
@@ -262,23 +268,19 @@ const projectData = {
         // the turntable's band. `stage: true` relocates #projectStage into
         // this section rather than duplicating it - there is one canvas and
         // one poster, and renderProjectStage owns both.
-        /* The dimensioned page sits with the DESIGN rather than with the
-           process, and it moved here when the process became four cards.
-           It is the orthographic views and the millimetres - 26 / 45 / 31 /
-           19 - so it documents what the thing IS, which is this section,
-           where in a list of making-of photographs it was the one that was
-           not a photograph of making anything.
-             Shot in portrait with the page turned, so it arrived on its side
-           and stayed that way for a release. Rotated 90 degrees anticlockwise
-           and baked to orientation 1 - see the double-rotation gotcha in
-           assets/README.md for why the EXIF tag is not the way to do it. */
+        /* NO FIGURE HERE. The dimensioned notebook page sat under the
+           turntable for two commits and Jack cut it: "right above the
+           Process area there is a photo of paper, can we take that out?"
+           He is right about what it was doing - the section already ends in
+           a 3D object you can turn, which is the most complete answer to
+           "what is it" this page has, and a drawing of the same object
+           underneath that is a second answer to a question already
+           answered. It also put a photograph of a notebook page directly
+           above the first process card, which is a photograph of a notebook
+           page. The file stays in assets/; the alt text is in the restore
+           note. */
         { id: 'design', title: 'proj.pot-clip.cs.design.t',
-          html: 'proj.pot-clip.cs.design.b', stage: true,
-          figures: [
-            { src: '/assets/projects/pot-clip/04-measurements.jpg', w: 1399, h: 779,
-              full: '/assets/projects/pot-clip/04-measurements-full.jpg',
-              altKey: 'proj.pot-clip.alt.4' },
-          ] },
+          html: 'proj.pot-clip.cs.design.b', stage: true },
 
         /* FOUR CARDS: one photograph and one line each. Jack, with a
            mock-up: "turn the process part into some cards like this to make
@@ -308,20 +310,28 @@ const projectData = {
            argument the figure rows already lost. */
         { id: 'process', title: 'proj.pot-clip.cs.process.t',
           steps: [
-            /* TWO PHOTOGRAPHS HERE, AND THEY EVEN THE ROW UP. The sketch
-               spread came down from Research, where it was the second of
-               two figures; stacked under the paper profiles it takes this
-               card to about the height of the foam model beside it, which
-               is what the 2x2 was missing - one card was 344 against 672.
-               The earlier note about two stacked portraits blowing a card
-               out still holds: these are two LANDSCAPES, 249 and 332 tall
-               at 442 wide, which is why it works here and did not there. */
+            /* TWO PHOTOGRAPHS, CROPPED TO ADD UP TO THE ONE BESIDE THEM.
+               Jack: "crop the heights of the Card 1 photos so that they are
+               the same height as the photo next to it." Card 2 is a single
+               4:5 portrait, 551px of image at a 441px column; this pair owes
+               the same, so after a 12px gap and two 3px borders a side they
+               owe 533 between them. The sketch spread takes 345 and the
+               paper profiles 188, and those two numbers are the aspect
+               ratios below - 1400x1096 is 1.277:1 and 1400x596 is 2.349:1.
+               Re-cropped from the ORIGINALS rather than from the exports,
+               so nothing is resampled twice.
+                 The profiles lost height and nothing else: the three paper
+               pieces occupy the middle 48% of that frame and the rest is
+               cutting mat. The sketch spread was cropped in on every side -
+               "so it looks more zoomed in and we just see the paper" - to
+               just inside the notebook page, which drops the dark desk it
+               was lying on and keeps the title and both questions. */
             { label: 'proj.pot-clip.cs.process.1',
               text: 'proj.pot-clip.cs.process.1b', figures: [
-              { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
+              { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 596,
                 full: '/assets/projects/pot-clip/cs-profiles.jpg',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
-              { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1600, h: 1200,
+              { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1400, h: 1096,
                 full: '/assets/projects/pot-clip/cs-sketches.jpg',
                 altKey: 'proj.pot-clip.cs.alt.sketches' },
             ] },

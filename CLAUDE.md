@@ -1717,14 +1717,33 @@ something the panel does not.
 PROVES WHY.** Step 2 first kept two — the foam and the spray booth — and
 two stacked PORTRAITS in a 215px column made that card **688px tall against
 175** for the other three, so the booth shot came out (still in `assets/`,
-alt text in the restore note). Card 1 now carries two and it is fine,
-because they are two LANDSCAPES: 249 and 332 tall at 442 wide, which takes
-it to **692 against the foam model's 671** — the thing the 2×2 was missing,
-since those two were 344 and 672. **The shape of the photograph decides
-this, not the count.**
-**Nothing is cropped to even a row up** — a square or 4:3 tile takes 25–44%
-off the width of a 1400×788 source, and on the paper-profiles shot that is
-the outer two profiles.
+alt text in the restore note). Card 1 carries two and it is fine, because
+they are two LANDSCAPES. **The shape of the photograph decides this, not the
+count.**
+**AND CARD 1'S PAIR IS CROPPED TO ADD UP TO THE ONE BESIDE IT.** Jack:
+*"crop the heights of the Card 1 photos so that they are the same height as
+the photo next to it."* Card 2 is a single 4:5 portrait, 551px of image at a
+441px column, so with a 12px gap and two 3px borders a side the pair owes
+**533 between them — 345 for the sketch spread and 188 for the paper
+profiles**. Those two numbers are the aspect ratios the files carry:
+**1400×1096 is 1.277:1 and 1400×596 is 2.349:1**. Measured, the stack lands
+within **7px of card 2 at every width from 320 to 1440**, because both sides
+scale with the column and only the 12px gap does not.
+**Re-cropped from the ORIGINALS, not from the exports** — the files in
+`assets/` are already one downscale deep and cropping those resamples them
+twice.
+**What each crop took.** The profiles lost height and nothing else: the
+three paper pieces occupy the middle 48% of that frame and the rest is
+cutting mat. The sketch spread came in on every side, *"so it looks more
+zoomed in and we just see the paper"* — to just inside the notebook page,
+which drops the dark desk it was lying on and keeps the title and both
+handwritten questions. **The bottom question sits close to the edge**, so
+the window is slid 1% of the frame down from centre; take any more height
+off the bottom and it goes.
+**Cropping to even a row up is still wrong as a general move** — a square or
+4:3 TILE takes 25–44% off the WIDTH of a 1400×788 source, and on the
+paper-profiles shot that is the outer two profiles. What is fine here is
+cropping each photograph to a chosen ratio in the direction it has room.
 The number is a CSS counter (`decimal-leading-zero`), not part of the
 string: it cannot drift from the order and there is nothing to translate
 four times. **It carries no `font-weight`**, and it did for one commit —
@@ -1740,10 +1759,15 @@ later in the file, so an equal-weight override lost and the foam shot drew
 394px inside a 448px card — narrower than the card holding it, which reads
 as a mistake rather than a choice.
 
-**The dimensioned notebook page moved to "The design"** when that happened.
-It is the orthographic views and the millimetres, so it documents what the
-thing IS; in a row of making-of photographs it was the one that was not a
-photograph of making anything.
+**The dimensioned notebook page moved to "The design"** when the cards
+arrived, and then **came out of the page entirely**. Jack: *"right above the
+Process area there is a photo of paper, can we take that out?"* He is right
+about what it was doing. The section already ends on a 3D object you can
+turn, which is the most complete answer to "what is it" this page has, and a
+drawing of the same object underneath is a second answer to a question
+already answered — sitting directly above a process card that is itself a
+photograph of a notebook page. The files stay in `assets/`;
+`proj.pot-clip.alt.4` and the rest are in the restore note.
 
 **RESEARCH PUTS ITS PHOTOGRAPH BESIDE ITS PROSE**, off an `aside` flag and
 `.cs-split`. Jack: *"move the alessi photo to the right of the research
@@ -1752,7 +1776,17 @@ so it is the tallest column of plain text on the page, and the storefront
 was a portrait sitting under all of it doing nothing for the shape. The
 sketch spread that used to sit next to it went down to process card 1,
 which is both where sketching belongs in the story and what evens that row
-up.
+up. **The closing line went too** — *"I explored five directions, from an
+S-hook to an egg cup…"* — so the section now ends on the notes themselves.
+**The photograph is `cs-storefront`, and the new filename is the point.**
+It is a different, taller frame of the same shopfront (9:16 as shot, against
+the old 4:5), which draws 340×600 beside 566px of notes. `vercel.json` gives
+everything under `/assets/` an hour of freshness and a **week** of
+stale-while-revalidate, so replacing a photograph in place shows returning
+visitors the old one for up to a week. For a re-crop that is a shrug; for a
+different picture it is wrong, so it got its own path and `cs-store.*` was
+deleted. (The two re-crops above DID reuse their paths, deliberately: a
+stale crop is briefly a slightly different crop, and it heals itself.)
 **A flag, not a rule**: it only pays where the prose is tall enough to stand
 a column beside it. Under a short paragraph the same photograph is a small
 picture in a wide gap.
