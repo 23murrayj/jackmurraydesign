@@ -68,7 +68,7 @@ refresh() {
   if [ -n "$dirty_before" ]; then
     cat >&2 <<MSG
 
-pre-commit: $what was out of date in $file, so it has been
+pre-commit: $file is out of date ($what), so it has been
             regenerated - but $file had other unstaged edits, so
             nothing was staged for you. Nothing is lost; your edits are
             still there.
@@ -81,7 +81,7 @@ MSG
   fi
 
   git add "$file"
-  echo "pre-commit: $what refreshed in $file, and staged."
+  echo "pre-commit: refreshed $what in $file, and staged it."
 }
 
 refresh tools/write-fallback.js index.html "the project list"
