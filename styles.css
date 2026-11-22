@@ -3299,30 +3299,37 @@ body.is-loading { overflow: hidden; }
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
   text-transform: uppercase; padding: 9px 14px;
 }
-/* NO WIDOW ON THE LAST LINE - AND `balance` HERE, WHERE THE BRIEF TAKES
-   `pretty`. Jack: "the solution box has a widow; fix it." At 1320 the
-   Solution card broke to "...so drips fall / back in.", and at 1000 and
-   900 all three cards ended on a two-word fragment.
-   PRETTY WAS TRIED FIRST AND DID NOT FIX IT. Chrome only rebalances the
-   last few lines and only so far; measured at 1320 it left "back in."
-   exactly where it was, and at 1200 it still left "a utensil." and
-   "thin-rimmed pots." hanging. The brief's note explains why a rule beats
-   a non-breaking space, and that reasoning is unchanged - it is the choice
-   of rule that differs.
-   BALANCE IS THE RIGHT ONE FOR A SHORT BLOCK IN A NARROW COLUMN, which is
-   exactly what a card is: two to four lines where the last one is a large
-   fraction of the whole, so an even rag reads as set rather than as
-   spilled. The brief is one wide paragraph at display size where only the
-   last line was wrong, and balancing it would re-rag three lines that are
-   already right.
-   AND IT COSTS NOTHING, which pretty could not promise: balance evens the
-   lines WITHIN the line count normal wrapping already produced, so the
-   row's height is identical to the unbalanced one at every width measured
-   - 174 at 1440, 1320 and 1200, 198 at 1000, 223 at 900. The cards are
-   grid items in one row, so all three take the tallest's height anyway. */
+/* THE CARD IS SIZED SO ITS LONGEST SENTENCE HOLDS TWO LINES, and that is
+   the fix for both complaints about this block.
+   FIRST `balance`, WHICH SOLVED THE WIDOW AND BROKE THE SHAPE. It evens
+   the lines within the line count, so at 1320 the Solution card went from
+   two full lines and "back in." to three lines filling 73/66/65% of the
+   box - no widow, and a narrow column of text inside a bordered card with
+   a quarter of it empty down the right. Jack: "the solution box seems far
+   off now with the text." On unbordered prose nobody would see it; the
+   border is what makes the unused measure a visible shape.
+   THE CAUSE IS 1.5%, NOT THE WRAP RULE. That sentence needs about 700px
+   of line; at 1440 the card gives it 2 x 361 and it sets in two full
+   lines, and at 1320 it gives 2 x 345 and misses - so the text spills
+   into a third line that is 2.15 lines' worth of content however it is
+   distributed. Every wrap rule is then choosing where to put the same
+   hole: `pretty` puts it all at the end (a 17% stub), `balance` spreads it
+   across every line.
+   SO THE MEASURE BUYS THE 1.5% BACK: 0.95rem instead of 0.98 and 14px of
+   side padding instead of 16, together about 5% more line. Measured, the
+   Solution card sets two full lines at 98/101% at 1320 where it was
+   73/66/65, and 1440 is unchanged and still full. The 14 also puts the
+   body on the same left edge as .cs-card-t above it, which was 2px out.
+   AND `pretty` UNDERNEATH, because with the text fitting again the only
+   job left is the tail. Between about 1150 and 1280 the sentence still
+   lands just over two lines and the third is a stub; that band is the
+   honest residue of a fixed string in a fluid column, and the answer
+   there would be a breakpoint for something nobody can name. The brief
+   keeps `pretty` for its own reason - one wide paragraph at display size
+   where only the last line was ever wrong. */
 .cs-card-b {
-  font-size: 0.98rem; line-height: 1.55; padding: 18px 16px 20px; margin: 0;
-  text-wrap: balance;
+  font-size: 0.95rem; line-height: 1.55; padding: 18px 14px 20px; margin: 0;
+  text-wrap: pretty;
 }
 
 /* ---- the brief, as the page's one dark band ---------------------------
@@ -3831,6 +3838,26 @@ body.is-loading { overflow: hidden; }
 .cs-stage-slot .project-stage {
   border: 3px solid var(--accent);
   background: var(--white);
+}
+/* AND IN DARK IT GLOWS, like everything else accent-coloured there. Jack:
+   "in dark mode, can you make the 3D model box glow a little bit like the
+   neon?" This is the brief's own split - light is refined, dark is
+   experimental - and the page already answers it the same way in three
+   places: the hero CTA, the badge mark and the seam ring all bloom in
+   dark and sit flat in light.
+   THE SAME SHAPE AS .btn-block's: its alpha, 34%, and a slightly wider
+   blur, 30px against 26. Same alpha because that is the strength Jack
+   already accepted on the CTA and the one that reads as neon rather than
+   as a drawn line; wider because this is a 546px frame where that is a
+   226px control, and a blur tuned to a small object draws a rim around a
+   big one instead of a halo. 26% at 34px was tried first and came out
+   closer to a smudge than a glow.
+   color-mix on --accent rather than a literal, so it tracks the token the
+   border already uses. No second declaration in light: a bloom on a coral
+   frame over sand is the gradient this page does not do, and the two
+   modes differing in kind is the brief. */
+:root[data-theme="dark"] .cs-stage-slot .project-stage {
+  box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 34%, transparent);
 }
 
 /* ---- the process, as four cards in a 2x2 -------------------------------

@@ -180,19 +180,35 @@ const projectData = {
   },
 
   'pot-clip': {
-    /* THE CARD IS THE RED POSTER, WHOLE. Jack: "for the project card in the
-       main page, change the image to 20.jpg and let's see how that looks."
-         The card slot is 4:3 and the poster is 1414x2000, so a crop can hold
-       the object or the ALESSI / NABA lockup and not both. It is composited
-       instead: the poster scaled to the full height of a 1280x960 canvas
-       filled with #7C1611, which is the poster's own ground sampled at all
-       four corners. The bars are therefore the same red as the picture and
-       nothing reads as letterboxed - the card is one red field with the
-       object in it, and no part of the poster is cut.
-         It is also lighter than the photograph it replaces, 37K against
-       198K, because most of it is flat colour.
-         bg is that red for the same reason it was the photograph's grey:
-       the card must not flash a colour the image then contradicts.
+    /* THE CARD IS A PIECE JACK MADE FOR THE SLOT. "Change the project card
+       to newAlessicard.png" - the render on its own red ground with four
+       drawn utensils around it, 1400x1050, which is the 4:3 and the exact
+       export size this project's card spec asks for. So there is no crop
+       and no composite this time: the file lands in the slot as it is.
+         IT REPLACES A COMPOSITE OF THE POSTER, which was the previous
+       answer to the same slot - the 1414x2000 poster scaled onto a red
+       canvas, because a 4:3 crop of it could hold the object or the
+       ALESSI / NABA lockup and not both. A piece drawn for the shape beats
+       a piece fitted to it.
+         IT KEEPS CLEAR OF THE TWO THINGS THAT EAT A CARD'S EDGES. The
+       .card-media::after badge is a 46x46 square pinned top-right with two
+       hard black rules, and the hover zoom scales the image 1.04 - about
+       2% off every side. The top-right corner of this one is empty ground
+       and the nearest drawing, the spoon, sits inside 88% of the width, so
+       neither reaches anything.
+         bg is #7B1610, the ground sampled from the file's own corner
+       pixels. It was #7C1611 for the composite - one step away, the same
+       red through two exports - and it is kept current for a reason that
+       does not currently apply: renderGallery writes it onto the card as
+       --bg, and NOTHING READS THAT PROPERTY. Checked across styles.css,
+       script.js and index.html: one write, no var(--bg) anywhere. So `bg`
+       is inert today. It is left correct rather than left stale because
+       the thing it was for - the card not flashing a colour the image
+       then contradicts - is still worth having, and the fix is one rule
+       on .card-media rather than six values to re-derive.
+         80K jpeg / 59K webp at 43.7 and 42.6 dB against a q98 reference.
+       Bigger than the 37K composite, which was mostly flat colour; this
+       one carries a full-frame render.
          ?v= BECAUSE THE BYTES CHANGED AT A LIVE PATH. /assets/ gets an hour
        of freshness and a week of stale-while-revalidate, so without it a
        returning visitor keeps the old bowl photograph for days. tools/
@@ -202,9 +218,9 @@ const projectData = {
        masonry wall and nothing replaced them for the card - so the one
        image representing this project in the gallery had been falling
        through to the generic "Photo 1 from POT CLIP UTENSIL REST". */
-    bg: '#7C1611',
-    thumb: { src: '/assets/projects/pot-clip/thumb.jpg?v=8c30b2db', w: 1280, h: 960,
-      small: '/assets/projects/pot-clip/thumb-800.jpg?v=516b3c30',
+    bg: '#7B1610',
+    thumb: { src: '/assets/projects/pot-clip/thumb.jpg?v=51f18351', w: 1400, h: 1050,
+      small: '/assets/projects/pot-clip/thumb-800.jpg?v=03bb7618',
       altKey: 'proj.pot-clip.alt.thumb' },
     category: 'PRODUCT',
     title: 'POT CLIP UTENSIL REST',

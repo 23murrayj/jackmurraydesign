@@ -1694,6 +1694,20 @@ themes and, as it turned out, quieter than the job needed).
 Same 3px as `.cs-fig` — the weight matches its neighbour and only the
 colour differs. **Do not give it the hard rule**; that is the thing the
 viewer note is about.
+**AND IN DARK IT GLOWS.** Jack: *"in dark mode, can you make the 3D model
+box glow a little bit like the neon?"* That is the brief's own split —
+light refined, dark experimental — and the page already answers it the
+same way in three places: the hero CTA, the badge mark and the seam ring
+all bloom in dark and sit flat in light.
+**`.btn-block`'s alpha and a slightly wider blur**: `0 0 30px` at **34%**
+against its 26px at 34%. The same alpha because that is the strength Jack
+already accepted on the CTA; wider because this is a 546px frame where
+that is a 226px control, and a blur tuned to a small object draws a rim
+round a big one instead of a halo. 26% at 34px was tried first and came
+out closer to a smudge than a glow. `color-mix` on `--accent`, so it
+tracks the token the border already uses, and **no light-mode
+declaration** — a bloom on a coral frame over sand is the gradient this
+page does not do.
 
 **AND THE DRAG LABEL IS INSIDE IT NOW, 14px from the top-left corner.**
 Jack: *"move the drag to rotate text to the top left inside corner of the
@@ -2269,28 +2283,35 @@ rule that can add a line does not belong under a measurement unless it is
 asked for. Where the property is unsupported the paragraph wraps exactly as
 it does today, so there is nothing to fall back to.
 
-**THE SUMMARY CARDS TAKE `balance`, NOT `pretty`, AND THE DIFFERENCE IS
-THE SHAPE OF THE BLOCK.** Jack: *"the solution box has a widow; fix it."*
-At 1320 the Solution card broke to "…so drips fall / **back in.**", and at
-1000 and 900 all three cards ended on a two-word fragment.
-**`pretty` was tried first and did not fix it**, which is worth knowing
-before reaching for it again: Chrome only rebalances the last few lines
-and only so far — measured at 1320 it left "back in." exactly where it
-was, and at 1200 it still left "a utensil." and "thin-rimmed pots."
-hanging.
-**`balance` is the right rule for a short block in a narrow column**,
-which is what a card is: two to four lines where the last one is a large
-fraction of the whole, so an even rag reads as set rather than as spilled.
-The brief is one wide paragraph at display size where only the last line
-was wrong, and balancing it would re-rag three lines that are already
-right.
-**And it costs no height**, which `pretty` could not promise: `balance`
-evens the lines WITHIN the line count normal wrapping already produced, so
-the row measures the same with it as without — **174px at 1440, 1320 and
-1200, 198 at 1000, 223 at 900.** Measured across those widths plus 390 and
-320 in all four languages, every last line now carries three words or more
-(or a full CJK run), and the three cards stay level with each other
-wherever they are a row.
+**THE SUMMARY CARDS ARE SIZED SO THEIR LONGEST SENTENCE HOLDS TWO LINES,
+AND THAT IS THE FIX FOR BOTH COMPLAINTS ABOUT THIS BLOCK.**
+**First `balance`, which solved the widow and broke the shape.** Jack:
+*"the solution box has a widow; fix it."* At 1320 the Solution card was
+breaking to "…so drips fall / **back in.**", and `balance` evens the lines
+within the line count, so it became three lines filling **73/66/65%** of
+the box — no widow, and a narrow column of text inside a bordered card
+with a quarter of it empty down the right. Jack again: *"the solution box
+seems far off now with the text."* On unbordered prose nobody would see
+it; **the border is what makes unused measure a visible shape.**
+**The cause is 1.5%, not the wrap rule.** That sentence needs about 700px
+of line. At 1440 the card gives it 2 × 361 and it sets in two full lines;
+at 1320 it gives 2 × 345 and misses — so it spills into a third line that
+is 2.15 lines' worth of content however it is distributed. Every wrap rule
+is then only choosing where to put the same hole: `pretty` puts it all at
+the end (a 17% stub), `balance` spreads it across every line.
+**So the measure buys the 1.5% back**: `0.95rem` instead of `0.98` and
+**14px** of side padding instead of 16, together about 5% more line.
+Measured, the Solution card sets two full lines at **98/101%** at 1320
+where it was 73/66/65, and 1440 is unchanged and still full. The 14 also
+puts the body on the same left edge as `.cs-card-t` above it, which had
+been **2px out** since the cards were built.
+**`pretty` underneath**, because with the text fitting again the only job
+left is the tail. **Between about 1150 and 1280 the sentence still lands
+just over two lines and the third is a stub** — that band is the honest
+residue of a fixed string in a fluid column, and the only answer there
+would be a breakpoint for something nobody can name. The brief keeps
+`pretty` for its own reason: one wide paragraph at display size where only
+the last line was ever wrong.
 **AND IT CARRIES THE CARDS' OWN 3px `--black` FRAME, WHICH ONLY SHOWS IN
 DARK.** Jack: *"on dark mode, the outline on the box for The brief
 disappears or blends in."* He is reading the tokens exactly right —
@@ -2397,8 +2418,33 @@ And **the rod's top edge is y 1025 with the cast shadow running to 2745**,
 which is what the last pass measured after this note had claimed 2490 for
 two crops running. *A number nobody re-measures outlives the thing it
 describes.*
-**THE GALLERY CARD IS THE RED POSTER, WHOLE.** Jack: *"for the project card
-in the main page, change the image to 20.jpg and let's see how that looks."*
+**THE GALLERY CARD IS A PIECE JACK DREW FOR THE SLOT.** *"Change the
+project card to newAlessicard.png"* — the render on its own red ground
+with four drawn utensils around it, **1400 × 1050**, which is the 4:3 and
+the exact export size this project's card spec asks for. No crop and no
+composite: the file lands in the slot as it is. **80K jpeg / 59K webp at
+43.7 and 42.6 dB** against a q98 reference — bigger than the 37K composite
+it replaces, which was mostly flat colour, because this one carries a
+full-frame render.
+**It keeps clear of the two things that eat a card's edges**, which is
+what the spec exists for: the `.card-media::after` badge is a 46 × 46
+square pinned top-right with two hard black rules, and the hover zoom
+scales the image 1.04 — about 2% off every side. This card's top-right
+corner is empty ground and its nearest drawing sits inside 88% of the
+width, so neither reaches anything.
+**`bg` IS INERT, AND THAT IS A FINDING RATHER THAN A DECISION.**
+`renderGallery` writes it onto the card as `--bg` and **nothing reads that
+property** — checked across `styles.css`, `script.js` and `index.html`:
+one write, no `var(--bg)` anywhere. So the colour that is supposed to stop
+a card flashing something the image then contradicts does nothing today.
+It is kept correct (`#7B1610`, sampled from the new file's corner pixels,
+where the composite's was `#7C1611`) rather than left stale, because the
+thing it was for is still worth having and the fix is one rule on
+`.card-media` rather than six values to re-derive.
+
+**IT REPLACED A COMPOSITE OF THE RED POSTER**, which was the previous
+answer to the same slot. Jack then: *"for the project card in the main
+page, change the image to 20.jpg and let's see how that looks."*
 The card slot is 4:3 and the poster is 1414×2000, so a crop can hold the
 object or the ALESSI / NABA lockup and not both. **It is composited
 instead**: the poster scaled to the full height of a 1280×960 canvas filled
