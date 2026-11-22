@@ -1774,10 +1774,14 @@ draws 1643px tall, two and a half screens of one photograph.
 
 **TESTING CARRIES NO FIGURES ANY MORE.** It opened on two — `~50%` of pots
 and `1 shoot` — and Jack took them out: *"just to make that section
-smaller."* Nothing left the page with them: the half survives on the
-Outcome summary card and in Limitations, and the product shoot is in the
-Finding sentence, which is where it had been saying the same thing twice
-(the duplication this file flagged when the copy went in). **It was the
+smaller."* Nothing left the page with them: the half survives in
+Limitations ("one clip profile fits only about half of pots", in all four
+languages) and the product shoot is in the Finding sentence, which is
+where it had been saying the same thing twice (the duplication this file
+flagged when the copy went in). **It survived on the Outcome card too
+until 2026-11-22**, when Jack rewrote the three cards and that one became
+the deliverables — so Limitations is now the only place the half is
+stated, and it is the place that qualifies it. **It was the
 only user of `stats`**, so the renderer branch, the four CSS rules and the
 sixteen i18n keys came out with it rather than being left idle — the same
 call as `titleTop`, and all of it is in `docs/pot-clip-masonry.md`. Testing
@@ -2132,6 +2136,21 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
+**THE THREE SUMMARY CARDS ARE PROBLEM / SOLUTION / OUTCOME, AND THE
+OUTCOME IS DELIVERABLES NOW.** Jack rewrote all three on 2026-11-22. The
+first two got longer and more specific — the problem names the small
+kitchen it happens in, the solution says what the clips do rather than
+only where they sit — and the third stopped being results and became what
+the project produced: *"A sculpted appearance model, an interactive 3D
+model, and a three-poster campaign, with the core idea proven on
+thin-rimmed pots."* That last clause is the only claim in it, and it is
+the one Testing's Finding supports word for word, so the card and the
+section cannot drift apart. **The `~50%` left the page with it** — see the
+Testing-figures note above for where the half still lives. The cards grew
+from **126px to 150** in English at 1440 (measured by putting the old
+strings back into the live nodes) and the three stay level with each
+other in every language, because they are grid items in one row.
+
 **THE BRIEF SITS IN THE MASTHEAD'S OWN COLUMN**, under the meta table.
 Jack: *"move The brief box up to the empty space to the left of the hero
 photo and above the problem, solution and outcome."* There was 318px of it
@@ -2159,6 +2178,25 @@ load-bearing now that two photographs are sized from them, and a last-line
 rule that can add a line does not belong under a measurement unless it is
 asked for. Where the property is unsupported the paragraph wraps exactly as
 it does today, so there is nothing to fall back to.
+**AND IT CARRIES THE CARDS' OWN 3px `--black` FRAME, WHICH ONLY SHOWS IN
+DARK.** Jack: *"on dark mode, the outline on the box for The brief
+disappears or blends in."* He is reading the tokens exactly right —
+`--ink` is `#111117` in dark and so is `--white`, so the slab and the
+ground are **literally the same colour** and the box had nothing but its
+coral title to say where it began. That sameness is deliberate everywhere
+else; it is what keeps the loader, the about slab and the footer part of
+the page rather than panels on it. But those three are full-bleed bands,
+and this is a box in a column with a shape to lose.
+**One declaration, no theme override.** `--black` flips, and in LIGHT it
+is `#1A1A18` — the same value as `--ink` — so the frame is invisible there
+and the box is exactly what it already was, while dark gets the off-white
+rule (16.9:1) that the three summary cards directly below it already
+wear. Same shape as the about panel's `--white` sliver: **the theme that
+needs nothing sees nothing.** It also makes the brief and the cards read
+as one family instead of a band and three cards.
+It costs 6px of measure, since `box-sizing` is `border-box`. Re-measured
+after: the paragraph still sets three lines in en/es/it and two in ja at
+1440, still carries no widow, and the box is 205.7px against 199.7.
 
 **THE POSTER STARTS LEVEL WITH THE BACK BUTTON**, and is 4.4% smaller.
 *"Move the hero poster so that the top of it is at the same height as the

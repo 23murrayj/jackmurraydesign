@@ -3230,8 +3230,29 @@ body.is-loading { overflow: hidden; }
    loader, the about slab and the footer are a dark surface with light type
    in both themes, and this is one more of them. It is also why the heading
    can be --accent here - coral on near-black is 5.3:1 either way round. */
+/* AND IT NEEDS AN EDGE, because in DARK its fill is the page. Jack: "on
+   dark mode, the outline on the box for The brief disappears or blends
+   in." He is reading the tokens exactly right: --ink is #111117 in dark
+   and so is --white, so the slab and the ground are literally the same
+   colour and the box had nothing but its coral title to say where it
+   started. That sameness is deliberate everywhere else - it is what keeps
+   the loader, the about slab and the footer part of the page instead of
+   panels on it - but those three are full-bleed bands, and this is a box
+   in a column with a visible shape to lose.
+   THE SAME 3px --black AS .cs-card, which is the block directly under it,
+   so the brief and the three summary cards are one family rather than a
+   band and three cards. One declaration and no theme override: --black
+   flips, and in LIGHT it is #1A1A18, the same value as --ink - so the
+   frame is invisible there and the box is exactly what it already was,
+   while dark gets the off-white rule the cards below it already wear.
+   Same shape as the about panel's --white sliver: the theme that needs
+   nothing sees nothing.
+   It costs 6px of measure (box-sizing is border-box), which the brief can
+   afford - re-measured, the paragraph still sets three lines in en/es/it
+   and two in ja at 1440, and still carries no widow. */
 .cs-brief {
   background: var(--ink); color: var(--paper);
+  border: 3px solid var(--black);
   padding: 36px 40px; margin-bottom: 64px;
 }
 /* In the masthead column it needs the gap above instead of below - the
