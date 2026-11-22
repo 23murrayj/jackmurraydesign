@@ -180,10 +180,32 @@ const projectData = {
   },
 
   'pot-clip': {
-    // The photograph's own backdrop, so the card does not flash a colour the
-    // image then contradicts while it loads.
-    bg: '#dedcd7',
-    thumb: { src: '/assets/projects/pot-clip/thumb.jpg', w: 1280, h: 960, small: '/assets/projects/pot-clip/thumb-800.jpg' },
+    /* THE CARD IS THE RED POSTER, WHOLE. Jack: "for the project card in the
+       main page, change the image to 20.jpg and let's see how that looks."
+         The card slot is 4:3 and the poster is 1414x2000, so a crop can hold
+       the object or the ALESSI / NABA lockup and not both. It is composited
+       instead: the poster scaled to the full height of a 1280x960 canvas
+       filled with #7C1611, which is the poster's own ground sampled at all
+       four corners. The bars are therefore the same red as the picture and
+       nothing reads as letterboxed - the card is one red field with the
+       object in it, and no part of the poster is cut.
+         It is also lighter than the photograph it replaces, 37K against
+       198K, because most of it is flat colour.
+         bg is that red for the same reason it was the photograph's grey:
+       the card must not flash a colour the image then contradicts.
+         ?v= BECAUSE THE BYTES CHANGED AT A LIVE PATH. /assets/ gets an hour
+       of freshness and a week of stale-while-revalidate, so without it a
+       returning visitor keeps the old bowl photograph for days. tools/
+       asset-rev.js fills ?v=0 in on the next run; see the cache note in
+       CLAUDE.md.
+         altKey, because pot-clip's positional alt.N keys went with the
+       masonry wall and nothing replaced them for the card - so the one
+       image representing this project in the gallery had been falling
+       through to the generic "Photo 1 from POT CLIP UTENSIL REST". */
+    bg: '#7C1611',
+    thumb: { src: '/assets/projects/pot-clip/thumb.jpg?v=8c30b2db', w: 1280, h: 960,
+      small: '/assets/projects/pot-clip/thumb-800.jpg?v=516b3c30',
+      altKey: 'proj.pot-clip.alt.thumb' },
     category: 'PRODUCT',
     title: 'POT CLIP UTENSIL REST',
     desc: "Movable rests that clip to a pot rim in pairs and keep the spoon out of the pot.",
@@ -225,49 +247,34 @@ const projectData = {
       eyebrow: 'proj.pot-clip.cs.eyebrow',
       lede: 'proj.pot-clip.cs.lede',
       tocLabel: 'proj.pot-clip.cs.toc',
-      /* CROPPED 1.55x TIGHTER THAN THE FRAME, from the original HEIC rather
-         than from the 1600px export: a 1950px window at 80,670 of the
-         3024x3024 source. It has moved four times - 1.00, then 1.24 at
-         left 584, then 1.24 at left 284, then 1.55 at 80,810, now 140px
-         higher up the source. Jack each time: "zoom in on it just a bit and
-         center the product", then "have it to the right more so we see more
-         white space on the left", then "even more zoomed in and even more
-         to the right", then "bring it down a bit in the frame so we get a
-         bit more white space in the top".
-           THE TWO ASKS PULL THE SAME WAY, which is why they arrive together.
-         Moving the WINDOW left moves the SUBJECT right, and zooming in means
-         a smaller window - so both are paid for out of the right edge, where
-         the bowl was already running off the source when the photograph was
-         taken. That is the cheapest thing in the frame; protecting every
-         pixel of it is what made the first version wrong.
-           VERTICAL IS MEASURED NOW, AND THE OLD NUMBER IN HERE WAS WRONG.
-         This comment said the shadow ended about 2490 and claimed 16% of
-         clear frame above the rod and below it. Profiled across the window's
-         own x range, the rod's top edge is y 1025 and the bowl's cast shadow
-         runs to 2745 - so at top 810 the air above the rod was 215 source
-         px and the air under the shadow 15. The frame was not balanced, it
-         was flush to the bottom, which is what Jack was looking at: "bring
-         it down a bit in the frame so we get a bit more white space in the
-         top."
-           140px UP, AND IT IS PAID FOR OUT OF THE SHADOW'S TAIL. Moving the
-         window up moves the subject DOWN, so the top gains what the bottom
-         gives, and what the bottom gives is the faintest 140px of a diffuse
-         shadow (its last row cut sits 30 levels off the paper). The air over
-         the rod goes from 11% of the output frame to 18%; the bowl's foot
-         lands at 83% where it was 76%. 190px was rendered and rejected - the
-         bowl is 91% down the frame there and reads as resting on the edge.
-           1.55 AND NOT MORE. 1.68 was rendered and rejected - the bowl stops
-         reading as a bowl and becomes a fragment running off two edges, so
-         the picture reads as a crop of a photograph rather than a composed
-         one. At 1.55 the clip is the subject, the bowl is still a bowl, and
-         the left edge carries 299px of the 1600 in clear ground.
-           THE FILENAME STOPPED MOVING AT THE THIRD PASS. It went cs-hero ->
-         cs-hero-bowl -> cs-hero-clip, one name per crop, until the ?v=
-         content hash landed; this fourth crop changes the bytes in place and
-         tools/asset-rev.js rewrites the query from the file itself. See the
-         cache note in CLAUDE.md. */
-      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=8579a9d8', w: 1600, h: 1600,
-        full: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=8579a9d8',
+      /* THE MASTHEAD IS THE POSTER, NOT THE PHOTOGRAPH IN IT. Jack: "change
+         the current hero image to 6.jpg. Its a poster that I made with the
+         exact photo in it so I think it may look better." It is the same
+         bowl, rod and clip, set under "Il buon design vive nei dettagli"
+         with the ALESSI lockup and the credit line - so the opening frame
+         now shows a finished piece of design rather than the shot it was
+         built from, which is what the page is arguing this project is.
+           IT IS THE SAME FILE AS THE THIRD POSTER BELOW, deliberately. A
+         second copy at a second path would cost a second download for a
+         visitor who scrolls to the Posters section; one path, loaded eagerly
+         up here, is already in cache by the time the three-up needs it. The
+         cost is that the picture appears twice on the page.
+           RE-EXPORTED AT 1400 for this, where the posters run alone was
+         happy at 900: the masthead draws ~549 CSS px, so 900 is 1.6x on a
+         retina screen and 1400 is 2.5x. 1414 is all the source has.
+           cs-hero-clip.jpg is still in assets/ and is no longer referenced.
+         It is the 1.55x crop of the same shot, moved four times on Jack's
+         eye - 1.00, then 1.24 at left 584, then 1.24 at left 284, then 1.55
+         at 80,810, then the same window 140px higher up the 3024x3024
+         source. The two things it was tuned for are worth keeping if it
+         ever comes back: moving the WINDOW left moves the SUBJECT right, so
+         "zoom in" and "more white space on the left" are both paid for out
+         of the right edge where the bowl already ran off the frame; and the
+         rod's top edge is y 1025 with the bowl's cast shadow running to
+         2745, which is what the last pass measured when the comment here
+         had been claiming 2490 for two crops. */
+      hero: { src: '/assets/projects/pot-clip/cs-poster-3.jpg?v=93224ceb', w: 1400, h: 1980,
+        full: '/assets/projects/pot-clip/cs-poster-3.jpg?v=93224ceb',
         altKey: 'proj.pot-clip.cs.alt.hero' },
       meta: [
         ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
@@ -487,8 +494,8 @@ const projectData = {
             { src: '/assets/projects/pot-clip/cs-poster-2.jpg?v=dad29eee', w: 900, h: 1273,
               full: '/assets/projects/pot-clip/cs-poster-2.jpg?v=dad29eee',
               altKey: 'proj.pot-clip.cs.alt.poster2' },
-            { src: '/assets/projects/pot-clip/cs-poster-3.jpg?v=0b4bd52b', w: 900, h: 1273,
-              full: '/assets/projects/pot-clip/cs-poster-3.jpg?v=0b4bd52b',
+            { src: '/assets/projects/pot-clip/cs-poster-3.jpg?v=93224ceb', w: 1400, h: 1980,
+              full: '/assets/projects/pot-clip/cs-poster-3.jpg?v=93224ceb',
               altKey: 'proj.pot-clip.cs.alt.poster3' },
           ] },
 

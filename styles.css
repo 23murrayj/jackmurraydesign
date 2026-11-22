@@ -3440,7 +3440,34 @@ body.is-loading { overflow: hidden; }
 }
 .cs-stage-pair .project-stage { grid-column: 1; grid-row: 1; }
 .cs-stage-pair .cs-stage-hint { grid-column: 1; grid-row: 2; }
-.cs-stage-pair .cs-figs       { grid-column: 2; grid-row: 1 / span 2; }
+.cs-stage-pair .cs-figs       { grid-column: 2; grid-row: 1; }
+
+/* THE TWO FRAMES ARE THE SAME HEIGHT. Jack: "crop the height borders of
+   the 3d model to make it the same height as the the picture next to it."
+   Square, the stage was 546 beside a 509-tall photograph; now the
+   photograph alone sizes row 1 and the stage stretches to it.
+   The stage has to give up its aspect-ratio for that, which is also what
+   stops it sizing the row — with one, both items would have a height of
+   their own and the row would be the taller. min-height is the floor for
+   the case this grid does not have today, a staged section with no
+   photograph beside it, where the stage would otherwise collapse to 0.
+   IT COSTS THE MODEL 7%, and that is worth knowing because the last pass
+   cost it nothing. Going 924 wide to 546 square took the empty width off
+   the SIDE: the fit is driven by the smaller half-angle, which was
+   vertical both times, so the object stayed 304px. Height is the binding
+   axis, so taking 37px off it scales the object with it — 283px now, and
+   the dead area goes 71% to 73% because the box is no longer the shape
+   the object rests in. Cropping ~6% off the photograph's width instead
+   would have levelled them at the model's full size; Jack named this box,
+   so this box is the one that moved.
+     SPECIFICITY, NOT SOURCE ORDER: the square rule is .cs-stage-slot
+   .project-stage, the same 0-2-0, and it sits further down the file — so
+   an equal-weight override here loses and the stage stays 546. Measured
+   that way once before it was spotted. Written at 0-3-0 it wins wherever
+   it sits, which is the same fix the lone-portrait cap needed twice. */
+.cs-stage-slot.cs-stage-pair .project-stage {
+  align-self: stretch; aspect-ratio: auto; height: auto; min-height: 320px;
+}
 /* .cs-figs carries a 26px top margin for the rows it was written for, and
    here it staggered the photograph 26px below the canvas. That happened to
    bring their BOTTOMS within 15px of each other, which is a tidier
@@ -3458,6 +3485,11 @@ body.is-loading { overflow: hidden; }
 @media (max-width: 900px) {
   .cs-stage-pair { grid-template-columns: 1fr; column-gap: 0; }
   .cs-stage-pair .cs-figs { grid-column: 1; grid-row: 3; margin-top: 26px; }
+  /* Stacked there is nothing beside it to match, so the stage goes back to
+     the square that wastes the least canvas (71% dead against 73%). */
+  .cs-stage-slot.cs-stage-pair .project-stage {
+    align-self: start; aspect-ratio: 1 / 1; min-height: 0;
+  }
 }
 
 /* THE STAGE IS SQUARE HERE, AND THAT IS THE WHOLE ANSWER TO "IT SAYS YOU
@@ -3598,6 +3630,20 @@ body.is-loading { overflow: hidden; }
 @media (max-width: 1100px) {
   .cs-mast { grid-template-columns: 1fr; gap: 36px; }
   .cs-mast-media { order: -1; }
+  /* THE OPENING FRAME IS CAPPED ONCE IT STACKS, and the poster is what
+     forced it. Side by side the media column is half the measure and the
+     uncapped rule above is right - it is the opening frame and should fill
+     its column. Stacked, the column is the WHOLE measure and the media
+     comes first, so at 901 the 1414x2000 poster drew 805x1138 in a 900px
+     window: you could not see the whole poster, let alone the project's
+     name under it. The square photograph it replaced was 805x805 and got
+     away with it.
+     440 gives 622 of poster and leaves the title on the first screen. It
+     does nothing on a phone, where the measure is 345 at 390.
+     AT 0-3-0, because the rule it is narrowing is .cs-mast-media .cs-fig
+     .is-portrait and specificity beats source order - the trap this file
+     has now recorded four times. */
+  .cs-mast-media .cs-fig.is-portrait { max-width: 440px; }
   .cs-lede { max-width: none; }
   .cs-main { grid-template-columns: 1fr; gap: 40px; }
   .cs-toc { position: static; border: 3px solid var(--black); padding: 18px 20px; }

@@ -2026,40 +2026,59 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
-**The masthead photograph is cropped 1.55× tighter than the frame**, from
-the original rather than the export: a 1950px window at 80,670 of the
-3024×3024 source. It has moved four times — 1.00, then 1.24 at left 584,
-then 1.24 at left 284, then 1.55 at 80,810, now the same window 140px higher
-up the source — on *"zoom in on it just a bit and center the product"*, then
-*"have it to the right more so we see more white space on the left"*, then
-*"even more zoomed in and even more to the right"*, then *"bring it down a
-bit in the frame so we get a bit more white space in the top"*.
-**THE TWO ASKS PULL THE SAME WAY**, which is why they keep arriving
-together. Moving the WINDOW left moves the SUBJECT right, and zooming in
-means a smaller window — so both are paid for out of the right edge, where
-the bowl was already running off the source when the shot was taken. **That
-is the cheapest thing in the frame, and protecting every pixel of it is what
-made the first version wrong.**
-**VERTICAL IS MEASURED NOW, AND WHAT WAS WRITTEN HERE WAS WRONG.** This note
-said the shadow ended about 2490 and claimed 16% of clear frame above the
-rod and below it. Profiled across the window's own x range, the rod's top
-edge is y 1025 and the bowl's cast shadow runs to **2745** — so at top 810
-there were 215 source px of air above the rod and **15** below the shadow.
-The frame was not balanced, it was flush to the bottom, and that is what
-Jack was looking at when he asked for white space at the top. **A number in
-here that nobody re-measured survived two crops of the thing it describes.**
-**140px up, paid for out of the shadow's tail.** Moving the window up moves
-the subject DOWN, so the top gains exactly what the bottom gives, and what
-the bottom gives is the faintest 140px of a diffuse shadow — the row the cut
-lands on is 30 levels off the paper. Air over the rod goes from **11% of the
-output frame to 18%**, and the bowl's foot lands at 83% where it was 76%.
-**190px was rendered and rejected**: the bowl is 91% down the frame there
-and reads as resting on the edge rather than standing on ground.
-**1.55 and not more.** 1.68 was rendered and rejected: the bowl stops reading
-as a bowl and becomes a fragment running off two edges, so the picture reads
-as a crop of a photograph rather than a composed one. At 1.55 the clip is
-the subject, the bowl is still a bowl, and the left edge carries 299px of
-the 1600 in clear ground.
+**THE MASTHEAD IS THE POSTER, NOT THE PHOTOGRAPH IN IT.** Jack: *"change the
+current hero image to 6.jpg. Its a poster that I made with the exact photo
+in it so I think it may look better."* Same bowl, rod and clip, set under
+*Il buon design vive nei dettagli* with the ALESSI lockup and the credit
+line — so the page opens on a finished piece of design rather than the shot
+it was built from, which is what the page is arguing this project is.
+**It is the same file as the third poster below, deliberately.** A second
+copy at a second path would cost a second download for anyone who scrolls
+to Posters; one path, loaded eagerly up here, is in cache by the time the
+three-up needs it. The cost is that the picture appears twice on the page.
+**Re-exported at 1400** where the posters run alone was happy at 900: the
+masthead draws ~549 CSS px, so 900 was 1.6× on a retina screen. 1414 is all
+the source has.
+**AND THE STACKED MASTHEAD NEEDED A CAP, which the square never did.**
+`.cs-mast` goes to one column at 1100, and the media is `order: -1`, so the
+opening frame becomes the whole measure with the title under it. At 901 the
+1414×2000 poster drew **805×1138 in a 900px window** — you could not see the
+whole poster, let alone the project's name. Capped at 440 it is 434×614 and
+the title, the lede and the meta table are all on the first screen. **Stated
+at 0-3-0**, because the rule it narrows is
+`.cs-mast-media .cs-fig.is-portrait` and specificity beats source order —
+the fourth time this file has had to say that.
+
+**`cs-hero-clip.jpg` is still in `assets/` and no longer referenced.** It is
+the 1.55× crop of the same shot, moved four times on Jack's eye — 1.00, then
+1.24 at left 584, then 1.24 at left 284, then 1.55 at 80,810, then the same
+window 140px higher up the 3024×3024 source. Two things are worth keeping if
+it ever comes back. **Moving the WINDOW left moves the SUBJECT right**, so
+"zoom in" and "more white space on the left" are both paid for out of the
+right edge, where the bowl already ran off the frame — the cheapest thing in
+it, and protecting every pixel of it is what made the first version wrong.
+And **the rod's top edge is y 1025 with the cast shadow running to 2745**,
+which is what the last pass measured after this note had claimed 2490 for
+two crops running. *A number nobody re-measures outlives the thing it
+describes.*
+**THE GALLERY CARD IS THE RED POSTER, WHOLE.** Jack: *"for the project card
+in the main page, change the image to 20.jpg and let's see how that looks."*
+The card slot is 4:3 and the poster is 1414×2000, so a crop can hold the
+object or the ALESSI / NABA lockup and not both. **It is composited
+instead**: the poster scaled to the full height of a 1280×960 canvas filled
+with `#7C1611`, the poster's own ground sampled at all four corners. The
+bars are therefore the same red as the picture, nothing reads as
+letterboxed, and no part of the poster is cut. It is also **37K against
+198K**, because most of it is flat colour.
+`bg` is that red for the same reason it was the photograph's grey: the card
+must not flash a colour the image then contradicts.
+**It carries a `?v=`** — the bytes changed at a live path, and without one a
+returning visitor keeps the old bowl photograph for up to a week.
+**And it gained an `altKey`.** pot-clip's positional `alt.N` keys went with
+the masonry wall and nothing replaced them for the thumb, so the one image
+representing this project in the gallery had been falling through to the
+generic *"Photo 1 from POT CLIP UTENSIL REST"*.
+
 **`cs-storefront.jpg` has identifiable bystanders** — the Milan shopfront —
 so it falls under the safety constraint below.
 
@@ -3400,7 +3419,28 @@ page will not tell you whether the object still turns.
   black rule. **It carries a light grey one now**, on Jack's request — the
   case-study note holds the words and the reasoning — and what is still
   banned is the hard frame that made it read as a tile.
-- **IT IS SQUARE IN THE CASE STUDY, AND THAT IS THE ANSWER TO "IT SAYS YOU
+- **IT IS THE PAINTED PHOTOGRAPH'S HEIGHT NOW, AND IT WAS SQUARE BEFORE.**
+  Jack: *"crop the height borders of the 3d model to make it the same height
+  as the the picture next to it."* The photograph alone sizes the row and
+  the stage stretches to it — 546×509 against 546×546 — so the two frames in
+  that band are level top and bottom.
+  **It costs the model 7%, which the previous pass did not.** Going 924 wide
+  to 546 square took the empty width off the SIDE, and the fit is driven by
+  the smaller half-angle, which was vertical both times, so the object
+  stayed 304px. Height is the binding axis, so taking 37px off it scales the
+  object with it: **283px now**, and the dead area goes 71% to 73% because
+  the box is no longer the shape the object rests in. Cropping ~6% off the
+  photograph's width instead would have levelled them at the model's full
+  size; Jack named this box, so this box is the one that moved.
+  **The stage gives up its `aspect-ratio` for it**, which is also what stops
+  it sizing the row — with one, both items have a height of their own and
+  the row is the taller. `min-height` is the floor for a staged section with
+  no photograph beside it, which this grid does not have today. Stacked, it
+  goes back to square, where the dead area is 71%.
+  **Written at 0-3-0**: the square rule is `.cs-stage-slot .project-stage`,
+  the same 0-2-0, and it sits further down the file, so the first attempt at
+  an equal-weight override silently left the stage at 546.
+- **IT WAS SQUARE, AND THAT WAS THE ANSWER TO "IT SAYS YOU
   CAN DRAG IT PRETTY FAR FROM THE MODEL".** The draggable area is the
   canvas, and the camera fits the bounding SPHERE at the worst orientation,
   so the object never fills it: measured through the viewer's own matrices
