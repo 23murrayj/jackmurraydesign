@@ -3323,32 +3323,51 @@ body.is-loading { overflow: hidden; }
 .cs-stage-slot:has(.is-live) .cs-stage-hint { opacity: 1; }
 .cs-stage-slot .project-stage { order: 1; }
 
-/* ---- the process, as four cards ---------------------------------------
+/* ---- the process, as four cards in a 2x2 -------------------------------
    Jack, with a mock-up: "turn the process part into some cards like this to
    make them a bit more condensed and scannable." It was four numbered
    paragraphs with up to two photographs each, stacked - the tallest thing
-   on the page, spent on the part a reader scans rather than reads. The
-   prose it replaced moved up into the section's own two paragraphs; this
-   row is a picture and a line.
-   ALIGNED AT THE TOP, NOT STRETCHED. Step 2 carries two photographs, so its
-   card is taller than the other three - which is what the mock-up draws,
-   and what the rest of this layout already does with figures of different
-   shapes. */
+   on the page, spent on the part a reader scans rather than reads.
+   ONE ROW OF FOUR WAS THE FIRST ANSWER AND IT WENT TOO FAR: "I feel they
+   are too small, and we took away some good text. maybe make them 2x2
+   cards instead of one row of 4." At four across the photographs were
+   215px wide and the cards could only carry a caption. Two across is 451px,
+   so the pictures are more than twice the area and each card carries its
+   own sentences again - condensed by being a grid rather than by being
+   shorter, which is what "scannable" actually wanted.
+   ALIGNED AT THE TOP, NOT STRETCHED, like every other figure row here: the
+   one portrait is taller than the three landscapes and nothing is cropped
+   to hide it. */
 .cs-steps {
   list-style: none; counter-reset: csstep;
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 22px; align-items: start; margin-top: 30px;
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 40px 28px; align-items: start; margin-top: 30px;
 }
 .cs-step { counter-increment: csstep; }
 /* inside a card the figures always stack, whatever the shared row class
    would otherwise do with two of them, and the lone-portrait cap does not
    apply - the column is already the cap */
 .cs-step-media .cs-figs { grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
-.cs-step-media .cs-fig.is-portrait { max-width: none; }
-.cs-step-cap { margin-top: 13px; font-size: 0.84rem; line-height: 1.45; }
+/* Specificity, not source order: .cs-figs-1 .cs-fig.is-portrait is the
+   same 0-3-0 and sits later in the file, so an equal-weight override lost
+   and the portrait drew 394px wide inside a 448px card - narrower than the
+   card it is in, which reads as a mistake rather than a choice. */
+.cs-step-media .cs-figs-1 .cs-fig.is-portrait { max-width: none; }
+/* The caption is the title now that the sentences are back under it, so
+   it is set as one: display face, a size up, and its own weight rather than
+   borrowing the counter's. */
+.cs-step-cap {
+  margin-top: 14px; margin-bottom: 7px;
+  font-family: var(--ff-display); font-size: 0.95rem; line-height: 1.3;
+}
+.cs-step-txt { font-size: 0.95rem; line-height: 1.6; max-width: 46ch; }
 /* The number is drawn, not written: a counter cannot fall out of step with
-   the order and there is nothing to translate four times. */
-.cs-step-cap::before { content: counter(csstep, decimal-leading-zero) " · "; font-weight: 700; }
+   the order and there is nothing to translate four times.
+   NO font-weight HERE. It carried 700 for one commit and that was the
+   house bug in miniature - the caption is set in Archivo Black, which
+   ships ONE face at 400, so asking for 700 got synthetic bold and a
+   smeared pair of digits. The face already looks black. */
+.cs-step-cap::before { content: counter(csstep, decimal-leading-zero) " · "; }
 
 /* ---- the two test figures --------------------------------------------
    One colour across both, for the reason the summary cards are one colour:
@@ -3400,15 +3419,12 @@ body.is-loading { overflow: hidden; }
    photograph AND the four facts, so the two stack. The contents column goes
    with it: sticky is worth nothing once it is a box above the thing it
    points at, so it becomes exactly that - a bordered block, in flow. */
-/* Four cards need about 200px each to stay photographs rather than
-   thumbnails. Two at 900, and one on a phone - "condensed" is a desktop
-   win; a phone column is already as condensed as the page gets, and
-   160px-wide pictures of paper profiles are unreadable. */
-@media (max-width: 900px) {
-  .cs-steps { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 560px) {
-  .cs-steps { grid-template-columns: 1fr; gap: 28px; }
+/* Two columns hold down to about 700, where each card is ~320px and the
+   photographs are still photographs. Below that one column - a phone is
+   already as condensed as this page gets, and the alternative is a 150px
+   picture of three paper profiles, which is a picture of nothing. */
+@media (max-width: 700px) {
+  .cs-steps { grid-template-columns: 1fr; gap: 34px; }
 }
 
 @media (max-width: 1100px) {
@@ -5330,9 +5346,15 @@ html[lang="ja"] .pong-end-msg,
    one Japanese glyph, and a counter is Latin in every language. */
 html[lang="ja"] .cs-h,
 html[lang="ja"] .cs-brief-t,
+html[lang="ja"] .cs-step-cap,
 html[lang="ja"] .cs-defs dt {
   font-weight: 900;
 }
+/* ...but NOT the counter inside that caption. It inherits the 900 above and
+   it is "01", "02" - Latin digits in Archivo Black in every language, which
+   is the one combination that gets synthetic bold. Same exclusion the stat
+   numbers need, one level down. */
+html[lang="ja"] .cs-step-cap::before { font-weight: 400; }
 
 /* The stat NUMBERS are the exception to the rule above, and they have to be
    taken back out of it. That list exists so Japanese glyphs reach the

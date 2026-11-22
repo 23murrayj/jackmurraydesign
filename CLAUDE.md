@@ -1693,16 +1693,26 @@ what an editorial page does with photographs of different shapes. **A lone
 portrait is capped at 400px** — at the column's full 924 a 1000×1778 source
 draws 1643px tall, two and a half screens of one photograph.
 
-**PROCESS IS FOUR CARDS, one photograph and one line each.** Jack, with a
-mock-up: *"turn the process part into some cards like this to make them a
-bit more condensed and scannable."* It was four numbered paragraphs carrying
-up to two photographs apiece — the tallest thing on the page, spent on the
-part a reader scans rather than reads.
-**The prose did not vanish, it moved up.** The section's `html` carries the
-two paragraphs that were spread across the steps, so the appearance-model
-nuance and the digital-model-came-last correction are still on the page.
-Dropping them would also have put the markup fallback in the one position it
-must never be in: saying something the panel does not.
+**PROCESS IS FOUR CARDS IN A 2×2.** Jack, with a mock-up: *"turn the process
+part into some cards like this to make them a bit more condensed and
+scannable."* It was four numbered paragraphs carrying up to two photographs
+apiece — the tallest thing on the page, spent on the part a reader scans
+rather than reads.
+**ONE ROW OF FOUR WAS THE FIRST ANSWER AND IT WENT TOO FAR**, which is the
+reusable part: *"I feel they are too small, and we took away some good text.
+maybe make them 2x2 cards instead of one row of 4."* At four across the
+photographs were **215px wide** and a card could only carry a caption. At two
+across they are **442px** — more than four times the area — and each card
+carries its own sentences again. **Condensing by making it a grid is not the
+same as condensing by cutting**, and only one of the two was wanted.
+**The prose on the cards is the original text, recovered from the commit
+rather than retyped**, minus the bold title each sentence used to open with,
+because the caption is that title now. The condensed section intro that
+stood in for it while the cards were captions-only went with the change: with
+every card carrying its own prose, a paragraph summarising all four says the
+same things twice, which is the thing the brief names. It also means the
+markup fallback is never in the one position it must not be in — saying
+something the panel does not.
 **ONE PHOTOGRAPH PER CARD, AND THAT WAS MEASURED.** Step 2 first kept two —
 the foam and the spray booth, because it genuinely is two operations — and
 two stacked portraits in a 215px column made that card **688px tall against
@@ -1714,9 +1724,18 @@ square or 4:3 tile takes 25–44% off the width of a 1400×788 source, and on
 the paper-profiles shot that is the outer two profiles.
 The number is a CSS counter (`decimal-leading-zero`), not part of the
 string: it cannot drift from the order and there is nothing to translate
-four times. The grid is **4 / 2 / 1 columns at 1100 / 900 / 560** — four
-cards need about 200px each to stay photographs rather than thumbnails, and
-a phone column is already as condensed as this page gets.
+four times. **It carries no `font-weight`**, and it did for one commit —
+the house bug in miniature, since the caption is Archivo Black, which ships
+one face at 400, so a 700 there was synthetic bold on two digits. For the
+same reason `.cs-step-cap` joins the Japanese 900 list (its content IS
+Japanese) while `.cs-step-cap::before` is pinned back to 400 inside it.
+The grid is **2 columns down to 700, then 1** — measured, the photographs
+run 322–498px wide at every width from 320 to 1440.
+**The one portrait needed a specificity fix, not a source-order one.**
+`.cs-figs-1 .cs-fig.is-portrait` caps a lone portrait at 400px and sits
+later in the file, so an equal-weight override lost and the foam shot drew
+394px inside a 448px card — narrower than the card holding it, which reads
+as a mistake rather than a choice.
 
 **The dimensioned notebook page moved to "The design"** when that happened.
 It is the orthographic views and the millimetres, so it documents what the

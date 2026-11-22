@@ -285,12 +285,15 @@ const projectData = {
            them a bit more condensed and scannable." It was four numbered
            paragraphs carrying up to two photographs apiece - the most
            vertical space on the page, spent on the part a reader scans.
-             THE PROSE DID NOT VANISH, IT MOVED UP. `html` carries the two
-           paragraphs that used to be spread across the steps, so the
-           appearance-model nuance and the digital-model-came-last correction
-           are still on the page. Dropping them would also have put the
-           markup fallback in the position it must never be in: saying
-           something the panel does not.
+             THE PROSE IS BACK ON THE CARDS. One row of four condensed it
+           into captions and moved the sentences into a section intro, and
+           Jack's read was that it cost something: "we took away some good
+           text." Two columns are wide enough to carry both, so each card is
+           a photograph, a title and the sentences that were under it before
+           - the same strings, recovered from the commit rather than retyped.
+           The intro went with the change: with every card carrying its own
+           prose, a paragraph summarising all four says the same things
+           twice, which is the thing the brief names.
              ONE PHOTOGRAPH PER CARD, and that was measured rather than
            assumed. Step 2 first carried two - the foam and the spray booth,
            because it IS two operations - and two stacked portraits in a
@@ -304,19 +307,21 @@ const projectData = {
            paper-profiles shot that is the outer two profiles - the same
            argument the figure rows already lost. */
         { id: 'process', title: 'proj.pot-clip.cs.process.t',
-          html: 'proj.pot-clip.cs.process.b',
           steps: [
-            { label: 'proj.pot-clip.cs.process.1', figures: [
+            { label: 'proj.pot-clip.cs.process.1',
+              text: 'proj.pot-clip.cs.process.1b', figures: [
               { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
                 full: '/assets/projects/pot-clip/cs-profiles.jpg',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
             ] },
-            { label: 'proj.pot-clip.cs.process.2', figures: [
+            { label: 'proj.pot-clip.cs.process.2',
+              text: 'proj.pot-clip.cs.process.2b', figures: [
               { src: '/assets/projects/pot-clip/cs-foam.jpg', w: 1200, h: 1500,
                 full: '/assets/projects/pot-clip/cs-foam.jpg',
                 altKey: 'proj.pot-clip.cs.alt.foam' },
             ] },
-            { label: 'proj.pot-clip.cs.process.3', figures: [
+            { label: 'proj.pot-clip.cs.process.3',
+              text: 'proj.pot-clip.cs.process.3b', figures: [
               { src: '/assets/projects/pot-clip/cs-blender.jpg', w: 1400, h: 895,
                 full: '/assets/projects/pot-clip/cs-blender.jpg',
                 altKey: 'proj.pot-clip.cs.alt.blender' },
@@ -330,7 +335,8 @@ const projectData = {
                out 293/292 left-right and 226/226 top-bottom.
                  14-object.jpg is still the turntable's poster and keeps
                alt.14; this is a different render and gets its own alt. */
-            { label: 'proj.pot-clip.cs.process.4', figures: [
+            { label: 'proj.pot-clip.cs.process.4',
+              text: 'proj.pot-clip.cs.process.4b', figures: [
               { src: '/assets/projects/pot-clip/cs-render.jpg', w: 1400, h: 933,
                 full: '/assets/projects/pot-clip/cs-render.jpg',
                 altKey: 'proj.pot-clip.cs.alt.render' },
@@ -1072,7 +1078,8 @@ function renderCaseStudy(data) {
          reading the markup. */
       out += '<ol class="cs-steps">' + sec.steps.map((st) =>
         '<li class="cs-step"><div class="cs-step-media">' + figs(st.figures)
-        + '</div>' + csText('p', 'cs-step-cap', st.label) + '</li>').join('')
+        + '</div>' + csText('p', 'cs-step-cap', st.label)
+        + csText('p', 'cs-step-txt', st.text) + '</li>').join('')
         + '</ol>';
     }
     out += figs(sec.figures);
