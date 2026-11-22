@@ -330,6 +330,26 @@ console.log('\n— WebP invariant (every inline jpg has a webp sibling)');
   say(n + ' inline jpgs each have a webp', miss.length === 0, miss.join(' '));
 }
 
+console.log('\n— asset ?v= hashes match the files');
+{
+  /* The mesh has carried a ?v= for a long time and model-check.js asserts
+     it; the case-study photographs joined after a re-crop reached Jack
+     looking unchanged, because /assets/ is served with a week of
+     stale-while-revalidate. tools/asset-rev.js writes them and the
+     pre-commit hook runs it, so this is a belt-and-braces check rather
+     than the mechanism - but a hook only runs where core.hooksPath is set,
+     which is local config and does not survive a clone. */
+  const { execFileSync } = require('child_process');
+  let ok = true, detail = '';
+  try {
+    execFileSync(process.execPath, [R + 'tools/asset-rev.js', '--check'], { stdio: 'pipe' });
+  } catch (e) {
+    ok = false;
+    detail = String(e.stdout || '').trim().split('\n').join(' | ');
+  }
+  const n = (js.match(/\?v=[0-9a-f]+/g) || []).length;
+  say('every ?v= is its file\'s current hash (' + n + ')', ok, detail);
+}
 console.log('\n— every asset projectData points at exists');
 {
   /* A RENAME DONE HALFWAY IS SILENT. Re-cropping a photograph at a path

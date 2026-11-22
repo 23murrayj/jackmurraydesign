@@ -252,8 +252,8 @@ const projectData = {
          third pass at this crop should move to the mesh's ?v= content hash
          instead of inventing a third filename. See the cache note in
          CLAUDE.md for why the bytes cannot change at a live path. */
-      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg', w: 1600, h: 1600,
-        full: '/assets/projects/pot-clip/cs-hero-clip.jpg',
+      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=efbfbfe5', w: 1600, h: 1600,
+        full: '/assets/projects/pot-clip/cs-hero-clip.jpg?v=efbfbfe5',
         altKey: 'proj.pot-clip.cs.alt.hero' },
       meta: [
         ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
@@ -281,8 +281,8 @@ const projectData = {
         { id: 'research', title: 'proj.pot-clip.cs.research.t',
           html: 'proj.pot-clip.cs.research.grid', aside: true,
           figures: [
-            { src: '/assets/projects/pot-clip/cs-storefront.jpg', w: 1000, h: 1778,
-              full: '/assets/projects/pot-clip/cs-storefront.jpg',
+            { src: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4', w: 1000, h: 1778,
+              full: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4',
               altKey: 'proj.pot-clip.cs.alt.store' },
           ] },
 
@@ -357,23 +357,23 @@ const projectData = {
                was lying on and keeps the title and both questions. */
             { label: 'proj.pot-clip.cs.process.1',
               text: 'proj.pot-clip.cs.process.1b', figures: [
-              { src: '/assets/projects/pot-clip/cs-paper-profiles.jpg', w: 1400, h: 596,
-                full: '/assets/projects/pot-clip/cs-paper-profiles.jpg',
+              { src: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=5edbb0ac', w: 1400, h: 596,
+                full: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=5edbb0ac',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
-              { src: '/assets/projects/pot-clip/cs-sketch-page.jpg', w: 1400, h: 1096,
-                full: '/assets/projects/pot-clip/cs-sketch-page.jpg',
+              { src: '/assets/projects/pot-clip/cs-sketch-page.jpg?v=88107ffb', w: 1400, h: 1096,
+                full: '/assets/projects/pot-clip/cs-sketch-page.jpg?v=88107ffb',
                 altKey: 'proj.pot-clip.cs.alt.sketches' },
             ] },
             { label: 'proj.pot-clip.cs.process.2',
               text: 'proj.pot-clip.cs.process.2b', figures: [
-              { src: '/assets/projects/pot-clip/cs-foam.jpg', w: 1200, h: 1500,
-                full: '/assets/projects/pot-clip/cs-foam.jpg',
+              { src: '/assets/projects/pot-clip/cs-foam.jpg?v=824ac2ae', w: 1200, h: 1500,
+                full: '/assets/projects/pot-clip/cs-foam.jpg?v=824ac2ae',
                 altKey: 'proj.pot-clip.cs.alt.foam' },
             ] },
             { label: 'proj.pot-clip.cs.process.3',
               text: 'proj.pot-clip.cs.process.3b', figures: [
-              { src: '/assets/projects/pot-clip/cs-blender.jpg', w: 1400, h: 895,
-                full: '/assets/projects/pot-clip/cs-blender.jpg',
+              { src: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde', w: 1400, h: 895,
+                full: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde',
                 altKey: 'proj.pot-clip.cs.alt.blender' },
             ] },
             /* CROPPED TO THE VIEWPORT. The source is a screenshot of the
@@ -387,8 +387,8 @@ const projectData = {
                alt.14; this is a different render and gets its own alt. */
             { label: 'proj.pot-clip.cs.process.4',
               text: 'proj.pot-clip.cs.process.4b', figures: [
-              { src: '/assets/projects/pot-clip/cs-render.jpg', w: 1400, h: 933,
-                full: '/assets/projects/pot-clip/cs-render.jpg',
+              { src: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada', w: 1400, h: 933,
+                full: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada',
                 altKey: 'proj.pot-clip.cs.alt.render' },
             ] },
           ] },
@@ -400,8 +400,8 @@ const projectData = {
           ],
           html: 'proj.pot-clip.cs.testing.b',
           figures: [
-            { src: '/assets/projects/pot-clip/cs-rim.jpg', w: 1000, h: 1778,
-              full: '/assets/projects/pot-clip/cs-rim.jpg',
+            { src: '/assets/projects/pot-clip/cs-rim.jpg?v=8f0f0861', w: 1000, h: 1778,
+              full: '/assets/projects/pot-clip/cs-rim.jpg?v=8f0f0861',
               altKey: 'proj.pot-clip.cs.alt.rim' },
           ] },
 
@@ -411,14 +411,14 @@ const projectData = {
         { id: 'posters', title: 'proj.pot-clip.cs.posters.t',
           text: 'proj.pot-clip.cs.posters.b',
           figures: [
-            { src: '/assets/projects/pot-clip/cs-poster-1.jpg', w: 900, h: 1273,
-              full: '/assets/projects/pot-clip/cs-poster-1.jpg',
+            { src: '/assets/projects/pot-clip/cs-poster-1.jpg?v=e75e799a', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-1.jpg?v=e75e799a',
               altKey: 'proj.pot-clip.cs.alt.poster1' },
-            { src: '/assets/projects/pot-clip/cs-poster-2.jpg', w: 900, h: 1273,
-              full: '/assets/projects/pot-clip/cs-poster-2.jpg',
+            { src: '/assets/projects/pot-clip/cs-poster-2.jpg?v=dad29eee', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-2.jpg?v=dad29eee',
               altKey: 'proj.pot-clip.cs.alt.poster2' },
-            { src: '/assets/projects/pot-clip/cs-poster-3.jpg', w: 900, h: 1273,
-              full: '/assets/projects/pot-clip/cs-poster-3.jpg',
+            { src: '/assets/projects/pot-clip/cs-poster-3.jpg?v=0b4bd52b', w: 900, h: 1273,
+              full: '/assets/projects/pot-clip/cs-poster-3.jpg?v=0b4bd52b',
               altKey: 'proj.pot-clip.cs.alt.poster3' },
           ] },
 
@@ -463,7 +463,7 @@ const projectData = {
          ever disagree, because a hand-maintained hash is a hash that will
          be wrong. */
       src: '/assets/projects/pot-clip/model.jmm?v=1c0b18a9',
-      poster: { src: '/assets/projects/pot-clip/14-object.jpg', w: 1400, h: 933 },
+      poster: { src: '/assets/projects/pot-clip/14-object.jpg?v=afb421be', w: 1400, h: 933 },
       // index into the alt.N series, 0-based — 13 resolves proj.…alt.14
       altIndex: 13,
     },
@@ -822,9 +822,15 @@ function mediaTag(entry, projectId, index, projectTitle, eager) {
      AVIF was generated and measured too and is not here: it came out 8%
      smaller than WebP on the home page, which does not pay for a second set
      of 50 files and a third source. */
-  const webp = src.replace(/\.jpg$/, '.webp');
+  /* QUERY-AWARE, because a path may carry a ?v= content hash. The old
+     /\.jpg$/ anchors at the end of the string, so 'x.jpg?v=ab12cd34' did not
+     match and the <source> would have pointed at the JPEG - which a browser
+     would happily accept as image/webp and then fail to decode. Both forms
+     go through one helper so they cannot drift. */
+  const toWebp = (p) => p.replace(/\.jpg(\?|$)/, '.webp$1');
+  const webp = toWebp(src);
   const webpSmall = (typeof entry === 'object' && entry.small)
-    ? entry.small.replace(/\.jpg$/, '.webp') : null;
+    ? toWebp(entry.small) : null;
   const webpSet = (webpSmall && entry.w)
     ? `${escapeAttr(webpSmall)} 800w, ${escapeAttr(webp)} ${entry.w}w`
     : escapeAttr(webp);
@@ -839,7 +845,7 @@ function mediaTag(entry, projectId, index, projectTitle, eager) {
   const loadAttrs = eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"';
   const img = `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}"${dims}${srcset}${track}${full}${exif}` +
               `${loadAttrs} decoding="async">`;
-  return src.endsWith('.jpg')
+  return /\.jpg(\?|$)/.test(src)
     ? `<picture><source type="image/webp" srcset="${webpSet}"${webpSizes}>${img}</picture>`
     : img;
 }

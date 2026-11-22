@@ -22,7 +22,9 @@ Bash. **Git:** `/Library/Developer/CommandLineTools/usr/bin/git` — the plain
 
 **Check it:** `node tools/audit.js` and `node tools/field-check.js`, before
 any commit touching more than one file, plus `node tools/model-check.js`
-when you touch the 3D viewer or repack its mesh. None replaces driving the
+when you touch the 3D viewer or repack its mesh. **Re-exporting a photograph
+needs nothing** — the pre-commit hook runs `tools/asset-rev.js` and the
+`?v=` hash follows the bytes. None replaces driving the
 page — and the model checker is the one that replaces *watching* it, since
 the pane freezes `requestAnimationFrame`.
 A `git config core.hooksPath .githooks` in a fresh clone turns the
@@ -1734,7 +1736,29 @@ scale with the column and only the 12px gap does not.
 twice.
 **What each crop took.** The profiles lost height and nothing else: the
 three paper pieces occupy the middle 48% of that frame and the rest is
-cutting mat. The sketch spread came in on every side, *"so it looks more
+cutting mat.
+**AND THE PENCIL ON THEM WAS DARKENED**, because it could not be read at
+442px: *"I feel like you cant see the drawing very easily, can you edit it a
+little bit to make the pencil marks more dark?"* Measured in the big card,
+the graphite sat at **223 against paper at 237 — a 14-level gap**. The edit
+is a levels stretch of 195–248 on LUMINANCE, applied as a per-channel
+multiplier so hue is preserved exactly (a per-channel stretch pulled the
+card's warmth around), and it takes that gap to **61**.
+**The mask is built from a BLURRED copy, and that is the whole trick.** Keyed
+off each pixel's own value, a dark stroke surrounded by paper scores LOW and
+gets excluded — the exact pixels the edit is for. Blurred at sigma 16, a
+stroke inherits the card's brightness and comes along, while the cutting mat
+(median 91) stays out of it entirely.
+**A 1.0 pre-blur, because grain is the expensive thing.** The stretch
+multiplies the paper's grain along with the graphite: the first version came
+out 377KB of jpeg against the 240KB it replaced. Softening before the
+stretch and sharpening gently after lands at **220KB / 162KB webp — lighter
+than the file it replaces** — and the drawing reads. Four combinations were
+rendered and weighed.
+**It is a reproduction adjustment, not a retouch.** Nothing is added or
+moved; the contrast that the camera lost on light graphite is put back. If
+an edit would ever change what the photograph SHOWS, it does not belong in
+a portfolio of real work. The sketch spread came in on every side, *"so it looks more
 zoomed in and we just see the paper"* — to just inside the notebook page,
 which drops the dark desk it was lying on and keeps the title and both
 handwritten questions. **The bottom question sits close to the edge**, so
@@ -1805,17 +1829,33 @@ feature is simply absent rather than approximate. And `.cs-fig img` is
 `width`/`height` attributes — the layout silently reverts to the old
 heights instead of showing a distorted picture, which is why it reads as
 "nothing changed" rather than as a bug.
-**So: any change to the BYTES at a live `/assets/` path needs a new path.**
-`cs-profiles` → `cs-paper-profiles`, `cs-sketches` → `cs-sketch-page`, and
-`cs-hero` → `cs-hero-bowl` → `cs-hero-clip`, old files deleted each time.
-**That last one renamed twice in two commits, and that is the threshold**: a
-third pass at the same picture should move to the mesh's `?v=` content hash
-rather than invent a third name. The hash costs a query-aware
-`.jpg`→`.webp` swap in `mediaTag` (which every project uses, so it is a
-change worth making deliberately rather than mid-iteration) plus an audit
-check that each hash matches its file, the way `model-check` does for the
-mesh. A filename costs no code at all, which is why it wins the first time
-and loses the third.
+**SO THE CASE-STUDY ASSETS CARRY A `?v=` CONTENT HASH NOW**, the thing the
+mesh has always had. It was renames first — `cs-profiles` →
+`cs-paper-profiles`, `cs-sketches` → `cs-sketch-page`, `cs-hero` →
+`cs-hero-bowl` → `cs-hero-clip` — which works, costs no code, and costs a
+new filename every time a crop is tuned. Four re-exports in four turns is
+where that stops being cheap: the next one had no honest name left, only
+`-v2`.
+**`node tools/asset-rev.js` writes the hashes and the pre-commit hook runs
+it**, so changing the bytes updates the URL on its own — the same shape as
+`write-fallback.js`, and for the same reason. *A hash somebody has to
+remember to update is a hash that will be wrong*, which is the line the
+model's own note has carried from the start.
+**It is opt-in by marker**: it only touches paths that ALREADY carry a
+`?v=`, so enrolling a path is adding one and nothing sweeps through the
+other ~90 assets. `?v=0` is the way in — stale by definition, so the first
+run fills it. **`.jmm` is skipped**, because `model-check.js` owns the
+mesh's hash and two tools writing the same characters is how they drift.
+**`mediaTag` had to become query-aware**, and this is the part that would
+have failed silently: the webp path came from `src.replace(/\.jpg$/, …)`,
+anchored at the end of the string, so `x.jpg?v=ab12cd34` did not match and
+the `<source>` would have offered a JPEG labelled `image/webp` — which a
+browser accepts and then cannot decode. Both that and the `endsWith('.jpg')`
+test go through one helper now, unit-tested on four forms including
+`/a/jpg.dir/c.jpg`.
+**`audit.js` runs `asset-rev --check`** as belt and braces, because a hook
+only runs where `core.hooksPath` is set and that is local config which does
+not survive a clone. Made to fail before being trusted.
 **`audit.js` now checks that every `/assets/` path in `projectData` resolves
 to a file and that each jpg has its webp sibling** — 91 paths — because a
 rename done halfway is otherwise silent, and `<picture>` falls back on an
