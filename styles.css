@@ -3678,9 +3678,25 @@ body.is-loading { overflow: hidden; }
    THE MARGIN IT SITS IN IS THE 66ch MEASURE'S LEFTOVER, and the width is
    that leftover rather than a number of its own: the prose caps at 690.3
    and the pull quote at 711.5, so 100% - 734 is the gap past the wider
-   of the two with 22.5px of air in front of the drawing. At 1440 the
-   column is 924 and that comes to exactly 190; the min() is the guard for
-   a column wider than this page has today.
+   of the two. At 1440 the column is 924 and that comes to exactly 190;
+   the min() is the guard for a column wider than this page has today.
+   IT IS INSET 26 FROM THE RIGHT, NOT FLUSH TO IT. Jack asked for it
+   "slightly more to the left", and 26 is the gap this page repeats - the
+   quote's own top margin - rather than a number of its own.
+   WHAT THAT EATS IS BOX, NOT INK, which is the only reason there was room
+   for it. Flush, the box left 22.5px of air in front of the quote's BOX,
+   which is what the width above is derived from - but the drawing runs
+   diagonally, handle top-left and drip bottom-right, so its alpha starts
+   at 65% of the frame's width across the bottom quarter where the quote
+   sits and reaches the frame's left edge only up at the top. Scanning the
+   mask row by row against every line box in the section, the tightest
+   ink-to-ink gap at 1440 is Spanish at 53.3px (the handle's tip beside a
+   prose line ending at 680.7), where English has 100.5, Italian 113.6 and
+   Japanese 152. The inset spends 26 of the 53.3 and leaves 27.3 in the
+   binding language; at 1280, where the drawing is 106 wide, it is 36.7.
+   So the box now overlaps the quote's by 3.5px and nothing drawn in it
+   comes near anything set in the column. Re-run that scan, not the box
+   arithmetic, before moving it again.
    AND IT IS DESKTOP-ONLY, which is honest rather than lazy. The column is
    840 at 1280 and the drawing 106 wide; a step narrower and it is a speck,
    and at 1101 the prose takes the whole column and there is no margin at
@@ -3694,7 +3710,7 @@ body.is-loading { overflow: hidden; }
 .cs-art { display: none; }
 @media (min-width: 1280px) {
   .cs-art {
-    display: block; position: absolute; right: 0; bottom: 0;
+    display: block; position: absolute; right: 26px; bottom: 0;
     width: min(190px, calc(100% - 734px));
     aspect-ratio: var(--art-ar);
     background: var(--black);

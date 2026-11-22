@@ -1882,12 +1882,33 @@ it. Exported **380 × 667** from the 426 × 735 original, trimmed to its own
 ink box (414 × 727) so the frame is the drawing; 9.8K as a palette PNG.
 **The width is the measure's leftover rather than a number of its own.**
 The prose caps at 690.3 and the pull quote at 711.5, so
-`calc(100% - 734px)` is whatever lies past the wider of the two with
-22.5px of air in front of the drawing — exactly **190 at 1440**, where the
-column is 924. Bottom-aligned, so it ends on the quote's last line; the
-section has no bottom padding, so `bottom: 0` is that line. Measured in
-all four languages at 1440: **190 × 333.5, 22.5 of clearance, 0.0 at the
-bottom**, with the section 391.7 tall in English and 474.9 in Italian.
+`calc(100% - 734px)` is whatever lies past the wider of the two — exactly
+**190 at 1440**, where the column is 924. Bottom-aligned, so it ends on
+the quote's last line; the section has no bottom padding, so `bottom: 0`
+is that line. Measured in all four languages at 1440: **190 × 333.5, 0.0
+at the bottom**, with the section 391.7 tall in English and 474.9 in
+Italian.
+**IT IS INSET 26 FROM THE RIGHT, NOT FLUSH TO IT**, on *"move the utensil
+clip art in The problem section slightly more to the left"*. 26 is the
+gap this page repeats — the pull quote's own top margin — rather than a
+number of its own.
+**WHAT THAT SPENDS IS BOX, NOT INK, and that is the only reason there was
+room for it.** Flush, the box left 22.5px of air in front of the quote's
+BOX, which is the number the width above is derived from — but the
+drawing runs diagonally, handle top-left and drip bottom-right, so its
+alpha starts at **65% of the frame's width across the bottom quarter**
+where the quote sits, and reaches the frame's left edge only up at the
+top where the prose lines are shorter. Scanning the mask row by row
+against every line box in the section, the tightest ink-to-ink gap at
+1440 was **Spanish at 53.3px** — the handle's tip beside a prose line
+ending at 680.7 — against 100.5 in English, 113.6 in Italian and 152 in
+Japanese. The inset spends 26 of that 53.3 and leaves **27.3 in the
+binding language**; at 1280, where the drawing is 106 wide, it leaves
+36.7. So the box now overlaps the quote's by 3.5px and nothing drawn in
+it comes near anything set in the column.
+**Re-run that scan, not the box arithmetic, before moving it again** —
+the box arithmetic says there are 22.5px to play with and the drawing
+says there are 53.3, and the second one is what you can see.
 **AND IT IS DESKTOP-ONLY, which is honest rather than lazy.** At 1280 the
 column is 840 and the drawing 106 wide; a step narrower and it is a speck,
 and at 1101 the prose takes the whole column and there is no margin left
@@ -2272,6 +2293,28 @@ Tools" because the row lists Blender, Illustrator and Canva while the
 project's other tools were a scalpel, dense foam and spray cans: the list
 was accurate and the label was not.
 
+**AND THE LEDE IS NOW THE CARD'S SENTENCE TOO**, on Jack asking for
+"Two movable clips that sit on a pot rim and hold your spoon above the
+pot" to become *"Designed, hand-sculpted, digitally modeled, and
+tested."* **That finishes the move the title started.** The note above
+records the old title putting the object's function in the headline
+"which the lede repeats one line below it" — and the lede was repeating
+something else as well: the Solution card, 150px further down, says
+"Two clips that slide along the pot rim and hold the utensil above the
+food, so drips fall back in", which is the same sentence with the
+*why* attached. So the page opened by saying what the thing is three
+times before saying anything else. It says it once now, on the card
+that explains it, and the lede carries the process instead — the same
+line the gallery card outside carries, so the card and the page it
+opens agree word for word.
+**It cost nothing below it and removed two widows.** Measured at 1440
+against `git stash`: the lede is two lines in all four languages where
+Spanish and Italian were **three, with a 39.7px and a 51.4px last
+line**; the masthead is 746.1 tall before and after in every language
+(the poster sets it, not the text); and the document height, the
+problem section and every landmark below are identical. What moved is
+the text column's foot — see the brief note below for the numbers.
+
 **THE EYEBROW IS A CREDIT LINE UNDER THE TITLE, NOT A LABEL OVER IT.**
 Jack: *"move the red eyebrow to under the title and have it read as A
 product concept for Alessi, NABA Milan 2026."* Over the title it said
@@ -2330,8 +2373,14 @@ Jack: *"move The brief box up to the empty space to the left of the hero
 photo and above the problem, solution and outcome."* There was 318px of it
 at 1440 — the left column ran out at the meta table while the poster
 carried on — and the brief is the one block early enough to belong there
-and short enough to fit. Measured after: the two columns end within 34px
-of each other. In the column it takes its 36px gap above instead of below,
+and short enough to fit. The 34px this line used to claim for the gap
+between the two columns' feet has not been true for several commits —
+measured at 1440 today it is **106.5 in English, 85.2 in Spanish and
+Italian, 123.9 in Japanese**, and the poster is what sets the masthead's
+height in every one of them, so the text column's foot floats. It moved
+again when the lede came down to two lines in es/it (see the lede note
+below); it is recorded rather than tuned, because nothing is aligned to
+it. In the column the brief takes its 36px gap above instead of below,
 since the masthead's own 56px is what separates it from the summary cards.
 **AND IT CARRIES `text-wrap: pretty`.** Jack: *"in The brief section dont
 let there be a hanging widow or whatever its called."* English broke "…on a store / **shelf.**" — one word
