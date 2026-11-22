@@ -1772,6 +1772,16 @@ what an editorial page does with photographs of different shapes. **A lone
 portrait is capped at 400px** — at the column's full 924 a 1000×1778 source
 draws 1643px tall, two and a half screens of one photograph.
 
+**LIMITATIONS ENDS ON ITS LAST "NEXT STEP", WITH NOTHING AFTER IT.** There
+was a closing line — *"A second version would start with rim fit and heat
+and let the form follow"* — and Jack took it out. It was the four rows of
+the table said again in one sentence: rim fit and heat are the first two
+rows, and "let the form follow" is what a list of next steps already
+means. The brief's own words for that are *unnecessary descriptions*. **It
+was the only user of `after`**, so the renderer branch and the four i18n
+keys came out with it rather than being left idle — the same call as
+`titleTop` and `stats`.
+
 **TESTING CARRIES NO FIGURES ANY MORE.** It opened on two — `~50%` of pots
 and `1 shoot` — and Jack took them out: *"just to make that section
 smaller."* Nothing left the page with them: the half survives in
@@ -2136,6 +2146,28 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
+**THE EYEBROW IS A CREDIT LINE UNDER THE TITLE, NOT A LABEL OVER IT.**
+Jack: *"move the red eyebrow to under the title and have it read as A
+product concept for Alessi, NABA Milan 2026."* Over the title it said
+"Product design · 2026" — a category and a year, which is the job the
+gallery card's chip already does on the page that card opens. Under it,
+naming the brief and the school, it answers what kind of thing this is and
+who set it, which is the question a case study opens on.
+**It is spaced like a caption now**: 14px above it and 36 below, where it
+was one 18px gap. It belongs to the title, so the gap that attaches it is
+the smaller one; 14 is `.cs-brief-t`'s gap to its own paragraph, the same
+relationship, and 36 is the lede's own gap to the meta table, so the
+rhythm below the title is one step repeated. One line in all four
+languages at 1440, 1200 and 1101.
+**It stays set in caps**, like every other eyebrow, because the string is
+stored sentence-case and the uppercase is the element's. The contact
+statement is the page's one deliberate exception and it is an exception for
+its own reason.
+**"Alessi" in it is not a client claim**: the disclaimer that says the
+project is not affiliated is unchanged at the foot of the page, and the
+title and the URL still carry no brand name, which is what the safety
+constraint actually asks for.
+
 **THE THREE SUMMARY CARDS ARE PROBLEM / SOLUTION / OUTCOME, AND THE
 OUTCOME IS DELIVERABLES NOW.** Jack rewrote all three on 2026-11-22. The
 first two got longer and more specific — the problem names the small
@@ -2198,26 +2230,56 @@ It costs 6px of measure, since `box-sizing` is `border-box`. Re-measured
 after: the paragraph still sets three lines in en/es/it and two in ja at
 1440, still carries no widow, and the box is 205.7px against 199.7.
 
-**THE POSTER STARTS LEVEL WITH THE BACK BUTTON**, and is 4.4% smaller.
-*"Move the hero poster so that the top of it is at the same height as the
-top of the back to work button"*, and *"maybe make the tiniest bit
-smaller."* The button is in the flow above the masthead, so the lift is its
-own block: 45.5px of button — 12px padding, 2px border, a 17.5px line —
-plus its 36px margin-bottom. The size came off the grid (1.15fr / 1fr to
-**1.25fr / 1fr**, 548.8 to 524.4) rather than a cap on the figure, because
-a cap would leave slack in the media column and the poster's right edge has
-to stay on the measure. The 24px goes to the text column, which now carries
-the brief.
-**Japanese gets its own number**, 48.5px, because Noto Sans JP's line box
-is 3px deeper and one value for four languages would be a near-miss in one
-of them. Giving `.project-back` a fixed line-height would fix it at the
-source and change a control on all seven projects, which is a different
-change.
-**The lift is in a `min-width: 1101px` query**, the only one in this
+**THE POSTER STARTS AT THE TOP OF THE TITLE TEXT**, and is 4.4% smaller
+than it began. The size came off the grid (1.15fr / 1fr to **1.25fr /
+1fr**, 548.8 to 524.4) on *"maybe make the tiniest bit smaller"*, rather
+than from a cap on the figure, because a cap would leave slack in the
+media column and the poster's right edge has to stay on the measure. The
+24px goes to the text column, which now carries the brief.
+**It was level with the BACK TO WORK button first**, lifted out of the
+masthead by that button's own 45.5px plus its 36px margin — and that was
+right while the eyebrow sat above the title, because the title was not
+the top of its column. With the eyebrow moved under it, the title IS the
+column, the two columns begin together, and the lift is gone.
+**What is left is the ink offset, and it is the whole rule.** The figure's
+top edge is a hard border; the title's is the top of a capital letter,
+which sits BELOW its line box — `line-height: 0.95` is tighter than the
+font, so the content area overhangs by half the difference, and the cap
+sits lower again by the gap between the font's ascent and the actual
+ascent of these glyphs. Measured through the font's own metrics (canvas
+`fontBoundingBoxAscent` against `actualBoundingBoxAscent`): **6.83px at a
+73.6px title, which is 0.0928em.**
+**As a fraction, not a pixel value**, because the title is clamped and so
+different at every width between 1101 and ~1132 — and every term in that
+offset is proportional to the font-size, so one ratio is exact
+everywhere. Measured **0.00 at 1440 and 1200, 0.35 at 1101**, in all four
+languages.
+**And the Japanese override is gone.** The old number needed one because
+it measured a CONTROL above the masthead and Noto Sans JP made that
+control 3px taller. This measures a sibling in the same grid row, and the
+title is "POT CLIP UTENSIL REST" — Latin in all four languages, Archivo
+Black in all four — so one number is right in each. One rule where there
+were two.
+**It stays in the `min-width: 1101px` query**, the only one in this
 stylesheet, because below that the masthead is one column with the media
-`order: -1` and FIRST — the same margin would pull the poster up over the
-button instead of level with it. One query rather than two resets, and the
-Japanese override would have needed a reset of its own.
+`order: -1` and FIRST, where a top margin would just push the opening
+frame down the page for nothing.
+
+**`--project-title-size` LIVES IN `:root`, AND PUTTING IT ANYWHERE ELSE
+BROKE THREE PROJECTS.** The offset above is a fraction of the title's
+size, so the clamp became a token rather than being written twice. It was
+declared on `.cs-mast` first, which reads correctly — both users are
+inside the masthead — and is wrong, because the `font-size` rule is
+`.project-body h2, .cs-title-slot h2`, one declaration shared with the six
+write-up layouts. Outside `.cs-mast` the var is undefined, an undefined
+`var()` makes the declaration **invalid at computed-value time**, and
+`font-size` then falls back to *inherit* — so easter-riverside, sandcastles
+and fuse drew their titles at **16px instead of 73.6**.
+**Nothing caught it**: the braces balance, `audit.js` is clean, and the one
+project being worked on looked perfect. Diffing the other six against
+`git stash` is what found it — which is the check this file already asks
+for after any change to the case study, and this is the commit that proves
+why.
 
 **THE MASTHEAD IS THE POSTER, NOT THE PHOTOGRAPH IN IT.** Jack: *"change the
 current hero image to 6.jpg. Its a poster that I made with the exact photo
@@ -2779,6 +2841,35 @@ JavaScript actually sees.
   `@media (hover: hover)`. That is the trade the resting block was bought to
   avoid, and it is the same trade every other control on the site already
   makes.
+- **AND `.project-back` LOST ITS RESTING BLOCK FOR THE SAME REASON, ON ALL
+  SEVEN PROJECTS.** Jack: *"make the back to work button like most buttons,
+  because it's too loud. Make it not have the red drop shadow til after the
+  hover and have it not change to white on hover."* It carried a 4px coral
+  block standing still, argued for on the grounds that it is **sticky** and
+  the page scrolls underneath it, so it needed an edge of its own. That is
+  the same argument the hero CTA's resting block was reverted for, and it
+  fails the same way: this is a filled rectangle with a 2px border and
+  reversed type, which is already unmistakably a control, and a button
+  wearing its shadow at rest has nowhere to go when you point at it. It was
+  the only control on the page carrying one.
+  **The edge worry was tested rather than assumed.** Driven over
+  easter-riverside's full-bleed sky photograph in both themes, the button
+  reads cleanly — an opaque near-black chip on the picture in light, an
+  opaque off-white one in dark. It never needed the shadow to separate.
+  **Hover is the house pattern now**: a 3px lift into a **6px** block, 3px
+  past the resting silhouette, the same proportion `.form-submit` and
+  `.btn-block` use. The colour inversion went with the block — `.btn-block`
+  does not invert either, so the lift and the block are the whole gesture —
+  and `:active` drops both, so a press reads as a press.
+  **The transition was wrong in both directions and that is the "animation"
+  half of the request.** It listed `background` and `color`, which no longer
+  change, and NOT `box-shadow`, which is the one thing that now arrives on
+  hover — so the block popped in with no transition at all. It is
+  `transform .25s, box-shadow .25s`, the same two properties and the same
+  duration as `.form-submit`.
+  **The hover pad is unaffected**: `--lift-x/y` are still 3px and
+  `--lift-edge` 2px, so the `:hover::before` still gives back exactly what
+  the lift takes.
 - **The CTA arrow is `scale(1.3, 1.85)`** — wider as well as longer. `\2193`
   is drawn narrow, a thin stem under a shallow chevron, and at 15.2px the head
   read as a tick. X stays well under Y deliberately: at equal scales the glyph

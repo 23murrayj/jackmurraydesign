@@ -430,6 +430,21 @@ picture { display: contents; }
   --ff-display: 'Archivo Black', 'Noto Sans JP', sans-serif;
   --ff-body: 'Space Grotesk', 'Noto Sans JP', sans-serif;
   --ff-condensed: 'Anton', 'Noto Sans JP', sans-serif;
+  /* THE PROJECT TITLE'S SIZE, as a token because three rules need it: the
+     <h2> itself (one rule, shared by the case study and the six write-up
+     layouts) and the case-study masthead's top margin, which is a FRACTION
+     of it. A second copy of the clamp is a number mirrored by hand, which
+     is a number that goes stale - the whole lesson of the loading
+     skeleton.
+     IT LIVES HERE AND NOT ON .cs-mast, and that is a measured correction
+     rather than tidiness. Declared on .cs-mast it resolved for the case
+     study and was UNDEFINED for `.project-body h2`, which shares the rule
+     - so font-size fell back to inherit and three projects drew their
+     title at 16px. Nothing caught it: the braces balance, the audit is
+     clean, and the one project being worked on looked right. Diffing the
+     other six against `git stash` is what found it, which is why that
+     check is in here as a rule. */
+  --project-title-size: clamp(2.3rem, 6.5vw, 4.6rem);
 }
 
 :root[data-theme="dark"] {
@@ -2702,7 +2717,13 @@ body.is-loading { overflow: hidden; }
   background: var(--black); color: var(--white);
   border: 2px solid var(--black); padding: 12px 20px; cursor: pointer;
   margin-bottom: 36px;
-  transition: background .25s, color .25s, transform .2s;
+  /* transform and box-shadow, because those are the only two things that
+     move now. It used to transition background and color and NOT
+     box-shadow, which is backwards twice over: the colours no longer
+     change, and the block it grows on hover was the one property arriving
+     with no transition on it at all - it popped. Same two properties and
+     the same .25s as .form-submit. */
+  transition: transform .25s, box-shadow .25s;
   /* Sticks to the top of its overlay instead of scrolling away. These pages
      run several screens long and the only way back was to scroll all of it
      again - Escape works but nobody discovers it. Sticky rather than a
@@ -2711,13 +2732,33 @@ body.is-loading { overflow: hidden; }
      ancestor (.project-overlay / .about-overlay are the overflow-y: auto
      elements), so this needs no JS. */
   position: sticky; top: 14px; z-index: 5;
-  /* the content scrolls underneath, so it needs an edge of its own to sit
-     on rather than blending into whatever happens to pass behind it */
-  box-shadow: 4px 4px 0 var(--accent);
 }
+/* IT CASTS NOTHING AT REST, AND IT DOES NOT INVERT. Jack: "make the back
+   to work button like most buttons, because it's too loud. Make it not
+   have the red drop shadow til after the hover and have it not change to
+   white on hover."
+   It carried a 4px coral block standing still, argued for on the grounds
+   that it is STICKY and the page scrolls underneath it, so it needed an
+   edge of its own. That reasoning is the same one the hero CTA's resting
+   block was reverted for, and it is wrong the same way: this is a filled
+   near-black rectangle with white type and a 2px border, which is already
+   unmistakably a control, and a button wearing its shadow at rest has
+   nowhere to go when you point at it. It was also the only control on
+   this page carrying one.
+   HOVER IS THE HOUSE PATTERN NOW: a 3px lift into a 6px block, which is
+   3px past the resting silhouette - the same proportion .form-submit and
+   .btn-block use, and the same one the hero CTA went back to. The colour
+   inversion went with the block: .btn-block does not invert either, so
+   the lift and the block are the whole gesture.
+   :active drops both, like .btn-block, so a press reads as a press
+   instead of the button hanging in its hovered state. */
 @media (hover: hover) {
-  .project-back:hover { background: var(--white); color: var(--black); transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 5px 5px 0 var(--accent); }
+  .project-back:hover {
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
+    box-shadow: 6px 6px 0 var(--accent);
+  }
 }
+.project-back:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 
 .project-media { margin-bottom: 40px; }
 
@@ -3084,10 +3125,14 @@ body.is-loading { overflow: hidden; }
   background: var(--black); color: var(--white);
   padding: 6px 12px; margin-bottom: 18px;
 }
+/* The size comes from --project-title-size in :root - see the note there,
+   and note that this selector covers BOTH the case study's title and the
+   other six layouts', so anything scoped narrower than :root breaks one
+   of them. */
 .project-body h2,
 .cs-title-slot h2 {
   font-family: var(--ff-display);
-  font-size: clamp(2.3rem, 6.5vw, 4.6rem);
+  font-size: var(--project-title-size);
   letter-spacing: -0.02em; margin-bottom: 22px;
 }
 .project-desc {
@@ -3149,23 +3194,33 @@ body.is-loading { overflow: hidden; }
   display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px;
   align-items: start; margin-bottom: 56px;
 }
-/* THE POSTER STARTS LEVEL WITH THE BACK BUTTON. Jack: "move the hero
-   poster so that the top of it is at the same height as the top of the
-   back to work button." That button is in the flow above the masthead, so
-   the lift is its own block: 45.5px of button (12px padding, 2px border
-   and a 17.5px line) plus its 36px margin-bottom.
-   The button is 48.5px tall in Japanese, where Noto Sans JP's line box is
-   3px deeper, so that language gets its own number further down rather
-   than a shared one that is wrong in one of four. Giving .project-back a
-   fixed line-height would fix it at the source and change a control on all
-   seven projects, which is not this change. */
+/* THE POSTER STARTS AT THE TOP OF THE TITLE TEXT. Jack: "move the hero
+   photo poster down so the top of it is at the top of the title text."
+   It was level with the BACK TO WORK button, lifted out of the masthead
+   by the button's own 45.5px plus its 36px margin - and that was right
+   while the eyebrow sat above the title, because the title was not the
+   top of its column. With the eyebrow moved under it the title IS the
+   column, so the two columns begin together and the lift is gone.
+   WHAT IS LEFT IS THE INK OFFSET, and it is the whole rule now. The
+   figure's top edge is a hard border; the title's is the top of a capital
+   letter, which sits BELOW its line box - line-height 0.95 is tighter
+   than the font, so the content area overhangs by half the difference,
+   and the cap sits lower again by the gap between the font's ascent and
+   the actual ascent of these glyphs. Measured through the font's own
+   metrics (canvas fontBoundingBoxAscent against actualBoundingBoxAscent):
+   6.83px at a 73.6px title, which is 0.0928em.
+   AS A FRACTION, NOT A PIXEL VALUE, because the title is clamped and
+   therefore different at every width between 1101 and ~1132 - and every
+   term in that offset is proportional to the font-size, so one ratio is
+   exact everywhere. Measured 0.0 at 1101, 1200 and 1440.
+   AND NO JAPANESE OVERRIDE ANY MORE. The old number needed one because it
+   measured a CONTROL above the masthead, and Noto Sans JP's line box made
+   that control 3px taller. This measures a sibling in the same grid row,
+   and the title is "POT CLIP UTENSIL REST" - Latin in all four languages,
+   set in Archivo Black in all four - so there is one number and it is
+   right in each. One rule where there were two. */
 @media (min-width: 1101px) {
-  .cs-mast-media { margin-top: calc(-45.5px - 36px); }
-  /* Noto Sans JP's line box is 3px deeper, so the button is 48.5 there.
-     One number for four languages would be a near-miss in one of them,
-     and the alternative - a fixed line-height on .project-back - changes
-     a control on all seven projects. */
-  html[lang="ja"] .cs-mast-media { margin-top: calc(-48.5px - 36px); }
+  .cs-mast-media { margin-top: calc(var(--project-title-size) * 0.0928); }
 }
 /* A min-width query, which this stylesheet otherwise does not use, because
    the lift only means anything while the masthead is two columns. Below
@@ -3173,11 +3228,18 @@ body.is-loading { overflow: hidden; }
    poster up over the back button instead of level with it. Pairing it with
    the existing max-width: 1100 block is one rule rather than two resets,
    and the Japanese override would have needed a reset of its own. */
+/* UNDER THE TITLE, SO IT IS SPACED LIKE A CREDIT LINE RATHER THAN A
+   LABEL. 14px above it and 36 below: it belongs to the title, so the gap
+   that attaches it is the smaller one, and 36 is the lede's own gap to
+   the meta table, so the rhythm below the title is one step repeated. It
+   was one 18px gap when it sat on top, where it only had to separate
+   itself from the thing it introduced. The 14 is .cs-brief-t's gap to its
+   own paragraph, which is the same relationship. */
 .cs-eyebrow {
   display: block;
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.8px;
   text-transform: uppercase; color: var(--accent-ink);
-  margin-bottom: 18px;
+  margin-bottom: 36px;
 }
 /* The chip and the <h2> are moved in here by fillProjectDetail rather than
    written twice - the heading is the overlay's aria-labelledby target, so
@@ -3185,7 +3247,7 @@ body.is-loading { overflow: hidden; }
    .project-body h2 rule it shares; only the line-height changes, because at
    73.6px a normal line box opens a visible gap between two lines of a
    wrapped title. */
-.cs-title-slot h2 { margin-bottom: 20px; line-height: 0.95; }
+.cs-title-slot h2 { margin-bottom: 14px; line-height: 0.95; }
 .cs-lede {
   font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5;
   max-width: 34ch; margin-bottom: 36px;

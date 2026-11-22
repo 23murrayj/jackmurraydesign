@@ -530,9 +530,18 @@ const projectData = {
               altKey: 'proj.pot-clip.cs.alt.poster3' },
           ] },
 
+        /* IT ENDS ON THE LAST "NEXT STEP", with nothing after it. There
+           was a closing line - "A second version would start with rim fit
+           and heat and let the form follow" - and Jack took it out. It was
+           the four rows of the table said again in one sentence: rim fit
+           and heat are the first two rows, and "let the form follow" is
+           what a list of next steps already means. The page's own brief
+           calls that "unnecessary descriptions".
+             It was the only user of `after`, so the renderer branch and
+           the four i18n keys came out with it rather than being left
+           idle - the same call as `titleTop` and `stats`. */
         { id: 'limits', title: 'proj.pot-clip.cs.limits.t',
-          html: 'proj.pot-clip.cs.limits.b',
-          after: 'proj.pot-clip.cs.limits.close' },
+          html: 'proj.pot-clip.cs.limits.b' },
       ],
       /* THE DISCLAIMER IS A SAFETY CONSTRAINT, NOT A FOOTNOTE. pot-clip
          carries a real trademark and is not a client project; the paragraph
@@ -1319,7 +1328,6 @@ function renderCaseStudy(data) {
     // canvas; either way they are already on the page
     if (!sec.aside && !sec.stage) out += figs(sec.figures);
     if (sec.textBelow) out += prose;
-    if (sec.after) out += csText('p', 'cs-after', sec.after);
     return out + '</section>';
   };
 
@@ -1339,9 +1347,19 @@ function renderCaseStudy(data) {
   projectCase.innerHTML =
     '<header class="cs-mast">'
     + '<div class="cs-mast-text">'
-      + csText('span', 'cs-eyebrow', cs.eyebrow)
       // the chip and the <h2>, moved in by fillProjectDetail
       + '<div class="cs-title-slot"></div>'
+      /* THE EYEBROW IS A CREDIT LINE UNDER THE TITLE, not a label over it.
+         Jack: "move the red eyebrow to under the title and have it read as
+         A product concept for Alessi, NABA Milan 2026." Over the title it
+         was a category and a year - the same job the gallery card's chip
+         does, done again on the page the card opens. Under it, naming the
+         brief and the school, it is the line that says what kind of thing
+         this is and who set it, which is the question a case study opens
+         on. The project is still not an Alessi one: the disclaimer that
+         says so is unchanged at the foot of the page, and the title and
+         the URL still carry no brand name. */
+      + csText('span', 'cs-eyebrow', cs.eyebrow)
       + csText('p', 'cs-lede', cs.lede)
       + '<dl class="cs-meta">' + cs.meta.map((p) => '<div>'
         + csText('dt', 'cs-meta-k', p[0]) + csText('dd', 'cs-meta-v', p[1])
