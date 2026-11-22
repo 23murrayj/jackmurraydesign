@@ -2159,10 +2159,26 @@ the smaller one; 14 is `.cs-brief-t`'s gap to its own paragraph, the same
 relationship, and 36 is the lede's own gap to the meta table, so the
 rhythm below the title is one step repeated. One line in all four
 languages at 1440, 1200 and 1101.
-**It stays set in caps**, like every other eyebrow, because the string is
-stored sentence-case and the uppercase is the element's. The contact
-statement is the page's one deliberate exception and it is an exception for
-its own reason.
+**IT IS SET IN SENTENCE CASE, WHICH IS THE SECOND EXCEPTION ON THE PAGE.**
+It shipped in caps for one commit, on the reasoning that the string is
+stored sentence-case and the uppercase belongs to the element, like every
+other eyebrow. Jack: *"make the eyebrow sentence case like I wrote it."*
+He is right, and the reason is the same one that took the caps off
+`.contact-statement`: this is a **sentence**, not a category label, and 44
+characters of tracked capitals under a 73.6px title is a second headline
+shouting under the first.
+**The 1.8px of tracking went with the caps**, and that is consequence
+rather than tidying: tracking is there to open up uppercase Latin, where
+every glyph is the same height and the counters need air. On lowercase it
+reads as broken word spacing — the same reason nine classes reset their
+tracking under `html[lang="ja"]`, one script along. `.cs-eyebrow` stays in
+that Japanese list for its `line-break: strict` half, which still decides
+where a Japanese sentence may break.
+**So the page now has two kinds of small coral line and that is correct**:
+the meta keys and the card headers are LABELS and stay tracked caps; this
+one is a line of prose that happens to be small. Measured, the ink went
+from about 380px to **269.8** in English — one line in all four languages
+at 1440 and 390, two in es/it/ja at 320, and no overflow anywhere.
 **"Alessi" in it is not a client claim**: the disclaimer that says the
 project is not affiliated is unchanged at the foot of the page, and the
 title and the URL still carry no brand name, which is what the safety

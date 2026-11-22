@@ -3212,7 +3212,7 @@ body.is-loading { overflow: hidden; }
    AS A FRACTION, NOT A PIXEL VALUE, because the title is clamped and
    therefore different at every width between 1101 and ~1132 - and every
    term in that offset is proportional to the font-size, so one ratio is
-   exact everywhere. Measured 0.0 at 1101, 1200 and 1440.
+   exact everywhere. Measured 0.00 at 1440 and 1200, 0.35 at 1101.
    AND NO JAPANESE OVERRIDE ANY MORE. The old number needed one because it
    measured a CONTROL above the masthead, and Noto Sans JP's line box made
    that control 3px taller. This measures a sibling in the same grid row,
@@ -3223,11 +3223,10 @@ body.is-loading { overflow: hidden; }
   .cs-mast-media { margin-top: calc(var(--project-title-size) * 0.0928); }
 }
 /* A min-width query, which this stylesheet otherwise does not use, because
-   the lift only means anything while the masthead is two columns. Below
-   1101 the media is order: -1 and FIRST, so the same margin would pull the
-   poster up over the back button instead of level with it. Pairing it with
-   the existing max-width: 1100 block is one rule rather than two resets,
-   and the Japanese override would have needed a reset of its own. */
+   the offset only means anything while the masthead is two columns. Below
+   1101 the media is order: -1 and FIRST, so the same margin would just
+   push the opening frame down the page with nothing beside it to line up
+   with. */
 /* UNDER THE TITLE, SO IT IS SPACED LIKE A CREDIT LINE RATHER THAN A
    LABEL. 14px above it and 36 below: it belongs to the title, so the gap
    that attaches it is the smaller one, and 36 is the lede's own gap to
@@ -3235,10 +3234,25 @@ body.is-loading { overflow: hidden; }
    was one 18px gap when it sat on top, where it only had to separate
    itself from the thing it introduced. The 14 is .cs-brief-t's gap to its
    own paragraph, which is the same relationship. */
+/* SENTENCE CASE, AS JACK WROTE IT. "Make the eyebrow sentence case like I
+   wrote it." It is a sentence now rather than a category label - "A
+   product concept for Alessi, NABA Milan 2026" - and 44 characters of
+   tracked capitals under a 73.6px title is a second headline shouting
+   under the first.
+   THE TRACKING GOES WITH THE CAPS, and that is not optional tidying: 1.8px
+   is there to open up uppercase Latin, where every glyph is the same
+   height and the counters need air. On lowercase it reads as broken word
+   spacing - the same reason nine classes reset their tracking under
+   html[lang="ja"], one script along.
+   This leaves the page with two small coral lines set differently, which
+   is correct: the meta keys and the card headers are LABELS and stay
+   tracked caps; this one is a line of prose that happens to be small.
+   .contact-statement is the other deliberate exception, for its own
+   reason. */
 .cs-eyebrow {
   display: block;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 1.8px;
-  text-transform: uppercase; color: var(--accent-ink);
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--accent-ink);
   margin-bottom: 36px;
 }
 /* The chip and the <h2> are moved in here by fillProjectDetail rather than
@@ -5840,7 +5854,11 @@ html[lang="ja"] .magnetic-letter,
 /* Every tracked line in the case study that is translated. The tracking
    on these is there to open up uppercase Latin; Japanese sets without
    word spaces, so the same value reads as broken spacing rather than as
-   emphasis. The step counters are left alone - they are digits. */
+   emphasis. The step counters are left alone - they are digits.
+   .cs-eyebrow is in the list for the line-break half only: it gave up its
+   tracking when it became a sentence, so the letter-spacing: 0 is a no-op
+   there, but line-break: strict still decides where a Japanese sentence
+   may break. */
 html[lang="ja"] .cs-h,
 html[lang="ja"] .cs-eyebrow,
 html[lang="ja"] .cs-card-t,
