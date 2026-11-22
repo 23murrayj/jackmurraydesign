@@ -3307,9 +3307,11 @@ fonts about 45KB.
   copies in four languages is eight chances to edit one and not the other,
   so **`audit.js` asserts they are the same string per language** rather
   than this being a step anyone has to remember.
-  The case study also carries **`cs-store.jpg`, the Alessi shopfront in
-  Milan, which has identifiable bystanders** — the same clearance question
-  as the photographs listed above.
+  The case study also carries **`cs-storefront.jpg`, the Alessi shopfront
+  in Milan, which has identifiable bystanders** — the same clearance
+  question as the photographs listed above. (It was `cs-store.jpg` until the
+  taller frame replaced it under a new filename; nothing on disk answers to
+  the old name any more.)
 - Placeholder/fake projects must never ship live.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.
