@@ -1713,15 +1713,18 @@ every card carrying its own prose, a paragraph summarising all four says the
 same things twice, which is the thing the brief names. It also means the
 markup fallback is never in the one position it must not be in — saying
 something the panel does not.
-**ONE PHOTOGRAPH PER CARD, AND THAT WAS MEASURED.** Step 2 first kept two —
-the foam and the spray booth, because it genuinely is two operations — and
-two stacked portraits in a 215px column made that card **688px tall against
-175** for the other three. The mock-up's taller second tile is one PORTRAIT
-beside three landscapes, which is 299 against 172–177, not 688 against 175.
-So the booth shot is out of the page; it is still in `assets/` and its alt
-text is in the restore note. **Nothing is cropped to even the row up** — a
-square or 4:3 tile takes 25–44% off the width of a 1400×788 source, and on
-the paper-profiles shot that is the outer two profiles.
+**ONE PHOTOGRAPH PER CARD WAS THE RULE, AND CARD 1 IS THE EXCEPTION THAT
+PROVES WHY.** Step 2 first kept two — the foam and the spray booth — and
+two stacked PORTRAITS in a 215px column made that card **688px tall against
+175** for the other three, so the booth shot came out (still in `assets/`,
+alt text in the restore note). Card 1 now carries two and it is fine,
+because they are two LANDSCAPES: 249 and 332 tall at 442 wide, which takes
+it to **692 against the foam model's 671** — the thing the 2×2 was missing,
+since those two were 344 and 672. **The shape of the photograph decides
+this, not the count.**
+**Nothing is cropped to even a row up** — a square or 4:3 tile takes 25–44%
+off the width of a 1400×788 source, and on the paper-profiles shot that is
+the outer two profiles.
 The number is a CSS counter (`decimal-leading-zero`), not part of the
 string: it cannot drift from the order and there is nothing to translate
 four times. **It carries no `font-weight`**, and it did for one commit —
@@ -1741,6 +1744,30 @@ as a mistake rather than a choice.
 It is the orthographic views and the millimetres, so it documents what the
 thing IS; in a row of making-of photographs it was the one that was not a
 photograph of making anything.
+
+**RESEARCH PUTS ITS PHOTOGRAPH BESIDE ITS PROSE**, off an `aside` flag and
+`.cs-split`. Jack: *"move the alessi photo to the right of the research
+text to help that section visually."* That section is four definition pairs,
+so it is the tallest column of plain text on the page, and the storefront
+was a portrait sitting under all of it doing nothing for the shape. The
+sketch spread that used to sit next to it went down to process card 1,
+which is both where sketching belongs in the story and what evens that row
+up.
+**A flag, not a rule**: it only pays where the prose is tall enough to stand
+a column beside it. Under a short paragraph the same photograph is a small
+picture in a wide gap.
+**The photo column is a fixed 340px, not a fraction**, because it is the
+supporting half and should not widen with the viewport at the expense of the
+text it supports. **It stacks at 900, and 760 was wrong**: measured across
+the range the prose gets 548px at 1440, 614 at 1100, 435 at 901 — and 344 at
+800, which is the column of five-word lines the stacking exists to prevent.
+900 because the page already uses it; the honest threshold is about 907, and
+18px of measure does not earn a twelfth breakpoint.
+**Stacking has to turn the lone-portrait cap back ON.** Side by side the
+340px column is its own limit so the cap is off; stacked, the column is the
+whole measure and 810px of storefront draws 1012px tall. Both rules are
+stated at 0-4-0 rather than left to source order — the same specificity trap
+that drew the foam shot 394px wide inside a 448px card.
 
 **The photographs are the new `Final Alessi Flow` set**, exported as
 `cs-*.jpg` + `.webp`, plus two survivors of the old wall:

@@ -241,15 +241,15 @@ const projectData = {
       ],
       brief: ['proj.pot-clip.cs.brief.t', 'proj.pot-clip.cs.brief.b'],
       sections: [
+        // the storefront sits in the column beside the notes; the sketch
+        // spread went down to the first process card, which is where the
+        // sketching actually happens in the story
         { id: 'research', title: 'proj.pot-clip.cs.research.t',
-          html: 'proj.pot-clip.cs.research.grid',
+          html: 'proj.pot-clip.cs.research.grid', aside: true,
           figures: [
             { src: '/assets/projects/pot-clip/cs-store.jpg', w: 1200, h: 1500,
               full: '/assets/projects/pot-clip/cs-store.jpg',
               altKey: 'proj.pot-clip.cs.alt.store' },
-            { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1600, h: 1200,
-              full: '/assets/projects/pot-clip/cs-sketches.jpg',
-              altKey: 'proj.pot-clip.cs.alt.sketches' },
           ],
           after: 'proj.pot-clip.cs.research.close' },
 
@@ -308,11 +308,22 @@ const projectData = {
            argument the figure rows already lost. */
         { id: 'process', title: 'proj.pot-clip.cs.process.t',
           steps: [
+            /* TWO PHOTOGRAPHS HERE, AND THEY EVEN THE ROW UP. The sketch
+               spread came down from Research, where it was the second of
+               two figures; stacked under the paper profiles it takes this
+               card to about the height of the foam model beside it, which
+               is what the 2x2 was missing - one card was 344 against 672.
+               The earlier note about two stacked portraits blowing a card
+               out still holds: these are two LANDSCAPES, 249 and 332 tall
+               at 442 wide, which is why it works here and did not there. */
             { label: 'proj.pot-clip.cs.process.1',
               text: 'proj.pot-clip.cs.process.1b', figures: [
               { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 788,
                 full: '/assets/projects/pot-clip/cs-profiles.jpg',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
+              { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1600, h: 1200,
+                full: '/assets/projects/pot-clip/cs-sketches.jpg',
+                altKey: 'proj.pot-clip.cs.alt.sketches' },
             ] },
             { label: 'proj.pot-clip.cs.process.2',
               text: 'proj.pot-clip.cs.process.2b', figures: [
@@ -1056,8 +1067,20 @@ function renderCaseStudy(data) {
         '<div class="cs-stat">' + csText('span', 'cs-stat-num', p[0])
         + csText('span', 'cs-stat-txt', p[1]) + '</div>').join('') + '</div>';
     }
-    if (sec.html) out += csText('div', 'cs-prose', sec.html, true);
-    if (sec.text) out += csText('p', 'cs-prose-p', sec.text);
+    /* `aside` puts the figures BESIDE the prose instead of under it. One
+       section wants it - Research, which is four definition pairs and so
+       the tallest column of plain text on the page, with a portrait
+       photograph that was sitting below all of it doing nothing for the
+       shape. Jack: "move the alessi photo to the right of the research
+       text to help that section visually."
+         A flag rather than a rule, because it only pays where the prose is
+       tall enough to stand a column beside it; under a short paragraph the
+       same photograph would just be a small picture in a wide gap. */
+    const prose = (sec.html ? csText('div', 'cs-prose', sec.html, true) : '')
+      + (sec.text ? csText('p', 'cs-prose-p', sec.text) : '');
+    out += sec.aside
+      ? '<div class="cs-split">' + prose + figs(sec.figures) + '</div>'
+      : prose;
     if (sec.quote) out += csText('blockquote', 'cs-quote', sec.quote);
     /* The caption says out loud what the finger nudge only hints at, and
        three seconds of stillness is a long time to wait to find out an
@@ -1082,7 +1105,7 @@ function renderCaseStudy(data) {
         + csText('p', 'cs-step-txt', st.text) + '</li>').join('')
         + '</ol>';
     }
-    out += figs(sec.figures);
+    if (!sec.aside) out += figs(sec.figures);
     if (sec.after) out += csText('p', 'cs-after', sec.after);
     return out + '</section>';
   };

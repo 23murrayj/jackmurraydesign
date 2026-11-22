@@ -3273,6 +3273,37 @@ body.is-loading { overflow: hidden; }
 }
 .cs-prose strong { font-weight: 700; }
 
+/* ---- prose with a photograph beside it --------------------------------
+   Only Research uses it, off the `aside` flag. A fixed 340px column rather
+   than a fraction: the picture is the supporting half, so it should not
+   widen with the viewport and push the text it supports into a narrow
+   measure. That leaves the prose 548px at 1440, which is where it wants to
+   be anyway.
+   STACKS AT 900, not 760. Measured across the range: 1440 leaves the prose
+   548px, 1100 leaves 614, 901 leaves 435 - and 800 leaves 344, which is the
+   column of five-word lines this is supposed to avoid. 900 because it is a
+   breakpoint the page already uses; the honest threshold is about 907, and
+   18px of measure is not worth a twelfth number. */
+.cs-split {
+  display: grid; grid-template-columns: 1fr 340px;
+  gap: 36px; align-items: start;
+}
+.cs-split .cs-figs { margin-top: 6px; }
+/* the lone-portrait cap is 400 and the column is 340, so it never bites -
+   but it is the same 0-3-0 as any override and sits later in the file, so
+   say it at 0-4-0 and not by source order (that cost a commit once) */
+.cs-split .cs-figs-1 .cs-fig.is-portrait { max-width: none; }
+@media (max-width: 900px) {
+  .cs-split { grid-template-columns: 1fr; gap: 0; }
+  .cs-split .cs-figs { margin-top: 26px; }
+  /* Stacked, the column is the whole measure, so the lone-portrait cap the
+     side-by-side rule turned off has to come back on - 810px of storefront
+     is 1012px tall. Stated at 0-4-0 because the rule it is undoing is.
+     Below 760 the page relaxes that cap for every figure and this one
+     follows, which is why the number only matters between 761 and 900. */
+  .cs-split .cs-figs-1 .cs-fig.is-portrait { max-width: 400px; }
+}
+
 /* A definition list for the research notes and the limitations: a term and
    what it means, which is what both of those actually are. The row variant
    goes two-up where there is room, because the limitations are four short
