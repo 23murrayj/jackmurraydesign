@@ -33,6 +33,7 @@ const fs = require('fs');
 const path = require('path');
 const R = require('path').join(__dirname, '..') + '/';
 const read = f => fs.readFileSync(R + f, 'utf8');
+const exists = f => fs.existsSync(R + f);
 
 const html = read('index.html');
 const cssRaw = read('styles.css');
@@ -329,6 +330,30 @@ console.log('\n— WebP invariant (every inline jpg has a webp sibling)');
   say(n + ' inline jpgs each have a webp', miss.length === 0, miss.join(' '));
 }
 
+console.log('\n— every asset projectData points at exists');
+{
+  /* A RENAME DONE HALFWAY IS SILENT. Re-cropping a photograph at a path
+     that is already live is a cache bug (see the note in CLAUDE.md), so the
+     fix is a new filename - and a new filename in projectData with the old
+     file still on disk, or the file moved and the reference missed, breaks
+     an image that nothing else here would notice. <picture> only falls back
+     when a browser cannot DECODE a type, never when a file 404s.
+       Comments are stripped first: SECTION 03's header documents the entry
+     shapes with '/assets/projects/x/01.jpg' as an example, and a checker
+     that cannot tell code from prose would fail on the documentation. Line
+     comments only where the // opens the line, so a '//' inside a string is
+     left alone. */
+  const code = js.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const refs = [...new Set([...code.matchAll(/'(\/assets\/[^']+)'/g)]
+    .map(m => m[1].split('?')[0]))];
+  const missing = refs.filter(p => !exists(p.slice(1)));
+  say('every path resolves to a file (' + refs.length + ')',
+    missing.length === 0, missing.join(' '));
+  // and the webp sibling every <picture> assumes, for the same reason
+  const noWebp = refs.filter(p => p.endsWith('.jpg') && !p.endsWith('-full.jpg'))
+    .filter(p => !exists(p.slice(1).replace(/\.jpg$/, '.webp')));
+  say('each one has its webp sibling', noWebp.length === 0, noWebp.join(' '));
+}
 console.log('\n— asset paths are root-relative (they resolve against /work/ on a deep link)');
 {
   /* srcset is in this list because it was NOT, and that is exactly how the

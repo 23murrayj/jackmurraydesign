@@ -225,19 +225,22 @@ const projectData = {
       eyebrow: 'proj.pot-clip.cs.eyebrow',
       lede: 'proj.pot-clip.cs.lede',
       tocLabel: 'proj.pot-clip.cs.toc',
-      /* CROPPED 1.24x TIGHTER AND CENTRED, from the original HEIC rather
-         than from the 1600px export. Jack: "can we zoom in on it just a bit
-         and center the product in the image just a bit more?"
-           The window is FLUSH to the source's right edge, and that is the
-         bound on the whole problem: the bowl already ran off that edge when
-         the photograph was taken, so the crop cannot travel any further
-         right to centre it. Perfectly centring the subject AND keeping air
-         to the left of the rod is not available - 584 + 2440 = 3024 exactly.
-         The rod runs edge to edge instead, which is the better reading of a
-         horizontal line anyway: one end floating in the middle of the air
-         was the weaker composition. */
-      hero: { src: '/assets/projects/pot-clip/cs-hero.jpg', w: 1600, h: 1600,
-        full: '/assets/projects/pot-clip/cs-hero.jpg',
+      /* CROPPED 1.24x TIGHTER, from the original HEIC rather than from the
+         1600px export: a 2440px window at 284,520 of the 3024x3024 frame.
+           THE FIRST VERSION SAT FLUSH TO THE SOURCE'S RIGHT EDGE (left 584,
+         584 + 2440 = 3024) on the reasoning that the bowl already ran off
+         that edge when the photograph was taken, so the crop could not
+         travel further right to centre the subject - which is true, and was
+         the wrong thing to optimise. Jack: "have it to the right more so we
+         see more white space on the left in the photo." Moving the WINDOW
+         left moves the SUBJECT right, and the only thing it costs is more of
+         a bowl that was already cut.
+           284 rather than 384: the rod's left end sits at x 445 in the
+         source, so a 384 window leaves it 40px from the frame edge at output
+         scale, which is the near-miss that reads as a bad cut rather than a
+         choice. 284 gives it 106px and real air around it. */
+      hero: { src: '/assets/projects/pot-clip/cs-hero-bowl.jpg', w: 1600, h: 1600,
+        full: '/assets/projects/pot-clip/cs-hero-bowl.jpg',
         altKey: 'proj.pot-clip.cs.alt.hero' },
       meta: [
         ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
@@ -330,7 +333,9 @@ const projectData = {
                paper profiles 188, and those two numbers are the aspect
                ratios below - 1400x1096 is 1.277:1 and 1400x596 is 2.349:1.
                Re-cropped from the ORIGINALS rather than from the exports,
-               so nothing is resampled twice.
+               so nothing is resampled twice - and shipped at NEW PATHS,
+               which the first pass got wrong. See the cache note in
+               CLAUDE.md: a re-crop at a live path is not a shrug.
                  The profiles lost height and nothing else: the three paper
                pieces occupy the middle 48% of that frame and the rest is
                cutting mat. The sketch spread was cropped in on every side -
@@ -339,11 +344,11 @@ const projectData = {
                was lying on and keeps the title and both questions. */
             { label: 'proj.pot-clip.cs.process.1',
               text: 'proj.pot-clip.cs.process.1b', figures: [
-              { src: '/assets/projects/pot-clip/cs-profiles.jpg', w: 1400, h: 596,
-                full: '/assets/projects/pot-clip/cs-profiles.jpg',
+              { src: '/assets/projects/pot-clip/cs-paper-profiles.jpg', w: 1400, h: 596,
+                full: '/assets/projects/pot-clip/cs-paper-profiles.jpg',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
-              { src: '/assets/projects/pot-clip/cs-sketches.jpg', w: 1400, h: 1096,
-                full: '/assets/projects/pot-clip/cs-sketches.jpg',
+              { src: '/assets/projects/pot-clip/cs-sketch-page.jpg', w: 1400, h: 1096,
+                full: '/assets/projects/pot-clip/cs-sketch-page.jpg',
                 altKey: 'proj.pot-clip.cs.alt.sketches' },
             ] },
             { label: 'proj.pot-clip.cs.process.2',

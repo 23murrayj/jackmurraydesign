@@ -1785,8 +1785,37 @@ everything under `/assets/` an hour of freshness and a **week** of
 stale-while-revalidate, so replacing a photograph in place shows returning
 visitors the old one for up to a week. For a re-crop that is a shrug; for a
 different picture it is wrong, so it got its own path and `cs-store.*` was
-deleted. (The two re-crops above DID reuse their paths, deliberately: a
-stale crop is briefly a slightly different crop, and it heals itself.)
+deleted.
+**AND THE SAME IS TRUE OF A RE-CROP — THAT CARVE-OUT WAS WRONG AND COST A
+ROUND.** The reasoning was that "a stale crop is briefly a slightly
+different crop, and it heals itself". Jack, after pushing: *"They look good
+on the photos in here but on the website it doesn't look changed even when
+I pushed it."*
+**Measured against the live site: the origin was right the whole time** —
+`cs-profiles.jpg` served 1400×596 and `cs-sketches.jpg` 1400×1096, byte for
+byte what was committed. What he was looking at was his own browser, holding
+the previous files under `max-age=3600, stale-while-revalidate=604800`: one
+hour of not even asking, then a week in which the stale copy is served
+INSTANTLY while the new one is fetched in the background — so the first
+visit after the hour still shows the old picture.
+**Two things make that worse than "briefly different" here.** The crops
+existed to make card 1 add up to card 2's height, so with the old bytes the
+feature is simply absent rather than approximate. And `.cs-fig img` is
+`height: auto`, so the moment the old file decodes, ITS ratio wins over the
+`width`/`height` attributes — the layout silently reverts to the old
+heights instead of showing a distorted picture, which is why it reads as
+"nothing changed" rather than as a bug.
+**So: any change to the BYTES at a live `/assets/` path needs a new path.**
+`cs-hero` → `cs-hero-bowl`, `cs-profiles` → `cs-paper-profiles`,
+`cs-sketches` → `cs-sketch-page`, old files deleted. The alternative is the
+mesh's `?v=` content hash, which would also work and costs a change to
+`mediaTag`'s `.jpg`→`.webp` swap; a new filename needs no code at all.
+**`audit.js` now checks that every `/assets/` path in `projectData` resolves
+to a file and that each jpg has its webp sibling** — 91 paths — because a
+rename done halfway is otherwise silent, and `<picture>` falls back on an
+undecodable TYPE, never on a 404. Both halves were made to fail before being
+trusted. It strips comments first, since SECTION 03's own header documents
+the entry shapes with `/assets/projects/x/01.jpg` as an example.
 **A flag, not a rule**: it only pays where the prose is tall enough to stand
 a column beside it. Under a short paragraph the same photograph is a small
 picture in a wide gap.
@@ -1814,12 +1843,20 @@ tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
 **The masthead photograph is cropped 1.24× tighter than the frame**, from
-the original rather than the export, and the window is flush to the source's
-right edge: the bowl ran off that edge when the shot was taken, so the crop
-cannot travel further right to centre the subject. Perfect centring and air
-to the left of the wooden rod are not both available — 584 + 2440 = 3024
-exactly — so the rod runs edge to edge, which reads better than one end
-floating in the middle of the air.
+the original rather than the export: a 2440px window at 284,520 of the
+3024×3024 source.
+**It first sat FLUSH to the source's right edge** (left 584, and
+584 + 2440 = 3024) on the reasoning that the bowl already ran off that edge
+when the shot was taken, so the crop could not travel further right to
+centre the subject. That is true, and it was the wrong thing to optimise.
+Jack: *"have it to the right more so we see more white space on the left in
+the photo."* **Moving the WINDOW left moves the SUBJECT right**, and the only
+thing it costs is more of a bowl that was already cut — which is the cheapest
+thing in the frame.
+**284 rather than 384**, because the rod's left end sits at x 445 in the
+source: a 384 window leaves it 40px from the frame edge at output scale,
+which is the near-miss that reads as a bad cut rather than a choice. 284
+gives it 106px and real air around it.
 **`cs-storefront.jpg` has identifiable bystanders** — the Milan shopfront —
 so it falls under the safety constraint below.
 
