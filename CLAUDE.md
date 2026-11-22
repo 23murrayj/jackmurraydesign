@@ -1813,8 +1813,15 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
-**`cs-store.jpg` has identifiable bystanders** — the Milan shopfront — so it
-falls under the safety constraint below.
+**The masthead photograph is cropped 1.24× tighter than the frame**, from
+the original rather than the export, and the window is flush to the source's
+right edge: the bowl ran off that edge when the shot was taken, so the crop
+cannot travel further right to centre the subject. Perfect centring and air
+to the left of the wooden rod are not both available — 584 + 2440 = 3024
+exactly — so the rod runs edge to edge, which reads better than one end
+floating in the middle of the air.
+**`cs-storefront.jpg` has identifiable bystanders** — the Milan shopfront —
+so it falls under the safety constraint below.
 
 **The old photo wall is in `docs/pot-clip-masonry.md`**, verbatim, with the
 48 alt-text lines that came out of `i18n.js` and the list of 11 photographs

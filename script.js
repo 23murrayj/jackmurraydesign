@@ -225,6 +225,17 @@ const projectData = {
       eyebrow: 'proj.pot-clip.cs.eyebrow',
       lede: 'proj.pot-clip.cs.lede',
       tocLabel: 'proj.pot-clip.cs.toc',
+      /* CROPPED 1.24x TIGHTER AND CENTRED, from the original HEIC rather
+         than from the 1600px export. Jack: "can we zoom in on it just a bit
+         and center the product in the image just a bit more?"
+           The window is FLUSH to the source's right edge, and that is the
+         bound on the whole problem: the bowl already ran off that edge when
+         the photograph was taken, so the crop cannot travel any further
+         right to centre it. Perfectly centring the subject AND keeping air
+         to the left of the rod is not available - 584 + 2440 = 3024 exactly.
+         The rod runs edge to edge instead, which is the better reading of a
+         horizontal line anyway: one end floating in the middle of the air
+         was the weaker composition. */
       hero: { src: '/assets/projects/pot-clip/cs-hero.jpg', w: 1600, h: 1600,
         full: '/assets/projects/pot-clip/cs-hero.jpg',
         altKey: 'proj.pot-clip.cs.alt.hero' },
