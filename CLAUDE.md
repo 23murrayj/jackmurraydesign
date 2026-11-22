@@ -1781,7 +1781,12 @@ Finding sentence, which is where it had been saying the same thing twice
 only user of `stats`**, so the renderer branch, the four CSS rules and the
 sixteen i18n keys came out with it rather than being left idle — the same
 call as `titleTop`, and all of it is in `docs/pot-clip-masonry.md`. Testing
-is **835 → 556 → 433** over the three passes.
+is **835 → 556 → 362** over the three passes — and 362 is also what it
+measures after `asideTop`, because the figure was out of flow before the
+change and is out of flow after it, so starting at the heading costs the
+page no height at all. (The 433 this line quoted was measured some other
+way; the committed build before `asideTop` measures 362 at 1440 in
+English, checked against `git stash`.)
 
 **POSTERS IS "POSTERS", AND THE TEXT IS UNDER THE PICTURES.** It was
 "Posters and packaging" over a one-line description; there is no packaging
@@ -1944,8 +1949,39 @@ Research is **711 → 654** across the two changes.
 **AND TESTING TOOK THE SAME FLAG.** Jack: *"adjust the photo so it is in
 line well and not unnecessarily under the text to the left of it."* It was
 342×321 beside 256 of prose, hanging 65px below the argument it
-illustrates; scaled to the text it is 271×256 in English, and 0.0 top and
-0.0 bottom in all four languages.
+illustrates; scaled to the text it came to 271×256 in English, and 0.0 top
+and 0.0 bottom in all four languages.
+
+**THEN TESTING TOOK `asideTop` AS WELL, AND IT IS THE ONLY SECTION THAT
+HAS.** Jack: *"uncrop the top enough so that it hits the top of the word
+testing and the bottom still hits the bottom of the last sentence."*
+Matched to the prose alone the picture started **63px below the heading**,
+so the two columns began on different lines and the band read as text with
+a thumbnail beside it rather than as two columns.
+**The heading moves INSIDE `.cs-split` for it**, so the figure can span two
+grid rows and reach the top of the word. A negative `top` on the figure was
+the other way and it is the lifted-photograph bug one layer up: the number
+would be `.cs-h`'s height plus its 26px margin, which is a clamp of the
+viewport *and* deeper in Japanese, so one value would be a near miss in at
+least one language. Two rows is no value at all — the rows measure
+themselves. Measured **0.00 top and 0.00 bottom in all four languages at
+1440, 1100 and 901.**
+**Both placements are explicit, and that is not belt and braces**: with the
+heading pinned at 1/1, auto-placement's next free cell is row 1 *column 2*,
+so the prose would land in the photograph's track.
+**AND THE TWO-ROW SPAN HAS TO BE UNDONE AT ITS OWN WEIGHT WHEN IT STACKS.**
+`.cs-split-end .cs-figs { grid-row: auto }` in the ≤900 block is 0-2-0 and
+the span is 0-3-0, so the reset lost and the figure was placed back over
+the heading and the prose in the only column there is — measured at 390 it
+came out **6×6, its two borders and nothing between them.** The same shape
+as the `grid-column` bug that rule already exists for, one specificity step
+up, and the **fifth** time this file has had to say that specificity beats
+source order.
+**RESEARCH DELIBERATELY DOES NOT TAKE IT**, and the reason is arithmetic:
+its notes are 548–573 tall, so the span would be 611–636, and at 901 that
+asks for a ratio of 0.53 where the storefront is 0.5625. The cap would fire
+and the bottom would stop landing on the last line — the one thing Jack
+asked that photograph for.
 **THE SCALED FIGURE NEEDED A CAP, AND IT WAS ALREADY OVERFLOWING WITHOUT
 ONE.** Sized by height, a picture's width is its height times its ratio,
 and nothing stopped that exceeding the 340px track. Measured at 901 in
@@ -2036,14 +2072,30 @@ picture in a wide gap.
 to crop the height because it is quite tall."* The rim shot shipped as the
 full 9:16 phone frame, 1000×1778, and the object only occupies the middle of
 it — so under the prose it drew a screenful of photograph at the end of a
-three-point argument. Re-cropped near-square from the original it is 340×321
-against 256 of English prose, and the section went **835px tall to 556**.
-**Near-square is as tight as that subject goes**: its own bounding box is
-2244×2001 in the source, aspect 1.12, so a frame letterboxed enough to match
-the prose exactly would have no margin left to put around it. Measured in
-all four languages the prose runs 228–284 against the photograph's 321, so
-it is 37–93px over — Research's is 34 over. **The sibling column may be a
-little taller than the prose; it must not be twice it.**
+three-point argument. Re-cropped near-square from the original — a
+2613×2465 window at 600,2631 — it drew 340×321 against 256 of English
+prose, and the section went **835px tall to 556**.
+**THEN A QUARTER OF THAT TOP WENT BACK ON**, when `asideTop` asked the
+picture to start at the heading. Spanning heading to last line wants
+319–394px of figure depending on the language and the width, and at 1.06
+that is 338–418 wide in a 340 column — so the cap would fire and the bottom
+would not land. **The window grew upward and only upward: 2613×3070 at
+600,2026.** Same bottom edge, same sides, 591px more wall above the bowl,
+which is what "uncrop the top" means in the source rather than in the
+layout.
+**0.851 is the ceiling less 4px.** The binding case is the narrowest
+two-column width, 901, in the longest language: the prose is 435 wide
+there, so the span is 394px and the figure may be 334 of image plus its two
+3px borders — 334/388 = **0.861**. 0.851 exports as **1000×1175** and draws
+273 wide in English at 1440 against 271 before, so the picture is the width
+it already was and 63px taller. Measured, the cap never fires between 901
+and 1440 in any of the four: widths run 223–336 against the 340 track.
+**THE OBJECT IS LOW IN THE FRAME NOW AND THAT IS NOT AN OVERSIGHT** —
+837px of wall above it and 246 below. Its own bounding box is 2244×2001,
+aspect 1.12, so there was never room to balance this crop and keep the
+subject big; the air goes where the layout needed it. The file is 64KB
+jpeg / 36KB webp at 45.0 and 43.6 dB PSNR — 25% more pixels for 9% more
+bytes, because most of what was added is a smooth grey wall.
 **THE COPY IS METHOD / FINDING / IMPLICATION**, in Jack's words, replacing a
 two-item list headed "Fit testing" and "Product photography" — which named
 what he DID twice and what he LEARNED nowhere. The rim is the finding and
@@ -2088,6 +2140,25 @@ carried on — and the brief is the one block early enough to belong there
 and short enough to fit. Measured after: the two columns end within 34px
 of each other. In the column it takes its 36px gap above instead of below,
 since the masthead's own 56px is what separates it from the summary cards.
+**AND IT CARRIES `text-wrap: pretty`, THE ONLY RULE ON THE PAGE THAT
+DOES.** Jack: *"in The brief section dont let there be a hanging widow or
+whatever its called."* English broke "…on a store / **shelf.**" — one word
+alone under two full lines, in the one block here set at display size on a
+54ch measure, where a short last line shows most.
+**A rule rather than a non-breaking space in the string**, because the
+string exists four times and the break depends on the width as well as the
+language: at 1440 the last line ran 1 word in English, 2 in Italian and 4
+in Spanish, and a tie between two of those moves at the next clamp step.
+Measured at 1440, 1200, 1101, 900, 600 and 390 in all three Latin
+languages, every last line now carries **two words or more**, English
+becomes "store shelf.", the other three are untouched, and the box is the
+same 199.7px tall — so nothing below it moved. (Japanese is one run with no
+word spaces and has no widow to fix.)
+**NOT ON `.cs-prose`, deliberately.** Those columns' heights are
+load-bearing now that two photographs are sized from them, and a last-line
+rule that can add a line does not belong under a measurement unless it is
+asked for. Where the property is unsupported the paragraph wraps exactly as
+it does today, so there is nothing to fall back to.
 
 **THE POSTER STARTS LEVEL WITH THE BACK BUTTON**, and is 4.4% smaller.
 *"Move the hero poster so that the top of it is at the same height as the

@@ -457,26 +457,52 @@ const projectData = {
           /* asideEnd here too. Jack: "adjust the photo so it is in line
              well and not unnecessarily under the text to the left of it."
              It was 342x321 beside 256 of prose, so it hung 65px below the
-             argument it illustrates. Scaled to the text it is 271x256 in
-             English - smaller, and level. */
-          html: 'proj.pot-clip.cs.testing.b', aside: true, asideEnd: true,
-          /* OUT OF ITS PHONE FRAME. The source is 3213x5712 held upright
-             and the object only occupies y 2877-4850 of it, so the top 45%
-             of the 9:16 export was empty ground - which is why it drew 600
-             tall beside 256 of prose. A 2613x2465 window at 600,2631 of the
-             original puts 10% of clear frame above and below the bowl and
-             leaves the rod's left end 47px of air at output scale; the bowl
-             runs off the right edge in the source, so that edge stays flush
-             the way the masthead's does.
-               NEAR-SQUARE IS AS TIGHT AS THIS SUBJECT GOES. The object's own
-             bounding box is 2244x2001, aspect 1.12, so a frame letterboxed
-             enough to match the prose exactly would have no margin left to
-             give it. At 340x321 it sits 37-93px over the prose depending on
-             the language, against Research's 34 - the same ragged bottom,
-             not a column of photograph. */
+             argument it illustrates.
+               AND asideTop, WHICH ONLY THIS SECTION HAS. Jack: "uncrop the
+             top enough so that it hits the top of the word testing and the
+             bottom still hits the bottom of the last sentence." Matched to
+             the prose alone, the picture started 63px below the heading, so
+             the two columns began on different lines and the band read as
+             text with a thumbnail beside it rather than as two columns.
+             Spanning heading to last line it is one rectangle, and both
+             edges are something a reader can see.
+               RESEARCH DELIBERATELY DOES NOT TAKE IT, and the reason is
+             arithmetic rather than taste: its notes are 548-573 tall, so
+             the span would be 611-636, and at 901 that asks for a ratio of
+             0.53 where the storefront is 0.5625. The cap would fire and the
+             bottom would stop landing on the last line - which is the one
+             thing Jack asked that photograph for. */
+          html: 'proj.pot-clip.cs.testing.b',
+          aside: true, asideEnd: true, asideTop: true,
+          /* OUT OF ITS PHONE FRAME, AND THEN A QUARTER OF THE TOP PUT
+             BACK. The source is 3213x5712 held upright and the object only
+             occupies y 2877-4850 of it, so the top 45% of the 9:16 export
+             was empty ground - which is why it drew 600 tall beside 256 of
+             prose. A 2613x2465 window at 600,2631 fixed that, and took with
+             it the height this pass needs: heading-to-last-line asks for
+             319-394px of figure depending on the language and the width,
+             and at 1.06 that is 338-418 wide in a 340 column, so the cap
+             would fire and the bottom would not land.
+               SO THE WINDOW GREW UPWARD AND ONLY UPWARD: 2613x3070 at
+             600,2026. The same bottom edge, the same sides, 591px more wall
+             above the bowl - which is what "uncrop the top" means in the
+             source rather than in the layout. The bowl still runs off the
+             right edge the way the masthead's does.
+               WHY 0.851. The binding case is the narrowest two-column
+             width, 901, in the longest language: the prose is 435 wide
+             there, so the span is 394px and the figure may be 334 of image
+             plus its two 3px borders. 334/388 = 0.861 is the ceiling; 0.851
+             leaves 4px of it and exports as 1000x1175. At 1440 in English
+             that draws 273 wide against 271 before - the same width it had,
+             63px taller, which is the whole point of taking it off the top.
+               THE OBJECT IS NOW LOW IN THE FRAME and that is not an
+             oversight: 837px of wall above it and 246 below. Its own
+             bounding box is 2244x2001, so there was never room to balance
+             this crop and keep the subject big; the air goes where the
+             layout needed it. */
           figures: [
-            { src: '/assets/projects/pot-clip/cs-rim.jpg?v=1d1c3603', w: 1000, h: 943,
-              full: '/assets/projects/pot-clip/cs-rim.jpg?v=1d1c3603',
+            { src: '/assets/projects/pot-clip/cs-rim.jpg?v=ad5f1cbd', w: 1000, h: 1175,
+              full: '/assets/projects/pot-clip/cs-rim.jpg?v=ad5f1cbd',
               altKey: 'proj.pot-clip.cs.alt.rim' },
           ] },
 
@@ -1212,8 +1238,24 @@ function renderCaseStudy(data) {
      goes back to the second item in the list rather than into the section
      they just asked for. Same fix as the hero's tabindex="-1". */
   const section = (sec) => {
+    /* `asideTop` puts the HEADING inside the split with the prose, so the
+       photograph beside them starts at the top of the word rather than at
+       the top of the first paragraph. Jack, on Testing: "uncrop the top
+       enough so that it hits the top of the word testing and the bottom
+       still hits the bottom of the last sentence."
+         A WRAPPER RATHER THAN A LIFT ON THE FIGURE, for the reason that
+       has already decided this twice in this section: a negative margin
+       would be the heading's height plus its margin, which is a different
+       number in Japanese (Noto Sans JP's line box is deeper) and at every
+       step of .cs-h's clamp. Inside the grid it is no number at all - the
+       figure spans two rows and the rows measure themselves.
+         The <h3> is still the section's first content and still its only
+       heading. It is one div further down, which nothing reads: the rule
+       above it belongs to .cs-section, the contents links scroll to the
+       section, and the heading order is unchanged. */
+    const head = csText('h3', 'cs-h', sec.title);
     let out = '<section class="cs-section" id="cs-' + escapeAttr(sec.id)
-      + '" tabindex="-1">' + csText('h3', 'cs-h', sec.title);
+      + '" tabindex="-1">' + (sec.asideTop ? '' : head);
     /* `aside` puts the figures BESIDE the prose instead of under it. Two
        sections want it. Research is four definition pairs and so the
        tallest column of plain text on the page, with a portrait photograph
@@ -1237,7 +1279,8 @@ function renderCaseStudy(data) {
        before. Jack: "move them to under the posters." */
     out += sec.aside
       ? '<div class="cs-split' + (sec.asideEnd ? ' cs-split-end' : '')
-          + '">' + prose + figs(sec.figures) + '</div>'
+          + (sec.asideTop ? ' cs-split-top' : '') + '">'
+          + (sec.asideTop ? head : '') + prose + figs(sec.figures) + '</div>'
       : (sec.textBelow ? '' : prose);
     if (sec.quote) out += csText('blockquote', 'cs-quote', sec.quote);
     /* The caption says out loud what the finger nudge only hints at, and

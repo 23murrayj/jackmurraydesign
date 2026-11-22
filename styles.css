@@ -3243,7 +3243,30 @@ body.is-loading { overflow: hidden; }
   font-family: var(--ff-display); font-size: 0.95rem; letter-spacing: 1.4px;
   text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
 }
-.cs-brief-b { font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.5; max-width: 54ch; margin: 0; }
+/* NO WIDOW ON THE LAST LINE. Jack: "in The brief section dont let there be
+   a hanging widow or whatever its called." In English it broke
+   "...on a store / shelf." - one word alone under two full lines, in the
+   one block on this page set at display size on a 54ch measure, where a
+   short last line is most visible.
+   `text-wrap: pretty` rather than a non-breaking space in the string,
+   because the string exists four times and the break depends on the width
+   as well as the language: measured at 1440 the last line runs 1 word in
+   English, 2 in Italian and 4 in Spanish, and a tie between two of those
+   would move at the next clamp step. The browser re-flows the last few
+   lines instead - English becomes "store shelf." and the other three are
+   untouched, which is the test that it is doing nothing it does not need
+   to.
+   NOT ON .cs-prose, deliberately. Those columns' heights are load-bearing
+   now that two photographs are sized from them, and a last-line rule that
+   can add a line is not something to put under a measurement without
+   being asked. This is one paragraph in a box.
+   Where it is unsupported the paragraph wraps exactly as it does today, so
+   there is nothing to fall back to. */
+.cs-brief-b {
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.5;
+  max-width: 54ch; margin: 0;
+  text-wrap: pretty;
+}
 
 /* ---- contents beside the sections ------------------------------------- */
 .cs-main { display: grid; grid-template-columns: 240px 1fr; gap: 72px; align-items: start; }
@@ -3380,6 +3403,35 @@ body.is-loading { overflow: hidden; }
   max-height: calc((var(--aside-col) - 6px) / (var(--fig-ar)) + 6px);
 }
 .cs-split-end .cs-fig img { height: 100%; width: auto; }
+
+/* ---- and the sibling that STARTS with the heading ---------------------
+   `asideTop` is the other end of the same instruction. Jack: "uncrop the
+   top enough so that it hits the top of the word testing and the bottom
+   still hits the bottom of the last sentence."
+   THE HEADING COMES INSIDE THE GRID for it, so the figure can span two
+   rows and reach the top of the word. The alternative was a negative
+   top on the figure, and it is the lifted-photograph bug one layer up:
+   the number would be .cs-h's height plus its 26px margin, which is a
+   clamp of the viewport AND deeper in Japanese, so one value would be a
+   near miss in at least one of the four languages. Two rows is no value
+   at all - the rows measure themselves, and 0.0/0.0 falls out in en, es,
+   ja and it alike.
+   ROW-GAP 0, because .cs-split's 36px gap applies to rows as well as
+   columns and .cs-h already carries the 26px that separates it from its
+   prose everywhere else on the page. Stated at 0-2-0: it narrows a rule
+   of equal weight, and source order has cost this file a commit four
+   times.
+   The placements are explicit for BOTH items in column one. Auto-placement
+   cannot be left to fill in the second: with the heading pinned at 1/1 the
+   cursor's next free cell is row 1 column 2, so the prose would land in
+   the photograph's track. */
+.cs-split.cs-split-top { row-gap: 0; }
+.cs-split-top .cs-h { grid-column: 1; grid-row: 1; }
+.cs-split-top .cs-prose, .cs-split-top .cs-prose-p { grid-column: 1; grid-row: 2; }
+/* Rows 1 AND 2 - the grid area is the figure's containing block, so this
+   is what takes top: 0 / bottom: 0 from the top of the heading to the
+   last descender instead of to the top of the first paragraph. */
+.cs-split-end.cs-split-top .cs-figs { grid-row: 1 / span 2; }
 /* "the bottom of it hits the bottom of the last line" — and the last
    definition's own 18px bottom margin was standing between the two, so
    the picture bottomed out on the BLOCK and sat 20.6px under the last
@@ -3407,6 +3459,15 @@ body.is-loading { overflow: hidden; }
     position: static; grid-column: auto; grid-row: auto;
     margin-top: 26px; display: grid;
   }
+  /* AND THE TWO-ROW SPAN HAS TO BE UNDONE AT ITS OWN WEIGHT. The rule
+     above is 0-2-0 and asideTop's is 0-3-0, so the reset lost and the
+     span survived into the stacked layout: measured at 390 the figure
+     came out 6x6 - its two borders and nothing between them - because it
+     was placed back over the heading and the prose in the only column
+     there is. Same shape as the grid-column bug the rule above exists
+     for, one specificity step up. Undo everything the rule set, at the
+     weight it set it. */
+  .cs-split-end.cs-split-top .cs-figs { grid-row: auto; }
   /* max-height goes with the height, and forgetting it was the same bug
      one layer down: the cap is the column's width over the ratio, and
      stacked there is no 340px column - the figure is the whole measure.
