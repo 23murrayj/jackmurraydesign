@@ -1806,10 +1806,16 @@ feature is simply absent rather than approximate. And `.cs-fig img` is
 heights instead of showing a distorted picture, which is why it reads as
 "nothing changed" rather than as a bug.
 **So: any change to the BYTES at a live `/assets/` path needs a new path.**
-`cs-hero` → `cs-hero-bowl`, `cs-profiles` → `cs-paper-profiles`,
-`cs-sketches` → `cs-sketch-page`, old files deleted. The alternative is the
-mesh's `?v=` content hash, which would also work and costs a change to
-`mediaTag`'s `.jpg`→`.webp` swap; a new filename needs no code at all.
+`cs-profiles` → `cs-paper-profiles`, `cs-sketches` → `cs-sketch-page`, and
+`cs-hero` → `cs-hero-bowl` → `cs-hero-clip`, old files deleted each time.
+**That last one renamed twice in two commits, and that is the threshold**: a
+third pass at the same picture should move to the mesh's `?v=` content hash
+rather than invent a third name. The hash costs a query-aware
+`.jpg`→`.webp` swap in `mediaTag` (which every project uses, so it is a
+change worth making deliberately rather than mid-iteration) plus an audit
+check that each hash matches its file, the way `model-check` does for the
+mesh. A filename costs no code at all, which is why it wins the first time
+and loses the third.
 **`audit.js` now checks that every `/assets/` path in `projectData` resolves
 to a file and that each jpg has its webp sibling** — 91 paths — because a
 rename done halfway is otherwise silent, and `<picture>` falls back on an
@@ -1842,21 +1848,29 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
-**The masthead photograph is cropped 1.24× tighter than the frame**, from
-the original rather than the export: a 2440px window at 284,520 of the
-3024×3024 source.
-**It first sat FLUSH to the source's right edge** (left 584, and
-584 + 2440 = 3024) on the reasoning that the bowl already ran off that edge
-when the shot was taken, so the crop could not travel further right to
-centre the subject. That is true, and it was the wrong thing to optimise.
-Jack: *"have it to the right more so we see more white space on the left in
-the photo."* **Moving the WINDOW left moves the SUBJECT right**, and the only
-thing it costs is more of a bowl that was already cut — which is the cheapest
-thing in the frame.
-**284 rather than 384**, because the rod's left end sits at x 445 in the
-source: a 384 window leaves it 40px from the frame edge at output scale,
-which is the near-miss that reads as a bad cut rather than a choice. 284
-gives it 106px and real air around it.
+**The masthead photograph is cropped 1.55× tighter than the frame**, from
+the original rather than the export: a 1950px window at 80,810 of the
+3024×3024 source. It has moved in and left three times — 1.00, then 1.24 at
+left 584, then 1.24 at left 284, now 1.55 at left 80 — on *"zoom in on it
+just a bit and center the product"*, then *"have it to the right more so we
+see more white space on the left"*, then *"even more zoomed in and even more
+to the right"*.
+**THE TWO ASKS PULL THE SAME WAY**, which is why they keep arriving
+together. Moving the WINDOW left moves the SUBJECT right, and zooming in
+means a smaller window — so both are paid for out of the right edge, where
+the bowl was already running off the source when the shot was taken. **That
+is the cheapest thing in the frame, and protecting every pixel of it is what
+made the first version wrong.**
+**Vertical is re-centred on the subject each time** rather than left where it
+was. The rod's top is at y 1081 and the shadow ends about 2490, so there was
+far more air above and below than beside it, and a zoom should come out of
+that before it comes out of the object. 16% of the frame over the rod and
+under the shadow.
+**1.55 and not more.** 1.68 was rendered and rejected: the bowl stops reading
+as a bowl and becomes a fragment running off two edges, so the picture reads
+as a crop of a photograph rather than a composed one. At 1.55 the clip is
+the subject, the bowl is still a bowl, and the left edge carries 299px of
+the 1600 in clear ground.
 **`cs-storefront.jpg` has identifiable bystanders** — the Milan shopfront —
 so it falls under the safety constraint below.
 

@@ -225,22 +225,35 @@ const projectData = {
       eyebrow: 'proj.pot-clip.cs.eyebrow',
       lede: 'proj.pot-clip.cs.lede',
       tocLabel: 'proj.pot-clip.cs.toc',
-      /* CROPPED 1.24x TIGHTER, from the original HEIC rather than from the
-         1600px export: a 2440px window at 284,520 of the 3024x3024 frame.
-           THE FIRST VERSION SAT FLUSH TO THE SOURCE'S RIGHT EDGE (left 584,
-         584 + 2440 = 3024) on the reasoning that the bowl already ran off
-         that edge when the photograph was taken, so the crop could not
-         travel further right to centre the subject - which is true, and was
-         the wrong thing to optimise. Jack: "have it to the right more so we
-         see more white space on the left in the photo." Moving the WINDOW
-         left moves the SUBJECT right, and the only thing it costs is more of
-         a bowl that was already cut.
-           284 rather than 384: the rod's left end sits at x 445 in the
-         source, so a 384 window leaves it 40px from the frame edge at output
-         scale, which is the near-miss that reads as a bad cut rather than a
-         choice. 284 gives it 106px and real air around it. */
-      hero: { src: '/assets/projects/pot-clip/cs-hero-bowl.jpg', w: 1600, h: 1600,
-        full: '/assets/projects/pot-clip/cs-hero-bowl.jpg',
+      /* CROPPED 1.55x TIGHTER THAN THE FRAME, from the original HEIC rather
+         than from the 1600px export: a 1950px window at 80,810 of the
+         3024x3024 source. It has moved in and left three times - 1.00, then
+         1.24 at left 584, then 1.24 at left 284, now this. Jack each time:
+         "zoom in on it just a bit and center the product", then "have it to
+         the right more so we see more white space on the left", then "even
+         more zoomed in and even more to the right".
+           THE TWO ASKS PULL THE SAME WAY, which is why they arrive together.
+         Moving the WINDOW left moves the SUBJECT right, and zooming in means
+         a smaller window - so both are paid for out of the right edge, where
+         the bowl was already running off the source when the photograph was
+         taken. That is the cheapest thing in the frame; protecting every
+         pixel of it is what made the first version wrong.
+           VERTICAL IS RE-CENTRED ON THE SUBJECT each time rather than left
+         where it was: the rod's top is at y 1081 and the shadow ends about
+         2490, so there was far more air above and below than beside, and a
+         zoom should come out of that before it comes out of the object.
+         This leaves 16% of the frame over the rod and under the shadow.
+           1.55 AND NOT MORE. 1.68 was rendered and rejected - the bowl stops
+         reading as a bowl and becomes a fragment running off two edges, so
+         the picture reads as a crop of a photograph rather than a composed
+         one. At 1.55 the clip is the subject, the bowl is still a bowl, and
+         the left edge carries 299px of the 1600 in clear ground.
+           THIS IS THE SECOND RENAME IN TWO COMMITS, which is the signal: a
+         third pass at this crop should move to the mesh's ?v= content hash
+         instead of inventing a third filename. See the cache note in
+         CLAUDE.md for why the bytes cannot change at a live path. */
+      hero: { src: '/assets/projects/pot-clip/cs-hero-clip.jpg', w: 1600, h: 1600,
+        full: '/assets/projects/pot-clip/cs-hero-clip.jpg',
         altKey: 'proj.pot-clip.cs.alt.hero' },
       meta: [
         ['proj.pot-clip.cs.meta.context', 'proj.pot-clip.cs.meta.contextV'],
