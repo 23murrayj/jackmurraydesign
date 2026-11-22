@@ -1668,22 +1668,32 @@ and no media query a 390px phone drew the stage at **50×50 inside a
 426px-wide slot** — narrower than the thumbnail beside it and wider than
 the screen. It stacks at 900 with `.cs-split`.
 
-**THE FRAME IS LIGHT GREY, AND THAT IS NOT THE BOX THE VIEWER NOTE BANS.**
-Jack: *"the 3d model should be given a boarder around to see where you can
-drag, but it should be a light grey border, different from the others."*
+**THE FRAME IS RED, AND THAT IS NOT THE BOX THE VIEWER NOTE BANS.**
+It began grey, on *"the 3d model should be given a boarder around to see
+where you can drag, but it should be a light grey border, different from
+the others"*, and it is `--accent` now on *"put the 3D model box in a red
+outline so it stands out."*
 The *Where it sits* note says no border, no background, no frame of any
 kind — and it was written against the stage being **a tile in the photo
 wall**, wearing the same hard 3px black as the thirteen things you only
-look at. A grey frame says the opposite thing: black frame, a picture;
-grey frame, a region that answers the pointer. The photograph beside it
-wearing the black one is what makes that legible, which is the one reason
-this could only work once the band held a pair.
-**`--line`, the page's own light-divider token, because it flips**:
-1.47:1 on the light ground and 1.51:1 on the dark one, a 0.04 spread, so
-the frame is equally quiet in both themes with no second value. Same 3px
-as `.cs-fig` — the weight matches its neighbour and only the colour
-differs. **Do not give it the hard rule**; that is the thing the viewer
-note is about.
+look at. A frame of another colour says the opposite thing: black frame, a
+picture; this frame, a region that answers the pointer. The photograph
+beside it wearing the black one is what makes that legible, which is the
+one reason this could only work once the band held a pair.
+**Grey said it quietly and red says it out loud**, which is the whole of
+the change: grey left the reader to notice, and this is the one thing on
+the page you can take hold of. The colour is not a new one either — it is
+the full stop after MURRAY, the section marks and every hover block, so
+the frame wears the colour that already means *this part is live*.
+**`--accent`, because it flips**: coral `#CF625A` on the light ground and
+hot pink `#ff2d55` on the dark one, measuring **3.21:1 and 5.16:1**. Both
+clear the 3:1 a non-text UI border owes; neither is text, so 4.5 does not
+apply. One declaration, no theme override — the same reason the grey
+`--line` it replaces was chosen (1.47:1 and 1.51:1, equally quiet in both
+themes and, as it turned out, quieter than the job needed).
+Same 3px as `.cs-fig` — the weight matches its neighbour and only the
+colour differs. **Do not give it the hard rule**; that is the thing the
+viewer note is about.
 
 **AND THE DRAG LABEL IS INSIDE IT NOW, 14px from the top-left corner.**
 Jack: *"move the drag to rotate text to the top left inside corner of the
@@ -1812,6 +1822,39 @@ before you have seen them and a caption after. *"Move them to under the
 posters."* The copy is `html` rather than `text` because it quotes that
 line in italics, and `csText` escapes a `text:` string — it would have
 printed the tag.
+
+**THE PROSE MEASURE IS 66ch, AND THE NUMBER COMES FROM ONE LINE IN THE
+PROBLEM.** Jack: *"'Space. A separate spoon rest takes up work surface
+that small kitchens don't have.' has a widow at the end, just extend the
+box so the last word can be with the rest."* That item sets **675.2px** on
+one line in English and the box was **669.4** — it missed by 5.8px, half a
+character, and dropped "have." onto a line of its own under two items that
+each fit.
+**66ch is 690px**, clearing it by 15 — slack enough that a word of copy
+either way does not put it back — and it is +3% on every other paragraph,
+which is invisible and still inside the 45–75 characters a measure is for.
+Going wide enough for Spanish (754px) or Italian (739) would have meant
+**73ch**, past that range, for two languages that wrap tidily at 66 anyway.
+**It does not touch Research or Testing**, and that is the thing to check
+before moving it again: their prose sits in `.cs-split`'s 1fr column,
+548px at 1440, narrower than either cap — so the column binds and the two
+heights that photographs are sized from do not move. Measured identical
+before and after, 0.00 top and bottom in both.
+**And the pull quote came up with it**: `.cs-quote`'s top margin is 26px
+where it was 34 — *"pull things under it up a bit"* — and 26 is the gap
+this page repeats everywhere else, where 34 was a number of its own. With
+the third item back on one line, The problem is **427px → 392**.
+
+**THE "HOW MIGHT WE" LINE CARRIES A COLON**, on Jack wanting to see how it
+looks: *"How might we: create a stable, adjustable place to rest utensils
+directly above the pot…"* The colon turns a long single question into a
+label and its answer, which is how the phrase is used in a workshop.
+**Spanish and Italian take it and Japanese does not**, and that is
+grammar rather than an oversight: both Romance versions put the
+interrogative first, so the colon lands in the same place; Japanese puts
+it last — 「…つくるには、どうすればよいか。」 — so there is no "how might
+we" at the front to punctuate, and a colon dropped into the middle would
+be a mistake rather than a device.
 
 **PROCESS IS FOUR CARDS IN A 2×2.** Jack, with a mock-up: *"turn the process
 part into some cards like this to make them a bit more condensed and
@@ -3738,7 +3781,7 @@ page will not tell you whether the object still turns.
   *"it shouldn't be in a box. It should be in its own area… put it at like
   the very top."* So `.project-stage` is a band of its own between the
   title and the photographs, and it does not wear the photo wall's hard
-  black rule. **It carries a light grey one now**, on Jack's request — the
+  black rule. **It carries a red one now** (grey first), on Jack's request — the
   case-study note holds the words and the reasoning — and what is still
   banned is the hard frame that made it read as a tile.
 - **IT IS THE PAINTED PHOTOGRAPH'S HEIGHT NOW, AND IT WAS SQUARE BEFORE.**

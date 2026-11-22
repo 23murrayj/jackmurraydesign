@@ -3437,7 +3437,24 @@ body.is-loading { overflow: hidden; }
   font-family: var(--ff-display); font-size: clamp(1.5rem, 3vw, 2.2rem);
   letter-spacing: -0.01em; line-height: 1.05; margin-bottom: 26px;
 }
-.cs-prose, .cs-prose-p { font-size: 1.02rem; line-height: 1.7; max-width: 64ch; }
+/* 66ch AND NOT 64, AND THE NUMBER COMES FROM ONE LINE. Jack, on The
+   problem: "'Space. A separate spoon rest takes up work surface that
+   small kitchens don't have.' has a widow at the end, just extend the box
+   so the last word can be with the rest." That item sets 675.2px on one
+   line in English and the box was 669.4 - so it missed by 5.8px, half a
+   character, and dropped "have." onto a line of its own under two items
+   that each fit.
+   66ch is 690px: it clears the line by 15px, which is slack enough that a
+   word of copy either way does not put it back, and it is +3% on every
+   other paragraph - invisible, and still inside the 45-75 characters a
+   measure is meant to hold. Going wide enough for Spanish (754px) or
+   Italian (739) would have meant 73ch, past that range, for two languages
+   that wrap tidily at 66 anyway.
+   IT DOES NOT TOUCH RESEARCH OR TESTING. Their prose sits in .cs-split's
+   1fr column, which is 548px at 1440 - narrower than either cap, so the
+   column binds and their heights, which two photographs are sized from,
+   do not move. Measured before and after: identical. */
+.cs-prose, .cs-prose-p { font-size: 1.02rem; line-height: 1.7; max-width: 66ch; }
 /* `textBelow` puts the prose after the pictures, and then it needs the gap
    the pictures normally get above them — the same 26px, so the rhythm does
    not depend on which way round the section is. */
@@ -3629,10 +3646,14 @@ body.is-loading { overflow: hidden; }
    question every section after it answers. 6px of --accent down the side
    rather than quotation marks: the line is not a quotation, it is the
    project's own hinge. */
+/* 26px above it, not 34. "...and pull things under it up a bit." With the
+   third item back on one line the list is a line shorter already; 26 takes
+   another 8 off and is the gap this page repeats everywhere else (.cs-figs
+   to prose, prose to pictures), where 34 was a number of its own. */
 .cs-quote {
   font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 500;
   border-left: 6px solid var(--accent); padding-left: 26px;
-  margin: 34px 0 0; max-width: 46ch;
+  margin: 26px 0 0; max-width: 46ch;
 }
 
 /* ---- the turntable's slot --------------------------------------------
@@ -3791,13 +3812,24 @@ body.is-loading { overflow: hidden; }
    look at. A grey frame says the opposite thing. Black frame, a picture;
    grey frame, a region that answers the pointer - and the photograph
    beside it wearing the black one is what makes the difference legible.
-   --line is the page's own light-divider token and it flips, measuring
-   1.47:1 on the light ground and 1.51:1 on the dark one - a 0.04 spread,
-   so the frame is equally quiet in both themes without a second value.
+   AND IT IS RED NOW, NOT GREY. Jack: "put the 3D model box in a red
+   outline so it stands out." Grey said "this is not a picture" quietly
+   and left it to the reader to notice; red says "this one is different"
+   out loud, which is the right register for the one thing on the page
+   you can take hold of. It is also the page's own accent - the full stop
+   after MURRAY, the section marks, every hover block - so the frame is
+   not a new colour, it is the colour that already means "this part is
+   live".
+   --accent flips, so one declaration covers both themes: coral #CF625A on
+   the light ground and hot pink #ff2d55 on the dark one, measuring 3.21:1
+   and 5.16:1. Both clear the 3:1 that non-text UI borders owe; neither is
+   text, so 4.5 does not apply.
    Same 3px as .cs-fig: the weight matches its neighbour, the colour is
-   what differs. */
+   what differs - which is still the point, just said louder. The grey it
+   replaces was --line at 1.47:1 and 1.51:1, equally quiet in both themes
+   and, as it turned out, quieter than the job needed. */
 .cs-stage-slot .project-stage {
-  border: 3px solid var(--line);
+  border: 3px solid var(--accent);
   background: var(--white);
 }
 
