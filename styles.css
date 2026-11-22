@@ -3140,10 +3140,39 @@ body.is-loading { overflow: hidden; }
 /* ---- the masthead ------------------------------------------------------
    Asymmetric on purpose - 1.15fr of text against 1fr of photograph - so it
    is the same split the hero uses rather than a tidy half and half. */
+/* 1.25fr / 1fr, where it was 1.15 / 1. Jack: "maybe make [the hero] the
+   tiniest bit smaller." The ratio rather than a cap on the figure, because
+   a cap would leave slack in the media column and the poster's right edge
+   has to stay on the measure. 548.8 to 524.4 at 1440 — 4.4% — and the 24px
+   goes to the text column, which now carries the brief as well. */
 .cs-mast {
-  display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px;
+  display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px;
   align-items: start; margin-bottom: 56px;
 }
+/* THE POSTER STARTS LEVEL WITH THE BACK BUTTON. Jack: "move the hero
+   poster so that the top of it is at the same height as the top of the
+   back to work button." That button is in the flow above the masthead, so
+   the lift is its own block: 45.5px of button (12px padding, 2px border
+   and a 17.5px line) plus its 36px margin-bottom.
+   The button is 48.5px tall in Japanese, where Noto Sans JP's line box is
+   3px deeper, so that language gets its own number further down rather
+   than a shared one that is wrong in one of four. Giving .project-back a
+   fixed line-height would fix it at the source and change a control on all
+   seven projects, which is not this change. */
+@media (min-width: 1101px) {
+  .cs-mast-media { margin-top: calc(-45.5px - 36px); }
+  /* Noto Sans JP's line box is 3px deeper, so the button is 48.5 there.
+     One number for four languages would be a near-miss in one of them,
+     and the alternative - a fixed line-height on .project-back - changes
+     a control on all seven projects. */
+  html[lang="ja"] .cs-mast-media { margin-top: calc(-48.5px - 36px); }
+}
+/* A min-width query, which this stylesheet otherwise does not use, because
+   the lift only means anything while the masthead is two columns. Below
+   1101 the media is order: -1 and FIRST, so the same margin would pull the
+   poster up over the back button instead of level with it. Pairing it with
+   the existing max-width: 1100 block is one rule rather than two resets,
+   and the Japanese override would have needed a reset of its own. */
 .cs-eyebrow {
   display: block;
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.8px;
@@ -3205,6 +3234,11 @@ body.is-loading { overflow: hidden; }
   background: var(--ink); color: var(--paper);
   padding: 36px 40px; margin-bottom: 64px;
 }
+/* In the masthead column it needs the gap above instead of below - the
+   masthead's own 56px is what separates it from the summary cards. 36px
+   matches the gap the back button leaves, which is the only other vertical
+   measure in this part of the page. */
+.cs-mast-text .cs-brief { margin-top: 36px; margin-bottom: 0; }
 .cs-brief-t {
   font-family: var(--ff-display); font-size: 0.95rem; letter-spacing: 1.4px;
   text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
@@ -3289,7 +3323,8 @@ body.is-loading { overflow: hidden; }
    breakpoint the page already uses; the honest threshold is about 907, and
    18px of measure is not worth a twelfth number. */
 .cs-split {
-  display: grid; grid-template-columns: 1fr 340px;
+  --aside-col: 340px;
+  display: grid; grid-template-columns: 1fr var(--aside-col);
   gap: 36px; align-items: start;
 }
 .cs-split .cs-figs { margin-top: 6px; }
@@ -3328,7 +3363,22 @@ body.is-loading { overflow: hidden; }
   top: 0; bottom: 0; right: 0; left: auto; margin-top: 0;
   display: flex; justify-content: flex-end;
 }
-.cs-split-end .cs-fig { height: 100%; }
+/* AND IT CANNOT GROW PAST THE COLUMN. Sized by height, a picture's width
+   is the height times its ratio, and nothing stops that exceeding the
+   track: measured at 901 in Spanish, Research's 623px of notes asked for a
+   350px photograph in a 340px column, and Testing's asked for 360. The
+   obvious guard does not work - `max-width: 100%` clamps the width and
+   leaves the height alone, so the picture overflows instead of shrinking
+   (tried, measured, 350.3px). The height is the axis to cap, and the cap
+   is arithmetic: the IMAGE may be the column less the frame's two borders,
+   so the FIGURE may be that over the ratio, plus the borders back.
+   --fig-ar comes from the entry's own w and h in projectData. Clamped, the
+   picture is shorter than the prose rather than wider than its column, and
+   it tops out with the text. */
+.cs-split-end .cs-fig {
+  height: 100%;
+  max-height: calc((var(--aside-col) - 6px) / (var(--fig-ar)) + 6px);
+}
 .cs-split-end .cs-fig img { height: 100%; width: auto; }
 /* "the bottom of it hits the bottom of the last line" — and the last
    definition's own 18px bottom margin was standing between the two, so
@@ -3357,7 +3407,14 @@ body.is-loading { overflow: hidden; }
     position: static; grid-column: auto; grid-row: auto;
     margin-top: 26px; display: grid;
   }
-  .cs-split-end .cs-fig { height: auto; }
+  /* max-height goes with the height, and forgetting it was the same bug
+     one layer down: the cap is the column's width over the ratio, and
+     stacked there is no 340px column - the figure is the whole measure.
+     Left on, it held the research photograph to 600px at a width that
+     wanted 624 and squashed the picture 4%, which is worse than the
+     overflow it was written to prevent. Measured at 390: 351x600 against
+     a true 351x624. */
+  .cs-split-end .cs-fig { height: auto; max-height: none; }
   .cs-split-end .cs-fig img { height: auto; width: 100%; }
   /* Stacked, the column is the whole measure, so the lone-portrait cap the
      side-by-side rule turned off has to come back on - 810px of storefront

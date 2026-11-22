@@ -454,7 +454,12 @@ const projectData = {
            the finding, and the next section opens on rim fit, so the
            implication is the hinge between them. */
         { id: 'testing', title: 'proj.pot-clip.cs.testing.t',
-          html: 'proj.pot-clip.cs.testing.b', aside: true,
+          /* asideEnd here too. Jack: "adjust the photo so it is in line
+             well and not unnecessarily under the text to the left of it."
+             It was 342x321 beside 256 of prose, so it hung 65px below the
+             argument it illustrates. Scaled to the text it is 271x256 in
+             English - smaller, and level. */
+          html: 'proj.pot-clip.cs.testing.b', aside: true, asideEnd: true,
           /* OUT OF ITS PHONE FRAME. The source is 3213x5712 held upright
              and the object only occupies y 2877-4850 of it, so the top 45%
              of the 9:16 export was empty ground - which is why it drew 600
@@ -1162,9 +1167,17 @@ function renderCaseStudy(data) {
      ask: a lone portrait is capped so a 1000x1778 source does not draw
      1643px tall in a 924px column, and a landscape runs the full width.
      Same trick the mixed layout uses, for the same reason. */
+  /* --fig-ar is the picture's own ratio, handed to CSS because one rule
+     needs arithmetic the stylesheet cannot do on its own: a figure that is
+     sized by HEIGHT (asideEnd, which matches a photograph to the prose
+     beside it) has to know how tall it may get before its width outgrows
+     the column. max-width cannot do it - measured, clamping the width
+     leaves the height alone and the picture simply overflows, which is
+     how a 350px photograph ended up in a 340px column in Spanish. */
   const fig = (e, eager) => {
     const o = (e && e.w && e.h) ? (e.w >= e.h ? ' is-landscape' : ' is-portrait') : '';
-    return '<figure class="cs-fig' + o + '">'
+    const ar = (e && e.w && e.h) ? ' style="--fig-ar: ' + e.w + ' / ' + e.h + '"' : '';
+    return '<figure class="cs-fig' + o + '"' + ar + '>'
       + mediaTag(e, data.id, 0, data.title, eager) + '</figure>';
   };
   /* The row class is a lookup rather than 'cs-figs-' + length, and both
@@ -1272,6 +1285,14 @@ function renderCaseStudy(data) {
       + '<dl class="cs-meta">' + cs.meta.map((p) => '<div>'
         + csText('dt', 'cs-meta-k', p[0]) + csText('dd', 'cs-meta-v', p[1])
         + '</div>').join('') + '</dl>'
+      /* THE BRIEF SITS UNDER THE META TABLE, IN THE MASTHEAD'S OWN COLUMN.
+         Jack: "move The brief box up to the empty space to the left of the
+         hero photo and above the problem, solution and outcome." There was
+         318px of it at 1440 - the left column ran out at the meta table
+         while the poster carried on - and the brief is the one block on the
+         page short enough to fill it and early enough to belong there. */
+      + '<div class="cs-brief">' + csText('h3', 'cs-brief-t', cs.brief[0])
+        + csText('p', 'cs-brief-b', cs.brief[1]) + '</div>'
     + '</div>'
     // eager: the opening photograph is on screen before anything is
     // scrolled, and an image the visitor can already see has no business
@@ -1282,8 +1303,6 @@ function renderCaseStudy(data) {
     + '<ul class="cs-cards">' + cs.cards.map((p) => '<li class="cs-card">'
       + csText('span', 'cs-card-t', p[0]) + csText('p', 'cs-card-b', p[1])
       + '</li>').join('') + '</ul>'
-    + '<div class="cs-brief">' + csText('h3', 'cs-brief-t', cs.brief[0])
-      + csText('p', 'cs-brief-b', cs.brief[1]) + '</div>'
     + '<div class="cs-main">' + toc
       + '<div class="cs-flow">' + cs.sections.map(section).join('') + '</div>'
     + '</div>'

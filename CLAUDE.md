@@ -1708,7 +1708,7 @@ made to fail before being trusted. **Automated, not written down as a step.**
 
 **Measured on the page, 1440×900:** `.project-detail` 1380 wide (the other
 six keep 1100), 1236px of content, split 240 / 72 / 924 between contents,
-gap and text column. Masthead 1.15fr / 1fr. Contrast: **0 failures across
+gap and text column. Masthead 1.25fr / 1fr. Contrast: **0 failures across
 82 text elements in both themes**, tightest `.cs-brief-t` at 4.60 (accent on
 ink, light). All seven contents links are 44px tall in English and in
 Japanese. (This also named `.cs-stat-num` at 3.21 against its 3 bar until
@@ -1913,6 +1913,32 @@ bottomed out on the prose BLOCK and sat 20.6px under the last descender,
 where the ask was the last line. A trailing margin on the last item in a
 list is spacing before nothing, and the section's own padding is the gap.
 Research is **711 → 654** across the two changes.
+**AND TESTING TOOK THE SAME FLAG.** Jack: *"adjust the photo so it is in
+line well and not unnecessarily under the text to the left of it."* It was
+342×321 beside 256 of prose, hanging 65px below the argument it
+illustrates; scaled to the text it is 271×256 in English, and 0.0 top and
+0.0 bottom in all four languages.
+**THE SCALED FIGURE NEEDED A CAP, AND IT WAS ALREADY OVERFLOWING WITHOUT
+ONE.** Sized by height, a picture's width is its height times its ratio,
+and nothing stopped that exceeding the 340px track. Measured at 901 in
+Spanish, Research's 623px of notes asked for a **350px photograph in a
+340px column** — shipped that way in `96c1e4f` and found by measuring the
+next change rather than by looking. Testing's asked for 360.
+**`max-width: 100%` does not fix it**, which is the part worth keeping:
+clamping the width leaves the height alone, so the picture overflows
+instead of shrinking. Measured, 350.3px with the clamp on.
+**The height is the axis to cap**, and the cap is arithmetic: the image may
+be the column less the frame's two borders, so the figure may be that over
+the ratio, plus the borders back. The ratio comes from the entry's own `w`
+and `h` in `projectData`, handed to CSS as `--fig-ar` by `fig()` — the one
+number the stylesheet cannot work out for itself. Clamped, the picture is
+shorter than the prose rather than wider than its column.
+**And `max-height` has to be released when the layout stacks**, the same
+lesson as `grid-column` one commit earlier: below 900 there is no 340px
+column, and the cap left on held the research photograph to 600px at a
+width that wanted 624 — a 4% squash, which is worse than the overflow it
+was written to prevent. **Undo everything the rule set, not just the part
+that names the layout.**
 
 **The photograph is `cs-storefront`, and the new filename is the point.**
 It is a different, taller frame of the same shopfront (9:16 as shot, against
@@ -2026,6 +2052,36 @@ third of it is a code snippet, a File Manager and a Download Scene button —
 tooling rather than work, and a thing this codebase pointedly does not use.
 Centred on the render's own ink box (446–1661 × 570–1318 in a 2948×1578
 source), 1800×1200 at source scale, margins 293/292 and 226/226.
+**THE BRIEF SITS IN THE MASTHEAD'S OWN COLUMN**, under the meta table.
+Jack: *"move The brief box up to the empty space to the left of the hero
+photo and above the problem, solution and outcome."* There was 318px of it
+at 1440 — the left column ran out at the meta table while the poster
+carried on — and the brief is the one block early enough to belong there
+and short enough to fit. Measured after: the two columns end within 34px
+of each other. In the column it takes its 36px gap above instead of below,
+since the masthead's own 56px is what separates it from the summary cards.
+
+**THE POSTER STARTS LEVEL WITH THE BACK BUTTON**, and is 4.4% smaller.
+*"Move the hero poster so that the top of it is at the same height as the
+top of the back to work button"*, and *"maybe make the tiniest bit
+smaller."* The button is in the flow above the masthead, so the lift is its
+own block: 45.5px of button — 12px padding, 2px border, a 17.5px line —
+plus its 36px margin-bottom. The size came off the grid (1.15fr / 1fr to
+**1.25fr / 1fr**, 548.8 to 524.4) rather than a cap on the figure, because
+a cap would leave slack in the media column and the poster's right edge has
+to stay on the measure. The 24px goes to the text column, which now carries
+the brief.
+**Japanese gets its own number**, 48.5px, because Noto Sans JP's line box
+is 3px deeper and one value for four languages would be a near-miss in one
+of them. Giving `.project-back` a fixed line-height would fix it at the
+source and change a control on all seven projects, which is a different
+change.
+**The lift is in a `min-width: 1101px` query**, the only one in this
+stylesheet, because below that the masthead is one column with the media
+`order: -1` and FIRST — the same margin would pull the poster up over the
+button instead of level with it. One query rather than two resets, and the
+Japanese override would have needed a reset of its own.
+
 **THE MASTHEAD IS THE POSTER, NOT THE PHOTOGRAPH IN IT.** Jack: *"change the
 current hero image to 6.jpg. Its a poster that I made with the exact photo
 in it so I think it may look better."* Same bowl, rod and clip, set under
