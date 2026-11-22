@@ -1710,9 +1710,9 @@ made to fail before being trusted. **Automated, not written down as a step.**
 six keep 1100), 1236px of content, split 240 / 72 / 924 between contents,
 gap and text column. Masthead 1.15fr / 1fr. Contrast: **0 failures across
 82 text elements in both themes**, tightest `.cs-brief-t` at 4.60 (accent on
-ink, light) and `.cs-stat-num` at 3.21 against its 3 bar, which is the
-display-type split the palette already documents. All seven contents links
-are 44px tall in English and in Japanese.
+ink, light). All seven contents links are 44px tall in English and in
+Japanese. (This also named `.cs-stat-num` at 3.21 against its 3 bar until
+the Testing figures came out on 2026-11-22 and took that class with them.)
 
 **The measure is wider HERE AND ONLY HERE.** Jack: *"you probably have to
 widen out the sides of the borders, because right now I think they're too
@@ -1723,10 +1723,11 @@ work started was not to touch them.
 **Japanese needed two additions, and one deliberate omission.** `.cs-h`,
 `.cs-brief-t` and `.cs-defs dt` join the `font-weight: 900` list — their
 content IS Japanese, and Japanese falls through to Noto Sans JP, which
-carries real weights. **`.cs-stat-num` and the step counters are excluded**
-for the reason `.stat-num` is: "約50%" is three Archivo Black digits beside
-one Japanese glyph, and a counter is Latin in every language, so a 900 there
-is synthetic bold and a smeared glyph. Nine tracked classes also reset
+carries real weights. **The step counters are excluded** for the reason
+`.stat-num` is: a counter is Latin in every language, so a 900 there is
+synthetic bold and a smeared glyph. (`.cs-stat-num` was the other exclusion
+and is gone with the Testing figures — "約50%" was three Archivo Black digits
+beside one Japanese glyph, which is the same trap in one string.) Nine tracked classes also reset
 `letter-spacing`, since tracking tuned for uppercase Latin reads as broken
 spacing in a script with no word spaces.
 
@@ -1742,6 +1743,28 @@ a process photo is for is the part that gets cropped. Ragged bottoms are
 what an editorial page does with photographs of different shapes. **A lone
 portrait is capped at 400px** — at the column's full 924 a 1000×1778 source
 draws 1643px tall, two and a half screens of one photograph.
+
+**TESTING CARRIES NO FIGURES ANY MORE.** It opened on two — `~50%` of pots
+and `1 shoot` — and Jack took them out: *"just to make that section
+smaller."* Nothing left the page with them: the half survives on the
+Outcome summary card and in Limitations, and the product shoot is in the
+Finding sentence, which is where it had been saying the same thing twice
+(the duplication this file flagged when the copy went in). **It was the
+only user of `stats`**, so the renderer branch, the four CSS rules and the
+sixteen i18n keys came out with it rather than being left idle — the same
+call as `titleTop`, and all of it is in `docs/pot-clip-masonry.md`. Testing
+is **835 → 556 → 433** over the three passes.
+
+**POSTERS IS "POSTERS", AND THE TEXT IS UNDER THE PICTURES.** It was
+"Posters and packaging" over a one-line description; there is no packaging
+in the section, and Jack rewrote the copy to say what the series is for —
+the campaign line *Il buon design vive nei dettagli* tying back to what
+research found about Alessi. `textBelow` is the flag: three posters are the
+output of this section, and the paragraph explaining them is a promise
+before you have seen them and a caption after. *"Move them to under the
+posters."* The copy is `html` rather than `text` because it quotes that
+line in italics, and `csText` escapes a `text:` string — it would have
+printed the tag.
 
 **PROCESS IS FOUR CARDS IN A 2×2.** Jack, with a mock-up: *"turn the process
 part into some cards like this to make them a bit more condensed and
@@ -1850,9 +1873,50 @@ sketch spread that used to sit next to it went down to process card 1,
 which is both where sketching belongs in the story and what evens that row
 up. **The closing line went too** — *"I explored five directions, from an
 S-hook to an egg cup…"* — so the section now ends on the notes themselves.
+**AND IT ENDS WHERE THE NOTES END**, off a second flag, `asideEnd`. Jack:
+*"move the alessi store photo up so that the bottom of it hits the bottom
+of the last line in that section, then we can move the sections under that
+up a little bit so the transition to the next section looks good."* Both
+halves are one change: side by side the row was as tall as the PICTURE —
+600px against 566 of notes — so the section ended on 34px of photograph
+with nothing beside it, and everything below sat that much lower.
+**The figure goes out of flow** (absolute, placed by `grid-column` /
+`grid-row` so the 340 is still stated once), which is what lets the row be
+the prose's height; `top: 0` and `bottom: 0` then make the photograph
+exactly that tall. **Scaled, never cropped** — the whole shopfront is still
+there, a few per cent smaller.
+**SCALED AND NOT LIFTED, BECAUSE LIFTING BROKE IN JAPANESE.** The first
+version left the picture at its natural 600 and pinned only the bottom,
+which is right in English (it rises 34px into a 46px gap under the heading)
+and wrong in Japanese: CJK sets the same notes in **515px**, so it rose 84
+and its top edge came out **21px above the heading**, over the rule between
+the sections. A fixed ratio cannot bottom out on four different column
+heights. Scaled, all four land at 0.0 top and 0.0 bottom; what varies is
+width — 335 in Spanish, 321 in English, 293 in Japanese — so the figure is
+pinned RIGHT and the gutter takes the difference.
+**`align-self: end` cannot do this**, which is worth knowing before trying
+it: a grid row is as tall as its tallest item, so bottom-aligning inside it
+is a no-op while the picture *is* the tallest.
+**AND STACKING IT NEEDS THE PLACEMENT UNDONE, not just the position.**
+`position: static` alone leaves `grid-column: 2` in force, so the figure
+asked for a second column of a one-column grid and the browser made an
+implicit one: measured, `grid-template-columns: 1fr` computed as
+"320px 400px" at 800, and at 390 the notes came out **120px wide**. This is
+the second time in two commits that a grid has failed to stack because of
+something other than the template — the stage pair's fixed 340px track was
+the first.
+**It is a flag and not a rule on `.cs-split`**: Testing's photograph is 65px
+TALLER than its prose, so the same treatment there would slide it into the
+title.
+**The last definition's trailing 18px went too.** With it the picture
+bottomed out on the prose BLOCK and sat 20.6px under the last descender,
+where the ask was the last line. A trailing margin on the last item in a
+list is spacing before nothing, and the section's own padding is the gap.
+Research is **711 → 654** across the two changes.
+
 **The photograph is `cs-storefront`, and the new filename is the point.**
 It is a different, taller frame of the same shopfront (9:16 as shot, against
-the old 4:5), which draws 340×600 beside 566px of notes. `vercel.json` gives
+the old 4:5). `vercel.json` gives
 everything under `/assets/` an hour of freshness and a **week** of
 stale-while-revalidate, so replacing a photograph in place shows returning
 visitors the old one for up to a week. For a re-crop that is a shrug; for a

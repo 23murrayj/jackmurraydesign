@@ -3260,6 +3260,10 @@ body.is-loading { overflow: hidden; }
   letter-spacing: -0.01em; line-height: 1.05; margin-bottom: 26px;
 }
 .cs-prose, .cs-prose-p { font-size: 1.02rem; line-height: 1.7; max-width: 64ch; }
+/* `textBelow` puts the prose after the pictures, and then it needs the gap
+   the pictures normally get above them — the same 26px, so the rhythm does
+   not depend on which way round the section is. */
+.cs-figs + .cs-prose, .cs-figs + .cs-prose-p { margin-top: 26px; }
 .cs-prose p + p, .cs-prose-p + .cs-prose-p { margin-top: 18px; }
 .cs-prose ul { list-style: none; margin-top: 20px; }
 .cs-prose li { padding-left: 20px; position: relative; margin-bottom: 14px; }
@@ -3289,6 +3293,51 @@ body.is-loading { overflow: hidden; }
   gap: 36px; align-items: start;
 }
 .cs-split .cs-figs { margin-top: 6px; }
+
+/* ---- the sibling that ends with the text ------------------------------
+   `asideEnd` bottoms the photograph out on the LAST LINE of the prose
+   instead of letting it hang below. Jack, on Research: "move the alessi
+   store photo up so that the bottom of it hits the bottom of the last
+   line in that section, then we can move the sections under that up a
+   little bit so the transition to the next section looks good."
+   Both halves are one change. Side by side the row was as tall as the
+   PICTURE — 600px against 566 of notes — so the section ended on 34px of
+   photograph with nothing beside it, and every section below sat that
+   much lower.
+   ABSOLUTE, so the figure stops sizing the row. align-self: end cannot do
+   this: the row is as tall as its tallest item, so bottom-aligning inside
+   it is a no-op while the picture IS the tallest. Out of flow, the row is
+   the prose's height, and top: 0 / bottom: 0 then makes the photograph
+   exactly that tall — scaled, never cropped, so the whole shopfront is
+   still there at a few per cent less.
+   SCALED AND NOT LIFTED, because lifting broke in Japanese. The first
+   version left the picture at its natural 600 and pinned only its bottom,
+   which is right in English (it rises 34px into a 46px gap under the
+   heading) and wrong in 日本語: CJK sets the same notes in 515px, so the
+   picture rose 84 and its top edge came out 21px ABOVE the heading, over
+   the rule that separates the sections. A fixed ratio cannot bottom out on
+   four different column heights; a scaled one does, in all four.
+   What it spends is width — 340 in Spanish, 318 in English, 290 in
+   Japanese — so the figure is pinned RIGHT, keeping its edge on the text
+   column's edge and letting the gutter take the difference.
+   Placed by grid-column/grid-row, so the containing block is that grid
+   area and the 340px column is still stated in exactly one place. */
+.cs-split-end { position: relative; }
+.cs-split-end .cs-figs {
+  position: absolute; grid-column: 2; grid-row: 1;
+  top: 0; bottom: 0; right: 0; left: auto; margin-top: 0;
+  display: flex; justify-content: flex-end;
+}
+.cs-split-end .cs-fig { height: 100%; }
+.cs-split-end .cs-fig img { height: 100%; width: auto; }
+/* "the bottom of it hits the bottom of the last line" — and the last
+   definition's own 18px bottom margin was standing between the two, so
+   the picture bottomed out on the BLOCK and sat 20.6px under the last
+   descender. A trailing margin on the last item in a list is spacing
+   before nothing; the section's own padding is what separates it from
+   what follows. Worth 18px off Research and about 2 off Limitations,
+   where the closing line's margin was collapsing with it anyway. */
+.cs-prose .cs-defs dd:last-child { margin-bottom: 0; }
 /* the lone-portrait cap is 400 and the column is 340, so it never bites -
    but it is the same 0-3-0 as any override and sits later in the file, so
    say it at 0-4-0 and not by source order (that cost a commit once) */
@@ -3296,6 +3345,20 @@ body.is-loading { overflow: hidden; }
 @media (max-width: 900px) {
   .cs-split { grid-template-columns: 1fr; gap: 0; }
   .cs-split .cs-figs { margin-top: 26px; }
+  /* Stacked there is nothing to bottom out against, and an absolutely
+     positioned figure here would sit on top of the prose.
+     THE grid-column RESET IS THE LOAD-BEARING LINE. Dropping back to
+     static is not enough: the placement survives, so the figure asked for
+     column 2 of a one-column grid and the browser made an implicit one —
+     measured, `grid-template-columns: 1fr` computed as "320px 400px" at
+     800 and the notes came out 120px wide at 390. Undo the placement with
+     the position, not just the position. */
+  .cs-split-end .cs-figs {
+    position: static; grid-column: auto; grid-row: auto;
+    margin-top: 26px; display: grid;
+  }
+  .cs-split-end .cs-fig { height: auto; }
+  .cs-split-end .cs-fig img { height: auto; width: 100%; }
   /* Stacked, the column is the whole measure, so the lone-portrait cap the
      side-by-side rule turned off has to come back on - 810px of storefront
      is 1012px tall. Stated at 0-4-0 because the rule it is undoing is.
@@ -3488,20 +3551,6 @@ body.is-loading { overflow: hidden; }
    smeared pair of digits. The face already looks black. */
 .cs-step-cap::before { content: counter(csstep, decimal-leading-zero) " · "; }
 
-/* ---- the two test figures --------------------------------------------
-   One colour across both, for the reason the summary cards are one colour:
-   two numbers in two hues are two subjects. --accent because it is the
-   colour of the full stop in the name, which is the only accent on this
-   page that means anything. */
-.cs-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
-.cs-stat { border-top: 3px solid var(--black); padding-top: 14px; }
-.cs-stat-num {
-  display: block; font-family: var(--ff-display);
-  font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1; color: var(--accent);
-  margin-bottom: 10px;
-}
-.cs-stat-txt { display: block; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
-
 /* ---- photographs ------------------------------------------------------
    NATURAL RATIOS, ALIGNED AT THE TOP, AND NOTHING CROPPED. Equal-height
    rows were the obvious alternative and they cost the pictures: a 1000x1778
@@ -3564,7 +3613,6 @@ body.is-loading { overflow: hidden; }
   .cs-defs-row { grid-template-columns: 1fr; gap: 0; }
   .cs-defs-row dt, .cs-defs-row dd { grid-column: 1; }
   .cs-defs-row dd { border-top: 0; padding-top: 0; }
-  .cs-stats { grid-template-columns: 1fr; gap: 18px; }
   .cs-quote { padding-left: 18px; border-left-width: 4px; }
   /* Two photographs side by side at 390px are 170px wide, which is a
      thumbnail of a process shot rather than a photograph of one. */
@@ -5460,9 +5508,11 @@ html[lang="ja"] .pong-end-msg,
    section headings, the brief's label and the definition terms are all
    translated - and Japanese falls through to Noto Sans JP, which carries
    real weights, so this is a real 900 rather than a smear.
-   NOT .cs-stat-num and NOT the step numbers, for the reason the about
-   stats are excluded below: "約50%" is three Archivo Black digits beside
-   one Japanese glyph, and a counter is Latin in every language. */
+   NOT the step numbers, for the reason the about stats are excluded
+   below: a counter is Latin in every language, so a 900 on it is a smear
+   rather than a weight. (It read "NOT .cs-stat-num and NOT the step
+   numbers" until the Testing figures came out on 2026-11-22; that class
+   no longer exists, and the restore note carries it.) */
 html[lang="ja"] .cs-h,
 html[lang="ja"] .cs-brief-t,
 html[lang="ja"] .cs-step-cap,

@@ -292,8 +292,19 @@ const projectData = {
            re-crop, which only looks slightly different; this is a different
            photograph, taller on purpose (9:16 as shot, against the old 4:5)
            so the column beside the notes is about as deep as they are. */
+        /* asideEnd BOTTOMS THE PHOTOGRAPH OUT ON THE LAST LINE of the
+           notes instead of hanging it 34px below them. Jack: "move the
+           alessi store photo up so that the bottom of it hits the bottom
+           of the last line in that section, then we can move the sections
+           under that up a little bit so the transition to the next section
+           looks good." Both halves are the one change - the section stops
+           being as tall as the picture and starts being as tall as its
+           text, so everything below comes up with it.
+             Research only. Testing's photograph is TALLER than its prose
+           by more than the gap under its heading, so the same rule there
+           would slide it up into the title. */
         { id: 'research', title: 'proj.pot-clip.cs.research.t',
-          html: 'proj.pot-clip.cs.research.grid', aside: true,
+          html: 'proj.pot-clip.cs.research.grid', aside: true, asideEnd: true,
           figures: [
             { src: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4', w: 1000, h: 1778,
               full: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4',
@@ -436,10 +447,6 @@ const projectData = {
            the finding, and the next section opens on rim fit, so the
            implication is the hinge between them. */
         { id: 'testing', title: 'proj.pot-clip.cs.testing.t',
-          stats: [
-            ['proj.pot-clip.cs.testing.s1n', 'proj.pot-clip.cs.testing.s1t'],
-            ['proj.pot-clip.cs.testing.s2n', 'proj.pot-clip.cs.testing.s2t'],
-          ],
           html: 'proj.pot-clip.cs.testing.b', aside: true,
           /* OUT OF ITS PHONE FRAME. The source is 3213x5712 held upright
              and the object only occupies y 2877-4850 of it, so the top 45%
@@ -464,8 +471,15 @@ const projectData = {
         // FIVE POSTERS WERE THE POINT ONCE. Jack: "I'm a digital creative, so
         // I feel like we need more emphasis on the posters that I created."
         // Three here, the three that are not variations of each other.
+        /* THE PICTURES COME FIRST HERE. Jack: "move them to under the
+           posters." Three posters are the output of this section and the
+           paragraph is what they are for - before them it is a promise,
+           after them it is a caption on something you have already read.
+             html rather than text because the copy quotes the campaign
+           line in italics; csText escapes a text: string, which would have
+           printed the tag. */
         { id: 'posters', title: 'proj.pot-clip.cs.posters.t',
-          text: 'proj.pot-clip.cs.posters.b',
+          html: 'proj.pot-clip.cs.posters.b', textBelow: true,
           figures: [
             { src: '/assets/projects/pot-clip/cs-poster-1.jpg?v=e75e799a', w: 900, h: 1273,
               full: '/assets/projects/pot-clip/cs-poster-1.jpg?v=e75e799a',
@@ -1163,11 +1177,6 @@ function renderCaseStudy(data) {
   const section = (sec) => {
     let out = '<section class="cs-section" id="cs-' + escapeAttr(sec.id)
       + '" tabindex="-1">' + csText('h3', 'cs-h', sec.title);
-    if (sec.stats) {
-      out += '<div class="cs-stats">' + sec.stats.map((p) =>
-        '<div class="cs-stat">' + csText('span', 'cs-stat-num', p[0])
-        + csText('span', 'cs-stat-txt', p[1]) + '</div>').join('') + '</div>';
-    }
     /* `aside` puts the figures BESIDE the prose instead of under it. Two
        sections want it. Research is four definition pairs and so the
        tallest column of plain text on the page, with a portrait photograph
@@ -1185,9 +1194,14 @@ function renderCaseStudy(data) {
        supposed to fix rather than a use of it. */
     const prose = (sec.html ? csText('div', 'cs-prose', sec.html, true) : '')
       + (sec.text ? csText('p', 'cs-prose-p', sec.text) : '');
+    /* textBelow puts the prose AFTER the pictures instead of before them.
+       Posters wants it: the three are the work, and a paragraph explaining
+       a campaign reads as a caption once you have seen it and as a promise
+       before. Jack: "move them to under the posters." */
     out += sec.aside
-      ? '<div class="cs-split">' + prose + figs(sec.figures) + '</div>'
-      : prose;
+      ? '<div class="cs-split' + (sec.asideEnd ? ' cs-split-end' : '')
+          + '">' + prose + figs(sec.figures) + '</div>'
+      : (sec.textBelow ? '' : prose);
     if (sec.quote) out += csText('blockquote', 'cs-quote', sec.quote);
     /* The caption says out loud what the finger nudge only hints at, and
        three seconds of stillness is a long time to wait to find out an
@@ -1223,6 +1237,7 @@ function renderCaseStudy(data) {
     // aside put them beside the prose and stage put them beside the
     // canvas; either way they are already on the page
     if (!sec.aside && !sec.stage) out += figs(sec.figures);
+    if (sec.textBelow) out += prose;
     if (sec.after) out += csText('p', 'cs-after', sec.after);
     return out + '</section>';
   };
