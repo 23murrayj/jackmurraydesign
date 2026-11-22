@@ -3459,20 +3459,45 @@ body.is-loading { overflow: hidden; }
    Its own margin-bottom is dropped: the section below supplies the gap. */
 .cs-stage-slot { margin-top: 30px; }
 .cs-stage-slot .project-stage { margin-bottom: 0; }
-/* :has() rather than a sibling selector, because .is-live lands on
-   .model-stage - a grandchild of #projectStage, which is itself moved in
-   here at runtime. The hint is also ordered before the stage in the
-   markup and pulled under it with flex, so renderProjectStage can append
-   without having to know what else is in the slot. */
-.cs-stage-slot { display: flex; flex-direction: column; }
+/* THE DRAG LABEL IS INSIDE THE FRAME, top-left. Jack: "move the drag to
+   rotate text to the top left inside corner of the 3d model box." Under
+   the canvas it was a caption ON the box; inside it, it is a label on the
+   region it names - the same thing the grey frame says, said in words, and
+   said on the surface the pointer has to be on for it to be true.
+     THERE IS ROOM FOR IT BECAUSE THE FIT WASTES IT. The camera is fitted
+   to the mesh's bounding sphere at the worst orientation (SECTION 19), so
+   at rest the object covers 52% of the height whatever the box shape is
+   and the corners are empty canvas - 73% of this box is dead area, which
+   is the figure the square crop was argued over. The label spends one
+   corner of it and the object does not move.
+     IT IS A CHILD OF .model-stage, moved there by renderProjectStage.
+   That element is position: relative and fills the frame, so this one
+   rule places the label in the pair, the stacked pair and a stage with
+   nothing beside it. It used to be a sibling pulled under the stage by
+   flex order, which is why the slot no longer needs to be a flex column.
+     pointer-events: none is load-bearing. .model-stage IS the drag target
+   and carries cursor: grab, so a label that took the pointer would kill
+   the gesture in the one corner it sits in and show a text cursor there.
+     z-index 2 because setupModelStages appends the canvas AFTER this node
+   is moved in, and the canvas is positioned - at auto it paints over the
+   label. The same 2 .model-hand carries, for the same reason.
+     14px in on both axes, the badge's own measure. The canvas clears with
+   alpha 0 (gl.clearColor(0, 0, 0, 0)), so the label sits on the frame's
+   own --white in both themes rather than on anything the renderer draws:
+   --muted measures 4.72:1 on the light ground and 6.78:1 on the dark. */
 .cs-stage-hint {
-  order: 2; margin-top: 14px;
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  margin: 0;
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
   text-transform: uppercase; color: var(--muted);
+  pointer-events: none;
   opacity: 0; transition: opacity .4s ease;
 }
-.cs-stage-slot:has(.is-live) .cs-stage-hint { opacity: 1; }
-.cs-stage-slot .project-stage { order: 1; }
+/* Hidden until the canvas is actually live - the poster is the no-WebGL
+   fallback, and telling someone to drag a photograph is worse than saying
+   nothing. .is-live lands on .model-stage, which is now this element's own
+   parent, so the gate no longer needs the slot and its :has(). */
+.model-stage.is-live .cs-stage-hint { opacity: 1; }
 
 /* ---- the turntable and the painted piece, side by side ----------------
    Jack: "move it to the left and put in a new photo I added called
@@ -3486,17 +3511,17 @@ body.is-loading { overflow: hidden; }
    supporting picture winning the row. 1.6fr/1fr reproduces the 1440 answer
    almost exactly (546 and 341 against 548 and 340) and holds the order all
    the way down.
-     The slot was a flex column (hint ordered before the stage in the
-   markup and pulled under it), so the pair re-places all three by hand. */
+     ONE ROW, not two. There was a second one for the drag label, which is
+   now inside the frame rather than under it - so the only items here are
+   the canvas and the photograph, side by side. */
 .cs-stage-pair {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto;
   column-gap: 36px;
   align-items: start;
 }
 .cs-stage-pair .project-stage { grid-column: 1; grid-row: 1; }
-.cs-stage-pair .cs-stage-hint { grid-column: 1; grid-row: 2; }
 .cs-stage-pair .cs-figs       { grid-column: 2; grid-row: 1; }
 
 /* THE TWO FRAMES ARE THE SAME HEIGHT. Jack: "crop the height borders of
@@ -3541,7 +3566,7 @@ body.is-loading { overflow: hidden; }
    in a grid does not stack itself. */
 @media (max-width: 900px) {
   .cs-stage-pair { grid-template-columns: 1fr; column-gap: 0; }
-  .cs-stage-pair .cs-figs { grid-column: 1; grid-row: 3; margin-top: 26px; }
+  .cs-stage-pair .cs-figs { grid-column: 1; grid-row: 2; margin-top: 26px; }
   /* Stacked there is nothing beside it to match, so the stage goes back to
      the square that wastes the least canvas (71% dead against 73%). */
   .cs-stage-slot.cs-stage-pair .project-stage {

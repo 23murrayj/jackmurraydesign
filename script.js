@@ -1101,8 +1101,25 @@ function renderProjectStage(data) {
      turntable buried mid-page for every project opened after it. Exactly the
      bug the titleTop branch was written to avoid, one slot along. */
   const stageSlot = projectCase.querySelector('.cs-stage-slot');
-  if (stageSlot) stageSlot.append(projectStage);
-  else if (projectStage.parentElement !== projectDetailEl) {
+  if (stageSlot) {
+    stageSlot.append(projectStage);
+    /* AND THE DRAG LABEL GOES INSIDE THE FRAME. Jack: "move the drag to
+       rotate text to the top left inside corner of the 3d model box." It
+       is MOVED rather than written here, for the same reason the <h2> and
+       this canvas are moved: renderCaseStudy owns the string and its
+       data-i18n key, and this function runs for all seven projects.
+         Into .model-stage, which is position: relative and fills the
+       frame, so one CSS rule places the label in all three layouts - the
+       pair, the stacked pair and a stage with nothing beside it - with no
+       second set of coordinates to keep in step.
+         renderCaseStudy rebuilds #projectCase on every open, so the node
+       moved in here is always the fresh one; the innerHTML above has
+       already replaced .model-stage, so there is never a stale copy of
+       the label left inside it. */
+    const hint = stageSlot.querySelector('.cs-stage-hint');
+    const inner = projectStage.firstElementChild;
+    if (hint && inner) inner.append(hint);
+  } else if (projectStage.parentElement !== projectDetailEl) {
     projectDetailEl.insertBefore(projectStage, projectCase);
   }
   setupModelStages(projectStage);
@@ -1231,11 +1248,12 @@ function renderCaseStudy(data) {
     if (sec.stage) {
       /* The figures go INSIDE the slot when a staged section has any, so
          the photograph can sit beside the canvas rather than under the
-         whole band. The hint stays with the stage - it names what the
-         stage does, not what the section contains - and CSS puts it back
-         under the canvas, since renderProjectStage appends #projectStage
-         here afterwards and must not have to know what else is in the
-         slot. */
+         whole band. The hint is written here, beside them, because this is
+         where its string and its data-i18n key live - but it ENDS UP
+         INSIDE the frame's top-left corner, moved there by
+         renderProjectStage once #projectStage has been appended. Written
+         first and moved, rather than appended after, so this function
+         still emits the whole section in one pass. */
       out += '<div class="cs-stage-slot' + (sec.figures ? ' cs-stage-pair' : '') + '">'
         + csText('p', 'cs-stage-hint', 'proj.pot-clip.cs.design.hint')
         + (sec.figures ? figs(sec.figures) : '')

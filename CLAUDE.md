@@ -1648,8 +1648,7 @@ Both on Jack's word, and both overturn something written here, so the
 reasons matter.
 *"Move it to the left and put in a new photo I added called
 newpaintedmodel to the right of it to use the space better."* So the slot
-is a 1.6fr/1fr grid — turntable left, photograph right, tops level, the
-drag hint still under the canvas. **It is the same object twice**, which
+is a 1.6fr/1fr grid — turntable left, photograph right, tops level. **It is the same object twice**, which
 is why it belongs in this section rather than in Process: left, the
 digital model you can turn; right, the physical one it was scanned from,
 hanging in the spray booth in its silver finish. The section asks what the
@@ -1685,6 +1684,35 @@ the frame is equally quiet in both themes with no second value. Same 3px
 as `.cs-fig` — the weight matches its neighbour and only the colour
 differs. **Do not give it the hard rule**; that is the thing the viewer
 note is about.
+
+**AND THE DRAG LABEL IS INSIDE IT NOW, 14px from the top-left corner.**
+Jack: *"move the drag to rotate text to the top left inside corner of the
+3d model box."* Under the canvas it was a caption ON the box; inside it, it
+is a label on the region it names — the same thing the grey frame says,
+said in words, on the surface the pointer has to be on for it to be true.
+**There is room because the fit wastes it**: the camera fits the bounding
+sphere at the worst orientation, so the object covers 52% of the height
+whatever the box shape is and **73% of this box is dead area** — the figure
+the square crop was argued over. The label spends one corner of it and the
+object does not move.
+**It is MOVED into `.model-stage` by `renderProjectStage`**, not written
+there: `renderCaseStudy` owns the string and its `data-i18n` key, and that
+function runs for all seven projects. `.model-stage` is `position:
+relative` and fills the frame, so one rule places the label in the pair,
+the stacked pair and a stage with nothing beside it — and the slot stops
+needing to be a flex column, which is all the old `order: 2` was for.
+**Two things are load-bearing and neither is visible.** `pointer-events:
+none`, because `.model-stage` IS the drag target and carries
+`cursor: grab`, so a label that took the pointer would kill the gesture in
+the one corner it sits in. And `z-index: 2`, because `setupModelStages`
+appends the canvas AFTER the label is moved in and the canvas is
+positioned — at auto it paints over it. The same 2 `.model-hand` carries,
+for the same reason.
+**It sits on the frame's own `--white`, not on anything the renderer
+draws**, because the canvas clears with alpha 0 — `--muted` measures
+4.72:1 light and 6.78:1 dark. Measured 14.0 / 14.0 in all four languages,
+widest at 161.6px (Italian) in a 540px box, and still clear inside a 282px
+one at 320.
 
 **The contents links scroll and do not navigate, and the default is
 cancelled for modified clicks too.** A hash would work — the overlay is the
