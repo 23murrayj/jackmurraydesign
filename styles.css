@@ -3351,7 +3351,7 @@ body.is-loading { overflow: hidden; }
    so the row is one size rather than two. .project-cat's own 0.75 / 1.5
    is shared with the six write-up layouts and must not move. */
 .cs-tags {
-  list-style: none; display: flex; flex-wrap: wrap; gap: 8px;
+  list-style: none; display: flex; flex-wrap: wrap; gap: 10px; /* the about chips' gap */
   margin-top: 18px;
 }
 .cs-tags-cat { display: flex; }
@@ -3359,7 +3359,7 @@ body.is-loading { overflow: hidden; }
   margin-bottom: 0;
   font-size: 0.72rem; letter-spacing: 1.4px;
 }
-.cs-tag-pair { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-tag-pair { display: flex; flex-wrap: wrap; gap: 10px; }
 .cs-tag {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
   text-transform: uppercase;
