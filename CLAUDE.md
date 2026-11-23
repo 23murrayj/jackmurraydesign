@@ -1891,7 +1891,10 @@ ink, light). All seven contents links are 44px tall in English and in
 Japanese. (This also named `.cs-stat-num` at 3.21 against its 3 bar until
 the Testing figures came out on 2026-11-22 and took that class with them.)
 
-**THE TYPE SCALE IS SEVEN STEPS, NOT TWENTY-ONE (2026-11-23).** Jack: the sizes read fine but nobody could see why 0.68, 0.72 and 0.75 were three numbers. Tracked-caps labels are all **0.72rem** (meta keys, contents label, card heads, eyebrow, stage hint, zoom tip); the contents links 0.85; small body (`cs-card-b`, `cs-step-txt`, `cs-meta-v`) and the small display heads (`cs-brief-t`, `cs-step-cap`, `cs-defs dt`) 0.95; prose and definition text **1rem**; lede and brief body share `clamp(1.1rem, 1.5vw, 1.3rem)`; the pull quote and section heads keep their own clamps. Measured after: lede and eyebrow still one line at 1024. **Pick from these steps before adding a size.**
+**THE TYPE SCALE IS SEVEN STEPS, NOT TWENTY-ONE (2026-11-23).** Jack: the sizes read fine but nobody could see why 0.68, 0.72 and 0.75 were three numbers. Tracked-caps labels are all **0.72rem** (meta keys, contents label, card heads, eyebrow, stage hint, zoom tip,
+and the keyword row, which restates it on the chip so the row is one size
+rather than two — `.project-cat`’s own 0.75 / 1.5 is shared with the six
+write-up layouts and must not move); the contents links 0.85; small body (`cs-card-b`, `cs-step-txt`, `cs-meta-v`) and the small display heads (`cs-brief-t`, `cs-step-cap`, `cs-defs dt`) 0.95; prose and definition text **1rem**; lede and brief body share `clamp(1.1rem, 1.5vw, 1.3rem)`; the pull quote and section heads keep their own clamps. Measured after: lede and eyebrow still one line at 1024. **Pick from these steps before adding a size.**
 
 **The measure is wider HERE AND ONLY HERE.** Jack: *"you probably have to
 widen out the sides of the borders, because right now I think they're too
@@ -2755,6 +2758,72 @@ twice and not saying what the brief was FOR. And "Tools" became "Digital
 Tools" because the row lists Blender, Illustrator and Canva while the
 project's other tools were a scalpel, dense foam and spray cans: the list
 was accurate and the label was not.
+
+**AND A KEYWORD ROW SITS UNDER IT: THE CATEGORY CHIP PLUS FIVE SKILLS.**
+Jack: *"every other page has the tag that you click on it... it might also
+be cool to have those tags as well next to it to show what keywords were
+used in the making of this... pretty minimal, not looking clickable... you
+might have to move the brief down a little bit."* The five are his own
+list — **User research, Prototyping, 3D modeling, Product photography,
+Graphic design** — and he swapped usability testing out for 3D modeling
+himself, on the grounds that the turntable proves it.
+**THE CHIP CAME BACK FOR IT.** This layout deliberately left `.project-cat`
+down in the hidden `.project-body`, and the reason was good at the time:
+the eyebrow under the title read "Product design, 2026", which is strictly
+more than "PRODUCT" in the same spot. That eyebrow is a credit line now
+("A product concept developed in Alessi's style, NABA Milan 2026") and says
+nothing about the category, so the objection is gone. It is **moved, not
+copied** — one permanent node, like the `<h2>`, parked back in
+`.project-body` by `renderCaseStudy` before the next wipe, with an empty
+`<li class="cs-tags-cat">` waiting for it. Driven over three
+pot-clip → easter-riverside → home cycles: the chip lands in the row on
+pot-clip and is back in `.project-body` reading GRAPHICS on easter every
+time.
+**THEY ARE SKILLS, NOT FILTERS, which is why they are a second kind of
+box.** The black chip is the one category the gallery files this under and
+a visitor can click it out there; these name what the work took. Wiring
+them up would promise five more views of a six-project gallery, four of
+which do not exist.
+**NOT CLICKABLE IS SAID WITH A FILL, which is the opposite of the obvious
+answer.** An outline is the quieter drawing, and on this page a 2px outline
+around a small caps label is exactly what a FILTER CHIP is — so outlining
+these would have made them the one thing they must not look like. Every
+flat filled chip here (`.project-cat`, `.cs-card-t`) is a label you cannot
+press. Verified under a pointer: `cursor: default` on all six, nothing
+focusable in the row, no lift, no block, no cursor dot.
+**ONE HUE, AND A 35% TINT RATHER THAN THE TOKEN.** `--blue` is the page's
+secondary, which is the rank a supporting keyword has beside the category;
+a colour each is the thing the about stats and the summary cards both came
+back from. `color-mix(in srgb, var(--blue) 35%, var(--white))` is one
+declaration that is right in both themes — dusty blue into warm ivory,
+electric blue into near-black — because the mixer flips. **The token at
+full strength fails as a fill**: `--black` on `#657FB9` measures 4.39:1
+against the 4.5 an 11.5px label owes, where the tint measures **10.15:1
+light and 9.22:1 dark** (the chip is 14.77 and 16.9). 22% was tried first
+and read as grey on a warm ground. Where `color-mix` is unsupported the
+declaration is dropped and the labels sit on the page's own ground, which
+is still legible.
+**It is a `<ul>` with no `aria-label`**, like the summary cards: the list
+gives the six labels their boundaries, and naming a row of keywords
+"keywords" is the unnecessary description the brief names.
+`html[lang="ja"] .cs-tag` joins the tracking reset, for the same reason
+`.cs-meta-k` is in it.
+**Measured: two lines in all four languages at 1512, 1440, 1200 and 1101**
+(62px, 67 in Japanese), one line in en/ja at 901, three at 390 (97px), with
+18px above and the brief's own 36px below, and nothing overflowing the
+column at any of them — the tightest is Spanish at 1200 with 4.0px to
+spare.
+**WHAT IT COSTS DEPENDS ON WHICH HALF OF THE MASTHEAD IS TALLER, AND AT THE
+TWO WIDEST IT COSTS NOTHING.** At 1512 and 1440 the poster binds, so the
+masthead is 741.5 and 746.1 exactly as before and **every landmark below is
+identical to the committed build in all four languages** — panel height and
+the foot's offset, checked against `git stash`. Where the TEXT column binds
+the row pushes the page down by its own 80px: measured at 1101, +80 in
+en/es/it and +85 in ja. At 1200, where the two halves are close, only +46.6
+(+38.6 ja), because the column had slack. Stacked, it is +115 (+122.5 ja)
+at 390.
+**The other six are untouched**, diffed landmark by landmark against the
+committed build at 1440, 900 and 390: zero differences.
 
 **AND THE LEDE IS NOW THE CARD'S SENTENCE TOO**, on Jack asking for
 "Two movable clips that sit on a pot rim and hold your spoon above the

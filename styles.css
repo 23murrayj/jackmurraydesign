@@ -3324,6 +3324,49 @@ body.is-loading { overflow: hidden; }
 }
 .cs-meta-v { font-size: 0.95rem; font-weight: 500; line-height: 1.45; margin: 0; }
 
+/* ---- the keyword row ---------------------------------------------------
+   The category chip and the five skills the project took, in one row under
+   the meta table. Jack: "pretty minimal, not looking clickable... I don't
+   want it to take up a ton of space."
+   NOT CLICKABLE IS SAID WITH A FILL, WHICH IS THE OPPOSITE OF THE OBVIOUS
+   ANSWER. An outlined box would have been the quieter drawing, and on this
+   page a 2px outline on a small caps label is exactly what a FILTER CHIP
+   is - so outlining these would have made them the one thing they must not
+   look like. Every flat filled chip here (.project-cat, .cs-card-t) is a
+   label you cannot press, so a fill is already the page's word for it, and
+   nothing in the row lifts, casts a block or takes the cursor dot.
+   ONE HUE FOR ALL FIVE. The about stats and the summary cards both went
+   through a colour each and came back: a series in five colours is five
+   separate things and you count the colours before reading the words.
+   --blue is the page's secondary, which is the rank a supporting keyword
+   has next to the category.
+   A 22% TINT RATHER THAN THE TOKEN ITSELF, and it is mixed with --white so
+   one declaration is right in both themes: dusty blue into warm ivory in
+   light, electric blue into near-black in dark. The token at full strength
+   fails as a fill behind text - #657FB9 under --black measures 4.39:1
+   against the 4.5 an 11.5px label owes - where the tint measures 13.0:1
+   light and 12.5:1 dark. Where color-mix is unsupported the declaration is
+   simply dropped and the labels sit on the page's own ground, legible.
+   THE TYPE IS THE PAGE'S LABEL STEP, 0.72rem / 1.4px, restated on the chip
+   so the row is one size rather than two. .project-cat's own 0.75 / 1.5
+   is shared with the six write-up layouts and must not move. */
+.cs-tags {
+  list-style: none; display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 18px;
+}
+.cs-tags-cat { display: flex; }
+.cs-tags .project-cat {
+  margin-bottom: 0;
+  font-size: 0.72rem; letter-spacing: 1.4px;
+}
+.cs-tag {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--blue) 35%, var(--white));
+  color: var(--black);
+  padding: 6px 12px;
+}
+
 /* ---- the three summary cards ------------------------------------------
    The label is a filled strip rather than tracked text above the box,
    because that filled chip is already the page's word for "this is what
@@ -6179,6 +6222,7 @@ html[lang="ja"] .cs-brief-t,
 html[lang="ja"] .cs-toc-label,
 html[lang="ja"] .cs-toc a,
 html[lang="ja"] .cs-meta-k,
+html[lang="ja"] .cs-tag,
 html[lang="ja"] .cs-defs dt,
 html[lang="ja"] .cs-stage-hint {
   letter-spacing: 0;

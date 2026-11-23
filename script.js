@@ -298,6 +298,27 @@ const projectData = {
         ['proj.pot-clip.cs.meta.role', 'proj.pot-clip.cs.meta.roleV'],
         ['proj.pot-clip.cs.meta.tools', 'proj.pot-clip.cs.meta.toolsV'],
       ],
+      /* THE KEYWORDS SIT UNDER THE META TABLE, BESIDE THE CATEGORY CHIP.
+         Jack: "every other page has the tag that you click on it... it
+         might also be cool to have those tags as well next to it to show
+         what keywords were used in the making of this... pretty minimal,
+         not looking clickable."
+           They are SKILLS rather than filters, which is the whole reason
+         they are a second kind of box: the black chip is the one category
+         this project is filed under and a visitor can click it on the
+         gallery, while these five name what the work took. Wiring them to
+         the filters would promise five more views of a six-project
+         gallery, four of which do not exist.
+           Full keys, like every other string in this layout, and named
+         rather than numbered - a tag is not a position, and 3D modeling
+         moving ahead of prototyping should not rename anything. */
+      tags: [
+        'proj.pot-clip.cs.tag.research',
+        'proj.pot-clip.cs.tag.proto',
+        'proj.pot-clip.cs.tag.model',
+        'proj.pot-clip.cs.tag.photo',
+        'proj.pot-clip.cs.tag.graphics',
+      ],
       cards: [
         ['proj.pot-clip.cs.card1.t', 'proj.pot-clip.cs.card1.b'],
         ['proj.pot-clip.cs.card2.t', 'proj.pot-clip.cs.card2.b'],
@@ -1440,6 +1461,15 @@ function renderCaseStudy(data) {
       + '<dl class="cs-meta">' + cs.meta.map((p) => '<div>'
         + csText('dt', 'cs-meta-k', p[0]) + csText('dd', 'cs-meta-v', p[1])
         + '</div>').join('') + '</dl>'
+      /* A <ul>, like the summary cards, so the row arrives as a list of
+         six short labels rather than a paragraph of run-together words -
+         and with no aria-label, because the meta table it sits under is
+         what gives it its context and naming a row of keywords "keywords"
+         is the unnecessary description the brief names. The first item is
+         a slot: the chip is a permanent node fillProjectDetail moves in,
+         the way the <h2> is. */
+      + (cs.tags ? '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
+        + cs.tags.map((k) => csText('li', 'cs-tag', k)).join('') + '</ul>' : '')
       /* THE BRIEF SITS UNDER THE META TABLE, IN THE MASTHEAD'S OWN COLUMN.
          Jack: "move The brief box up to the empty space to the left of the
          hero photo and above the problem, solution and outcome." There was
@@ -1734,16 +1764,24 @@ function fillProjectDetail(id) {
      project would leave the heading in a masthead that is no longer there. */
   const titleSlot = data.caseStudy && projectCase.querySelector('.cs-title-slot');
   if (titleSlot) {
-    /* THE CHIP DOES NOT COME UP WITH THE HEADING HERE, and that is the one
-       place this layout differs from the treatment it replaced. The chip
-       says PRODUCT; the masthead's eyebrow above it says PRODUCT DESIGN,
-       2026 - strictly more, in the same spot. Two labels stacked is the
-       thing the brief calls an unnecessary description, and it is what
-       sent the numbered section eyebrows off the home page.
-         It is left in .project-body rather than hidden on the spot, so it
-       is back where it belongs for the next project opened - .project-body
-       is display:none for this layout, so nothing shows. */
-    projectDesc.before(projectCat);
+    /* THE CHIP GOES DOWN TO THE KEYWORD ROW, not up with the heading.
+       It was left out of the masthead entirely for one reason: the eyebrow
+       directly under the title used to read "Product design, 2026", which
+       is strictly more than "PRODUCT" in the same spot, and two labels
+       stacked is the unnecessary description the brief names. That eyebrow
+       is now a credit line ("A product concept developed in Alessi's
+       style, NABA Milan 2026") and says nothing about the category, so the
+       chip has a job again - and Jack asked for it at the head of the
+       keyword row: "show that black box, then next to it... some other
+       colored boxes".
+         The row is rendered with an empty <li> for it rather than a copy
+       of it, because the chip is a permanent node like the <h2>: one
+       element, filled from data.category, parked back in .project-body by
+       renderCaseStudy before the next wipe. The fallback is that same
+       home, so a tagless case study keeps a chip somewhere valid. */
+    const catSlot = projectCase.querySelector('.cs-tags-cat');
+    if (catSlot) catSlot.append(projectCat);
+    else projectDesc.before(projectCat);
     titleSlot.append(projectTitle);
   } else {
     projectDesc.before(projectCat, projectTitle);
