@@ -328,6 +328,7 @@ const projectData = {
            would slide it up into the title. */
         { id: 'research', title: 'proj.pot-clip.cs.research.t',
           html: 'proj.pot-clip.cs.research.grid', aside: true, asideEnd: true,
+          asideTop: true,
           figures: [
             { src: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4', w: 1000, h: 1778,
               full: '/assets/projects/pot-clip/cs-storefront.jpg?v=c8d3a2c4',

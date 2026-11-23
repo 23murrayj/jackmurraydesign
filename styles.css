@@ -3572,6 +3572,17 @@ body.is-loading { overflow: hidden; }
   position: absolute; grid-column: 2; grid-row: 1;
   top: 0; bottom: 0; right: 0; left: auto; margin-top: 0;
   display: flex; justify-content: flex-end;
+  /* WHEN THE CAP BELOW FIRES, THE SHORTFALL GOES AT THE TOP, and that is
+     Jack's own priority: "keep the bottom where the bottom is. It's very
+     good." A flex item with height: 100% and a max-height resolves to the
+     START of the cross axis, so a clamped picture used to keep its top on
+     the heading and lift its bottom OFF the last line — which is the one
+     thing both aside flags exist to put there. Ended, the bottom holds and
+     the top drops below the heading instead, which is exactly where the
+     picture sat before asideTop. It changes nothing while the cap is not
+     firing: `height: 100%` is explicit, so alignment is moot until the
+     max-height actually clamps. */
+  align-items: flex-end;
 }
 /* AND IT CANNOT GROW PAST THE COLUMN. Sized by height, a picture's width
    is the height times its ratio, and nothing stops that exceeding the

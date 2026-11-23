@@ -2443,9 +2443,13 @@ figure is pinned RIGHT and the slack in the 340 column has always gone
 there. At the widest it has ever been it still reads as a column of
 photograph beside the notes rather than as a hole — checked on screen, not
 inferred — so the frame is unchanged.
-**And it takes the cap further off the table.** At 901, the width that was
-binding, the figure now draws 287.1–315.3 against the 340 track in all four
-languages and the `--fig-ar` cap never fires, where Spanish used to reach it.
+**And it took the cap off the table** — at 901 the figure drew 287.1–315.3
+against the 340 track in all four languages where Spanish used to reach it.
+**Both of those numbers are superseded by `asideTop` below**, which spends
+the headroom the merge created: the picture is 294.3 × 518.6 at 1440 now,
+the gutter from the notes' edge comes back from 117 to 82, and 901 caps
+again in two languages — at the TOP, where it costs nothing the flag was
+asked for.
 
 **THE WIDOW IN THAT NOTE IS FIXED IN THE STRING, AND text-wrap: pretty IS
 NOT THE ANSWER HERE.** Jack: *"don't let there be a text widow there."*
@@ -2488,8 +2492,8 @@ line well and not unnecessarily under the text to the left of it."* It was
 illustrates; scaled to the text it came to 271×256 in English, and 0.0 top
 and 0.0 bottom in all four languages.
 
-**THEN TESTING TOOK `asideTop` AS WELL, AND IT IS THE ONLY SECTION THAT
-HAS.** Jack: *"uncrop the top enough so that it hits the top of the word
+**THEN TESTING TOOK `asideTop` AS WELL** — Research has it too since
+2026-11-23, below, but Testing is where it was worked out. Jack: *"uncrop the top enough so that it hits the top of the word
 testing and the bottom still hits the bottom of the last sentence."*
 Matched to the prose alone the picture started **63px below the heading**,
 so the two columns began on different lines and the band read as text with
@@ -2513,14 +2517,41 @@ came out **6×6, its two borders and nothing between them.** The same shape
 as the `grid-column` bug that rule already exists for, one specificity step
 up, and the **fifth** time this file has had to say that specificity beats
 source order.
-**RESEARCH DELIBERATELY DOES NOT TAKE IT**, and the reason is arithmetic.
-It was: its notes were 548–573 tall, so the span would have been 611–636,
-and at 901 that asks for a ratio of 0.53 where the storefront is 0.5625.
-The merge to three notes has not changed the conclusion — at 901 the notes
-are about 500 and the heading adds ~60, so a span of ~560 still asks for
-346px of width in a 340px column and the cap would fire. Either way the
-bottom would stop landing on the last line, which is the one thing Jack
-asked that photograph for.
+**RESEARCH TAKES IT TOO SINCE 2026-11-23, AND THE OBJECTION THAT HELD IT
+BACK WAS REAL — IT JUST STOPPED BEING FATAL.** Jack: *"extend the photo up
+a little bit in research so that the top of it is at the top of the
+research text. That way it's a little bit bigger. Keep the bottom where the
+bottom is. It's very good."*
+**The objection was arithmetic**: with four notes the column was 548–573
+tall, so a heading-to-last-line span would have been 611–636, and at this
+photograph's 0.5625 that asks for more than the 340px track — so the cap
+would fire and the bottom would come off the last line, which is the one
+thing both flags exist to put there. Merging to three notes took ~92px out
+of that column, which is what made the span fit at most widths.
+**Measured, top 0.00 and bottom 0.00 in all four languages at 1512, 1440,
+1366, 1280 and 1100**, with the picture 294.3 × 518.6 in English at 1440
+against 258.9 × 455.6 before — 63px taller and 35px wider, for no page
+height at all, since the figure is out of flow.
+**TWO WIDTHS STILL HIT THE CAP, AND THE FIX WAS TO CHOOSE WHICH END GIVES.**
+At ~1101–1279 the contents sidebar squeezes the prose column, so the span
+grows past what 340px of width can buy (599.9px of height at this ratio):
+measured at 1200 the shortfall is 19.1 in English, 44.2 in Italian and 69.3
+in Spanish, and at 901 it is 10.5 in English and Spanish. Japanese never
+reaches it.
+**A flex item with `height: 100%` and a `max-height` resolves to the START
+of the cross axis**, so a clamped picture kept its top on the heading and
+lifted its bottom off the last line — the failure the flag exists to
+prevent. `align-items: flex-end` on `.cs-split-end .cs-figs` puts the
+shortfall at the TOP instead, which is Jack's own priority (*"keep the
+bottom where the bottom is"*) and is exactly where the picture sat before
+`asideTop`. **Bottom now measures 0.00 at every width and in every
+language**, including the two that cap.
+**It fixed a Testing case on the way**: at 1200 in Spanish and Italian that
+photograph was already capped and sitting 3.94px off its last line. It is
+0.00 now.
+**One declaration, and it changes nothing where the cap is idle** —
+`height: 100%` is explicit, so alignment only matters once the max-height
+actually clamps.
 **THE SCALED FIGURE NEEDED A CAP, AND IT WAS ALREADY OVERFLOWING WITHOUT
 ONE.** Sized by height, a picture's width is its height times its ratio,
 and nothing stopped that exceeding the 340px track. Measured at 901 in
@@ -2627,8 +2658,12 @@ two-column width, 901, in the longest language: the prose is 435 wide
 there, so the span is 394px and the figure may be 334 of image plus its two
 3px borders — 334/388 = **0.861**. 0.851 exports as **1000×1175** and draws
 273 wide in English at 1440 against 271 before, so the picture is the width
-it already was and 63px taller. Measured, the cap never fires between 901
-and 1440 in any of the four: widths run 223–336 against the 340 track.
+it already was and 63px taller. The cap stays idle across most of the
+range — widths run 223–336 against the 340 track — but it is NOT never:
+at 1200, where the contents sidebar is narrowest against the prose,
+Spanish and Italian reach 340. That used to cost 3.94px off the last line
+and now costs the same at the top instead; see the `align-items` note
+under Research.
 **THE OBJECT IS LOW IN THE FRAME NOW AND THAT IS NOT AN OVERSIGHT** —
 837px of wall above it and 246 below. Its own bounding box is 2244×2001,
 aspect 1.12, so there was never room to balance this crop and keep the
