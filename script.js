@@ -459,23 +459,53 @@ const projectData = {
                 full: '/assets/projects/pot-clip/cs-foam.jpg?v=824ac2ae',
                 altKey: 'proj.pot-clip.cs.alt.foam' },
             ] },
+            /* THE FINISHING PHOTOGRAPH CAME BACK FOR THIS CARD. Jack's
+               rewrite split the old "Foam model, spray-finished" into
+               Sculpting and Finishing, so card 2 keeps the raw foam in the
+               hand and this one needed a picture of the coats going on.
+               Nothing on the page could stand in: cs-painted is the
+               finished piece and The design already shows it beside the
+               turntable, and cs-booth is the SAME FRAME at a wider crop,
+               so either would have put one picture on the page twice.
+                 So cs-finishing is the old masonry wall's 06-finishing -
+               the primed clip in a gloved hand, the only photograph of the
+               finishing itself - re-exported from its -full at 1000x1250,
+               jpeg q82 and webp q85 at 44.2 and 43.5 dB against a q98
+               reference. CENTRE-CROPPED 1333x2000 -> 1333x1666 so it is
+               4:5 like the foam shot beside it: the two physical stages
+               are then the same frame shape, which is what makes them read
+               as one pair, and what it costs is an unrelated architecture
+               model at the top of the frame. ?v=0 is the way into
+               asset-rev.js - stale by definition, so the hook fills it. */
             { label: 'proj.pot-clip.cs.process.3',
               text: 'proj.pot-clip.cs.process.3b', figures: [
-              { src: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde', w: 1400, h: 895,
-                full: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde',
-                altKey: 'proj.pot-clip.cs.alt.blender' },
+              { src: '/assets/projects/pot-clip/cs-finishing.jpg?v=0e96128d', w: 1000, h: 1250,
+                full: '/assets/projects/pot-clip/cs-finishing.jpg?v=0e96128d',
+                altKey: 'proj.pot-clip.cs.alt.finishing' },
             ] },
-            /* CROPPED TO THE VIEWPORT. The source is a screenshot of the
-               <model-viewer> editor and the right third of it is a code
-               snippet, a File Manager and a Download Scene button - tooling,
-               not work, and a thing this codebase pointedly does not use.
-               Centred on the render's own ink box (446-1661 x 570-1318 in
-               the 2948x1578 source), 1800x1200 at source scale, which comes
-               out 293/292 left-right and 226/226 top-bottom.
+            /* BOTH DIGITAL PICTURES SIT ON THIS CARD NOW. It used to be
+               "Renders" with the render alone and the Blender capture on a
+               card above it; Jack's card 4 is the model itself - scanned,
+               rebuilt, and driving the turntable - so the mesh is the
+               subject and the render is what that mesh produces. Two
+               landscapes stacked, the shape card 1 already carries, and it
+               is also what keeps this row level against the portrait
+               beside it.
+                 The render is CROPPED TO THE VIEWPORT. Its source is a
+               screenshot of the <model-viewer> editor and the right third
+               of it is a code snippet, a File Manager and a Download Scene
+               button - tooling, not work, and a thing this codebase
+               pointedly does not use. Centred on the render's own ink box
+               (446-1661 x 570-1318 in the 2948x1578 source), 1800x1200 at
+               source scale, which comes out 293/292 left-right and 226/226
+               top-bottom.
                  14-object.jpg is still the turntable's poster and keeps
                alt.14; this is a different render and gets its own alt. */
             { label: 'proj.pot-clip.cs.process.4',
               text: 'proj.pot-clip.cs.process.4b', figures: [
+              { src: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde', w: 1400, h: 895,
+                full: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde',
+                altKey: 'proj.pot-clip.cs.alt.blender' },
               { src: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada', w: 1400, h: 933,
                 full: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada',
                 altKey: 'proj.pot-clip.cs.alt.render' },

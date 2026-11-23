@@ -2051,12 +2051,56 @@ every card carrying its own prose, a paragraph summarising all four says the
 same things twice, which is the thing the brief names. It also means the
 markup fallback is never in the one position it must not be in — saying
 something the panel does not.
-**ONE PHOTOGRAPH PER CARD WAS THE RULE, AND CARD 1 IS THE EXCEPTION THAT
-PROVES WHY.** Step 2 first kept two — the foam and the spray booth — and
+
+**THE FOUR CARDS WERE REWRITTEN ON 2026-11-23, AND THE SPLIT IS THE PART
+THAT MATTERS.** Jack handed over all four in his own words: *01 Sketches
+and paper profiles*, *02 Sculpting*, *03 Finishing*, *04 Digital model*.
+Three are tighter versions of what was there. The change is that the old
+card 2, "Foam model, spray-finished", was **one card doing two steps** —
+carving and finishing — and it is now two, which is also what gives the old
+card 4 somewhere to go: *"Renders / Every render comes from the digital
+model"* was four words restating card 3, and card 4 is now the model
+itself, scanned, rebuilt and driving the turntable, which is the one claim
+on the page a reader can check by dragging it.
+**THE WORDING MOVED THE PHOTOGRAPHS, and that is what a card changing
+subject costs rather than scope creep** — with the words alone, "03
+Finishing" would have sat over a Blender screenshot.
+- **Card 3 needed a picture of the coats going on, and nothing already on
+  the page could stand in.** `cs-painted` is the finished piece and The
+  design shows it beside the turntable; `cs-booth` is **the same frame at a
+  wider crop**, so either would have put one photograph on the page twice.
+  What went in is `cs-finishing`, the old masonry wall's `06-finishing` —
+  the primed clip in a gloved hand, the only photograph of the finishing
+  itself — re-exported from its `-full` at **1000 × 1250, jpeg q82 / webp
+  q85 at 44.2 and 43.5 dB** against a q98 reference. **Centre-cropped
+  1333 × 2000 → 1333 × 1666 so it is 4:5 like the foam shot beside it**:
+  measured, both draw **558.5px** of image at 1440, so the two physical
+  stages are the same frame shape and read as one pair. What the crop costs
+  is an unrelated architecture model at the top of the frame.
+- **Card 4 took BOTH digital pictures** rather than losing one: the Blender
+  mesh is the rebuild the sentence describes and the render is what that
+  mesh produces. Two landscapes stacked, the shape card 1 already carries.
+**Measured at 1440 after the move**: 647.6 / 623.6 across the first row and
+647.9 / 690.5 across the second, so the grid reads as a 2×2 for the first
+time — row 2 used to be **half the height of row 1**, 366 against 672.
+Process is **1038 → 1378** tall in English, which is what a fourth
+photograph and a step that previously had none actually cost. Checked in
+all four languages, and at 390 where it is one column.
+**`sips` is a trap for this.** It can centre-crop and resample, but it
+**silently ignores `--cropOffset`** (the crop simply does not happen, and
+the file comes back at its original size) and it **cannot write webp**
+although `sips --formats` lists it. A `-z H W` after a failed crop then
+squashes the photograph to the target box instead of scaling it. The webp
+came from `sharp` installed in the scratchpad, per the rule below that it
+must never become a project dependency.
+
+**ONE PHOTOGRAPH PER CARD WAS THE RULE, AND THE TWO EXCEPTIONS PROVE
+WHY.** Step 2 first kept two — the foam and the spray booth — and
 two stacked PORTRAITS in a 215px column made that card **688px tall against
 175** for the other three, so the booth shot came out (still in `assets/`,
 alt text in the restore note). Card 1 carries two and it is fine, because
-they are two LANDSCAPES. **The shape of the photograph decides this, not the
+they are two LANDSCAPES, and card 4 has carried two since the rewrite above
+for the same reason. **The shape of the photograph decides this, not the
 count.**
 **AND CARD 1'S PAIR IS CROPPED TO ADD UP TO THE ONE BESIDE IT.** Jack:
 *"crop the heights of the Card 1 photos so that they are the same height as
@@ -2864,10 +2908,11 @@ layout, so they travelled with the photographs and are still true.
 - **CLICK-TO-ZOOM IS ALL OF THEM.** It was on two tiles out of nine and
   looked arbitrary, because it was: `full` had been added only where the
   source happened to be large. The rule survived the redesign: every figure
-  in the case study carries `full`, and **12 of the 13 images in the panel
-  zoom** — the thirteenth is the turntable's poster, which is a fallback
-  rather than a photograph. (It was 13 of 14 until the dimensioned notebook
-  page came out of The design; counted in the live panel, not inferred.) For the new exports `full` is the file's own
+  in the case study carries `full`, and **13 of the 14 images in the panel
+  zoom** — the fourteenth is the turntable's poster, which is a fallback
+  rather than a photograph. (It went 14 → 13 when the dimensioned notebook
+  page came out of The design and back to 14 when the finishing photograph
+  joined Process; counted in the live panel each time, not inferred.) For the new exports `full` is the file's own
   path: they are 1000–1600px sources drawn 300–600px wide, so opening one at
   full size really does show more, and there is no second file to fetch.
 
