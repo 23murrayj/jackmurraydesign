@@ -2094,15 +2094,49 @@ squashes the photograph to the target box instead of scaling it. The webp
 came from `sharp` installed in the scratchpad, per the rule below that it
 must never become a project dependency.
 
-**ONE PHOTOGRAPH PER CARD WAS THE RULE, AND THE TWO EXCEPTIONS PROVE
-WHY.** Step 2 first kept two — the foam and the spray booth — and
+**THEN THE WHOLE SET WAS LEVELLED TO ONE FRAME, AND THAT IS WHERE IT
+STANDS.** Jack, looking at the cards: *"I want them to all end up being the
+same ratio as the … Blender photo of the product, of me modeling it … I
+want them all to be that same ratio and size."* So every step is now **ONE
+photograph at 1200 × 767**, ratio 1.5645, and the 2×2 holds four identical
+frames — measured **448 × 288.5 apiece at 1440 in all four languages**, and
+351 × 226.5 at 390 where it is one column. Card heights then vary only by
+how many lines the sentence takes, 353.6 to 402.2.
+**1200 IS THE FOAM'S CEILING, and that is what picked the number.**
+`cs-foam.jpg` is 1200 × 1500 and its camera original is not on this machine
+— the old wall's `05-foam-full` is the SPRAY BOOTH, not the foam, so that
+name lies — which makes 1200 the widest a landscape crop of it can be
+without upscaling. The Blender capture came DOWN from 1400 × 895 to match:
+a 14% downscale of a screenshot costs nothing, where upscaling the one
+photograph that cannot be re-exported would have softened it. **Pick the
+common size from the weakest source, not from the best one.**
+**What each frame is now.** The profiles are the rotated source almost
+whole — 2000 × 1333 after the 90°, cropped to 2000 × 1278, which drops 4%
+of the height — where the old 1400 × 596 was a tight strip of it, cut to
+make a two-photograph card add up. The foam is a 1200 × 767 window of its
+own export at top 500, which keeps the hand and the offcut on the bench.
+`cs-finished` is Jack's own `newnumber3.jpeg` (3024 × 4032, shot 13
+October, the same session as the first coats), cropped 1900 × 1215 at
+522,1429 so the clip reads at card size.
+**The sketch spread and the gold render are OUT**, both on his word.
+`cs-sketch-page.jpg` and `cs-render.jpg` stay in `assets/` unreferenced,
+like `cs-booth` and `cs-hero-clip`, and `cs-finishing` — the finishing
+photograph that stood in card 3 for one commit — was deleted outright,
+since it had never been on the live site. Their alt keys came OUT of
+`i18n.js` rather than being left to read as dead.
+
+**ONE PHOTOGRAPH PER CARD IS THE RULE AND THERE ARE NO EXCEPTIONS LEFT,
+BUT IT TOOK THREE GOES TO GET THERE.** Step 2 first kept two — the foam and the spray booth — and
 two stacked PORTRAITS in a 215px column made that card **688px tall against
 175** for the other three, so the booth shot came out (still in `assets/`,
 alt text in the restore note). Card 1 carries two and it is fine, because
-they are two LANDSCAPES, and card 4 has carried two since the rewrite above
-for the same reason. **The shape of the photograph decides this, not the
-count.**
-**AND CARD 1'S PAIR IS CROPPED TO ADD UP TO THE ONE BESIDE IT.** Jack:
+they were two LANDSCAPES, which is what made that card legal where two
+portraits were not: **the shape of the photograph decided it, not the
+count.** Both pairs went when the set was levelled above, so nothing on
+this grid carries two any more.
+**AND CARD 1'S PAIR WAS CROPPED TO ADD UP TO THE ONE BESIDE IT** — the
+pair is gone, but the arithmetic is the worked example for matching a
+stack to its neighbour, so it stays. Jack:
 *"crop the heights of the Card 1 photos so that they are the same height as
 the photo next to it."* Card 2 is a single 4:5 portrait, 551px of image at a
 441px column, so with a 12px gap and two 3px borders a side the pair owes
@@ -2135,6 +2169,22 @@ out 377KB of jpeg against the 240KB it replaced. Softening before the
 stretch and sharpening gently after lands at **220KB / 162KB webp — lighter
 than the file it replaces** — and the drawing reads. Four combinations were
 rendered and weighed.
+**THE RECIPE ABOVE IS NOT WHAT THE LIVE FILE WAS CARRYING, and the refit
+is the number to use.** When the profiles were re-cropped on 2026-11-23
+the darkening had to be redone, and applying the documented 195–248
+stretch gave a visibly greyer card than the one already on the site.
+Measured inside the card mask, the approved export sat at **paper 232 with
+stroke-against-paper contrast p95 26.0**; 195–248 lands paper 211 and p95
+46.4. Fitted to the approved numbers instead: **a 130–250 stretch plus a
+1.4 sharpen**, which gives paper 232 and p95 26.9.
+**Measure the STROKES, not the percentiles.** A paper-median and a 1st
+percentile can both match while the pencil reads half as dark, because the
+dark tail is card edges and shadows rather than graphite. The metric that
+decides it is each pixel against its own local paper level (a sigma-4
+blur), inside a sigma-14 mask that keeps the cards and drops the mat.
+**And the sharpen is MASKED to the cards.** Sharpening the cutting mat's
+dot texture is pure file size: confining it took the webp from 220K to
+**152K**, under the 162K the old file shipped, at the same stroke contrast.
 **It is a reproduction adjustment, not a retouch.** Nothing is added or
 moved; the contrast that the camera lost on light graphite is put back. If
 an edit would ever change what the photograph SHOWS, it does not belong in
@@ -2908,11 +2958,12 @@ layout, so they travelled with the photographs and are still true.
 - **CLICK-TO-ZOOM IS ALL OF THEM.** It was on two tiles out of nine and
   looked arbitrary, because it was: `full` had been added only where the
   source happened to be large. The rule survived the redesign: every figure
-  in the case study carries `full`, and **13 of the 14 images in the panel
-  zoom** — the fourteenth is the turntable's poster, which is a fallback
-  rather than a photograph. (It went 14 → 13 when the dimensioned notebook
-  page came out of The design and back to 14 when the finishing photograph
-  joined Process; counted in the live panel each time, not inferred.) For the new exports `full` is the file's own
+  in the case study carries `full`, and **11 of the 12 images in the panel
+  zoom** — the twelfth is the turntable's poster, which is a fallback
+  rather than a photograph. (14 → 13 when the dimensioned notebook page
+  came out of The design, back to 14 with a finishing photograph, then to
+  12 when Process went to one photograph a card; counted in the live panel
+  each time, not inferred.) For the new exports `full` is the file's own
   path: they are 1000–1600px sources drawn 300–600px wide, so opening one at
   full size really does show more, and there is no second file to fetch.
 

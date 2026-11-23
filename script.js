@@ -425,90 +425,77 @@ const projectData = {
            paper-profiles shot that is the outer two profiles - the same
            argument the figure rows already lost. */
         { id: 'process', title: 'proj.pot-clip.cs.process.t',
+          /* ONE FRAME FOR ALL FOUR, AND IT IS THE BLENDER CAPTURE'S.
+             Jack: "I want them to all end up being the same ratio as the
+             [...] Blender photo of the product, of me modeling it [...] I
+             want them all to be that same ratio and size." So every step
+             is ONE photograph at 1200x767, ratio 1.5645, and the 2x2 grid
+             has four identical frames in it.
+               1200 IS THE FOAM'S CEILING, which is what sets the number.
+             cs-foam.jpg is 1200x1500 and its own camera original is not on
+             this machine (the old wall's 05-foam-full is the spray booth,
+             not the foam), so 1200 is the widest a landscape crop of it can
+             be without upscaling. Blender came DOWN from 1400x895 to match:
+             a 14% downscale of a screenshot costs nothing, where upscaling
+             the foam 17% would have softened the one photograph that cannot
+             be re-exported. Every file is now literally the same size.
+               WHAT EACH CROP IS. The profiles are the rotated source almost
+             whole - 2000x1333 after the 90 degrees, cropped to 2000x1278,
+             which drops 4% of the height - where the old 1400x596 was a
+             tight strip of it, cut to make a two-photograph card add up.
+             The foam is a 1200x767 window of its export at top 500, which
+             keeps the hand and the offcut on the bench. cs-finished is
+             newnumber3.jpeg (3024x4032, shot 13 Oct) cropped 1900x1215 at
+             522,1429, centred on the clip so it reads at card size.
+               THE PENCIL DARKENING HAD TO BE REDONE for the new crop, and
+             the documented 195-248 stretch is NOT what the live file was
+             carrying. Measured inside the card mask, the approved export
+             sat at paper 232 with stroke-against-paper contrast p95 26.0;
+             195-248 gives paper 211 and p95 46.4, which is a visibly
+             greyer card. Fitted to the approved numbers instead: a 130-250
+             stretch plus a 1.4 sharpen, which lands paper 232 and p95 26.9.
+             The sharpen is MASKED to the cards - sharpening the cutting
+             mat's dot texture is pure file size, and confining it took the
+             webp from 220K to 152K, under the 162K the old file shipped. */
           steps: [
-            /* TWO PHOTOGRAPHS, CROPPED TO ADD UP TO THE ONE BESIDE THEM.
-               Jack: "crop the heights of the Card 1 photos so that they are
-               the same height as the photo next to it." Card 2 is a single
-               4:5 portrait, 551px of image at a 441px column; this pair owes
-               the same, so after a 12px gap and two 3px borders a side they
-               owe 533 between them. The sketch spread takes 345 and the
-               paper profiles 188, and those two numbers are the aspect
-               ratios below - 1400x1096 is 1.277:1 and 1400x596 is 2.349:1.
-               Re-cropped from the ORIGINALS rather than from the exports,
-               so nothing is resampled twice - and shipped at NEW PATHS,
-               which the first pass got wrong. See the cache note in
-               CLAUDE.md: a re-crop at a live path is not a shrug.
-                 The profiles lost height and nothing else: the three paper
-               pieces occupy the middle 48% of that frame and the rest is
-               cutting mat. The sketch spread was cropped in on every side -
-               "so it looks more zoomed in and we just see the paper" - to
-               just inside the notebook page, which drops the dark desk it
-               was lying on and keeps the title and both questions. */
             { label: 'proj.pot-clip.cs.process.1',
               text: 'proj.pot-clip.cs.process.1b', figures: [
-              { src: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=5edbb0ac', w: 1400, h: 596,
-                full: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=5edbb0ac',
+              { src: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=f86714ee', w: 1200, h: 767,
+                full: '/assets/projects/pot-clip/cs-paper-profiles.jpg?v=f86714ee',
                 altKey: 'proj.pot-clip.cs.alt.profiles' },
-              { src: '/assets/projects/pot-clip/cs-sketch-page.jpg?v=88107ffb', w: 1400, h: 1096,
-                full: '/assets/projects/pot-clip/cs-sketch-page.jpg?v=88107ffb',
-                altKey: 'proj.pot-clip.cs.alt.sketches' },
             ] },
             { label: 'proj.pot-clip.cs.process.2',
               text: 'proj.pot-clip.cs.process.2b', figures: [
-              { src: '/assets/projects/pot-clip/cs-foam.jpg?v=824ac2ae', w: 1200, h: 1500,
-                full: '/assets/projects/pot-clip/cs-foam.jpg?v=824ac2ae',
+              { src: '/assets/projects/pot-clip/cs-foam.jpg?v=763ddd51', w: 1200, h: 767,
+                full: '/assets/projects/pot-clip/cs-foam.jpg?v=763ddd51',
                 altKey: 'proj.pot-clip.cs.alt.foam' },
             ] },
-            /* THE FINISHING PHOTOGRAPH CAME BACK FOR THIS CARD. Jack's
-               rewrite split the old "Foam model, spray-finished" into
-               Sculpting and Finishing, so card 2 keeps the raw foam in the
-               hand and this one needed a picture of the coats going on.
-               Nothing on the page could stand in: cs-painted is the
-               finished piece and The design already shows it beside the
-               turntable, and cs-booth is the SAME FRAME at a wider crop,
-               so either would have put one picture on the page twice.
-                 So cs-finishing is the old masonry wall's 06-finishing -
-               the primed clip in a gloved hand, the only photograph of the
-               finishing itself - re-exported from its -full at 1000x1250,
-               jpeg q82 and webp q85 at 44.2 and 43.5 dB against a q98
-               reference. CENTRE-CROPPED 1333x2000 -> 1333x1666 so it is
-               4:5 like the foam shot beside it: the two physical stages
-               are then the same frame shape, which is what makes them read
-               as one pair, and what it costs is an unrelated architecture
-               model at the top of the frame. ?v=0 is the way into
-               asset-rev.js - stale by definition, so the hook fills it. */
+            /* THE FINISHED PIECE, on Jack's "I want this, the third one,
+               the third step, [to be] what you need to see the finished
+               project on." It is the clip standing on its spray board in
+               the workshop - the same 13 October session as the first
+               coats - so the card's own sentence, built up with coats and
+               spray-finished to read as metal, is what the photograph
+               shows. ?v=0 is the way into asset-rev.js: stale by
+               definition, so the hook fills it. */
             { label: 'proj.pot-clip.cs.process.3',
               text: 'proj.pot-clip.cs.process.3b', figures: [
-              { src: '/assets/projects/pot-clip/cs-finishing.jpg?v=0e96128d', w: 1000, h: 1250,
-                full: '/assets/projects/pot-clip/cs-finishing.jpg?v=0e96128d',
-                altKey: 'proj.pot-clip.cs.alt.finishing' },
+              { src: '/assets/projects/pot-clip/cs-finished.jpg?v=c51d409a', w: 1200, h: 767,
+                full: '/assets/projects/pot-clip/cs-finished.jpg?v=c51d409a',
+                altKey: 'proj.pot-clip.cs.alt.finished' },
             ] },
-            /* BOTH DIGITAL PICTURES SIT ON THIS CARD NOW. It used to be
-               "Renders" with the render alone and the Blender capture on a
-               card above it; Jack's card 4 is the model itself - scanned,
-               rebuilt, and driving the turntable - so the mesh is the
-               subject and the render is what that mesh produces. Two
-               landscapes stacked, the shape card 1 already carries, and it
-               is also what keeps this row level against the portrait
-               beside it.
-                 The render is CROPPED TO THE VIEWPORT. Its source is a
-               screenshot of the <model-viewer> editor and the right third
-               of it is a code snippet, a File Manager and a Download Scene
-               button - tooling, not work, and a thing this codebase
-               pointedly does not use. Centred on the render's own ink box
-               (446-1661 x 570-1318 in the 2948x1578 source), 1800x1200 at
-               source scale, which comes out 293/292 left-right and 226/226
-               top-bottom.
-                 14-object.jpg is still the turntable's poster and keeps
-               alt.14; this is a different render and gets its own alt. */
+            /* THE MESH IS LAST AND THE GOLD RENDER IS OUT, both on Jack's
+               word: "I want the render one where it looks kind of golden
+               [...] to take away, and I want the Blender model picture to
+               be the last one." cs-render.jpg and cs-sketch-page.jpg stay
+               in assets/ unreferenced, the same as cs-booth and
+               cs-hero-clip; their alt keys came out of i18n.js rather than
+               being left to read as dead. */
             { label: 'proj.pot-clip.cs.process.4',
               text: 'proj.pot-clip.cs.process.4b', figures: [
-              { src: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde', w: 1400, h: 895,
-                full: '/assets/projects/pot-clip/cs-blender.jpg?v=876a7bde',
+              { src: '/assets/projects/pot-clip/cs-blender.jpg?v=819a2449', w: 1200, h: 767,
+                full: '/assets/projects/pot-clip/cs-blender.jpg?v=819a2449',
                 altKey: 'proj.pot-clip.cs.alt.blender' },
-              { src: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada', w: 1400, h: 933,
-                full: '/assets/projects/pot-clip/cs-render.jpg?v=9d954ada',
-                altKey: 'proj.pot-clip.cs.alt.render' },
             ] },
           ] },
 
