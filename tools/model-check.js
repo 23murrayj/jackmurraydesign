@@ -152,7 +152,8 @@ function checkMesh(file) {
 function constants() {
   const src = fs.readFileSync(path.join(ROOT, 'script.js'), 'utf8');
   const names = ['HOME_YAW', 'HOME_PITCH', 'IDLE_SPIN', 'IDLE_AFTER',
-                 'THROW_DECAY', 'RETURN_EASE', 'HOME_EPS', 'FOV', 'FIT_MARGIN'];
+                 'THROW_DECAY', 'RETURN_EASE', 'HOME_EPS', 'FOV', 'FIT_MARGIN',
+                 'PROMPT_AFTER'];
   const out = {};
   for (const n of names) {
     const m = src.match(new RegExp('const\\s+' + n + '\\s*=\\s*(-?[\\d.]+)'));
@@ -182,7 +183,32 @@ function checkFraming(file, K) {
     if (d > r2) r2 = d;
   }
   const r = Math.sqrt(r2);
+  /* THE VIEWER TURNS ABOUT THE MESH'S AREA-WEIGHTED CENTROID, not about
+     the box centre the packer put at the origin, so the empirical pass
+     below has to subtract the same point or it is checking a frame the
+     page does not draw. The same formula as buildModelStage's, and the
+     distance deliberately still comes off the box-centred radius: from
+     the pivot the worst case is smaller, which is more air than the fit
+     needs rather than less. */
+  let area = 0, pv = [0, 0, 0];
+  for (let t = 0; t < m.nt; t++) {
+    const g = (k) => { const i = m.idx[t*3+k]; return [m.pos[i*3]/32767, m.pos[i*3+1]/32767, m.pos[i*3+2]/32767]; };
+    const a = g(0), b = g(1), c = g(2);
+    const u = [b[0]-a[0], b[1]-a[1], b[2]-a[2]], v = [c[0]-a[0], c[1]-a[1], c[2]-a[2]];
+    const n = [u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]];
+    const ar = 0.5 * Math.hypot(n[0], n[1], n[2]);
+    area += ar;
+    for (let k = 0; k < 3; k++) pv[k] += ar * (a[k]+b[k]+c[k]) / 3;
+  }
+  if (area > 0) pv = pv.map((x) => x / area);
+  let rp2 = 0;
+  for (let i = 0; i < m.nv; i++) {
+    const x = m.pos[i*3]/32767 - pv[0], y = m.pos[i*3+1]/32767 - pv[1], z = m.pos[i*3+2]/32767 - pv[2];
+    const d = x*x + y*y + z*z;
+    if (d > rp2) rp2 = d;
+  }
   console.log(`\nFRAMING   bounding sphere ${r.toFixed(4)}   FOV ${K.FOV} rad   margin ${K.FIT_MARGIN}`);
+  console.log(`          pivot [${pv.map((x) => x.toFixed(4)).join(', ')}]   radius from it ${Math.sqrt(rp2).toFixed(4)}`);
   /* THE STAGE IS SQUARE EVERYWHERE NOW - it shares the Design band with a
      photograph, so it is the column's width by the same height: 542 inside
      its border at 1440, 429 at 901, 554 stacked, 345 on a phone. Square
@@ -223,7 +249,7 @@ function checkFraming(file, K) {
     const pitch = -Math.PI + pi / 16 * Math.PI * 2;      // the full tumble, both axes
     const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     for (let i = 0; i < m.nv; i++) {
-      const x0 = m.pos[i*3]/32767, y0 = m.pos[i*3+1]/32767, z0 = m.pos[i*3+2]/32767;
+      const x0 = m.pos[i*3]/32767 - pv[0], y0 = m.pos[i*3+1]/32767 - pv[1], z0 = m.pos[i*3+2]/32767 - pv[2];
       const X = cy*x0 + sy*z0, Z = -sy*x0 + cy*z0;
       const Y = cp*y0 - sp*Z,  Z2 = sp*y0 + cp*Z;
       const wc = dist - Z2;                               // -(view z)
@@ -232,7 +258,7 @@ function checkFraming(file, K) {
       if (n > maxNdc) { maxNdc = n; at = `yaw ${yaw.toFixed(2)} pitch ${pitch.toFixed(2)}`; }
     }
   }
-  T('no vertex leaves the canvas, over a full tumble in both axes', maxNdc < 1,
+  T('no vertex leaves the canvas, over a full tumble in both axes, about the pivot', maxNdc < 1,
     `worst vertex reaches ${(maxNdc * 100).toFixed(1)}% of the way to the edge, at ${at} (${24 * 17} orientations x ${m.nv} verts)`);
 }
 
@@ -249,9 +275,9 @@ function checkMotion(K) {
   };
   // mirrors the viewer's initial state exactly: nothing has been touched,
   // so it is already home and already idle, and drifts from frame one
-  const sim = () => ({ yaw: K.HOME_YAW, pitch: K.HOME_PITCH, yawVel: 0, pitchVel: 0, idle: Infinity, homed: true });
+  const sim = () => ({ yaw: K.HOME_YAW, pitch: K.HOME_PITCH, yawVel: 0, pitchVel: 0, idle: Infinity, homed: true, promptClock: 0 });
   // the state a pointerdown leaves behind
-  const touched = (s) => { s.idle = 0; s.homed = false; return s; };
+  const touched = (s) => { s.idle = 0; s.homed = false; s.promptClock = 0; return s; };
   const step = (s, dt, reduce) => {
     s.idle += dt;
     if (!reduce && s.idle > K.IDLE_AFTER) {
@@ -272,7 +298,11 @@ function checkMotion(K) {
       s.pitch += s.pitchVel * (1 - e) / K.THROW_DECAY;
       s.yawVel *= e; s.pitchVel *= e;
     }
+    /* the nudge's own clock, which only runs once the object is home - the
+       viewer gates it on the same flag. */
+    if (s.homed) s.promptClock += dt * 1000;
   };
+  const handUp = (s) => s.promptClock > K.PROMPT_AFTER;
 
   // 1. NOTHING STOPS, IN EITHER AXIS. This is the one Jack reported twice.
   {
@@ -302,6 +332,36 @@ function checkMotion(K) {
       `home ${arrived ? arrived.toFixed(1) : '—'}s after the pause began, from 11.3 rad of yaw and a tumble past vertical`);
     T('and then drifts, instead of hauling itself back', s.yaw > K.HOME_YAW,
       `drifted ${(s.yaw - K.HOME_YAW).toFixed(2)} rad past home once it arrived`);
+  }
+  /* 2b. AND THE HAND WAITS FOR IT. Jack described the old order exactly:
+     "the finger will pop up and it'll drag the object a little bit, and then
+     it'll go back to its starting position" - two independent clocks, the
+     nudge at 3s and the return at 6s, so the nudge always went first. The
+     fix is one flag, which is exactly the kind of thing that gets undone by
+     accident, so it is asserted rather than written down. */
+  {
+    const s = touched(sim());
+    s.yaw = K.HOME_YAW + 2.4;                  // left somewhere after a drag
+    s.pitch = K.HOME_PITCH + 0.8;
+    let t = 0, firstHand = null, arrived = null;
+    while (t < 40) {
+      step(s, 1/60, false); t += 1/60;
+      if (s.homed && arrived === null) arrived = t;
+      if (handUp(s) && firstHand === null) firstHand = t;
+    }
+    T('after a drag it goes home BEFORE the hand appears',
+      arrived !== null && firstHand !== null && firstHand > arrived,
+      `home at ${arrived === null ? '—' : arrived.toFixed(1)}s, hand at ` +
+      `${firstHand === null ? '—' : firstHand.toFixed(1)}s`);
+    /* and the other half: a page nobody has touched is already home, so the
+       first nudge still arrives on its own 3s and nothing waits on a return
+       that has nowhere to return from. */
+    const fresh = sim();
+    let ft = 0, freshHand = null;
+    while (ft < 20) { step(fresh, 1/60, false); ft += 1/60; if (handUp(fresh) && freshHand === null) freshHand = ft; }
+    T('on an untouched page the hand still comes at PROMPT_AFTER',
+      freshHand !== null && Math.abs(freshHand - K.PROMPT_AFTER / 1000) < 0.1,
+      `${freshHand === null ? '—' : freshHand.toFixed(2)}s against PROMPT_AFTER ${(K.PROMPT_AFTER / 1000).toFixed(2)}s`);
   }
   // 3. the return takes the SHORT way - it must not unwind the turns given
   {

@@ -4805,6 +4805,30 @@ function startModelViewer(stage, src) {
 
   const FOV = 0.62;                // vertical, radians
   let radius = 1.5;                // bounding sphere, measured from the mesh on load
+  /* IT TURNS ABOUT ITS OWN MIDDLE, NOT ABOUT THE BOX'S. Jack: "if it could
+     rotate from the middle of the object... it kind of rotates a little bit
+     from one side of it."
+     The packer centres the mesh on its BOUNDING BOX, which is the right
+     thing for a file format and the wrong pivot for a shape whose extremes
+     are thin: measured on this mesh, the area-weighted centroid sits at
+     (-0.214, 0.207, 0.001), which is 11% of the box's width and 12% of its
+     height away from the box's own centre. The legs and the tab reach
+     further than the mass does, so the box centre lands off the body and
+     the object swings around a point near its edge.
+     Measured by projecting every vertex through the viewer's own matrices
+     over a full turn at the stage's real 542px: at the resting pitch the
+     silhouette's centre swings 93.3px sideways about the box centre and
+     58.1px about the centroid, and across four pitches its worst distance
+     from the middle of the frame goes 68.3px to 37.4px.
+     A GRID SEARCH OVER PIVOTS BOTTOMS OUT AT 36.1px, at (-0.200, 0.200,
+     0.000) - the centroid within rounding - so this is the right point
+     rather than a tuned one, and there is nothing left to chase.
+     Area-weighted rather than per-vertex, because vertex density is an
+     artefact of where the decimation put points.
+     It is applied INSIDE uModel, before the rotation, so the shading and
+     the shadow see the same transform - and that also means the centroid,
+     not the box, is what sits at the centre of the frame. */
+  let pivot = [0, 0, 0];           // the object's own centre, measured on load
   /* THE OPENING POSE AND THE RESTING POSE ARE ONE PAIR OF NUMBERS, and
      for three rounds they were two. HOME_YAW / HOME_PITCH governed the
      RETURN, while the view a visitor actually arrives on came from a
@@ -5113,7 +5137,23 @@ function startModelViewer(stage, src) {
        drift carries on underneath it. Reduced motion gets none of it: it is
        decorative movement, and the stage is labelled as draggable anyway. */
     let want = 0;
-    if (!drag && dt && !prefersReducedMotion) {
+    /* IT GOES HOME FIRST AND THE HAND COMES SECOND. Jack described the old
+       order exactly: "the finger will pop up and it'll drag the object a
+       little bit, and then it'll go back to its starting position and then
+       start rotating" - because the two clocks were independent, PROMPT_AFTER
+       at 3s and IDLE_AFTER at 6s, so after a drag the nudge always arrived
+       first and the return interrupted it. "Instead, after you moved it a
+       little bit, the hand wouldn't come up first... first it went back to
+       its original place after a little bit of time. Don't make it do it
+       super fast."
+       So promptClock only runs while `homed`, which every input clears and
+       the return sets once it has landed. The pause before the return and
+       the speed of it are untouched: IDLE_AFTER is still 6s and RETURN_EASE
+       still 1.1, which is what "not super fast" asks for. The hand then
+       waits its own PROMPT_AFTER from the landing, so the sequence reads
+       settle, pause, hand - and on a page nobody has touched, `homed` starts
+       true, so the first nudge still arrives at 3s exactly as before. */
+    if (!drag && dt && !prefersReducedMotion && homed) {
       promptClock += dt * 1000;
       if (promptClock > PROMPT_AFTER) {
         const cycle = (promptClock - PROMPT_AFTER) % PROMPT_EVERY;
@@ -5145,7 +5185,11 @@ function startModelViewer(stage, src) {
     size();
     const spin = M4.rotY(yaw);
     const tip = M4.rotX(pitch);
-    const model = M4.mul(tip, spin);
+    /* the pivot shift goes FIRST, so every rotation after it turns the
+       object about its own centre. The coverage pass below gets the same
+       composed matrix, or the shadow would sit where the box used to be. */
+    const centre = M4.trans(-pivot[0], -pivot[1], -pivot[2]);
+    const model = M4.mul(M4.mul(tip, spin), centre);
     const view = M4.trans(0, 0, -dist);
     const projM = M4.persp(FOV, canvas.width / canvas.height, 0.1, dist + radius + 1);
 
@@ -5153,7 +5197,7 @@ function startModelViewer(stage, src) {
        floor quad, then the object over the top of both */
     if (shadowFbo) {
       const extent = radius * 1.35;
-      drawCoverage(spin, extent);
+      drawCoverage(M4.mul(spin, centre), extent);
       gl.viewport(0, 0, canvas.width, canvas.height);
     }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -5197,6 +5241,28 @@ function startModelViewer(stage, src) {
       if (d2 > r2) r2 = d2;
     }
     radius = Math.sqrt(r2);
+    /* the pivot, area-weighted over the triangles: each one contributes its
+       own centroid at its own area, so a dense patch of small triangles
+       does not outvote a big flat one. 38k triangles, once, at load. */
+    let area = 0, px = 0, py = 0, pz = 0;
+    for (let t = 0; t < mesh.nt; t++) {
+      const i0 = mesh.idx[t*3], i1 = mesh.idx[t*3+1], i2 = mesh.idx[t*3+2];
+      const ax = mesh.pos[i0*3]/32767, ay = mesh.pos[i0*3+1]/32767, az = mesh.pos[i0*3+2]/32767;
+      const bx = mesh.pos[i1*3]/32767, by = mesh.pos[i1*3+1]/32767, bz = mesh.pos[i1*3+2]/32767;
+      const cx = mesh.pos[i2*3]/32767, cy = mesh.pos[i2*3+1]/32767, cz = mesh.pos[i2*3+2]/32767;
+      const ux = bx-ax, uy = by-ay, uz = bz-az, vx = cx-ax, vy = cy-ay, vz = cz-az;
+      const nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx;
+      const a = 0.5 * Math.hypot(nx, ny, nz);
+      area += a;
+      px += a * (ax+bx+cx)/3; py += a * (ay+by+cy)/3; pz += a * (az+bz+cz)/3;
+    }
+    if (area > 0) pivot = [px/area, py/area, pz/area];
+    /* THE CAMERA DISTANCE STAYS OFF THE BOX-CENTRED RADIUS, deliberately.
+       Measured from the pivot the worst case is 1.283 rather than 1.475, so
+       the same FIT_MARGIN would draw the object 15% bigger - and the
+       apparent size is a number Jack tuned himself, on a request that was
+       about the BOX. The bigger radius is simply more air than the fit
+       needs, so the no-clipping guarantee still holds with room over. */
     fitDirty = true;
     prog = gl.createProgram();
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, MODEL_VS));

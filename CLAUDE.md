@@ -4173,6 +4173,53 @@ page will not tell you whether the object still turns.
 
 ### How it turns
 
+- **IT TURNS ABOUT ITS OWN MIDDLE, NOT ABOUT THE BOX'S.** Jack: *"if it
+  could rotate from the middle of the object… it kind of rotates a little
+  bit from one side of it."* The packer centres the mesh on its BOUNDING
+  BOX, which is right for a file format and wrong as a pivot for a shape
+  whose extremes are thin: the legs and the tab reach further than the mass
+  does, so the box centre lands off the body. Measured, the area-weighted
+  centroid is at **(−0.214, 0.207, 0.001)** — 11% of the box's width and
+  12% of its height from the box's own centre — and the object swung around
+  a point near its edge.
+  **Measured by projecting every vertex through the viewer's own matrices**
+  at the stage's real 542px: at the resting pitch the silhouette's centre
+  swings **93.3px sideways about the box centre and 58.1px about the
+  centroid**, and across four pitches its worst distance from the middle of
+  the frame goes **68.3px to 37.4px**.
+  **A grid search over pivots bottoms out at 36.1px**, at (−0.200, 0.200,
+  0.000) — the centroid within rounding — so this is the right point rather
+  than a tuned one, and there is nothing left to chase.
+  **Area-weighted over the triangles, not per-vertex**, because vertex
+  density is an artefact of where the decimation put points. It is applied
+  INSIDE `uModel`, before the rotation, so the shading and the shadow
+  coverage pass see the same transform — the coverage pass takes the
+  composed matrix, or the shadow would sit where the box used to be.
+  **The camera distance deliberately still comes off the BOX-centred
+  radius.** From the pivot the worst case is 1.283 rather than 1.4746, so
+  the same `FIT_MARGIN` would draw the object **15% bigger** — and the
+  apparent size is a number Jack tuned himself, on a request that was about
+  the box. The bigger radius is simply more air than the fit needs, so the
+  no-clipping guarantee holds with room over: the empirical worst vertex
+  now reaches **69.2%** of the way to the edge where it reached 80.5%.
+- **IT GOES HOME FIRST AND THE HAND COMES SECOND.** Jack described the old
+  order exactly: *"the finger will pop up and it'll drag the object a little
+  bit, and then it'll go back to its starting position and then start
+  rotating"* — because the two clocks were independent, `PROMPT_AFTER` at 3s
+  and `IDLE_AFTER` at 6s, so after a drag the nudge always arrived first and
+  the return interrupted it. *"Instead, after you moved it a little bit, the
+  hand wouldn't come up first… first it went back to its original place
+  after a little bit of time. Don't make it do it super fast."*
+  The fix is one flag: `promptClock` only runs while `homed`, which every
+  input clears and the return sets on arrival. **The pause before the return
+  and the speed of it are untouched** — `IDLE_AFTER` 6s and `RETURN_EASE`
+  1.1, which is what "not super fast" asks for — and the hand then waits its
+  own `PROMPT_AFTER` from the landing. Measured in the simulation: after a
+  drag, **home at 11.0s and the hand at 14.0s**.
+  **An untouched page is unchanged**, because `homed` starts true there:
+  the first nudge still arrives at 3.02s against `PROMPT_AFTER` 3.00.
+  **Both halves are asserted in `model-check`** rather than written down —
+  one flag is exactly the kind of thing that gets undone by accident.
 - **NOTHING STOPS, IN EITHER AXIS.** Both are unbounded: yaw and pitch each
   run forever, you can tumble it end over end, and there is no edge
   anywhere. The previous build clamped pitch to ±1.45 so the object could
@@ -4239,11 +4286,15 @@ page will not tell you whether the object still turns.
   the two half-angles covers a tall stage as well as a wide one — so the
   phone band is handled by the same arithmetic rather than a second rule.
   Recomputed on resize, so a reshaped stage cannot reintroduce it.
-- **`model-check` asserts it twice, analytically and empirically.** The
+- **`model-check` asserts it twice, analytically and empirically**, and the
+  empirical pass subtracts the same pivot the viewer turns about — it has
+  to, or it is checking a frame the page does not draw. The
   formula is only a proof if the formula is right, so it also projects
   every vertex through the viewer's own matrices over a full tumble in both
   axes — 408 orientations × 19,056 vertices — and reports the furthest any
-  of them lands from centre. Currently **93.5%** of the way to the edge.
+  of them lands from centre. Currently **69.2%** of the way to the edge —
+  93.5% in the wide-band era, 80.5% once the stage went square, and 69.2
+  since it turns about its centroid rather than the box centre.
 - **The cost is apparent size, and the band pays it.** Fitting the worst
   orientation means the resting one sits well inside the frame, so
   `.project-stage` went from `clamp(320px, 52vh, 560px)` to
@@ -4303,8 +4354,9 @@ page will not tell you whether the object still turns.
   the flat 360 at ≤760px still stand for any stage outside the case study —
   there is none today.
   **The remaining lever is `FIT_MARGIN`, and it is deliberately untouched.**
-  Square, the empirical worst vertex reaches 80.5% of the way to the edge
-  where the wide band had it at 93.5%, so there is headroom: dropping 1.22
+  Square, the empirical worst vertex reached 80.5% of the way to the edge
+  where the wide band had it at 93.5%, and the centroid pivot has since
+  taken it to 69.2%, so there is headroom: dropping 1.22
   toward the checker's 1.042 floor would take the object from 52% of the
   height to about 61%. That is a change to air Jack tuned himself, on a
   request that was about the BOX, so it waits to be asked for.
