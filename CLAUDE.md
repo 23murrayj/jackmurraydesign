@@ -1613,6 +1613,66 @@ being left idle.
   clicked. It is delegated from `.project-detail` now, and
   `markZoomableImages` walks the same root.
 
+**THE ENLARGEMENT IS THE CASE STUDY'S OWN, AND ONLY THE CASE STUDY'S.**
+Jack asked for it refined *"only inside the Pot Clip case-study page… do not
+change image behavior on Easter, Caterpillar or any other project"*, so the
+scoping is the first thing to keep: every rule here is keyed on `.cs-fig` or
+on `.project-detail.is-case`, which is pot-clip alone today, and the other
+six keep what they had — native `title`, no tooltip, no sets, the caption's
+old counter. **Checked on easter-riverside after every part of it**: four
+zoomable images, four titles, the tooltip refusing to arm, the arrows
+`display: none`, and the caption still reading `01 / 04`.
+**The picture answers the pointer, by 1%.** `transform: scale(1.01)` over
+200ms, with `overflow: hidden` on `.cs-fig` so it costs no layout. 1.01 is
+deliberately almost nothing — two pixels at 442 — because anything more
+reads as a zoom preview and promises the wrong thing before the lightbox
+opens. It is keyed on `img[data-full]`, so a frame that does not open would
+stay still, and it is off under `prefers-reduced-motion`.
+**The cursor dot grows to 30, not to the 60 `.big` uses.** Those are
+different signals: `.big` is the playful state cards and buttons get, this
+is a hint that the picture opens. The case-study figures were never in
+`CURSOR_TARGETS` at all — that list names `#projectMedia`, which this layout
+does not use — so nothing about the dot changed anywhere else. Going back to
+18 is INSTANT, which needs a class worn for one reflow, because the
+transition that would otherwise run belongs to the shared base rule.
+**THE NATIVE `title` IS GONE FROM THIS LAYOUT, and the reason is worth
+keeping.** Jack: the hint *"appears to be a native browser tooltip and
+remains visible after the cursor moves within the image"*. That is the
+attribute working exactly as specified — shown after about a second,
+dismissed on LEAVING the element — and inside a 442px photograph it is a
+label parked over the picture for as long as you look at it. `.zoom-tip`
+replaces it: same look as the nav controls' tooltip, same i18n key
+(`a11y.zoomHint`, so still four languages), shown after the pointer has
+been **still for 350ms** and gone on the first pixel of movement, on
+leave, on press, on scroll and when the lightbox opens. Mouse only —
+a touch device has no pointer to hold still, and a tip that movement
+cannot dismiss would be the same bug with no way out. Measured: not shown
+at 200ms, shown at 450, placed +16/+20 from the pointer and pulled back
+inside the viewport near an edge.
+**TWO SETS, NOT ONE GALLERY.** *"Do not create one gallery containing every
+Pot Clip image."* A section carrying `data-lb-group` IS the set, which is
+how Process spans its four cards without the markup saying so twice; only
+Process and Posters carry it, and everything else opens alone. The arrows
+and the counter live in the shared lightbox markup but are hidden until
+`.is-group`, so a standalone picture — every other project's included —
+shows neither. **No wrap**: the ends disable rather than loop, because a
+control that disappears moves the furniture mid-set. Left and Right step it
+from the document, gated on the set.
+**Stepping must NOT call `activateDialog`** — the same push that bit the
+next-project link. And a disabled control is not focusable, so arriving at
+an end with that arrow focused would drop focus to `<body>` and take the
+tab trap with it; focus goes to the close button instead.
+**THE FLASH ON CLOSE WAS THE ALT TEXT.** Jack: *"a brief small text-box
+flash… while closing"*. `closeLightbox` dropped the `src` on the same frame
+as the class came off, and an `<img>` with no `src` and an `alt` renders —
+as its alt text, in a little box where the photograph was — for the whole
+0.28s fade. The counter and the arrows would have done the same if
+`is-group` came off there. **Nothing is torn down until the fade has
+finished** (320ms), and the guard is the class rather than a flag, so
+reopening inside that window keeps the picture it was just given. Verified
+by sampling mid-fade: src, alt, counter and `is-group` all unchanged at
+120ms and all cleared at 470.
+
 **Strings are FULL KEYS in `projectData`, not suffixes the renderer builds.**
 A second project adopting this layout brings its own keys and needs no code
 change, which is what Jack asked for. And `audit.js` finds a key by looking

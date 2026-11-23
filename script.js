@@ -424,7 +424,11 @@ const projectData = {
            would take 25-44% off the width of a 1400x788 source, and on the
            paper-profiles shot that is the outer two profiles - the same
            argument the figure rows already lost. */
-        { id: 'process', title: 'proj.pot-clip.cs.process.t',
+        /* lbGroup: the four pictures below are one run, so the lightbox
+           steps through them instead of opening each on its own. Only
+           Process and Posters carry it - everything else on this page is a
+           single photograph making a single point. */
+        { id: 'process', title: 'proj.pot-clip.cs.process.t', lbGroup: true,
           /* ONE FRAME FOR ALL FOUR, AND IT IS THE BLENDER CAPTURE'S.
              Jack: "I want them to all end up being the same ratio as the
              [...] Blender photo of the product, of me modeling it [...] I
@@ -574,7 +578,7 @@ const projectData = {
              html rather than text because the copy quotes the campaign
            line in italics; csText escapes a text: string, which would have
            printed the tag. */
-        { id: 'posters', title: 'proj.pot-clip.cs.posters.t',
+        { id: 'posters', title: 'proj.pot-clip.cs.posters.t', lbGroup: true,
           html: 'proj.pot-clip.cs.posters.b', textBelow: true,
           figures: [
             { src: '/assets/projects/pot-clip/cs-poster-1.jpg?v=e75e799a', w: 900, h: 1273,
@@ -1323,6 +1327,9 @@ function renderCaseStudy(data) {
     const head = csText('h3', 'cs-h', sec.title);
     let out = '<section class="cs-section' + (sec.art ? ' cs-has-art' : '')
       + '" id="cs-' + escapeAttr(sec.id)
+      /* the lightbox reads this off the nearest ancestor, so a run can
+         span several cards - Process is four of them, one picture each. */
+      + (sec.lbGroup ? '" data-lb-group="' + escapeAttr(sec.id) : '')
       + '" tabindex="-1">' + (sec.asideTop ? '' : head);
     /* `aside` puts the figures BESIDE the prose instead of under it. Two
        sections want it. Research is four definition pairs and so the
@@ -2100,6 +2107,30 @@ if (window.matchMedia('(pointer: fine)').matches) {
   };
   document.addEventListener('mouseover', (e) => cursorEdge(e, true));
   document.addEventListener('mouseout', (e) => cursorEdge(e, false));
+
+  /* AND THE CASE STUDY'S PICTURES GROW IT TO 30, not to the 60 the list
+     above uses. Those are different signals: .big is the playful state a
+     card or a button gets, and this is a hint that the picture opens. The
+     case-study figures are not in CURSOR_TARGETS at all (that list names
+     #projectMedia, which this layout does not use), so nothing here
+     changes what the dot does anywhere else.
+       Going back to 18 is instant rather than eased - "return it to 18px
+     immediately when leaving the image" - which takes a class worn for one
+     reflow, because the transition that would otherwise run is the base
+     rule's and it is shared with .big. */
+  const zoomDotHit = (e) => {
+    const img = e.target.closest && e.target.closest('img[data-full]');
+    return !!(img && img.closest('.project-detail.is-case'));
+  };
+  document.addEventListener('mouseover', (e) => { if (zoomDotHit(e)) cursorDot.classList.add('zoom'); });
+  document.addEventListener('mouseout', (e) => {
+    if (!zoomDotHit(e)) return;
+    if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('img[data-full]')) return;
+    cursorDot.classList.add('no-anim');
+    cursorDot.classList.remove('zoom');
+    void cursorDot.offsetWidth;        // flush, so 18px lands un-animated
+    cursorDot.classList.remove('no-anim');
+  });
 }
 
 /* SCROLL REVEAL, AND WHY WHAT IS ALREADY ON SCREEN DOES NOT GO THROUGH THE
@@ -4350,23 +4381,75 @@ const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.getElementById('lightboxImg');
 const lightboxClose = document.getElementById('lightboxClose');
 const lightboxCaption = document.getElementById('lightboxCaption');
+const lightboxPrev = document.getElementById('lightboxPrev');
+const lightboxNext = document.getElementById('lightboxNext');
+const lightboxCounter = document.getElementById('lightboxCounter');
 
-function openLightbox(img) {
-  if (!lightbox || !img) return;
-  const full = img.dataset.full || img.currentSrc || img.src;
-  lightboxImg.src = full;
+/* A SET, OR A SINGLE PICTURE. Jack: "do not create one gallery containing
+   every Pot Clip image" - the case study's Process run and Posters run are
+   each a sequence worth stepping through, and everything else on the page
+   is one photograph making one point. A section carrying data-lb-group IS
+   the set, so Process spans its four cards without the markup having to say
+   so twice. Empty means standalone, which is every image on the other six
+   projects too. */
+let lbGroup = [];
+let lbIndex = -1;
+let lbClearTimer = null;
+
+function showLightboxImage(img) {
+  lightboxImg.src = img.dataset.full || img.currentSrc || img.src;
   // the thumbnail's alt already describes the image; reusing it keeps the
   // two in sync automatically when the language changes
   lightboxImg.alt = img.alt || '';
-  // position in the set plus the camera settings — facts you can't get by
-  // looking. The description stays in alt, where it's read to the people who
-  // actually need it rather than printed under a picture you can already see.
-  const siblings = [...projectMedia.querySelectorAll('img[data-full]')];
-  const at = siblings.indexOf(img);
   const pad = (n) => String(n).padStart(2, '0');
-  const counter = at >= 0 && siblings.length > 1
-    ? `${pad(at + 1)} / ${pad(siblings.length)}` : '';
-  lightboxCaption.textContent = [counter, img.dataset.exif].filter(Boolean).join('   ·   ');
+  if (lbGroup.length > 1) {
+    /* the counter is its own element rather than the caption, because the
+       ask was a counter and NO caption: "do not add visible captions or
+       descriptions". The description is in alt, where it is read to the
+       people who need it rather than printed under a picture you can see. */
+    lightboxCounter.textContent = pad(lbIndex + 1) + ' / ' + pad(lbGroup.length);
+    lightboxCaption.textContent = '';
+    // no wrap: the ends disable rather than loop
+    lightboxPrev.disabled = lbIndex <= 0;
+    lightboxNext.disabled = lbIndex >= lbGroup.length - 1;
+    /* a disabled control is not focusable, so landing on the last image
+       with Next focused would drop focus to <body> and take the tab trap
+       with it. Hand it to the close button, which is always available. */
+    if (document.activeElement === lightboxNext && lightboxNext.disabled) lightboxClose.focus();
+    if (document.activeElement === lightboxPrev && lightboxPrev.disabled) lightboxClose.focus();
+  } else {
+    /* the other six projects' behaviour, untouched: position in the
+       project's own media plus the camera settings, which are facts you
+       cannot get by looking. */
+    const siblings = [...projectMedia.querySelectorAll('img[data-full]')];
+    const at = siblings.indexOf(img);
+    const counter = at >= 0 && siblings.length > 1
+      ? `${pad(at + 1)} / ${pad(siblings.length)}` : '';
+    lightboxCaption.textContent = [counter, img.dataset.exif].filter(Boolean).join('   ·   ');
+    lightboxCounter.textContent = '';
+  }
+}
+
+function stepLightbox(delta) {
+  if (lbGroup.length < 2) return;
+  const next = lbIndex + delta;
+  if (next < 0 || next >= lbGroup.length) return;
+  lbIndex = next;
+  /* NOT activateDialog: the lightbox is already open and already on the
+     stack, and pushing it twice would need two Escapes to leave and would
+     restore focus to the wrong picture afterwards. */
+  showLightboxImage(lbGroup[lbIndex]);
+}
+
+function openLightbox(img) {
+  if (!lightbox || !img) return;
+  clearTimeout(lbClearTimer);      // a reopen inside the fade keeps its image
+  hideZoomTip();
+  const groupEl = img.closest('[data-lb-group]');
+  lbGroup = groupEl ? [...groupEl.querySelectorAll('img[data-full]')] : [];
+  lbIndex = groupEl ? lbGroup.indexOf(img) : -1;
+  lightbox.classList.toggle('is-group', lbGroup.length > 1);
+  showLightboxImage(img);
   lightbox.classList.add('open');
   document.body.style.overflow = 'hidden';
   activateDialog(lightbox, lightboxClose);
@@ -4375,14 +4458,36 @@ function openLightbox(img) {
 function closeLightbox() {
   if (!lightbox) return;
   lightbox.classList.remove('open');
+  hideZoomTip();
   // the project overlay underneath still wants the scroll locked; only
   // release it if nothing else is open
   if (!projectOverlay.classList.contains('open') && !aboutOverlay.classList.contains('open')) {
     document.body.style.overflow = '';
   }
   deactivateDialog(lightbox);
-  // drop the (large) source so it isn't held in memory between openings
-  lightboxImg.removeAttribute('src');
+  /* THE FLASH ON CLOSE WAS THE ALT TEXT. Jack: "a brief small text-box
+     flash... while closing". Dropping the src freed the memory and did it
+     on the same frame as the class came off - and an <img> with no src and
+     an alt still renders, as its ALT TEXT, in a little box where the
+     photograph was, for the whole 0.28s fade. The counter and the arrows
+     would have done the same thing if is-group came off here.
+     So nothing is torn down until the fade has finished, and the guard is
+     the class rather than a flag: reopening inside those 320ms keeps the
+     picture it was just given. One coordinated state, in and out. */
+  clearTimeout(lbClearTimer);
+  lbClearTimer = setTimeout(() => {
+    if (lightbox.classList.contains('open')) return;
+    lightboxImg.removeAttribute('src');
+    lightboxImg.alt = '';
+    lightboxCaption.textContent = '';
+    lightboxCounter.textContent = '';
+    lightbox.classList.remove('is-group');
+    // hidden either way, but a disabled control left over from the last set
+    // is state nobody set and nobody can see
+    lightboxPrev.disabled = false;
+    lightboxNext.disabled = false;
+    lbGroup = []; lbIndex = -1;
+  }, 320);                        // the .28s fade, plus a frame
 }
 
 /* Delegated, and bound to the WHOLE panel rather than to .project-media:
@@ -4403,21 +4508,110 @@ projectDetailEl?.addEventListener('keydown', (e) => {
 });
 
 lightboxClose?.addEventListener('click', closeLightbox);
-// clicking the backdrop closes; clicking the image itself does not
+lightboxPrev?.addEventListener('click', () => stepLightbox(-1));
+lightboxNext?.addEventListener('click', () => stepLightbox(1));
+// clicking the backdrop closes; clicking the image or a control does not -
+// the identity test already excludes every child
 lightbox?.addEventListener('click', (e) => {
   if (e.target === lightbox) closeLightbox();
+});
+/* Left and Right step the set. Bound at the document because the lightbox
+   itself is not always what holds focus - the close button is - and gated
+   on the set so the keys do nothing on a standalone picture. Escape stays
+   where it is, in the one handler that knows the overlay order. */
+document.addEventListener('keydown', (e) => {
+  if (!lightbox || !lightbox.classList.contains('open') || lbGroup.length < 2) return;
+  if (e.key === 'ArrowLeft') { e.preventDefault(); stepLightbox(-1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); stepLightbox(1); }
 });
 
 // zoomable images need to be reachable and operable by keyboard, and they're
 // generated markup, so this runs whenever the media is (re)built
 function markZoomableImages() {
+  /* THE CASE STUDY DRAWS ITS OWN HINT. Jack: the "Click to enlarge" text
+     "appears to be a native browser tooltip and remains visible after the
+     cursor moves within the image" - which is exactly what a title does.
+     It waits about a second, renders as system chrome, and dismisses on
+     LEAVING the element, so moving around inside one photograph never
+     clears it. The six other projects keep it: this is scoped to the
+     case study, and .zoom-tip below is what replaces it. */
+  const cased = projectDetailEl && projectDetailEl.classList.contains('is-case');
   document.querySelectorAll('.project-detail img[data-full]').forEach((img) => {
     img.tabIndex = 0;
     img.setAttribute('role', 'button');
     img.style.cursor = 'zoom-in';
-    img.title = T.t('a11y.zoomHint');
+    if (cased) img.removeAttribute('title');
+    else img.title = T.t('a11y.zoomHint');
   });
 }
+/* ==========================================================================
+   THE CASE STUDY'S "CLICK TO ENLARGE"
+
+   What a native title does wrong here, in Jack's words: it "remains visible
+   after the cursor moves within the image". That is the attribute working
+   as specified - the OS shows it after about a second and keeps it until
+   the pointer LEAVES the element - and inside a 442px photograph that is a
+   label parked over the picture for as long as you are looking at it.
+
+   So: appears only after the pointer has been STILL for 350ms, and goes on
+   the first pixel of movement. Moving again re-arms it, so it behaves like
+   a thing that answers a question rather than one that announces itself.
+
+   Mouse only. A touch device has no pointer to hold still, and a tooltip
+   that cannot be dismissed by moving would be exactly the bug above with
+   no way out; tapping opens the picture, which is the whole message.
+   ========================================================================== */
+const zoomTip = document.createElement('div');
+zoomTip.className = 'zoom-tip';
+/* the image is already a button named by its alt text, so the hint is
+   decoration for a pointer - announcing it would be the label twice. */
+zoomTip.setAttribute('aria-hidden', 'true');
+document.body.appendChild(zoomTip);
+let zoomTipTimer = null;
+
+function hideZoomTip() {
+  clearTimeout(zoomTipTimer);
+  zoomTip.classList.remove('show');
+}
+
+/* scoped to the case-study layout: .project-detail.is-case is pot-clip and
+   nothing else today, and the other six keep their native title. */
+function zoomTipTarget(e) {
+  const img = e.target.closest && e.target.closest('img[data-full]');
+  return img && img.closest('.project-detail.is-case') ? img : null;
+}
+
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    hideZoomTip();                       // ANY movement dismisses it
+    const img = zoomTipTarget(e);
+    if (!img || (lightbox && lightbox.classList.contains('open'))) return;
+    const px = e.clientX, py = e.clientY;
+    zoomTipTimer = setTimeout(() => {
+      zoomTip.textContent = T.t('a11y.zoomHint');
+      /* measure before placing: shown off-screen first, so a tip near the
+         right or bottom edge can be pulled back inside rather than
+         clipped. 16/20 is below and to the right of the pointer, clear of
+         the cursor dot's own 30px. */
+      zoomTip.style.transform = 'translate(-9999px, -9999px)';
+      zoomTip.classList.add('show');
+      const w = zoomTip.offsetWidth, h = zoomTip.offsetHeight;
+      let tx = px + 16, ty = py + 20;
+      if (tx + w > window.innerWidth - 8) tx = window.innerWidth - 8 - w;
+      if (ty + h > window.innerHeight - 8) ty = py - 12 - h;
+      zoomTip.style.transform = 'translate(' + Math.round(tx) + 'px, ' + Math.round(ty) + 'px)';
+    }, 350);
+  }, { passive: true });
+  /* leaving the picture, pressing on it, and scrolling the panel under it
+     all dismiss immediately. Captured, because the overlay scrolls rather
+     than the window and a scroll event on an element does not bubble. */
+  document.addEventListener('pointerout', (e) => { if (zoomTipTarget(e)) hideZoomTip(); }, true);
+  document.addEventListener('pointerdown', hideZoomTip, true);
+  document.addEventListener('scroll', hideZoomTip, true);
+  window.addEventListener('blur', hideZoomTip);
+}
+
 setInert(lightbox, true);
 
 /* ==========================================================================

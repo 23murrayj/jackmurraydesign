@@ -654,7 +654,17 @@
 <!-- IMAGE LIGHTBOX — click-to-zoom for project media -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" data-i18n-aria="a11y.lightbox" aria-label="Enlarged image">
   <button class="lightbox-close" id="lightboxClose" type="button" data-i18n-aria="a11y.close" aria-label="Close">✕</button>
+  <!-- The arrows and the counter only appear for an image that belongs to a
+       SET: the case study's Process and Posters runs. Everything else opens
+       on its own and the lightbox shows neither, which is why these are
+       hidden by default and revealed by .is-group rather than the other way
+       round. The glyphs are decorative - each button is named by its
+       aria-label, so a screen reader says "Previous image", not
+       "leftwards arrow". -->
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" data-i18n-aria="a11y.prevImage" aria-label="Previous image"><span aria-hidden="true">←</span></button>
   <img class="lightbox-img" id="lightboxImg" alt="">
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" data-i18n-aria="a11y.nextImage" aria-label="Next image"><span aria-hidden="true">→</span></button>
+  <p class="lightbox-counter" id="lightboxCounter" aria-hidden="true"></p>
   <p class="lightbox-caption" id="lightboxCaption"></p>
 </div>
 
