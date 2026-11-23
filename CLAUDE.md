@@ -1911,7 +1911,8 @@ measures after `asideTop`, because the figure was out of flow before the
 change and is out of flow after it, so starting at the heading costs the
 page no height at all. (The 433 this line quoted was measured some other
 way; the committed build before `asideTop` measures 362 at 1440 in
-English, checked against `git stash`.)
+English, checked against `git stash`.) **334.4 since 2026-11-23**, when
+Jack rewrote the three items — see the copy note below.
 
 **POSTERS IS "POSTERS", AND THE TEXT IS UNDER THE PICTURES.** It was
 "Posters and packaging" over a one-line description; there is no packaging
@@ -2556,6 +2557,26 @@ here as the closest this page came to the brief's "unnecessary
 descriptions", and left as Jack's to cut. He cut it on 2026-11-22 with the
 rest of the Testing figures, so the finding is now the only place the shoot
 is mentioned.
+**JACK REWROTE ALL THREE ON 2026-11-23** and the shape is unchanged — still
+Method / Finding / Implication, still a `<ul>` with `<strong>` leads. What
+went is a sentence that announced its own finding: *"The rim decided
+whether it works"* stood in front of the two clauses that say exactly that,
+which is the brief's "unnecessary descriptions" at the scale of one line.
+The Finding now opens on what held. Three other things moved with it: the
+object is *the prototype* rather than *the model*, which is the word the
+rest of the page had already settled on for the thing he tested; the
+failure is *didn't fit* rather than *slipped*, which is the same fact said
+as a fit problem so it lines up with the Implication; and *one fixed clip
+PROFILE … every pot* became *one fixed clip OPENING … every rim*, which is
+the real variable — Limitations has always said the rims are what differ.
+**It cost one line in English and nothing anywhere else.** Measured at 1440
+against `git stash`: English goes 11 prose lines to 10 and the section
+362.2 → 334.4, while Spanish, Japanese and Italian are identical to the
+pixel. The photograph is sized from that prose, so it follows — 272.5 ×
+319.2 to 248.9 × 291.4 in English — and since it only ever gets SHORTER,
+the `--fig-ar` width cap has more headroom than before, not less: at 901,
+the binding width, it draws 265.2 in English and 312.4 in Spanish and
+Italian against the 340 column.
 **The photo column is a fixed 340px, not a fraction**, because it is the
 supporting half and should not widen with the viewport at the expense of the
 text it supports. **It stacks at 900, and 760 was wrong**: measured across
