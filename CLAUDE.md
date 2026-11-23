@@ -2397,13 +2397,14 @@ title.
 bottomed out on the prose BLOCK and sat 20.6px under the last descender,
 where the ask was the last line. A trailing margin on the last item in a
 list is spacing before nothing, and the section's own padding is the gap.
-Research is **711 → 654** across the two changes.
+Research is **711 → 654** across the two changes, and **561.6** since the
+first two notes were merged — see the Brand research note below.
 
 **RESEARCH OPENS ON THE STORE NOW, NOT ON JACK'S OWN KITCHEN.** Jack:
 *"move 'User observation' to the 3rd point, it is currently the first.
-That would make 'In-store market research' the first."* So the four notes
-run In-store market research, Product and catalog review, User
-observation, Competitor review. The outside research comes first and the
+That would make 'In-store market research' the first."* So the notes ran
+In-store market research, Product and catalog review, User observation,
+Competitor review — the first two have since merged, below. The outside research comes first and the
 personal note sits inside it, which is also the order the write-up tells
 the story in. **It is one string per language**: the notes are a `<dl>`
 inside `proj.pot-clip.cs.research.grid`, so re-ordering is moving a
@@ -2417,6 +2418,34 @@ the photograph's `max-height` cap fires there and it ends 23.07px above
 the last line instead of on it. **That is the documented cap doing its
 job** — Spanish has always done this at 901 — not a new fault, but it is
 the one measurable cost of the longer phrase.
+
+**AND THEN THE FIRST TWO BECAME ONE: "BRAND RESEARCH".** Jack merged
+In-store market research and Product and catalog review, so the notes are
+now **three** — Brand research, User observation, Competitor review — and
+the store visit and the catalogue read as the one activity they were. His
+copy also corrects a fact: Alessi's own cutlery rests are *"curved,
+polished steel pieces that are designed to sit on a counter"* where this
+page used to call them "large, open forms".
+**It is still one string per language and touches nothing else** — no key,
+no renderer, no alt text, and the `\u00A0` glue in the User observation
+item is untouched.
+**THE PHOTOGRAPH FOLLOWED AND DID NOT NEED CROPPING**, which is what Jack
+guessed: *"make sure the image to the right in research still looks good
+and is positioned well; crop if needed, but it probably won't need it."*
+It is scaled to the notes, so a shorter column is a smaller picture —
+measured at 1440 against `git stash`, **310.6 × 547.7 → 258.9 × 455.6** in
+English, with the section 653.6 → 561.6. It still lands **0.00 on the last
+line in all four languages**, and the 22px it starts above the notes' own
+top edge is the grid row, not drift: the committed build reports the same
+−22.
+**What grows is the gutter**, from 65px to 117 in English, because the
+figure is pinned RIGHT and the slack in the 340 column has always gone
+there. At the widest it has ever been it still reads as a column of
+photograph beside the notes rather than as a hole — checked on screen, not
+inferred — so the frame is unchanged.
+**And it takes the cap further off the table.** At 901, the width that was
+binding, the figure now draws 287.1–315.3 against the 340 track in all four
+languages and the `--fig-ar` cap never fires, where Spanish used to reach it.
 
 **THE WIDOW IN THAT NOTE IS FIXED IN THE STRING, AND text-wrap: pretty IS
 NOT THE ANSWER HERE.** Jack: *"don't let there be a text widow there."*
@@ -2484,10 +2513,13 @@ came out **6×6, its two borders and nothing between them.** The same shape
 as the `grid-column` bug that rule already exists for, one specificity step
 up, and the **fifth** time this file has had to say that specificity beats
 source order.
-**RESEARCH DELIBERATELY DOES NOT TAKE IT**, and the reason is arithmetic:
-its notes are 548–573 tall, so the span would be 611–636, and at 901 that
-asks for a ratio of 0.53 where the storefront is 0.5625. The cap would fire
-and the bottom would stop landing on the last line — the one thing Jack
+**RESEARCH DELIBERATELY DOES NOT TAKE IT**, and the reason is arithmetic.
+It was: its notes were 548–573 tall, so the span would have been 611–636,
+and at 901 that asks for a ratio of 0.53 where the storefront is 0.5625.
+The merge to three notes has not changed the conclusion — at 901 the notes
+are about 500 and the heading adds ~60, so a span of ~560 still asks for
+346px of width in a 340px column and the cap would fire. Either way the
+bottom would stop landing on the last line, which is the one thing Jack
 asked that photograph for.
 **THE SCALED FIGURE NEEDED A CAP, AND IT WAS ALREADY OVERFLOWING WITHOUT
 ONE.** Sized by height, a picture's width is its height times its ratio,
