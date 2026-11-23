@@ -4029,7 +4029,18 @@ body.is-loading { overflow: hidden; }
    house bug in miniature - the caption is set in Archivo Black, which
    ships ONE face at 400, so asking for 700 got synthetic bold and a
    smeared pair of digits. The face already looks black. */
-.cs-step-cap::before { content: counter(csstep, decimal-leading-zero) " · "; }
+/* The number and the caption, with nothing between them: Jack asked for the
+   "·" out. The gap is a MARGIN rather than a word space, and the difference
+   is small but it is the whole point of the separator that left. Measured
+   at this size (15.2px, and the caption has no letter-spacing), a word
+   space gives 5.07px and this gives 6.84, where the old " · " ran 15.19
+   between the digits and the caption. At 5 the number starts reading as
+   part of the first word instead of as a label on it; 0.45em keeps it its
+   own unit and tracks the font-size if that ever moves. */
+.cs-step-cap::before {
+  content: counter(csstep, decimal-leading-zero);
+  margin-right: 0.45em;
+}
 
 /* ---- photographs ------------------------------------------------------
    NATURAL RATIOS, ALIGNED AT THE TOP, AND NOTHING CROPPED. Equal-height
