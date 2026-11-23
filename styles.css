@@ -3274,7 +3274,7 @@ body.is-loading { overflow: hidden; }
    and above 1101 every language is one line so there is nothing to do. */
 .cs-eyebrow {
   display: block;
-  font-size: 0.75rem; font-weight: 700;
+  font-size: 0.72rem; font-weight: 700;
   color: var(--accent-ink);
   margin-bottom: 36px;
   text-wrap: pretty;
@@ -3319,10 +3319,10 @@ body.is-loading { overflow: hidden; }
 .cs-meta > div { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--line); }
 .cs-meta > div:nth-child(2n) { padding-right: 0; }
 .cs-meta-k {
-  display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 1.4px;
+  display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
   text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
 }
-.cs-meta-v { font-size: 0.92rem; font-weight: 500; line-height: 1.45; margin: 0; }
+.cs-meta-v { font-size: 0.95rem; font-weight: 500; line-height: 1.45; margin: 0; }
 
 /* ---- the three summary cards ------------------------------------------
    The label is a filled strip rather than tracked text above the box,
@@ -3433,7 +3433,7 @@ body.is-loading { overflow: hidden; }
    Where it is unsupported the paragraph wraps exactly as it does today, so
    there is nothing to fall back to. */
 .cs-brief-b {
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.5;
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5;
   max-width: 54ch; margin: 0;
   text-wrap: pretty;
 }
@@ -3445,7 +3445,7 @@ body.is-loading { overflow: hidden; }
    that button: it sits at top:14 and stands about 45px tall. */
 .cs-toc { position: sticky; top: 76px; }
 .cs-toc-label {
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.6px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
   text-transform: uppercase; color: var(--muted);
   padding-bottom: 12px; border-bottom: 3px solid var(--black); margin-bottom: 4px;
 }
@@ -3453,7 +3453,7 @@ body.is-loading { overflow: hidden; }
 .cs-toc li { counter-increment: cstoc; border-bottom: 1px solid var(--line); }
 .cs-toc a {
   display: flex; text-decoration: none; color: var(--black);
-  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.6px;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.6px;
   text-transform: uppercase;
   /* min-height rather than padding arithmetic: 12px either side of a
      0.82rem line box measured 41px, and the number moves again in Japanese
@@ -3503,7 +3503,7 @@ body.is-loading { overflow: hidden; }
    1fr column, which is 548px at 1440 - narrower than either cap, so the
    column binds and their heights, which two photographs are sized from,
    do not move. Measured before and after: identical. */
-.cs-prose, .cs-prose-p { font-size: 1.02rem; line-height: 1.7; max-width: 66ch; }
+.cs-prose, .cs-prose-p { font-size: 1rem; line-height: 1.7; max-width: 66ch; }
 /* `textBelow` puts the prose after the pictures, and then it needs the gap
    the pictures normally get above them — the same 26px, so the rhythm does
    not depend on which way round the section is. */
@@ -3689,7 +3689,7 @@ body.is-loading { overflow: hidden; }
    pairs and a single column of them reads as a longer list than it is. */
 .cs-defs { margin-top: 22px; max-width: 64ch; }
 .cs-defs dt {
-  font-family: var(--ff-display); font-size: 0.88rem; letter-spacing: 0.6px;
+  font-family: var(--ff-display); font-size: 0.95rem; letter-spacing: 0.6px;
   text-transform: uppercase; padding-top: 16px;
   border-top: 1px solid var(--line); margin-bottom: 8px;
 }
@@ -3709,7 +3709,7 @@ body.is-loading { overflow: hidden; }
    So the glue is a non-breaking space in the three strings that need one,
    written as a \u00A0 escape so it is visible in the source. The note in
    CLAUDE.md has the per-width numbers. */
-.cs-defs dd { font-size: 0.98rem; line-height: 1.6; margin-bottom: 18px; }
+.cs-defs dd { font-size: 1rem; line-height: 1.6; margin-bottom: 18px; }
 /* The term column is fixed, not 1fr: at 1fr a two-word term took 450px
    and left the sentence beside it 180px to wrap in, which is a column of
    six-word lines next to a column of white. */
@@ -6334,7 +6334,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   background: var(--ink); color: var(--paper);
   padding: 7px 10px;
   font-family: var(--ff-body);
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 1px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
   white-space: nowrap; pointer-events: none;
   opacity: 0; visibility: hidden;
 }

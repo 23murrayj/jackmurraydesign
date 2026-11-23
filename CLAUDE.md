@@ -1891,6 +1891,8 @@ ink, light). All seven contents links are 44px tall in English and in
 Japanese. (This also named `.cs-stat-num` at 3.21 against its 3 bar until
 the Testing figures came out on 2026-11-22 and took that class with them.)
 
+**THE TYPE SCALE IS SEVEN STEPS, NOT TWENTY-ONE (2026-11-23).** Jack: the sizes read fine but nobody could see why 0.68, 0.72 and 0.75 were three numbers. Tracked-caps labels are all **0.72rem** (meta keys, contents label, card heads, eyebrow, stage hint, zoom tip); the contents links 0.85; small body (`cs-card-b`, `cs-step-txt`, `cs-meta-v`) and the small display heads (`cs-brief-t`, `cs-step-cap`, `cs-defs dt`) 0.95; prose and definition text **1rem**; lede and brief body share `clamp(1.1rem, 1.5vw, 1.3rem)`; the pull quote and section heads keep their own clamps. Measured after: lede and eyebrow still one line at 1024. **Pick from these steps before adding a size.**
+
 **The measure is wider HERE AND ONLY HERE.** Jack: *"you probably have to
 widen out the sides of the borders, because right now I think they're too
 small."* `.project-detail` is 1100 and stays 1100; `.is-case` is 1380.
