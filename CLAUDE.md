@@ -1836,6 +1836,34 @@ before you have seen them and a caption after. *"Move them to under the
 posters."* The copy is `html` rather than `text` because it quotes that
 line in italics, and `csText` escapes a `text:` string — it would have
 printed the tag.
+**THE CAMPAIGN LINE IS BOLD, AND THE SOURCES SENTENCE LOST ITS TAIL.**
+Two more of Jack's: *"take out the words 'and current graphic design
+trends'"* and *"make the 'Good design lives in the details' in the
+paragraph bold."*
+The first is a claim the page cannot show — the posters are in the
+section and the brand's own posters are nameable, where "current graphic
+design trends" is the kind of phrase that sounds like research and points
+at nothing. What is left is *"drew on the brand's existing posters."*
+**The bold goes on the line the reader can actually READ, which is a
+different element per language.** In English, Spanish and Japanese that
+is the gloss in brackets after the Italian — `<strong>` inside the
+quotes, so the quote marks come with it — and in ITALIAN the gloss does
+not exist, because the campaign line already is the sentence; there the
+`<em>` carrying *Il buon design vive nei dettagli* takes the `<strong>`
+instead. Bolding the Italian in the English version as well would put two
+weights on one line and emphasise the half nobody in that language reads.
+
+**THE DESIGN IS WRITTEN IN THE CONDITIONAL.** Jack: *"change 'Two
+independent supports sit' to 'Two independent supports would sit'."* It
+is the same correction as "proven" becoming "working" on the Outcome
+card, one section along: the object is an appearance model, so what it
+does on a real pot is what it WOULD do. The Romance languages take the
+conditional on both verbs of that sentence, because they have to
+(*"se apoyarían … se deslizarían"*, *"poggerebbero … vi scorrerebbero"*),
+and Japanese carries the modality at the end of the sentence instead
+(*"…スライドする想定だ"*), since there is no auxiliary to put in front.
+The rest of the paragraph stays in Jack's present tense — he changed one
+verb, not the voice of the section.
 
 **THE PROSE MEASURE IS 66ch, AND THE NUMBER COMES FROM ONE LINE IN THE
 PROBLEM.** Jack: *"'Space. A separate spoon rest takes up work surface
@@ -1858,6 +1886,24 @@ before and after, 0.00 top and bottom in both.
 where it was 34 — *"pull things under it up a bit"* — and 26 is the gap
 this page repeats everywhere else, where 34 was a number of its own. With
 the third item back on one line, The problem is **427px → 392**.
+
+**THEN ITS OPENING SENTENCE WENT, AND THE LIST IS THE SECTION NOW.** Jack:
+*"remove 'While cooking, there's no clean, secure place to set a utensil
+down for a moment.' so that way the bullet points under it take more
+emphasis."* He is right about what it was doing: the three items ARE that
+sentence, itemised — instability, dripping and space are the three ways
+there is no clean place to put a utensil down — so the paragraph announced
+the list and then the list said it properly. The brief's own words for
+that are *unnecessary descriptions*.
+It costs the section a full-measure line in English and Japanese and two
+in Italian: **The problem is 392 → 344 (en, ja), 419.5 → 371.7 (es) and
+474.9 → 399.5 (it)** at 1440, and everything from The design down moves up
+by exactly that — measured against `git stash`, Research and The problem
+start on the same pixel in all four languages and the five sections below
+them move 47.7 / 47.8 / 75.4 / 47.7. Nothing else changed, at 1440, 1200
+or 901.
+**It also gave the drawing beside it more room, not less** — see the scan
+in the next note.
 
 **THE PROBLEM CARRIES A DRAWING IN ITS RIGHT MARGIN.** Jack drew a
 dripping spatula — `Logo Inner Line Update.png` — and asked for it
@@ -1886,8 +1932,14 @@ The prose caps at 690.3 and the pull quote at 711.5, so
 **190 at 1440**, where the column is 924. Bottom-aligned, so it ends on
 the quote's last line; the section has no bottom padding, so `bottom: 0`
 is that line. Measured in all four languages at 1440: **190 × 333.5, 0.0
-at the bottom**, with the section 391.7 tall in English and 474.9 in
-Italian.
+at the bottom**. The section was 391.7 tall in English and 474.9 in
+Italian when that was written; with the opening sentence out it is **344
+and 399.5**, so the drawing — which is bottom-anchored and a fixed
+333.5 — now starts **10.5px below the section's top edge in English**
+rather than 58.5, level with the heading rather than under it. The heading
+is at the left of a 924px column and the drawing is in the last 190 of it,
+so there is nothing to collide with; it is the floor, though, and a
+shorter section than 333.5 would push the frame off the top.
 **IT IS INSET 26 FROM THE RIGHT, NOT FLUSH TO IT**, on *"move the utensil
 clip art in The problem section slightly more to the left"*. 26 is the
 gap this page repeats — the pull quote's own top margin — rather than a
@@ -1908,7 +1960,11 @@ binding language**; at 1280, where the drawing is 106 wide, it leaves
 it comes near anything set in the column.
 **Re-run that scan, not the box arithmetic, before moving it again** —
 the box arithmetic says there are 22.5px to play with and the drawing
-says there are 53.3, and the second one is what you can see.
+says there are 53.3, and the second one is what you can see. Re-run after
+the opening sentence came out, the worst gap is **82.2 (es), 87.6 (it),
+92.3 (en) and 126 (ja)**: the line that was binding at 53.3 was that
+paragraph, the only full-measure prose in the section, so losing it bought
+the drawing 29px of clearance in the language that had the least.
 **AND IT IS DESKTOP-ONLY, which is honest rather than lazy.** At 1280 the
 column is 840 and the drawing 106 wide; a step narrower and it is a speck,
 and at 1101 the prose takes the whole column and there is no margin left
@@ -2080,6 +2136,61 @@ bottomed out on the prose BLOCK and sat 20.6px under the last descender,
 where the ask was the last line. A trailing margin on the last item in a
 list is spacing before nothing, and the section's own padding is the gap.
 Research is **711 → 654** across the two changes.
+
+**RESEARCH OPENS ON THE STORE NOW, NOT ON JACK'S OWN KITCHEN.** Jack:
+*"move 'User observation' to the 3rd point, it is currently the first.
+That would make 'In-store market research' the first."* So the four notes
+run In-store market research, Product and catalog review, User
+observation, Competitor review. The outside research comes first and the
+personal note sits inside it, which is also the order the write-up tells
+the story in. **It is one string per language**: the notes are a `<dl>`
+inside `proj.pot-clip.cs.research.grid`, so re-ordering is moving a
+`<dt>`/`<dd>` pair in four places and touches no key, no renderer and no
+alt text. It costs no height — measured, Research is 653.6 at 1440 before
+and after, and the storefront still lands 0.00 top and 0.00 bottom.
+**And the observation itself says "where messes originated"** where it
+said "where drips landed" — his wording. It is five characters longer,
+which is enough to add a line at 901 in English (prose 597.8 → 622.9), so
+the photograph's `max-height` cap fires there and it ends 23.07px above
+the last line instead of on it. **That is the documented cap doing its
+job** — Spanish has always done this at 901 — not a new fault, but it is
+the one measurable cost of the longer phrase.
+
+**THE WIDOW IN THAT NOTE IS FIXED IN THE STRING, AND text-wrap: pretty IS
+NOT THE ANSWER HERE.** Jack: *"don't let there be a text widow there."*
+In English the item ended on a **70px fourth line** ("of space.") under
+three full ones at 1440 and 1512, and the same at 901 and 390.
+**The rule this file has twice recommended does nothing on this
+paragraph.** `text-wrap: pretty` was applied to `.cs-defs dd` first and
+measured at 1512, 1440, 1280, 1200, 1100, 901 and 390: the line arrays
+come back **identical with it on and off**, in a browser where the
+computed value really is `pretty` (Chrome 156) and where the same
+property demonstrably moves the eyebrow's break one commit earlier.
+Chrome re-breaks only the last few lines and only when its own score
+improves; pulling "lack" down off a 530px line to rescue a 70px one does
+not qualify. **So the declaration came back out** — a rule that measures
+identical to no rule is dead CSS, whatever its intent.
+`balance` does work and is wrong: at 901 it evens the item into five
+326–328px lines in a 435px column, which is the summary-card failure one
+layer down.
+**The glue is a non-breaking space, written as a `\u00A0` escape so it
+is visible in the source.** English binds "around the lack of space."
+(192.3), Spanish "sorteaba la falta de espacio." (215.6, which also fixes
+an 86.6px tail it had at 1100) and Italian "la mancanza di spazio."
+(237.9, for a 70.9px tail at 1512). **Glue the WHOLE tail including the
+last word** — the first attempt left a plain space before "space." and at
+901 the browser simply broke there instead, for a 49.7px last line, which
+is worse than what it replaced.
+Measured last lines across 1512 / 1440 / 1280 / 1200 / 1100 / 901 / 390,
+the three Latin languages now run 169–474px and the glue is **inert at
+every width that never had a widow**. Japanese is left alone: it sets
+without word spaces, so there is no two-word unit to bind, and its short
+last lines (109.8 at 1280 and 390) are a different thing from a widow.
+**The other three notes still have short last lines at some widths** —
+47.9 and 55.3 in English at 1280, for instance. They are not glued,
+because that is the residue of fixed strings in a fluid column and he
+asked about this one.
+
 **AND TESTING TOOK THE SAME FLAG.** Jack: *"adjust the photo so it is in
 line well and not unnecessarily under the text to the left of it."* It was
 342×321 beside 256 of prose, hanging 65px below the argument it

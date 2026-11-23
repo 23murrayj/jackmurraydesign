@@ -3668,6 +3668,22 @@ body.is-loading { overflow: hidden; }
   text-transform: uppercase; padding-top: 16px;
   border-top: 1px solid var(--line); margin-bottom: 8px;
 }
+/* THE WIDOWS IN THESE NOTES ARE FIXED IN THE STRINGS, AND text-wrap: pretty
+   IS NOT HERE BECAUSE IT DOES NOTHING. It was the obvious answer - it is
+   what .cs-brief-b and .cs-eyebrow use - and measured on the User
+   observation item it changed NOT ONE BREAK at 1512, 1440, 1280, 1200,
+   1100, 901 or 390: the line arrays come back identical with the property
+   on and off (Chrome 156, computed text-wrap-style: pretty, so it applied
+   and declined). Chrome re-breaks only the last few lines and only when its
+   own score improves, and pulling "lack" down off a 530px line to rescue a
+   70px one evidently does not qualify.
+   text-wrap: balance DOES work here and is wrong: at 901 it evens the item
+   into five 326-328px lines inside a 435px column, which is the
+   summary-card failure one layer down - a block of text with a quarter of
+   its measure left empty.
+   So the glue is a non-breaking space in the three strings that need one,
+   written as a \u00A0 escape so it is visible in the source. The note in
+   CLAUDE.md has the per-width numbers. */
 .cs-defs dd { font-size: 0.98rem; line-height: 1.6; margin-bottom: 18px; }
 /* The term column is fixed, not 1fr: at 1fr a two-word term took 450px
    and left the sentence beside it 180px to wrap in, which is a column of
