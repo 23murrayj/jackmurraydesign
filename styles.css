@@ -3356,8 +3356,10 @@ body.is-loading { overflow: hidden; }
 }
 .cs-tags-cat { display: flex; }
 .cs-tags .project-cat {
+  /* same size and type as the grey tags beside it; the black fill is the category chip's own, as on every other project page */
   margin-bottom: 0;
-  font-size: 0.72rem; letter-spacing: 1.4px;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 1.2px;
+  padding: 9px 15px;
 }
 .cs-tag-pair { display: flex; flex-wrap: wrap; gap: 10px; }
 .cs-tag {
