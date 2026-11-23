@@ -3362,7 +3362,8 @@ body.is-loading { overflow: hidden; }
 .cs-tag {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
   text-transform: uppercase;
-  background: color-mix(in srgb, var(--blue) 35%, var(--white));
+  /* the about page skill chips grey, not a blue tint (2026-11-23, Jack) */
+  background: var(--chip);
   color: var(--black);
   padding: 6px 12px;
 }
