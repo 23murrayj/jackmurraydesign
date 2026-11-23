@@ -3361,12 +3361,13 @@ body.is-loading { overflow: hidden; }
 }
 .cs-tag-pair { display: flex; flex-wrap: wrap; gap: 10px; }
 .cs-tag {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
+  /* the about page skill chip, exactly: 0.78rem / 500 / 1.2px and 9px 15px */
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 1.2px;
   text-transform: uppercase;
   /* the about page skill chips grey, not a blue tint (2026-11-23, Jack) */
   background: var(--chip);
   color: var(--black);
-  padding: 6px 12px;
+  padding: 9px 15px;
 }
 
 /* ---- the three summary cards ------------------------------------------
