@@ -1469,7 +1469,9 @@ function renderCaseStudy(data) {
          a slot: the chip is a permanent node fillProjectDetail moves in,
          the way the <h2> is. */
       + (cs.tags ? '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
-        + cs.tags.map((k) => csText('li', 'cs-tag', k)).join('') + '</ul>' : '')
+        + cs.tags.slice(0, -2).map((k) => csText('li', 'cs-tag', k)).join('')
+        // the last two travel together, so neither is left alone on a line (Jack: on a Mac the final chip was a widow)
+        + '<li class="cs-tag-pair">' + cs.tags.slice(-2).map((k) => csText('span', 'cs-tag', k)).join('') + '</li></ul>' : '')
       /* THE BRIEF SITS UNDER THE META TABLE, IN THE MASTHEAD'S OWN COLUMN.
          Jack: "move The brief box up to the empty space to the left of the
          hero photo and above the problem, solution and outcome." There was

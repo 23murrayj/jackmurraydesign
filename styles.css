@@ -3359,6 +3359,7 @@ body.is-loading { overflow: hidden; }
   margin-bottom: 0;
   font-size: 0.72rem; letter-spacing: 1.4px;
 }
+.cs-tag-pair { display: flex; flex-wrap: wrap; gap: 8px; }
 .cs-tag {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
   text-transform: uppercase;
