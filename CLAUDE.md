@@ -1806,6 +1806,28 @@ was the only user of `after`**, so the renderer branch and the four i18n
 keys came out with it rather than being left idle — the same call as
 `titleTop` and `stats`.
 
+**AND IT OPENS ON A STATE RATHER THAN ON A TEST.** Jack: *"change 'Testing
+showed real problems with the concept, and some of them need more research
+before this could become a product.' to 'There are still real problems with
+the concept, and some of them need more research before this could become a
+viable product.'"* One sentence, two things.
+**"Testing showed" had been opening two sentences in a row** — this line
+and RIM FIT directly beneath it — and only the second one earns the phrase,
+since it is reporting what a test found. The section says it once now.
+**And *viable* is the word the rest of the page is careful about.** The
+Outcome card says the idea is *working* on thin-rimmed pots, so what is
+missing is not evidence that it works but the distance between a working
+idea and a product, which is exactly what the four rows below it list. A
+flat "a product" made the gap sound like a formality.
+The Romance languages take the impersonal — *"Sigue habiendo problemas
+reales en el concepto"*, *"Restano problemi reali nel concept"* — and
+Japanese carries *still* as 依然として; *viable* is *viable*, *valido* and
+実用的な.
+**Nothing below it moved**: measured at 1440 by putting the old strings
+back into the live nodes, the lead sets two lines before and after in all
+four languages and the section is the same 606.5 (en, ja), 681.7 (es) and
+631.6 (it) tall.
+
 **TESTING CARRIES NO FIGURES ANY MORE.** It opened on two — `~50%` of pots
 and `1 shoot` — and Jack took them out: *"just to make that section
 smaller."* Nothing left the page with them: the half survives in
@@ -1926,20 +1948,35 @@ a `url()` written in the stylesheet could never carry one, and this is a
 live path under `/assets/` with a week of stale-while-revalidate behind
 it. Exported **380 × 667** from the 426 × 735 original, trimmed to its own
 ink box (414 × 727) so the frame is the drawing; 9.8K as a palette PNG.
-**The width is the measure's leftover rather than a number of its own.**
-The prose caps at 690.3 and the pull quote at 711.5, so
-`calc(100% - 734px)` is whatever lies past the wider of the two — exactly
-**190 at 1440**, where the column is 924. Bottom-aligned, so it ends on
-the quote's last line; the section has no bottom padding, so `bottom: 0`
-is that line. Measured in all four languages at 1440: **190 × 333.5, 0.0
-at the bottom**. The section was 391.7 tall in English and 474.9 in
-Italian when that was written; with the opening sentence out it is **344
-and 399.5**, so the drawing — which is bottom-anchored and a fixed
-333.5 — now starts **10.5px below the section's top edge in English**
-rather than 58.5, level with the heading rather than under it. The heading
-is at the left of a 924px column and the drawing is in the last 190 of it,
-so there is nothing to collide with; it is the floor, though, and a
-shorter section than 333.5 would push the frame off the top.
+**The width is the SMALLER of the measure's leftover and a 168px cap**, and
+both halves are derived. The prose caps at 690.3 and the pull quote at
+711.5, so `calc(100% - 734px)` is whatever lies past the wider of the
+two — exactly **190 at 1440**, where the column is 924. Bottom-aligned, so
+it ends on the quote's last line; the section has no bottom padding, so
+`bottom: 0` is that line.
+**THE CAP EXISTS BECAUSE THE LEFTOVER PUT THE HANDLE ABOVE THE HEADING.**
+Jack: *"make the clipart utensil slightly smaller because on mac it goes
+just slightly too high."* This note used to call that a floor and leave it:
+with the opening sentence out the section is **344 tall in English**, the
+drawing was a fixed 333.5, and it is bottom-anchored — so its top sat
+10.5px under the section's edge and **35.9px ABOVE the top of the word
+"problem"**, up against the rule that divides the sections. The frame is
+trimmed to the drawing's own ink box, so that top edge IS the tip of the
+handle. Nothing collided, and it still read as the section starting too
+high, which is the half the arithmetic could not see.
+**The number is the room rather than a guess**: 344 less the heading's
+46.4px cap offset leaves 297.6 of height, which at 380 × 667 is **169.5 of
+width**, and 168 takes it with 2px of slack. Measured in all four languages
+at 1366, 1440 and 1512: **168 × 294.9**, 0.0 at the bottom, and the top
+lands **2.7px below the heading in English and 5.7 in Japanese** — the two
+languages that set this section at its shortest. Spanish (371.7) and
+Italian (399.5) were never the problem and now sit 30.4 and 58.2 clear.
+**WHICH OF THE TWO BINDS IS A BAND, because the column is widest in the
+MIDDLE of the range rather than at the end of it**: 840 at 1280, 924 at
+1440, then back down through 916.8 at 1512, 908 at 1600, 895.2 at 1728 and
+876 at 1920. So the cap governs from about 1330 to about 1660 and the
+leftover governs outside it — 106 at 1280, 142 at 1920 — and the drawing is
+never bigger than the 168 it draws at 1440.
 **IT IS INSET 26 FROM THE RIGHT, NOT FLUSH TO IT**, on *"move the utensil
 clip art in The problem section slightly more to the left"*. 26 is the
 gap this page repeats — the pull quote's own top margin — rather than a
@@ -1965,6 +2002,11 @@ the opening sentence came out, the worst gap is **82.2 (es), 87.6 (it),
 92.3 (en) and 126 (ja)**: the line that was binding at 53.3 was that
 paragraph, the only full-measure prose in the section, so losing it bought
 the drawing 29px of clearance in the language that had the least.
+Re-run again at the 168 cap, the worst is **Italian at 91.1**, with Spanish
+93.2, English 107.0 and Japanese 129.5 — the right edge is pinned at 26, so
+shrinking the frame can only move the drawing away from the type, and which
+language binds changes because a shorter frame puts different mask rows
+beside different lines.
 **AND IT IS DESKTOP-ONLY, which is honest rather than lazy.** At 1280 the
 column is 840 and the drawing 106 wide; a step narrower and it is a speck,
 and at 1101 the prose takes the whole column and there is no margin left
@@ -2348,12 +2390,13 @@ the next section opens on rim fit, so the implication is the hinge between
 them. It is a `<ul>` with `<strong>` leads, the same shape as The problem,
 because three labelled sentences in a 548px column is exactly what that
 pattern is for.
-**One thing it leaves doubled**: the second stat still reads "held utensils
-securely through a full product shoot" and the finding now ends "including
-through a full product shoot", about 100px apart. The stats band is a
-different register and a scanner reads one or the other, so both stay —
-but it is the closest this page comes to the brief's "unnecessary
-descriptions", and it is Jack's sentence, so it is his to cut.
+**It left one thing doubled and the duplicate has since gone.** The second
+stat read "held utensils securely through a full product shoot" about 100px
+from a finding ending "including through a full product shoot" — recorded
+here as the closest this page came to the brief's "unnecessary
+descriptions", and left as Jack's to cut. He cut it on 2026-11-22 with the
+rest of the Testing figures, so the finding is now the only place the shoot
+is mentioned.
 **The photo column is a fixed 340px, not a fraction**, because it is the
 supporting half and should not widen with the viewport at the expense of the
 text it supports. **It stacks at 900, and 760 was wrong**: measured across
@@ -2821,9 +2864,10 @@ layout, so they travelled with the photographs and are still true.
 - **CLICK-TO-ZOOM IS ALL OF THEM.** It was on two tiles out of nine and
   looked arbitrary, because it was: `full` had been added only where the
   source happened to be large. The rule survived the redesign: every figure
-  in the case study carries `full`, and **13 of the 14 images in the panel
-  zoom** — the fourteenth is the turntable's poster, which is a fallback
-  rather than a photograph. For the new exports `full` is the file's own
+  in the case study carries `full`, and **12 of the 13 images in the panel
+  zoom** — the thirteenth is the turntable's poster, which is a fallback
+  rather than a photograph. (It was 13 of 14 until the dimensioned notebook
+  page came out of The design; counted in the live panel, not inferred.) For the new exports `full` is the file's own
   path: they are 1000–1600px sources drawn 300–600px wide, so opening one at
   full size really does show more, and there is no second file to fetch.
 

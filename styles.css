@@ -3720,10 +3720,30 @@ body.is-loading { overflow: hidden; }
    from script.js so tools/asset-rev.js can hash it; a url() written here
    could never carry a ?v=.
    THE MARGIN IT SITS IN IS THE 66ch MEASURE'S LEFTOVER, and the width is
-   that leftover rather than a number of its own: the prose caps at 690.3
+   the smaller of that leftover and the cap below, rather than a number of
+   its own: the prose caps at 690.3
    and the pull quote at 711.5, so 100% - 734 is the gap past the wider
-   of the two. At 1440 the column is 924 and that comes to exactly 190;
-   the min() is the guard for a column wider than this page has today.
+   of the two - 190 at 1440, where the column is 924, and 183 at 1366
+   and 1512, where it is 917.
+   THE 168px CAP IS WHAT KEEPS ITS TOP OFF THE HEADING. Jack: "make the
+   clipart utensil slightly smaller because on mac it goes just slightly
+   too high." The frame is trimmed to the drawing's own ink box, so its
+   top edge IS the tip of the handle - and bottom-anchored in a section
+   344 tall in English, the leftover's own 190 drew 333.5 and put that
+   tip 35.9px ABOVE the top of the word "problem", up against the rule
+   that divides the sections. That is what reads as too high. The room
+   there is the section's height less the heading's cap offset, 344 -
+   46.4 = 297.6, which at this ratio is 169.5 of width; 168 takes it
+   with 2px of slack. Measured at 1366, 1440 and 1512 the drawing is
+   168 x 294.9 and its top lands 2.7px below the heading in English and
+   5.7 in Japanese, the two languages that set this section at its
+   shortest; Spanish (371.7) and Italian (399.5) were already clear.
+   WHICH OF THE TWO BINDS IS A BAND, because the column is widest in the
+   middle of the range rather than at the end of it: 840 at 1280, 924 at
+   1440, then back down through 916.8 at 1512, 908 at 1600, 895.2 at
+   1728 and 876 at 1920. So the cap governs from about 1330 to about
+   1660 and the leftover governs outside it - 106 at 1280, 142 at 1920 -
+   and the drawing is never bigger than the 168 it draws at 1440.
    IT IS INSET 26 FROM THE RIGHT, NOT FLUSH TO IT. Jack asked for it
    "slightly more to the left", and 26 is the gap this page repeats - the
    quote's own top margin - rather than a number of its own.
@@ -3740,22 +3760,25 @@ body.is-loading { overflow: hidden; }
    binding language; at 1280, where the drawing is 106 wide, it is 36.7.
    So the box now overlaps the quote's by 3.5px and nothing drawn in it
    comes near anything set in the column. Re-run that scan, not the box
-   arithmetic, before moving it again.
+   arithmetic, before moving it again - re-run at 168 the worst gap is
+   Italian at 91.1, with Spanish 93.2, English 107.0 and Japanese 129.5,
+   since the right edge is pinned and shrinking only moves the drawing
+   away from the type.
    AND IT IS DESKTOP-ONLY, which is honest rather than lazy. The column is
    840 at 1280 and the drawing 106 wide; a step narrower and it is a speck,
    and at 1101 the prose takes the whole column and there is no margin at
    all. Decoration that would have to shrink past reading belongs off the
    page, the same call the hero field makes when it thins on a phone.
    Bottom-aligned, so it ends on the quote's last line; the section has no
-   bottom padding, so bottom: 0 is that line. 190 x 333.5 against a
-   section 391.7 tall in English and 474.9 in Italian - the tallest it ever
-   draws still clears the heading above it. */
+   bottom padding, so bottom: 0 is that line. Shrinking it only moves it
+   AWAY from the type, since the right edge is pinned at 26: the 53.3px
+   Spanish ink-to-ink gap measured above can only grow. */
 .cs-has-art { position: relative; }
 .cs-art { display: none; }
 @media (min-width: 1280px) {
   .cs-art {
     display: block; position: absolute; right: 26px; bottom: 0;
-    width: min(190px, calc(100% - 734px));
+    width: min(168px, calc(100% - 734px));
     aspect-ratio: var(--art-ar);
     background: var(--black);
     -webkit-mask: var(--art) no-repeat center / contain;
