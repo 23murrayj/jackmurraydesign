@@ -1757,6 +1757,71 @@ fallback and the JSON-LD description are built from. This layout hides
 in four languages is eight chances to edit one and not the other.
 `audit.js` asserts they are the same string per language, and the check was
 made to fail before being trusted. **Automated, not written down as a step.**
+**JACK REWROTE IT ON 2026-11-23**, and what changed is worth reading because
+it is the one paragraph on this site that is load-bearing for a trademark.
+It now reads *"This was a student project at NABA in Milan. It is not
+affiliated with Alessi and was not commissioned or reviewed by the company.
+Alessi served as the reference brand for the assignment, and the posters are
+an original concept campaign developed for this project."*
+**The two claims that matter are intact and slightly sharper** — not
+affiliated, not commissioned or reviewed, with "the company" in place of
+"them". **Two things left.** The explicit *"is not a NABA product"* clause
+is gone, carried now by "student project" and "the assignment"; and
+*"classroom art direction rather than a real campaign"* became *"an
+original concept campaign developed for this project"*, which claims the
+posters as his work rather than disclaiming them as coursework. Both are
+his call on his own project and neither touches the Alessi claims, but if
+this paragraph is ever edited again, those are the two sentences a reader
+could lean on. The title and the URL still carry no brand name.
+
+**THE NEXT PROJECT SITS BESIDE THE DISCLAIMER.** Jack: *"add a button…
+right next to that on the right side of it that would say like next
+project, and then under that it would say the next project… that way it
+leads them into more projects."* `.cs-foot` is a `1fr auto` grid and the
+3px rule moved onto it from the paragraph, so one rule crosses the pair
+and the foot reads as one block rather than two.
+**The order is the gallery's, which is `projectData`'s own key order.**
+"Whatever was to the right, and if there was nothing to the right, then
+down and to the left" is exactly reading order on a two-column grid, so
+next is simply the following key. **It wraps at the end** rather than
+stopping: a dead end on the last project is the thing the control exists
+to fix.
+**A real `<a href="/work/<id>">` with `data-open-project`**, so cmd- and
+middle-click still open a tab and the delegated handler in SECTION 07 — the
+one the about copy's project links already use — does the routing. No new
+routing code, and `navigate()` pushes exactly as a card click does.
+**PROJECT-TO-PROJECT IS A PATH NOTHING COULD TAKE BEFORE, and it needed a
+guard.** `syncToRoute` re-renders in place when the id changes, but
+`openProject` ended with an unconditional `activateDialog`, which PUSHES —
+so the same overlay would have sat on `dialogStack` twice, Escape would
+have closed one entry and left the panel open, and `deactivateDialog` would
+have restored focus to a trigger two projects ago. It now re-focuses the
+overlay region instead when it was already open: focus still has to move,
+because the link that was clicked is inside the markup the re-render is
+about to replace.
+**One consequence, recorded rather than fixed:** closing is `history.back()`,
+so after following the chain, Escape steps back a project at a time instead
+of closing outright. That is the same thing the browser's own Back does
+and the price of the link being real navigation; `replaceState` would close
+to the gallery from anywhere but would make Back skip the project you just
+came from.
+**The title under the label is NOT translated and carries no `data-i18n`** —
+all seven live in `projectData` in capitals, identically in every language.
+Only the label has a key, `project.next`, in the same namespace as
+`project.back` / `type` / `year` / `role`. Measured: the control is
+337 × 83 in English, Spanish and Italian and 337 × 87 in Japanese.
+**The label is `--accent-ink`, not `--accent`**: it is 12.8px text, which
+owes 4.5:1, and coral gives 3.21 on this ground where the ink gives **4.71
+light and 5.16 dark**; the title measures 14.77 and 16.9.
+**It is the house control** — flat at rest, a 3px lift into a 6px `--accent`
+block on hover, which is `.form-submit`'s proportion — and it is in all
+three hover-pad lists, so it cannot flicker. Verified under a real pointer:
+`transform` translate(−3, −3), a 6px coral block, and the pad at
+`0 −6px −6px 0`, which is the lift plus the 3px border exactly.
+**IT IS ON pot-clip ONLY so far**, because the disclaimer it sits beside is,
+and the other six would need the same block in `.project-body`'s foot — the
+shared path for all six at once, which is the thing this file keeps saying
+to do one at a time.
 
 **Measured on the page, 1440×900:** `.project-detail` 1380 wide (the other
 six keep 1100), 1236px of content, split 240 / 72 / 924 between contents,
@@ -4492,7 +4557,11 @@ fonts about 45KB.
   a student brief at NABA in Milan that referenced Alessi; Jack confirmed it
   is "not at all related to Alessi… not affiliated with Alessi at all", and
   it is not a NABA product either. The posters carry the ALESSI and NABA
-  marks because the exercise asked for them. **The disclaimer is the last
+  marks because the exercise asked for them. **Jack rewrote the disclaimer
+  on 2026-11-23**; the affiliation and commissioning claims are intact and
+  the "not a NABA product" clause is now carried by "student project" and
+  "the assignment" instead of being stated outright — see the case-study
+  note for the exact wording and what moved. **The disclaimer is the last
   paragraph of `proj.pot-clip.body`, in all four languages, and therefore
   also in the markup fallback and the JSON-LD description** — that is what
   keeps a summary from inventing a client relationship. Do not shorten it,

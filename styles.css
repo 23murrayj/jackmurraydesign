@@ -165,6 +165,7 @@ picture { display: contents; }
   --lift-x: 3px; --lift-y: 3px;
 }
 .btn-block { --lift-x: 4px; --lift-y: 4px; }
+.cs-next { --lift-x: 3px; --lift-y: 3px; }
 /* the card is the one that also ROTATES, -0.4deg about its centre, which
    swings a corner of a 643x671 card about 2.3px out of true. The pad rotates
    with the card, so the resting box's far corners can fall outside it - hence
@@ -181,14 +182,16 @@ picture { display: contents; }
 .theme-switch, .lang-toggle, .badge-available, .btn-block, .filter-btn,
 .project-back, .about-back, .about-readmore-btn, .cv-btn, .copy-email-btn,
 .form-submit, .lightbox-close { --lift-edge: 2px; }
-.card { --lift-edge: 3px; }
+/* three, like the card and the case study's own frames */
+.card, .cs-next { --lift-edge: 3px; }
 
 /* The seven that were position: static. The other six are already positioned
    (two relative for their tooltips, the card relative, two sticky, one
    absolute) and must keep what they have - overriding .project-back's sticky
    here would unpin it from the top of the overlay. */
 .badge-available, .btn-block, .filter-btn,
-.about-readmore-btn, .cv-btn, .copy-email-btn, .form-submit { position: relative; }
+.about-readmore-btn, .cv-btn, .copy-email-btn, .form-submit,
+.cs-next { position: relative; }
 
 @media (hover: hover) {
   .theme-switch:hover::before,
@@ -203,6 +206,7 @@ picture { display: contents; }
   .cv-btn:hover::before,
   .copy-email-btn:hover::before,
   .form-submit:hover::before,
+  .cs-next:hover::before,
   .lightbox-close:hover::before {
     content: '';
     position: absolute;
@@ -2029,7 +2033,9 @@ body.is-loading { overflow: hidden; }
      casts reaches a little further than it did - that is what the gesture
      is miming, now that there is nothing on the page to hold still. */
   .btn-block:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 7px 7px 0 var(--accent); }
+  .cs-next:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 6px 6px 0 var(--accent); }
 }
+.cs-next:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 .btn-block:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 /* The arrow drifts, to say there is more below without shouting it. Pulled
    out of the translated string and into a pseudo-element for the same reason
@@ -4067,10 +4073,53 @@ body.is-loading { overflow: hidden; }
    - inventing a relationship with the brand. It is the last paragraph of
    proj.<id>.body, which is what the markup fallback and the JSON-LD
    description are built from, so audit.js asserts the two match. Muted and
-   set small because it is an aside, bordered because it is a statement. */
-.cs-disclaimer {
+   set small because it is an aside, bordered because it is a statement.
+     THE RULE AND THE SPACING MOVED TO .cs-foot when the next-project
+   control arrived beside it: one rule across the pair reads as the foot of
+   the page, where two would read as two unrelated blocks. The paragraph
+   keeps only its type. */
+.cs-foot {
   margin-top: 72px; padding-top: 22px; border-top: 3px solid var(--black);
+  display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: start;
+}
+.cs-disclaimer {
+  margin: 0;
   font-size: 0.86rem; line-height: 1.6; color: var(--muted); max-width: 76ch;
+}
+
+/* ---- the next project ------------------------------------------------
+   Jack: "add a button... right next to that on the right side of it that
+   would say like next project, and then under that it would say the next
+   project... that way it leads them into more projects."
+   THE HOUSE CONTROL, not a new one: a 3px --black frame, flat at rest, and
+   on hover a 3px lift into a 6px --accent block - 3px past the resting
+   silhouette, the proportion .form-submit and .project-back both use. The
+   label is the small tracked coral line the page already uses for keys and
+   card headers; the title under it is display type, because it is a name.
+   --accent-ink rather than --accent on the label: it is 12.8px text, which
+   owes 4.5:1, and coral gives 3.21 on this ground where the ink gives 4.71.
+   The arrow is its own span so the lift carries it without a second
+   transition, and it is aria-hidden - the label already says where this
+   goes, and a glyph read out by its Unicode name is the miss the social
+   rows had. */
+.cs-next {
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  column-gap: 26px; row-gap: 4px;
+  padding: 18px 24px; border: 3px solid var(--black); background: var(--white);
+  text-decoration: none; width: fit-content; min-width: 240px;
+  transition: transform .25s, box-shadow .25s;
+}
+.cs-next-k {
+  grid-column: 1; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.6px;
+  color: var(--accent-ink);
+}
+.cs-next-t {
+  grid-column: 1; font-family: var(--ff-display); font-size: 1.15rem;
+  line-height: 1.15; color: var(--black);
+}
+.cs-next-a {
+  grid-column: 2; grid-row: 1 / span 2; font-size: 1.6rem; line-height: 1;
+  color: var(--black);
 }
 
 /* ---- narrow ----------------------------------------------------------
@@ -4123,7 +4172,10 @@ body.is-loading { overflow: hidden; }
   .cs-figs-2, .cs-figs-3 { grid-template-columns: 1fr; }
   .cs-figs-1 .cs-fig.is-portrait { max-width: none; }
   .cs-toc ol { grid-template-columns: 1fr; }
-  .cs-disclaimer { margin-top: 48px; }
+  .cs-foot { margin-top: 48px; grid-template-columns: 1fr; gap: 26px; }
+  /* full width once it is on its own line: a shrink-wrapped control under a
+     paragraph the width of the column reads as a loose end. */
+  .cs-next { width: auto; }
 }
 
 /* ------------------------------------------------------------------------

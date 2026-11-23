@@ -1453,7 +1453,48 @@ function renderCaseStudy(data) {
     + '<div class="cs-main">' + toc
       + '<div class="cs-flow">' + cs.sections.map(section).join('') + '</div>'
     + '</div>'
-    + csText('p', 'cs-disclaimer', cs.disclaimer);
+    + '<div class="cs-foot">'
+      + csText('p', 'cs-disclaimer', cs.disclaimer)
+      + nextProjectLink(data.id)
+    + '</div>';
+}
+
+/* THE NEXT PROJECT, BESIDE THE DISCLAIMER. Jack: "add a button... right
+   next to that on the right side of it that would say like next project,
+   and then under that it would say the next project... that way it leads
+   them into more projects."
+   THE ORDER IS THE GALLERY'S, which is projectData's own key order, and
+   "next" is simply the following key: "it would be whatever was to the
+   right [on the cards], and if there was nothing to the right, then it
+   would be down and to the left" is exactly what reading order already
+   does on a two-column grid. It WRAPS at the end rather than stopping -
+   the point of the control is that there is always somewhere further to
+   go, and a dead end on the last project is the thing it exists to fix.
+   A REAL <a href="/work/<id>">, so cmd-click and middle-click still open a
+   tab, and `data-open-project` hands the plain click to the delegated
+   handler in SECTION 07 - the same one the about copy's project links use,
+   so this needs no routing code of its own.
+   The title is NOT translated and carries no data-i18n: all seven live in
+   projectData in capitals, identically in every language. Only the label
+   above it has a key. */
+function nextProjectId(id) {
+  const ids = Object.keys(projectData);
+  const i = ids.indexOf(id);
+  return i < 0 ? null : ids[(i + 1) % ids.length];
+}
+
+function nextProjectLink(id) {
+  const next = nextProjectId(id);
+  if (!next) return '';
+  return '<a class="cs-next" href="/work/' + escapeAttr(next) + '"'
+    + ' data-open-project="' + escapeAttr(next) + '">'
+    + csText('span', 'cs-next-k', 'project.next')
+    + '<span class="cs-next-t">' + escapeAttr(projectData[next].title) + '</span>'
+    /* decorative: the label already says where it goes, and a screen
+       reader announcing "rightwards arrow" after it is the glyph read
+       out by its Unicode name - the same miss the social rows had. */
+    + '<span class="cs-next-a" aria-hidden="true">→</span>'
+    + '</a>';
 }
 
 /* THE TABLE OF CONTENTS SCROLLS AND DOES NOT NAVIGATE, and the default is
@@ -1725,6 +1766,18 @@ function fillProjectDetail(id) {
 function openProject(id) {
   const data = projectData[id];
   if (!data) return;
+  /* PROJECT TO PROJECT IS A RE-RENDER, NOT A SECOND OPEN, and this is the
+     path the next-project link created - nothing could reach it before,
+     because syncToRoute closes the about overlay before opening a project
+     and the cards are only clickable from the page behind.
+     activateDialog PUSHES, unconditionally, so without this the same
+     overlay would sit on dialogStack twice: Escape would close one entry
+     and leave the panel open, and deactivateDialog would then restore
+     focus to a trigger two projects ago. Focus still has to move, though -
+     the link that was clicked is inside the markup fillProjectDetail is
+     about to replace, so leaving it alone drops focus to <body> and the
+     tab trap with it. */
+  const wasOpen = projectOverlay.classList.contains('open');
   // stamped on so the media helpers can build proj.<id>.alt.<n> keys
   data.id = id;
   renderProjectMedia(data);
@@ -1744,7 +1797,8 @@ function openProject(id) {
   // viewport, so the window's scroll position doesn't matter while it's open,
   // and body overflow:hidden already holds the page still.
   projectOverlay.scrollTop = 0;
-  activateDialog(projectOverlay);
+  if (wasOpen) projectOverlay.focus({ preventScroll: true });
+  else activateDialog(projectOverlay);
 }
 
 function closeProject() {
