@@ -4497,28 +4497,31 @@ body.is-loading { overflow: hidden; }
   transform: translateY(0); visibility: visible; pointer-events: auto;
   transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
 }
-.about-page { max-width: 1100px; margin: 0 auto; padding: 68px 5vw 110px; }
+.about-page { max-width: 1100px; margin: 0 auto; padding: 50px 5vw 110px; }   /* 68 less the bar's own 18 */
+/* THE TOP BAR, as on the project pages: a solid band that sticks with the
+   button, so scrolling text passes under a clean edge instead of running
+   behind a floating button. */
+.about-bar { position: sticky; top: 0; z-index: 5; background: var(--white); padding: 18px 0 22px; margin-bottom: 24px; }
+/* THE SAME BUTTON AS THE PROJECT PAGES' ALL PROJECTS (Jack: "make it the same
+   style"): a filled rectangle that casts nothing at rest and does not invert,
+   and on hover lifts 3px into a 6px coral block. The bar around it is what
+   gives scrolling text a clean edge, so the resting block it used to carry
+   for that job is gone. position: relative (not static) because its hover
+   pad is positioned against it. */
 .about-back {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
   background: var(--black); color: var(--white);
   border: 2px solid var(--black); padding: 12px 20px; cursor: pointer;
-  margin-bottom: 46px;
-  transition: background .25s, color .25s, transform .2s;
-  /* Sticks to the top of its overlay instead of scrolling away. These pages
-     run several screens long and the only way back was to scroll all of it
-     again - Escape works but nobody discovers it. Sticky rather than a
-     second button at the foot: one control, in one place, available the
-     whole way down instead of only at the two ends. It is its own scrolling
-     ancestor (.project-overlay / .about-overlay are the overflow-y: auto
-     elements), so this needs no JS. */
-  position: sticky; top: 14px; z-index: 5;
-  /* the content scrolls underneath, so it needs an edge of its own to sit
-     on rather than blending into whatever happens to pass behind it */
-  box-shadow: 4px 4px 0 var(--accent);
+  transition: transform .25s, box-shadow .25s;
+  position: relative;
 }
 @media (hover: hover) {
-  .about-back:hover { background: var(--white); color: var(--black); transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 5px 5px 0 var(--accent); }
+  .about-back:hover {
+    transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y)));
+    box-shadow: 6px 6px 0 var(--accent);
+  }
 }
+.about-back:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
 
 .about-page-top {
   display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 60px;
@@ -4593,7 +4596,7 @@ body.is-loading { overflow: hidden; }
   .about-page-top, .about-photos { display: contents; }
   /* everything that is not part of the pair runs the full width */
   .about-page > * { order: 5; grid-column: 1 / -1; }
-  .about-back { order: 0; }
+  .about-bar { order: 0; }
   .about-page-intro { order: 1; grid-column: 1 / -1; margin-bottom: 20px; }
   .about-photo-frame { order: 2; grid-column: 1; position: static; }
   .about-photos .square { order: 3; grid-column: 2; }
