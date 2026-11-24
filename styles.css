@@ -2332,7 +2332,10 @@ body.is-loading { overflow: hidden; }
    background here covers the hero's shape field where it reaches into this
    section. The content still paints above the field, which is what keeps
    the cards clean. */
-.work { position: relative; padding-bottom: 40px; }
+/* No bottom padding: the last row of cards runs straight into the about
+   slab, so the grid ends where the next section begins. It was 40px of bare
+   page between the two, which read as a gap rather than a seam. */
+.work { position: relative; padding-bottom: 0; }
 
 /* THE SEAM FORM. One oversized ring in the top-right of #work, bleeding off
    the right edge, behind everything the section draws.
