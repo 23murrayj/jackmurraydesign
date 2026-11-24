@@ -86,4 +86,5 @@ MSG
 
 refresh tools/write-fallback.js index.html "the project list"
 refresh tools/asset-rev.js      script.js  "the asset ?v= hashes"
+refresh tools/asset-rev.js      index.html "the resume ?v= hash"
 exit 0

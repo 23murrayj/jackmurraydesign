@@ -32,13 +32,12 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = path.join(__dirname, '..');
-const TARGET = path.join(ROOT, 'script.js');
+const TARGETS = ['script.js', 'index.html'].map((f) => path.join(ROOT, f));   // index.html carries the resume's ?v=
 const CHECK = process.argv.includes('--check');
 
 const hashOf = (rel) =>
   crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex').slice(0, 8);
 
-const src = fs.readFileSync(TARGET, 'utf8');
 
 /* The path, then the marker. Anchored on /assets/ and stopped at the quote
    so it cannot run past the end of one string literal into the next - the
@@ -47,14 +46,14 @@ const RE = /(\/assets\/[^'"?\s]+)\?v=([0-9a-f]+)/g;
 
 const stale = [];
 const missing = [];
-let out = src.replace(RE, (whole, rel, have) => {
+const outs = TARGETS.map((file) => [file, fs.readFileSync(file, 'utf8').replace(RE, (whole, rel, have) => {
   if (rel.endsWith('.jmm')) return whole;          // model-check owns this one
   if (!fs.existsSync(path.join(ROOT, rel))) { missing.push(rel); return whole; }
   const want = hashOf(rel);
   if (want === have) return whole;
   stale.push({ rel, have, want });
   return rel + '?v=' + want;
-});
+})]);
 
 /* A webp sibling shares the jpg's hash in the markup (mediaTag derives the
    .webp path from the .jpg one), so the two files would have to be hashed
@@ -79,5 +78,5 @@ if (CHECK) {
   process.exit(1);
 }
 
-fs.writeFileSync(TARGET, out);
-console.log('asset-rev: updated ' + stale.length + ' hash(es) in script.js');
+for (const [file, text] of outs) fs.writeFileSync(file, text);
+console.log('asset-rev: updated ' + stale.length + ' hash(es)');
