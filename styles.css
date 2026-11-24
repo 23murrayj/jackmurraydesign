@@ -5510,10 +5510,16 @@ body.is-loading { overflow: hidden; }
    features most readers do not need. */
 .footer-built {
   margin: 0;
-  font-size: 0.66rem;
+  font-size: 0.75rem; /* 12px; was 10.6 */
   letter-spacing: 0.4px;
-  line-height: 1.7;
-  color: color-mix(in srgb, var(--paper) 55%, transparent);
+  /* centred across the full footer width; on a phone it wraps into centred
+     lines, and 1.9 is the row gap between them. The separators are glued to
+     the item before them with a no-break space (in the strings), so a line
+     can end on a dot but never begin on one. */
+  text-align: center;
+  text-wrap: balance;
+  line-height: 1.9;
+  color: color-mix(in srgb, var(--paper) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
   padding-bottom: 16px;
 }
