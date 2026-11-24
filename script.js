@@ -185,7 +185,7 @@ const projectData = {
     // photos are supporting evidence here, not the point. `intro` picks the
     // opening composition (see the PROJECT SHELL note in styles.css): split =
     // identity beside the featured frame
-    intro: 'split',
+    intro: 'columns',
     hero: { src: '/assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
             full: '/assets/projects/cat-coaching/hero-full.jpg' },
     // One supporting photo, not two. The whiteboard shot came out and the
@@ -706,7 +706,7 @@ const projectData = {
     role: 'Graphic Designer',
     // hero + supporting shots: the design, then the design in the wild
     layout: 'mixed',
-    intro: 'stack',
+    intro: 'split',
     // `full` is the click-to-zoom source; `src` stays the smaller in-page one
     hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
             full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
@@ -747,7 +747,10 @@ const projectData = {
     intro: 'film',
     detailImages: [
       { src: '/assets/projects/fuse-partners-in-crime/02-museum-play.jpg', w: 757, h: 760 },
-      { src: '/assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760 },
+      // the masthead frame (`lead`): one VR player and one PC player at the
+      // same table, in a room full of onlookers - the asymmetric co-op and the
+      // public exhibition in a single photograph
+      { src: '/assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760, lead: true },
       // the exhibition standup: title lockup, the full 17-person crew by
       // department, and the in-game scanner art. Unreadable at strip width by
       // definition, so it carries a zoom source.
@@ -772,7 +775,12 @@ const projectData = {
     role: 'Graphic Designer',
     // same shape as easter-riverside: the design, then the design in use
     layout: 'mixed',
-    intro: 'stack',
+    intro: 'split',
+    // the artwork is a centred composition on a wide field of paper (the
+    // wordmark spans the middle half), so the masthead frame is 4:3 rather
+    // than Easter's 16:9: more picture per inch of column, nothing that
+    // matters cut (the lightbox still opens the whole 16:9)
+    heroRatio: '4 / 3',
     hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
             full: '/assets/projects/sandcastles/01-hero-full.jpg' },
     // Two applications, both of them the finished thing in use. 02-photoshop.jpg
@@ -893,7 +901,7 @@ const projectData = {
       poster: '/assets/projects/oasis-journey/video-poster.jpg'
     },
     detailImages: [
-      { src: '/assets/projects/oasis-journey/poster-art.jpg', w: 776, h: 1200,
+      { src: '/assets/projects/oasis-journey/poster-art.jpg', w: 776, h: 1200, lead: true,
         full: '/assets/projects/oasis-journey/poster-art-full.jpg' }
     ],
     // 4:3 crop of the poster artwork, taken below the title lockup so the card
@@ -1593,11 +1601,11 @@ function renderProjectMedia(data) {
   // flow with the page on the left, info panel pinned on the right
   projectDetailEl.classList.toggle('is-masonry', data.layout === 'masonry');
   // the opening composition: `intro` in projectData picks one of three
-  // (split / stack / film). All three are undone first, because the overlay
+  // (split / columns / film). All three are undone first, because the overlay
   // is one reused panel and the last project's class is this one's state.
   // (a lookup of literal names, not 'is-intro-' + v: audit.js finds a class by
   // its literal, and a composed one reads as dead CSS)
-  const INTRO_CLASS = { split: 'is-intro-split', stack: 'is-intro-stack', film: 'is-intro-film' };
+  const INTRO_CLASS = { split: 'is-intro-split', columns: 'is-intro-columns', film: 'is-intro-film' };
   Object.keys(INTRO_CLASS).forEach((v) =>
     projectDetailEl.classList.toggle(INTRO_CLASS[v], data.intro === v));
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
@@ -1606,8 +1614,10 @@ function renderProjectMedia(data) {
   renderCaseStudy(data);
   // The poster-beside-the-text treatment only works for a single still. With
   // more than one the strip needs full width, so those projects stack instead.
-  projectDetailEl.classList.toggle('is-video-aside',
-    data.layout === 'video' && (data.detailImages || []).length === 1);
+  // a video project's masthead frame is its `lead` still; a portrait one takes
+  // a narrow column and gives the text the rest (see the composition note)
+  const leadEntry = data.layout === 'video' && (data.detailImages || []).find((e) => e && e.lead);
+  projectDetailEl.classList.toggle('is-lead-tall', !!(leadEntry && leadEntry.h > leadEntry.w));
 
   if (data.layout === 'case') return;
 
@@ -1670,9 +1680,11 @@ function renderProjectMedia(data) {
     const lift = lead
       ? `<div class="masonry-lead" style="aspect-ratio: ${items[0].w} / ${items[0].h}">${cell(items[0], 0)}</div>`
       : '';
-    projectMedia.innerHTML = lift + '<div class="masonry-wall">' + items.map((entry, i2) =>
+    projectMedia.innerHTML = lift + '<div class="masonry-section">'
+      + '<p class="masonry-label" data-i18n="project.selected">' + escapeAttr(T.t('project.selected') || '') + '</p>'
+      + '<div class="masonry-wall">' + items.map((entry, i2) =>
       (lead && i2 === 0) ? '' : `<div class="masonry-item size-${sizes[i2]}">${cell(entry, i2)}</div>`
-    ).join('') + '</div>';
+    ).join('') + '</div></div>';
     setupModelStages(projectMedia);
     return;
   }
@@ -1688,9 +1700,18 @@ function renderProjectMedia(data) {
     // Supporting stills (poster art, frames). They have to sit outside the
     // 16:9 player box, which is overflow:hidden — anything appended inside it
     // is simply clipped.
-    const details = (data.detailImages && data.detailImages.length)
-      ? `<div class="project-video-details">${data.detailImages.map((entry, i) =>
-          `<div>${mediaTag(entry, data.id, i + 1, data.title)}</div>`).join('')}</div>`
+    const all = data.detailImages || [];
+    const leadIdx = all.findIndex((e) => e && e.lead);
+    // The `lead` still is the masthead frame: lifted out of the strip so it
+    // is shown once, beside the title, and not again below the film. Alt text
+    // is positional, so every entry keeps its place in the ORIGINAL array.
+    const leadHtml = leadIdx >= 0
+      ? `<div class="project-video-lead" style="aspect-ratio: ${all[leadIdx].w} / ${all[leadIdx].h}">${mediaTag(all[leadIdx], data.id, leadIdx + 1, data.title)}</div>`
+      : '';
+    const rest = all.map((entry, i) => ({ entry, i })).filter((x) => x.i !== leadIdx);
+    const details = rest.length
+      ? `<div class="project-video-details">${rest.map((x) =>
+          `<div>${mediaTag(x.entry, data.id, x.i + 1, data.title)}</div>`).join('')}</div>`
       : '';
     // A real file plays for real. The branch below it is the original
     // placeholder — an SVG with a play button that only toggles a caption —
@@ -1701,7 +1722,7 @@ function renderProjectMedia(data) {
       // bar — the native bar over a still is visual noise before anyone has
       // pressed anything. Controls are switched on at first play, from which
       // point the browser's own UI takes over for good.
-      projectMedia.innerHTML = `
+      projectMedia.innerHTML = leadHtml + `
         <div class="project-video-frame is-idle"${v.ratio ? ` style="--video-ratio: ${escapeAttr(v.ratio)}"` : ''}><video class="project-video" preload="metadata"
                ${v.poster ? `poster="${escapeAttr(v.poster)}"` : ''}
                data-i18n-aria="a11y.videoLabel"
@@ -1732,7 +1753,7 @@ function renderProjectMedia(data) {
       });
       return;
     }
-    projectMedia.innerHTML = `
+    projectMedia.innerHTML = leadHtml + `
       <div class="project-video-frame">
       ${data.videoSvg.replace('<svg ', '<svg class="video-bg" ')}
       <div class="project-video-overlay">
@@ -1757,7 +1778,7 @@ function renderProjectMedia(data) {
 
   if (data.layout === 'mixed') {
     projectMedia.innerHTML = `
-      <div class="project-mixed-hero">${mediaTag(data.hero || data.heroSvg, data.id, 0, data.title)}</div>
+      <div class="project-mixed-hero"${data.heroRatio ? ` style="--hero-ratio: ${escapeAttr(data.heroRatio)}"` : ''}>${mediaTag(data.hero || data.heroSvg, data.id, 0, data.title)}</div>
       <div class="project-mixed-details">
         ${(data.detailImages || []).map((entry, i) => {
           // Width comes from the photo's own orientation. In equal square

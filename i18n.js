@@ -202,6 +202,7 @@
 
       'project.back': '← BACK TO WORK',
       'project.next': 'NEXT PROJECT',
+      'project.selected': 'Selected photographs',
       'project.type': 'TYPE',
       'project.year': 'YEAR',
       'project.role': 'ROLE',
@@ -469,6 +470,7 @@
 
       'project.back': '← VOLVER A PROYECTOS',
       'project.next': 'SIGUIENTE PROYECTO',
+      'project.selected': 'Fotografías seleccionadas',
       'project.type': 'TIPO',
       'project.year': 'AÑO',
       'project.role': 'ROL',
@@ -734,6 +736,7 @@
 
       'project.back': '← 作品一覧へ戻る',
       'project.next': '次のプロジェクト',
+      'project.selected': '選んだ写真',
       'project.type': '種別',
       'project.year': '年',
       'project.role': '役割',
@@ -999,6 +1002,7 @@
 
       'project.back': '← TORNA AI PROGETTI',
       'project.next': 'PROSSIMO PROGETTO',
+      'project.selected': 'Fotografie selezionate',
       'project.type': 'TIPO',
       'project.year': 'ANNO',
       'project.role': 'RUOLO',
