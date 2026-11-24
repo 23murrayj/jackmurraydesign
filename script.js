@@ -176,7 +176,7 @@ const projectData = {
     bg: '#f2a71b',
     thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
     category: 'UX/UI',
-    skills: ['skill.ux-design', 'skill.interaction-design', 'skill.user-research', 'skill.user-flows', 'skill.prototyping', 'skill.usability-testing'],
+    skills: ['skill.interaction-design', 'skill.user-research', 'skill.user-flows', 'skill.prototyping', 'skill.usability-testing'],
     title: 'CATERPILLAR UX CHALLENGE',
     desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
     type: 'Bradley University x Caterpillar',
@@ -247,7 +247,7 @@ const projectData = {
       altKey: 'proj.pot-clip.alt.thumb' },
     category: 'PRODUCT',
     alsoIn: ['MOTION'],
-    skills: ['skill.product-design', 'skill.user-research', 'skill.prototyping', 'skill.3d-modeling', 'skill.photography', 'skill.graphic-design'],
+    skills: ['skill.user-research', 'skill.prototyping', 'skill.3d-modeling', 'skill.photography', 'skill.graphic-design'],
     title: 'POT CLIP',
     desc: "Designed, hand-sculpted, digitally modeled, and tested.",
     type: 'Product Design',
@@ -683,7 +683,7 @@ const projectData = {
     // 2x the 717px it renders at — it read soft on a retina screen.
     thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
-    skills: ['skill.brand-identity', 'skill.graphic-design', 'skill.typography', 'skill.print-design'],
+    skills: ['skill.brand-identity', 'skill.typography', 'skill.print-design'],
     title: 'EASTER AT RIVERSIDE',
     desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
     type: 'Event Identity',
@@ -754,7 +754,7 @@ const projectData = {
     // 16:9 version would cut the ends off the word the project is named after.
     thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
     category: 'GRAPHICS',
-    skills: ['skill.brand-identity', 'skill.graphic-design', 'skill.typography', 'skill.print-design'],
+    skills: ['skill.brand-identity', 'skill.typography', 'skill.print-design'],
     title: 'SANDCASTLES',
     desc: "Sermon series identity applied across stage screens, social, and print.",
     type: 'Sermon Series Identity',
@@ -789,7 +789,7 @@ const projectData = {
     // inherits alt.1, which describes a different photograph entirely.
     thumb: { src: '/assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9, small: '/assets/projects/monmouth-retreat/thumb-800.jpg' },
     category: 'PHOTOGRAPHY',
-    skills: ['skill.photography', 'skill.color-grading'],
+    skills: ['skill.color-grading'],
     title: 'MONMOUTH RETREAT',
     desc: "Candid photography from a worship team's retreat in Monmouth.",
     type: 'Photography Collection',
@@ -927,7 +927,6 @@ const projectData = {
     thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
     hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
     category: 'UX/UI',
-    skills: ['skill.ux-design'],
     title: 'BRADLEY REDESIGN',
     desc: "Case study coming soon.",
     type: 'Case Study',
@@ -1509,11 +1508,11 @@ function renderCaseStudy(data) {
          is the unnecessary description the brief names. The first item is
          a slot: the chip is a permanent node fillProjectDetail moves in,
          the way the <h2> is. */
-      + (data.skills ? '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
-        + data.skills.slice(1, -2).map((k) => csText('li', 'cs-tag', k)).join('')
+      + '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
         // the last two travel together, so neither is left alone on a line (Jack: on a Mac the final chip was a widow)
-        + (data.skills.length > 2 ? '<li class="cs-tag-pair">' + data.skills.slice(-2).map((k) => csText('span', 'cs-tag', k)).join('') + '</li>'
-          : data.skills.slice(1).map((k) => csText('li', 'cs-tag', k)).join('')) + '</ul>' : '')
+        + (data.skills || []).slice(0, -2).map((k) => csText('li', 'cs-tag', k)).join('')
+        + ((data.skills || []).length > 1 ? '<li class="cs-tag-pair">' + data.skills.slice(-2).map((k) => csText('span', 'cs-tag', k)).join('') + '</li>'
+          : (data.skills || []).map((k) => csText('li', 'cs-tag', k)).join('')) + '</ul>'
       /* THE BRIEF SITS UNDER THE META TABLE, IN THE MASTHEAD'S OWN COLUMN.
          Jack: "move The brief box up to the empty space to the left of the
          hero photo and above the problem, solution and outcome." There was
@@ -1823,14 +1822,16 @@ function fillProjectDetail(id) {
   // remain the fallback so a missing key degrades to English rather than
   // blanking the field. The TITLE is never translated — these are the
   // names of actual works, not descriptions of them.
-  /* THE BLACK CHIP IS THE FIRST SKILL, NOT THE CATEGORY. The category is what
-     the gallery files a project under and is a filter; the chips on a page
-     say what the work took. Each is a data-i18n node so a language change
-     refreshes it without a re-render. */
+  /* THE BLACK CHIP IS THE PRIMARY CATEGORY (uppercase, one of the filter
+     names, first in the row); the light chips after it are the specific
+     skills in data.skills, Title Case. Two purposes, two kinds of chip: the
+     category is what the gallery files the project under, the skills are
+     what the work took. data-i18n nodes, so a language change refreshes
+     them without a re-render. */
   const skills = data.skills || [];
-  projectCat.dataset.i18n = skills[0] || '';
-  projectCat.textContent = skills[0] ? (T.t(skills[0]) || '') : '';
-  projectCat.hidden = !skills[0];
+  projectCat.dataset.i18n = 'cat.' + data.category;
+  projectCat.textContent = T.t('cat.' + data.category) || data.category;
+  projectCat.hidden = false;
   projectTags.querySelectorAll('.cs-tag').forEach((n) => n.remove());
   projectTitle.textContent = data.title;
 
@@ -1869,14 +1870,22 @@ function fillProjectDetail(id) {
   } else {
     projectTags.prepend(projectCat);
     projectDesc.before(projectTitle);
-    // the rest of the skills sit beside the black chip, wrapping naturally
-    projectTags.append(...skills.slice(1).map((k) => {
+    // the light skill chips sit beside the black category chip, wrapping naturally
+    const chip = (k) => {
       const li = document.createElement('span');
       li.className = 'cs-tag';
       li.dataset.i18n = k;
       li.textContent = T.t(k) || '';
       return li;
-    }));
+    };
+    // the last two travel together so neither is left alone on a line
+    projectTags.append(...skills.slice(0, -2).map(chip));
+    if (skills.length > 1) {
+      const pair = document.createElement('span');
+      pair.className = 'cs-tag-pair';
+      pair.append(...skills.slice(-2).map(chip));
+      projectTags.append(pair);
+    } else projectTags.append(...skills.map(chip));
   }
   /* THE NEXT PROJECT closes every page that is not the case study, which
      already has its own beside the disclaimer. Same control, same builder. */
