@@ -5666,9 +5666,11 @@ body.is-loading { overflow: hidden; }
      the glyphs in it) sits on the midpoint. It was 22 above and 16 below,
      which put the type ~3px low. */
   padding-bottom: 20px;
-  /* a little air between the five items; the trailing letter-space is
-     balanced on the left so the run is optically centred too */
-  word-spacing: 0.35em;
+  /* the air between the five items lives in the separators themselves
+     (two no-break spaces before the dot, a space and a thin space after),
+     NOT in word-spacing, which also widened the gap inside "Four languages".
+     The trailing letter-space is balanced on the left so the run is
+     optically centred too */
   padding-left: 0.4px;
 }
 @media (max-width: 700px) {
