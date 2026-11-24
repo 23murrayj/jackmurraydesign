@@ -843,8 +843,8 @@ a { color: inherit; text-decoration: none; }
   }
 }
 /* Chip heights are fixed (10px padding + 12.8px text + 2px borders = 40) and
-   the widths are multiples of the chip's own 0.8rem: ALL 5.195, UX/UI 6.351,
-   GRAPHICS 8.765, PHOTOGRAPHY 11.37, MOTION 7.556. Measured identical at
+   the widths are multiples of the chip's own 0.8rem: ALL 5.077, UX/UI 6.156,
+   PRODUCT 8.118, GRAPHICS 8.452, PHOTOGRAPHY 10.941, MOTION 7.322 (at the 1px tracking of 2026-11-24). Measured identical at
    1440, 1024 and 390, because none of them depends on the viewport.
    A COPY CHANGE IS A SKELETON CHANGE here exactly as it is for the badge. */
 .sk-filters { --sk-chip: 0.8rem; }
@@ -855,12 +855,12 @@ a { color: inherit; text-decoration: none; }
    reads discipline-first; the other five multiples were re-measured at the
    same time and are unchanged, which is the check that the insert did not
    disturb them. A copy change is a skeleton change here. */
-.sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.195); }
-.sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.351); }
-.sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.392); }
-.sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.765); }
-.sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 11.37); }
-.sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.556); }
+.sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.077); }
+.sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.156); }
+.sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.118); }
+.sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.452); }
+.sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 10.941); }
+.sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.322); }
 /* The cards take whatever is left of the viewport. No aspect ratio to track:
    the loader is a fixed full-viewport box with overflow: hidden, and only
    the top ~60px of the first row is ever on screen. */
@@ -2423,7 +2423,7 @@ body.is-loading { overflow: hidden; }
   #work .section-head, .sk-head { padding-top: 28px; }
 }
 .filter-btn {
-  font-family: var(--ff-body); font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px;
+  font-family: var(--ff-body); font-weight: 700; font-size: 0.8rem; letter-spacing: 1px;
   /* Opaque, not transparent. The hero's shape field now runs past this row
      to the first card, and these are 12.8px chips: the text itself is safe
      either way (--black over even a vivid shape measures 6.13:1), but a
@@ -2460,12 +2460,12 @@ body.is-loading { overflow: hidden; }
      becomes 10px, which is 16px off every chip. Without this the loader
      draws six chips wider than the six it hands over to, and on the width
      where the row wraps that is a different number of rows. */
-  .sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.195 - 16px); }
-  .sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.351 - 16px); }
-  .sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.392 - 16px); }
-  .sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.765 - 16px); }
-  .sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 11.37 - 16px); }
-  .sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.556 - 16px); }
+  .sk-chip:nth-child(1) { width: calc(var(--sk-chip) * 5.077 - 16px); }
+  .sk-chip:nth-child(2) { width: calc(var(--sk-chip) * 6.156 - 16px); }
+  .sk-chip:nth-child(3) { width: calc(var(--sk-chip) * 8.118 - 16px); }
+  .sk-chip:nth-child(4) { width: calc(var(--sk-chip) * 8.452 - 16px); }
+  .sk-chip:nth-child(5) { width: calc(var(--sk-chip) * 10.941 - 16px); }
+  .sk-chip:nth-child(6) { width: calc(var(--sk-chip) * 7.322 - 16px); }
 }
 
 .card.hidden-card { display: none; }
@@ -2662,7 +2662,7 @@ body.is-loading { overflow: hidden; }
   border-top: 2px solid var(--black);
   display: flex; align-items: center; justify-content: space-between;
   font-family: var(--ff-body);
-  font-weight: 700; font-size: 0.78rem; letter-spacing: 1.5px;
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.9px;
   color: var(--accent-ink);
   transition: background-color .2s ease, color .2s ease;
 }
@@ -3505,8 +3505,7 @@ body.is-loading { overflow: hidden; }
 .cs-toc li { counter-increment: cstoc; border-bottom: 1px solid var(--line); }
 .cs-toc a {
   display: flex; text-decoration: none; color: var(--black);
-  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.6px;
-  text-transform: uppercase;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2px; /* sentence case as written: navigation, not metadata */
   /* min-height rather than padding arithmetic: 12px either side of a
      0.82rem line box measured 41px, and the number moves again in Japanese
      and with any change of size. A centred 44px box is 44 whatever the text
@@ -4676,7 +4675,7 @@ body.is-loading { overflow: hidden; }
   /* 500, not 600: Space Grotesk is loaded at 400/500/700 only, so 600 fell
      through to the 700 file and these rendered identically to .lead below -
      the weight half of that distinction did nothing. */
-  padding: 9px 15px; font-size: 0.78rem; font-weight: 500; letter-spacing: 1.2px;
+  padding: 9px 15px; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.5px; /* Title Case in the markup; group labels stay caps */
 }
 /* the lead skill in each band still reads first so a reader scanning four
    groups picks up the headline of each without reading all 29 - now by
@@ -5512,7 +5511,7 @@ body.is-loading { overflow: hidden; }
 .footer-built {
   margin: 0;
   font-size: 0.66rem;
-  letter-spacing: 1.2px;
+  letter-spacing: 0.4px;
   line-height: 1.7;
   color: color-mix(in srgb, var(--paper) 55%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
