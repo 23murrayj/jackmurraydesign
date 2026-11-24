@@ -182,9 +182,10 @@ const projectData = {
     year: '2025',
     role: 'UX Research & Design',
     layout: 'mixed',
-    // photos are supporting evidence here, not the point — the sidebar
-    // shell lets the write-up be read while they scroll past
-    sidebar: true,
+    // photos are supporting evidence here, not the point. `intro` picks the
+    // opening composition (see the PROJECT SHELL note in styles.css): split =
+    // identity beside the featured frame
+    intro: 'split',
     hero: { src: '/assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
             full: '/assets/projects/cat-coaching/hero-full.jpg' },
     // One supporting photo, not two. The whiteboard shot came out and the
@@ -705,6 +706,7 @@ const projectData = {
     role: 'Graphic Designer',
     // hero + supporting shots: the design, then the design in the wild
     layout: 'mixed',
+    intro: 'stack',
     // `full` is the click-to-zoom source; `src` stays the smaller in-page one
     hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
             full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
@@ -742,6 +744,7 @@ const projectData = {
     year: '2025',
     role: 'VR Interface & VFX',
     layout: 'video',
+    intro: 'film',
     detailImages: [
       { src: '/assets/projects/fuse-partners-in-crime/02-museum-play.jpg', w: 757, h: 760 },
       { src: '/assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760 },
@@ -769,6 +772,7 @@ const projectData = {
     role: 'Graphic Designer',
     // same shape as easter-riverside: the design, then the design in use
     layout: 'mixed',
+    intro: 'stack',
     hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
             full: '/assets/projects/sandcastles/01-hero-full.jpg' },
     // Two applications, both of them the finished thing in use. 02-photoshop.jpg
@@ -799,6 +803,7 @@ const projectData = {
     year: '2025',
     role: 'Photographer',
     layout: 'masonry',
+    intro: 'split',
     // Ordered as a narrative — the town, the room, warm-up, rehearsal,
     // individual portraits, then the emotional peak to close — and sequenced
     // so the three people who appear twice are spread apart rather than
@@ -910,6 +915,7 @@ const projectData = {
     year: '2022',
     role: 'Animator / Director',
     layout: 'video',
+    intro: 'film',
     videoCaption: 'WATCH THE SHORT FILM',
     videoSvg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
       <rect width="600" height="450" fill="#0a5cff"/>
@@ -1586,10 +1592,14 @@ function renderProjectMedia(data) {
   // masonry projects get the full-page sticky-scroll treatment: photos
   // flow with the page on the left, info panel pinned on the right
   projectDetailEl.classList.toggle('is-masonry', data.layout === 'masonry');
-  // the sticky two-column shell: every masonry project, plus anything that
-  // opts in with `sidebar: true` so its write-up reads alongside its images
-  projectDetailEl.classList.toggle('has-sidebar',
-    data.layout === 'masonry' || data.sidebar === true);
+  // the opening composition: `intro` in projectData picks one of three
+  // (split / stack / film). All three are undone first, because the overlay
+  // is one reused panel and the last project's class is this one's state.
+  // (a lookup of literal names, not 'is-intro-' + v: audit.js finds a class by
+  // its literal, and a composed one reads as dead CSS)
+  const INTRO_CLASS = { split: 'is-intro-split', stack: 'is-intro-stack', film: 'is-intro-film' };
+  Object.keys(INTRO_CLASS).forEach((v) =>
+    projectDetailEl.classList.toggle(INTRO_CLASS[v], data.intro === v));
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
   // the whole page, built from `caseStudy`. Hides .project-media and
   // .project-body, so this returns before any of the layouts below.
@@ -1645,13 +1655,24 @@ function renderProjectMedia(data) {
     // An entry carrying `model` keeps its <img> and gets a stage around it:
     // the still render IS the poster and the no-WebGL fallback, so nothing
     // has to be duplicated and nothing disappears if the canvas never starts.
-    projectMedia.innerHTML = items.map((entry, i2) => {
+    const cell = (entry, i2) => {
       const media = mediaTag(entry, data.id, i2, data.title);
-      const inner = (entry && entry.model)
+      return (entry && entry.model)
         ? `<div class="model-stage" data-model="${escapeAttr(entry.model)}">${media}</div>`
         : media;
-      return `<div class="masonry-item size-${sizes[i2]}">${inner}</div>`;
-    }).join('');
+    };
+    /* THE OPENING FRAME IS LIFTED OUT OF THE WALL when it is the full-width
+       feature (a landscape first photograph), so the split opening can set it
+       beside the title and the wall runs on from the second photograph. The
+       packer above already gave it a row of its own, so taking it out leaves
+       every other row exactly as it was. */
+    const lead = sizes[0] === 'feature' && hasDims(items[0]);
+    const lift = lead
+      ? `<div class="masonry-lead" style="aspect-ratio: ${items[0].w} / ${items[0].h}">${cell(items[0], 0)}</div>`
+      : '';
+    projectMedia.innerHTML = lift + '<div class="masonry-wall">' + items.map((entry, i2) =>
+      (lead && i2 === 0) ? '' : `<div class="masonry-item size-${sizes[i2]}">${cell(entry, i2)}</div>`
+    ).join('') + '</div>';
     setupModelStages(projectMedia);
     return;
   }
@@ -1809,6 +1830,10 @@ function fillProjectDetail(id) {
   } else {
     projectDesc.before(projectCat, projectTitle);
   }
+  /* THE NEXT PROJECT closes every page that is not the case study, which
+     already has its own beside the disclaimer. Same control, same builder. */
+  const foot = document.getElementById('projectFoot');
+  if (foot) foot.innerHTML = data.caseStudy ? '' : nextProjectLink(id);
   projectDesc.textContent = T.t('proj.' + id + '.desc') || data.desc;
   projectType.textContent = T.t('proj.' + id + '.type') || data.type;
   projectYear.textContent = data.year;

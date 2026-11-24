@@ -634,7 +634,9 @@
          anything tried on one has to be a flag or it lands on all of them.
          Collapsed (:empty) for everything else. -->
     <div class="project-case" id="projectCase"></div>
-    <div class="project-media" id="projectMedia"></div>
+    <!-- ORDER IS THE READING ORDER: identity first, then the media. The grid
+         in styles.css places both by area, so this is what a screen reader,
+         a crawler and the Tab key see as well as what the eye sees. -->
     <div class="project-body">
       <span class="project-cat" id="projectCat"></span>
       <h2 id="projectTitle"></h2>
@@ -648,6 +650,10 @@
         <div><span class="meta-label" data-i18n="project.role">ROLE</span><span id="projectRole"></span></div>
       </div>
     </div>
+    <div class="project-media" id="projectMedia"></div>
+    <!-- Next project, filled by fillProjectDetail for every layout but the
+         case study (which carries its own beside the disclaimer). -->
+    <div class="project-foot" id="projectFoot"></div>
   </div>
 </div>
 

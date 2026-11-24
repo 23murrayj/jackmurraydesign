@@ -2724,9 +2724,27 @@ body.is-loading { overflow: hidden; }
   transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
 }
 
+/* ------------------------------------------------------------------------
+   THE PROJECT SHELL - one width for every project page.
+   It was two: 1100px here and 1380px on the case study, and both put their
+   gutter INSIDE the cap, so on a wide screen the box stopped growing while
+   5vw kept eating it: Pot Clip's content went 1236 at 1440 to 1175 at 2048,
+   and the other six sat in 956px, several inches inside Pot Clip's edges on
+   a Mac.
+   Now the CONTENT is the constant and the gutter is what flexes. The cap is
+   content + two gutters, the gutter is 5vw up to 72px (the 72 that 5vw
+   already is at 1440), so at 1440 and above every project page has the same
+   1236px of content on the same left and right edges, and below 1440 it is
+   exactly what Pot Clip already was (1152 at 1280, 990 at 1100).
+   1236 is Pot Clip's own measure at 1440, where its columns were tuned, so
+   the reference page moves by 7px at 1512 and nothing at 1440 or below.
+   ------------------------------------------------------------------------ */
 .project-detail {
-  max-width: 1100px; margin: 0 auto;
-  padding: 68px 5vw 100px;
+  --pd-gutter: min(5vw, 72px);
+  --pd-content: 1236px;
+  max-width: calc(var(--pd-content) + 2 * var(--pd-gutter));
+  margin: 0 auto;
+  padding: 68px var(--pd-gutter) 100px;
 }
 .project-back {
   font-family: var(--ff-body); font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px;
@@ -2933,7 +2951,8 @@ body.is-loading { overflow: hidden; }
 /* masonry photography grid — mixed image sizes via CSS grid row/col spans.
    On its own this would internally scroll, but inside .is-masonry the
    page-level sticky layout below takes over and it scrolls with the page. */
-.project-media.layout-masonry {
+.project-detail.is-masonry { container-type: inline-size; }
+.masonry-wall {
   border: 4px solid var(--black);
   background: var(--black);
   padding: 6px;
@@ -2946,7 +2965,13 @@ body.is-loading { overflow: hidden; }
   /* 60px rows rather than 80px: it's the unit the spans below are tuned
      against, and a finer unit lets each cell land much closer to its
      photo's real aspect ratio. */
-  grid-auto-rows: 60px;
+  /* The row unit scales with the wall. The spans below were tuned with a
+     ~170px column and 60px rows (a cell's shape is its span ratio), which
+     only holds while the wall is that wide; at the full measure the same 60
+     would turn every portrait into a landscape. So the row is the column
+     width times 0.352, from the shell's own width (.is-masonry is a size
+     container). It is 60px at the old 543px wall and 141px at 1236. */
+  grid-auto-rows: calc((100cqw - 32px) * 0.1173);
   gap: 6px;
   /* mixed spans leave holes otherwise — dense backfills them */
   grid-auto-flow: dense;
@@ -2970,7 +2995,7 @@ body.is-loading { overflow: hidden; }
 .masonry-item.size-medium { grid-row: span 4; }
 .masonry-item.size-large { grid-row: span 5; grid-column: span 2; }
 @media (max-width: 700px) {
-  .project-media.layout-masonry { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 60px; }
+  .masonry-wall { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 60px; }
   /* Landscapes run the full width; portraits pair up two to a row.
      Everything used to span both columns, which made the wall a single
      stack - 18 photographs at Monmouth, 4898px, six phone screens of
@@ -2990,85 +3015,129 @@ body.is-loading { overflow: hidden; }
   .masonry-item.size-tall { grid-column: span 1; grid-row: span 4; }
 }
 
-/* Full-page sticky scroll: media runs down the left at natural page scroll
-   while the write-up stays pinned on the right. Opted into by layout:'masonry'
-   or by `sidebar: true` on any project — it suits a long write-up with
-   secondary images just as well as it suits a photo wall. */
-.project-detail.has-sidebar {
-  display: grid;
-  /* minmax(0, ...) rather than a bare 1.5fr/1fr: an `fr` track's automatic
-     minimum is its min-content, so the info column's content was overriding
-     the declared split and inverting it — the media column came out 419px
-     against the sidebar's 487px, ratio 0.86 where 1.5 was asked for. */
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 50px;
-  align-items: start;
-}
-/* 1 / -1 so the button owns its own row above both columns, but justify-self
-   so it stays its own width in it. Without this it stretched the full grid -
-   a 922px bar in the two sidebar projects (Caterpillar, Monmouth) against a
-   178px button everywhere else. Same control, same size, every layout. */
-.project-detail.has-sidebar .project-back { grid-column: 1 / -1; justify-self: start; }
-.project-detail.has-sidebar .project-media { margin-bottom: 0; }
-/* the sidebar is ~360px wide; the full-size project title is set for a
-   956px column and simply doesn't belong at that scale here. Does not
-   apply where the title has moved up top — there it is not in .project-body
-   at all, so the selector stops matching on its own. */
-.project-detail.has-sidebar .project-body h2 {
-  font-size: clamp(2.5rem, 4vw, 3rem);
-  line-height: 1;
-}
-.project-detail.has-sidebar .project-body {
-  position: sticky;
-  top: 110px;
-  align-self: start;
-}
-/* and so does the turntable — it is a band, not a column */
-.project-detail.has-sidebar .project-stage { grid-column: 1 / -1; }
-@media (max-width: 900px) {
-  .project-detail.has-sidebar { grid-template-columns: 1fr; }
-  .project-detail.has-sidebar .project-body { position: static; }
+/* ------------------------------------------------------------------------
+   THE SHORT PROJECTS' COMPOSITION - one grid, three openings.
+   Identity first: the chip, the title, the one-line description and the
+   facts sit under the back button, before the media, on all six pages. They
+   used to sit in a ~360px sticky sidebar (Caterpillar, Monmouth) or under
+   the whole gallery or film (the other four), and the long write-up was
+   squeezed into that sidebar or stranded at the foot.
+   .project-body and the media wrappers are display: contents, so their
+   children are grid items and can be placed by line; the DOM is in reading
+   order (body before media) so focus and screen readers agree with the eye.
+   Twelve columns, 32px apart: 5 columns is 496px at the 1236 measure, 7 is
+   708 - which is why prose is 7 columns, inside the 620-720 a measure wants.
+   The three openings are chosen per project by `intro` in projectData:
+     split  identity (5) beside the featured frame (7)       cat, monmouth
+     stack  identity, then the write-up and the facts, then the larger
+            image sequence                                   easter, sandcastles
+     film   identity, then the film at full measure, then the
+            write-up beside the stills                       fuse, oasis
+   Gaps are margins rather than row-gap, because a span across rows would
+   otherwise be stretched by them. A flexible row (1fr) in the split opening
+   takes whatever height the frame has over the text, so the chip, title,
+   description and facts keep their own spacing instead of being pulled apart.
+   Stickiness: .project-back spans every row, so its containing block is the
+   whole page. A grid item sticks inside its own area, and in row 1 alone it
+   would scroll away with it. --pd-back-room reserves the row it would have
+   occupied.
+   ------------------------------------------------------------------------ */
+.project-detail:not(.is-case) .project-stage:empty { display: none; }
+.project-detail:not(.is-case) .project-body,
+.project-detail:not(.is-case) .project-media.layout-mixed,
+.project-detail:not(.is-case) .project-media.layout-video,
+.project-detail:not(.is-case) .project-media.layout-masonry { display: contents; }
+.masonry-lead { border: 4px solid var(--black); overflow: hidden; }
+.project-detail:not(.is-case) .project-media { margin-bottom: 0; }
+
+@media (min-width: 901px) {
+  .project-detail:not(.is-case) {
+    --pd-back-room: 82px;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 32px;
+    align-items: start;
+  }
+  .project-detail:not(.is-case) .project-back {
+    grid-column: 1 / 4; grid-row: 1 / -1; align-self: start; justify-self: start;
+    margin-bottom: 0;
+  }
+  .project-detail:not(.is-case) .project-cat   { grid-row: 2; margin-top: var(--pd-back-room); justify-self: start; }
+  .project-detail:not(.is-case) .project-body h2 { grid-row: 3; }
+  .project-detail:not(.is-case) .project-desc  { grid-row: 4; }
+  .project-detail:not(.is-case) .project-meta  { grid-row: 5; }
+  .project-detail:not(.is-case) .project-foot  { grid-column: 1 / -1; grid-row: 9; }
+
+  /* ---- split: identity 5 | frame 7 ---- */
+  .project-detail.is-intro-split { grid-template-rows: auto auto auto auto auto 1fr auto auto auto; }
+  .project-detail.is-intro-split .project-cat,
+  .project-detail.is-intro-split .project-body h2,
+  .project-detail.is-intro-split .project-desc,
+  .project-detail.is-intro-split .project-meta { grid-column: 1 / 6; }
+  .project-detail.is-intro-split .project-mixed-hero { grid-column: 6 / -1; grid-row: 2 / 7; margin-top: var(--pd-back-room); }
+  .project-detail.is-intro-split .project-body-copy { grid-column: 1 / 8; grid-row: 7; margin-top: 64px; }
+  .project-detail.is-intro-split .project-mixed-details { grid-column: 9 / -1; grid-row: 7; margin-top: 64px; }
+  /* masonry: the wall's opening feature is lifted into the frame's column,
+     and the rest of the wall runs the full measure beneath the write-up. */
+  .project-detail.is-masonry .masonry-lead { grid-column: 6 / -1; grid-row: 2 / 7; margin-top: var(--pd-back-room); }
+  .project-detail.is-masonry .project-body-copy { grid-column: 1 / 8; grid-row: 7; margin-top: 64px; }
+  .project-detail.is-masonry .masonry-wall { grid-column: 1 / -1; grid-row: 8; margin-top: 64px; }
+
+  /* ---- stack: identity, write-up | facts, then the images ---- */
+  .project-detail.is-intro-stack { grid-template-rows: auto auto auto auto auto auto auto auto auto; }
+  .project-detail.is-intro-stack .project-cat,
+  .project-detail.is-intro-stack .project-body h2 { grid-column: 1 / -1; }
+  .project-detail.is-intro-stack .project-desc { grid-column: 1 / 8; }
+  .project-detail.is-intro-stack .project-body-copy { grid-column: 1 / 8; grid-row: 5; }
+  .project-detail.is-intro-stack .project-meta { grid-column: 9 / -1; grid-row: 4 / 6; }
+  .project-detail.is-intro-stack .project-mixed-hero { grid-column: 1 / -1; grid-row: 6; margin-top: 64px; }
+  .project-detail.is-intro-stack .project-mixed-details { grid-column: 1 / -1; grid-row: 7; margin-top: 14px; }
+
+  /* ---- film: identity, the film, then the write-up beside the stills ---- */
+  .project-detail.is-intro-film { grid-template-rows: auto auto auto auto auto auto auto auto auto; }
+  .project-detail.is-intro-film .project-cat,
+  .project-detail.is-intro-film .project-body h2 { grid-column: 1 / -1; }
+  .project-detail.is-intro-film .project-desc { grid-column: 1 / 8; }
+  .project-detail.is-intro-film .project-meta { grid-column: 9 / -1; grid-row: 4 / 6; }
+  .project-detail.is-intro-film .project-video-frame { grid-column: 1 / -1; grid-row: 6; margin-top: 56px; }
+  .project-detail.is-intro-film .project-body-copy { grid-column: 1 / 8; grid-row: 7; margin-top: 56px; }
+  .project-detail.is-intro-film .project-video-details { grid-column: 1 / -1; grid-row: 8; margin-top: 40px; }
+  /* exactly one still: a plate beside the write-up, not a strip under it */
+  .project-detail.is-intro-film.is-video-aside .project-video-details { grid-column: 9 / -1; grid-row: 7; margin-top: 56px; }
 }
 
-/* Video layout: film full width, then the write-up and the poster side by
-   side. The poster is a grandchild (.project-media > .project-video-details)
-   while the copy is .project-media's sibling, so the two can't share a grid
-   until the wrapper is flattened — hence `display: contents` on it. That
-   removes the wrapper's box, so its `margin-bottom: 40px` stops applying and
-   the spacing has to come from row-gap instead. */
-.project-detail.is-video-aside {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
-  column-gap: 50px;
-  row-gap: 40px;
-  align-items: start;
-}
-.project-detail.is-video-aside .project-back {
-  grid-column: 1 / -1; grid-row: 1;
-  justify-self: start;
-  margin-bottom: 0;          /* row-gap owns this spacing now */
-}
-.project-detail.is-video-aside .project-media.layout-video { display: contents; }
-.project-detail.is-video-aside .project-video-frame { grid-column: 1 / -1; grid-row: 2; }
-.project-detail.is-video-aside .project-body { grid-column: 1; grid-row: 3; }
-.project-detail.is-video-aside .project-video-details {
-  grid-column: 2; grid-row: 3;
-  margin-top: 0;             /* the 12px strip gap would double the row-gap */
-}
-/* the title is set for a 956px column and doesn't fit a ~500px one — same
-   reduction .has-sidebar already makes for its sidebar. If this layout ever
-   opts into titleTop, these rows renumber and this rule goes. */
-.project-detail.is-video-aside .project-body h2 {
-  font-size: clamp(2.5rem, 4vw, 3rem);
-  line-height: 1;
-}
+/* ---- tablet and phone: one column, flex so each piece can be ordered ---- */
 @media (max-width: 900px) {
-  /* back to normal flow; the wrapper needs its box back so its margin returns */
-  .project-detail.is-video-aside { display: block; }
-  .project-detail.is-video-aside .project-media.layout-video { display: block; }
-  .project-detail.is-video-aside .project-back { margin-bottom: 36px; }
-  .project-detail.is-video-aside .project-video-details { margin-top: 12px; }
+  .project-detail:not(.is-case) { display: flex; flex-direction: column; }
+  .project-detail:not(.is-case) > * { order: 0; }
+  .project-detail:not(.is-case) .project-back { align-self: flex-start; }
+  .project-detail:not(.is-case) .project-cat   { order: 1; align-self: flex-start; }
+  .project-detail:not(.is-case) .project-body h2 { order: 2; }
+  .project-detail:not(.is-case) .project-desc  { order: 3; }
+  .project-detail:not(.is-case) .project-meta  { order: 4; margin-bottom: 40px; }
+  .project-detail:not(.is-case) .project-mixed-hero,
+  .project-detail:not(.is-case) .project-video-frame,
+  .project-detail:not(.is-case) .masonry-lead { order: 5; }
+  .project-detail:not(.is-case) .masonry-wall { order: 7; }
+  .project-detail:not(.is-case) .project-body-copy { order: 6; margin: 40px 0 0; }
+  .project-detail:not(.is-case) .project-mixed-details,
+  .project-detail:not(.is-case) .project-video-details { order: 7; margin-top: 14px; }
+  .project-detail:not(.is-case) .project-foot { order: 8; }
+  /* the stack opening introduces before it shows: write-up ahead of the frame */
+  .project-detail.is-intro-stack .project-body-copy { order: 5; margin: 0 0 40px; }
+  .project-detail.is-intro-stack .project-mixed-hero { order: 6; }
+  .project-detail.is-intro-stack .project-mixed-details { order: 7; }
 }
+
+/* the next project closes every page that has no case-study foot of its own,
+   on the rule the case study's foot draws: one 3px line, the control at its
+   right */
+.project-foot {
+  margin-top: 80px; padding-top: 28px; border-top: 3px solid var(--black);
+  display: flex; justify-content: flex-end;
+}
+.project-foot:empty { display: none; }
+@media (max-width: 900px) { .project-foot { justify-content: flex-start; margin-top: 56px; } }
 
 /* large hero image + smaller detail shots below */
 .project-media.layout-mixed { display: flex; flex-direction: column; gap: 14px; }
@@ -3154,15 +3223,36 @@ body.is-loading { overflow: hidden; }
   letter-spacing: -0.02em; margin-bottom: 22px;
 }
 .project-desc {
-  font-size: 1.1rem; font-weight: 400; line-height: 1.6; max-width: 640px; margin-bottom: 40px;
+  /* the lede: the case study's own size, so the two read as one hand */
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 400; line-height: 1.5;
+  max-width: 640px; margin-bottom: 36px;
 }
+/* The facts, as Pot Clip draws them: the heavy 3px rule says where the block
+   starts, the 1px ones only separate rows, the label is the tracked small
+   cap and the value is plain. Two columns with the first fact (the longest,
+   "Bradley University x Caterpillar") across both. */
 .project-meta {
-  display: flex; flex-wrap: wrap; gap: 50px;
-  border-top: 3px solid var(--black); padding-top: 26px;
+  display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px;
+  border-top: 3px solid var(--black);
 }
-.project-meta > div { display: flex; flex-direction: column; gap: 6px; }
-.meta-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); }
-.project-meta span:last-child { font-weight: 700; font-size: 1rem; }
+.project-meta > div { display: block; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.project-meta > div:first-child { grid-column: 1 / -1; }
+.meta-label {
+  display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px;
+  color: var(--muted); margin-bottom: 6px;
+}
+.project-meta span:last-child { font-weight: 500; font-size: 0.95rem; line-height: 1.45; }
+/* The title: the full-measure size for stack and film, and a size set for a
+   5-column measure for split, where CATERPILLAR is 7.5em wide and has to fit
+   496px. Balanced, so a long title breaks into even lines instead of leaving
+   one word alone. */
+.project-body h2 { text-wrap: balance; }
+.project-detail.is-intro-split .project-body h2 {
+  font-size: clamp(2.5rem, 4.2vw, 3.6rem); line-height: 1;
+}
+@media (min-width: 901px) {
+  .project-detail:not(.is-case) .project-body h2 { margin-bottom: 22px; }
+}
 
 /* ------------------------------------------------------------------------
    SECTION 11b · THE CASE-STUDY LAYOUT
@@ -3184,7 +3274,6 @@ body.is-loading { overflow: hidden; }
    .project-detail would reflow the other six - and the instruction when
    this work started was not to touch them.
    ------------------------------------------------------------------------ */
-.project-detail.is-case { max-width: 1380px; }
 /* The write-up column and the photo wall are both replaced by this layout.
    Hidden rather than left empty: .project-body still gets filled by
    fillProjectDetail (the chip and the <h2> are moved OUT of it, the rest is
@@ -6325,7 +6414,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 
 /* long-form project write-up, under the one-line description */
 .project-body-copy {
-  max-width: 640px;
+  max-width: 700px;   /* 7 of 12 columns at the 1236 measure is 708 */
   margin-bottom: 40px;
 }
 .project-body-copy p {
