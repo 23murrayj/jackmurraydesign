@@ -3131,7 +3131,7 @@ body.is-loading { overflow: hidden; }
      left beside them, its paragraphs spread so it ends level with the last photo */
   .project-detail.has-stack .project-mixed-stack { grid-column: 6 / -1; grid-row: 7; margin-top: 56px; display: flex; flex-direction: column; align-items: flex-end; gap: 32px; }
   .project-detail.has-stack .project-mixed-stack > div.is-bookmark { width: 70%; }
-  .project-detail.has-stack .project-mixed-stack > div.is-stage { width: 55%; }
+  .project-detail.has-stack .project-mixed-stack > div.is-stage { width: 70%; }   /* same width as the bookmark above it */
   .project-detail.has-stack .project-body-copy { grid-column: 1 / 6; margin: 56px 0 0; align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; }
   .project-detail.has-stack .project-body-copy p { margin: 0; }
   .project-detail.has-aside .project-mixed-aside { grid-column: 8 / -1; grid-row: 7; margin-top: 56px; }
