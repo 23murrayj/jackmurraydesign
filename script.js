@@ -703,7 +703,7 @@ const projectData = {
         full: '/assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
       /* aside: the cards on the small table sit to the RIGHT of the write-up
          (re-cropped 1:1 from the original so the stack fills the frame) */
-      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg?v=00c50b5a', w: 1200, h: 1200, aside: true,
+      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg?v=5eaa458d', w: 1500, h: 1500, aside: true,
         full: '/assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
     ]
   },
@@ -777,9 +777,12 @@ const projectData = {
     // state while the copy claims iteration, so it was promising something it
     // didn't deliver.
     detailImages: [
-      { src: '/assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
+      // `stack`: both sit in a column on the RIGHT under the hero, the bookmark
+      // whole and uncropped, the stage photo smaller at its own ratio, with the
+      // write-up running down the left beside them
+      { src: '/assets/projects/sandcastles/05-reading-plan-whole.jpg?v=4acbefad', w: 1146, h: 1192, stack: 'is-bookmark',
         full: '/assets/projects/sandcastles/05-reading-plan-full.jpg' },
-      { src: '/assets/projects/sandcastles/03-stage.jpg?v=8611f06f', w: 1800, h: 1006,
+      { src: '/assets/projects/sandcastles/03-stage.jpg?v=8611f06f', w: 1800, h: 1006, stack: 'is-stage',
         full: '/assets/projects/sandcastles/03-stage-full.jpg' }
     ]
   },
@@ -1620,6 +1623,7 @@ function renderProjectMedia(data) {
     projectDetailEl.classList.toggle(INTRO_CLASS[v], data.intro === v));
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
   projectDetailEl.classList.toggle('is-film-side', !!data.filmSide);
+  projectDetailEl.classList.toggle('has-stack', !!(data.detailImages || []).some((e) => e && e.stack));
   projectDetailEl.classList.toggle('has-aside', !!(data.detailImages || []).some((e) => e && e.aside));
   // the whole page, built from `caseStudy`. Hides .project-media and
   // .project-body, so this returns before any of the layouts below.
@@ -1794,11 +1798,13 @@ function renderProjectMedia(data) {
   if (data.layout === 'mixed') {
     projectMedia.innerHTML = `
       <div class="project-mixed-hero"${data.heroRatio ? ` style="--hero-ratio: ${escapeAttr(data.heroRatio)}"` : ''}>${mediaTag(data.hero || data.heroSvg, data.id, 0, data.title)}</div>
+      ${(data.detailImages || []).some((e) => e && e.stack) ? `<div class="project-mixed-stack">${(data.detailImages || []).map((entry, i) => entry && entry.stack
+        ? `<div class="${entry.stack}" style="--ar: ${entry.w} / ${entry.h}">${mediaTag(entry, data.id, i + 1, data.title)}</div>` : '').join('')}</div>` : ''}
       ${(data.detailImages || []).map((entry, i) => entry && entry.aside
         ? `<div class="project-mixed-aside">${mediaTag(entry, data.id, i + 1, data.title)}</div>` : '').join('')}
       <div class="project-mixed-details">
         ${(data.detailImages || []).map((entry, i) => {
-          if (entry && entry.aside) return '';
+          if (entry && (entry.aside || entry.stack)) return '';
           // Width comes from the photo's own orientation. In equal square
           // boxes a portrait shot loses far more to the cover crop than a
           // landscape one, so give portraits a narrower box and landscapes

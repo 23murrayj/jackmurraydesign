@@ -2839,6 +2839,7 @@ body.is-loading { overflow: hidden; }
 
 /* stills under the player — sized by height so each keeps its own ratio and
    nothing is cropped; a portrait poster stays a portrait poster */
+.project-video-details > div:last-child { order: -1; }   /* the standup banner leads, the laptop photo follows on the right */
 .project-video-details {
   display: flex;
   flex-wrap: wrap;
@@ -3126,6 +3127,14 @@ body.is-loading { overflow: hidden; }
   /* ASIDE (Easter): one photo beside the write-up, in columns 8-12 (496px at
      the full shell, square), top level with the first line of the text; the
      remaining two sit full width underneath at their own native ratios */
+  /* STACK (Sandcastles): the bookmark (whole) and the stage photo (smaller, its own ratio)
+     stack on the right under the hero, flush right; the write-up runs down the
+     left beside them, its paragraphs spread so it ends level with the last photo */
+  .project-detail.has-stack .project-mixed-stack { grid-column: 6 / -1; grid-row: 7; margin-top: 56px; display: flex; flex-direction: column; align-items: flex-end; gap: 32px; }
+  .project-detail.has-stack .project-mixed-stack > div.is-bookmark { width: 70%; }
+  .project-detail.has-stack .project-mixed-stack > div.is-stage { width: 55%; }
+  .project-detail.has-stack .project-body-copy { grid-column: 1 / 6; margin: 56px 0 0; align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; }
+  .project-detail.has-stack .project-body-copy p { margin: 0; }
   .project-detail.has-aside .project-mixed-aside { grid-column: 8 / -1; grid-row: 7; margin-top: 56px; }
   .project-detail.has-aside .project-body-copy { grid-column: 1 / 8; }
 
@@ -3134,12 +3143,12 @@ body.is-loading { overflow: hidden; }
   .project-detail.is-intro-film .project-body-copy { grid-column: 1 / 8; grid-row: 8; margin-top: 56px; }
   .project-detail.is-intro-film .project-video-details { grid-column: 1 / -1; grid-row: 9; margin-top: 56px; }
   /* FILM SIDE (Oasis): the film is smaller and sits on the right (columns
-     6-12, 708px wide at the full shell) with the write-up tight beside it on
-     the left (columns 1-5), both in ONE row straight under the masthead, so
+     5-12, 820px wide at the full shell) with the write-up tight beside it on
+     the left (columns 1-4, 391px), both in ONE row straight under the masthead, so
      the text starts to show as soon as the page opens and can be read while
      the film plays */
-  .project-detail.is-film-side .project-video-frame { grid-column: 6 / -1; grid-row: 7; margin-top: 40px; }
-  .project-detail.is-film-side .project-body-copy { grid-column: 1 / 6; grid-row: 7; margin-top: 40px; }
+  .project-detail.is-film-side .project-video-frame { grid-column: 5 / -1; grid-row: 7; margin-top: 40px; }   /* 8 columns: 820 x 461 at the full shell */
+  .project-detail.is-intro-film.is-film-side .project-body-copy { grid-column: 1 / 5; grid-row: 7; margin-top: 40px; }    /* 4 columns: 391px, tight and tall */
 
 
   /* ---- columns: two stacks that progress on their own ---- */
@@ -3191,6 +3200,9 @@ body.is-loading { overflow: hidden; }
   .project-detail:not(.is-case) .project-video-frame { order: 6; margin-top: 40px; }
   .project-detail:not(.is-case) .project-body-copy { order: 7; margin: 40px 0 0; }
   .project-detail:not(.is-case) .project-mixed-aside { order: 8; margin-top: 40px; }
+  .project-detail.has-stack .project-mixed-stack { order: 8; margin-top: 40px; align-items: stretch; }
+  .project-detail.has-stack .project-mixed-stack > div.is-bookmark,
+  .project-detail.has-stack .project-mixed-stack > div.is-stage { width: 100%; }
   .project-detail:not(.is-case) .project-mixed-details,
   .project-detail:not(.is-case) .project-video-details,
   .project-detail:not(.is-case) .masonry-section { order: 9; margin-top: 14px; }
@@ -3253,6 +3265,8 @@ body.is-loading { overflow: hidden; }
   aspect-ratio: 1;
 }
 .project-mixed-details svg { width: 100%; height: 100%; display: block; }
+.project-mixed-stack > div { border: 3px solid var(--black); overflow: hidden; aspect-ratio: var(--ar); }
+.project-mixed-stack img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .project-mixed-aside { border: 3px solid var(--black); overflow: hidden; aspect-ratio: 1; }
 .project-mixed-aside img { width: 100%; height: 100%; display: block; object-fit: cover; }
 /* with an aside the bottom pair is levelled at the photographs' OWN ratios:
