@@ -3123,11 +3123,23 @@ body.is-loading { overflow: hidden; }
   .project-detail.is-intro-split .project-mixed-details,
   .project-detail.is-intro-split .masonry-section { grid-column: 1 / -1; grid-row: 8; margin-top: 48px; }
   .project-detail.is-intro-split .project-mixed-details { margin-top: 56px; }
+  /* ASIDE (Easter): one photo beside the write-up, in columns 8-12 (496px at
+     the full shell, square), top level with the first line of the text; the
+     remaining two sit full width underneath at their own native ratios */
+  .project-detail.has-aside .project-mixed-aside { grid-column: 8 / -1; grid-row: 7; margin-top: 56px; }
+  .project-detail.has-aside .project-body-copy { grid-column: 1 / 8; }
 
   /* film: the film is the next major section, then the write-up */
   .project-detail.is-intro-film .project-video-frame { grid-column: 1 / -1; grid-row: 7; margin-top: 64px; }
   .project-detail.is-intro-film .project-body-copy { grid-column: 1 / 8; grid-row: 8; margin-top: 56px; }
   .project-detail.is-intro-film .project-video-details { grid-column: 1 / -1; grid-row: 9; margin-top: 56px; }
+  /* FILM SIDE (Oasis): the film is smaller and sits on the right (columns
+     6-12, 708px wide at the full shell) with the write-up tight beside it on
+     the left (columns 1-5), both in ONE row straight under the masthead, so
+     the text starts to show as soon as the page opens and can be read while
+     the film plays */
+  .project-detail.is-film-side .project-video-frame { grid-column: 6 / -1; grid-row: 7; margin-top: 40px; }
+  .project-detail.is-film-side .project-body-copy { grid-column: 1 / 6; grid-row: 7; margin-top: 40px; }
 
 
   /* ---- columns: two stacks that progress on their own ---- */
@@ -3178,11 +3190,12 @@ body.is-loading { overflow: hidden; }
   .project-detail:not(.is-case) .project-video-lead { order: 5; }
   .project-detail:not(.is-case) .project-video-frame { order: 6; margin-top: 40px; }
   .project-detail:not(.is-case) .project-body-copy { order: 7; margin: 40px 0 0; }
+  .project-detail:not(.is-case) .project-mixed-aside { order: 8; margin-top: 40px; }
   .project-detail:not(.is-case) .project-mixed-details,
   .project-detail:not(.is-case) .project-video-details,
-  .project-detail:not(.is-case) .masonry-section { order: 8; margin-top: 14px; }
+  .project-detail:not(.is-case) .masonry-section { order: 9; margin-top: 14px; }
   .project-detail:not(.is-case) .masonry-section { margin-top: 40px; }
-  .project-detail:not(.is-case) .project-foot { order: 9; }
+  .project-detail:not(.is-case) .project-foot { order: 10; }
   .project-detail.is-intro-columns .project-media.layout-mixed { display: contents; }
   /* a portrait poster across a whole tablet is 1069px tall: cap it, and let
      the text above it carry the width */
@@ -3240,6 +3253,14 @@ body.is-loading { overflow: hidden; }
   aspect-ratio: 1;
 }
 .project-mixed-details svg { width: 100%; height: 100%; display: block; }
+.project-mixed-aside { border: 3px solid var(--black); overflow: hidden; aspect-ratio: 1; }
+.project-mixed-aside img { width: 100%; height: 100%; display: block; object-fit: cover; }
+/* with an aside the bottom pair is levelled at the photographs' OWN ratios:
+   flex-grow equal to aspect-ratio makes both the same height with no crop, so
+   the landscape runs wider and the portrait taller, as asked. 1.333 and 0.667
+   are 4:3 and 2:3 */
+.project-detail.has-aside .project-mixed-details > div.is-landscape { flex-grow: 1.333; aspect-ratio: 1.333; }
+.project-detail.has-aside .project-mixed-details > div.is-portrait  { flex-grow: 0.667; aspect-ratio: 0.667; }
 @media (max-width: 700px) {
   /* Two-up and wrapping: the width nudge is pointless once tiles are half a
      phone wide, so squares come back.
@@ -4047,7 +4068,9 @@ body.is-loading { overflow: hidden; }
   position: absolute; top: 14px; left: 14px; z-index: 2;
   margin: 0;
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
-  text-transform: uppercase; color: var(--muted);
+  text-transform: uppercase;
+  /* the page's coral, as --accent-ink because this is 11.5px text: 4.71:1 light and 5.16 dark (--accent itself is 3.21 on the light ground). Was --muted. */
+  color: var(--accent-ink);
   pointer-events: none;
   opacity: 0; transition: opacity .4s ease;
 }

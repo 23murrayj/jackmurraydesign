@@ -697,11 +697,13 @@ const projectData = {
     hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
             full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
     detailImages: [
-      { src: '/assets/projects/easter-riverside/03-banner.jpg', w: 1200, h: 900,
+      { src: '/assets/projects/easter-riverside/03-banner.jpg?v=6d7df561', w: 1600, h: 1200,
         full: '/assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
-      { src: '/assets/projects/easter-riverside/02-photo-wall.jpg', w: 800, h: 1200,
+      { src: '/assets/projects/easter-riverside/02-photo-wall.jpg?v=05d91e46', w: 1000, h: 1500,
         full: '/assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
-      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg', w: 900, h: 1200,
+      /* aside: the cards on the small table sit to the RIGHT of the write-up
+         (re-cropped 1:1 from the original so the stack fills the frame) */
+      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg?v=00c50b5a', w: 1200, h: 1200, aside: true,
         full: '/assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
     ]
   },
@@ -737,7 +739,8 @@ const projectData = {
       // the masthead frame (`lead`): one VR player and one PC player at the
       // same table, in a room full of onlookers - the asymmetric co-op and the
       // public exhibition in a single photograph
-      { src: '/assets/projects/fuse-partners-in-crime/03-museum-room.jpg', w: 1013, h: 760, lead: true },
+      { src: '/assets/projects/fuse-partners-in-crime/03-museum-room-hi.jpg?v=c3d71ef3', w: 1800, h: 1350, lead: true,
+        full: '/assets/projects/fuse-partners-in-crime/03-museum-room-full.jpg' },   // re-exported from the 2048x1536 original (was a 1013px file, which is what kept it at 5 columns)
       // the exhibition standup: title lockup, the full 17-person crew by
       // department, and the in-game scanner art. Unreadable at strip width by
       // definition, so it carries a zoom source.
@@ -911,6 +914,7 @@ const projectData = {
     role: 'Animator / Director',
     layout: 'video',
     intro: 'film',
+    filmSide: true,   // film smaller on the right, the write-up beside it on the left
     videoCaption: 'WATCH THE SHORT FILM',
     videoSvg: `<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
       <rect width="600" height="450" fill="#0a5cff"/>
@@ -1615,6 +1619,8 @@ function renderProjectMedia(data) {
   Object.keys(INTRO_CLASS).forEach((v) =>
     projectDetailEl.classList.toggle(INTRO_CLASS[v], data.intro === v));
   projectDetailEl.classList.toggle('is-video', data.layout === 'video');
+  projectDetailEl.classList.toggle('is-film-side', !!data.filmSide);
+  projectDetailEl.classList.toggle('has-aside', !!(data.detailImages || []).some((e) => e && e.aside));
   // the whole page, built from `caseStudy`. Hides .project-media and
   // .project-body, so this returns before any of the layouts below.
   renderCaseStudy(data);
@@ -1788,8 +1794,11 @@ function renderProjectMedia(data) {
   if (data.layout === 'mixed') {
     projectMedia.innerHTML = `
       <div class="project-mixed-hero"${data.heroRatio ? ` style="--hero-ratio: ${escapeAttr(data.heroRatio)}"` : ''}>${mediaTag(data.hero || data.heroSvg, data.id, 0, data.title)}</div>
+      ${(data.detailImages || []).map((entry, i) => entry && entry.aside
+        ? `<div class="project-mixed-aside">${mediaTag(entry, data.id, i + 1, data.title)}</div>` : '').join('')}
       <div class="project-mixed-details">
         ${(data.detailImages || []).map((entry, i) => {
+          if (entry && entry.aside) return '';
           // Width comes from the photo's own orientation. In equal square
           // boxes a portrait shot loses far more to the cover crop than a
           // landscape one, so give portraits a narrower box and landscapes
@@ -1841,7 +1850,9 @@ function fillProjectDetail(id) {
     n.textContent = T.t('cat.' + c) || c;
     return n;
   });
-  projectTags.querySelectorAll('.cs-tag').forEach((n) => n.remove());
+  // pairs too: removing only the chips left their empty wrappers behind, and each
+  // one is a flex item, so a 10px gap per stale wrapper opened up the chip row
+  projectTags.querySelectorAll('.cs-tag, .cs-tag-pair').forEach((n) => n.remove());
   projectTitle.textContent = data.title;
 
   /* WHERE THE TITLE SITS. Its home is the top of .project-body - the
@@ -1967,6 +1978,9 @@ function closeProject() {
   // a requestAnimationFrame left running behind a closed overlay is a phone
   // battery spent on something nobody is looking at
   stopModelStages();
+  // a film left playing behind a closed panel keeps its sound going: pause
+  // every video in the panel (the next open re-renders it from the poster)
+  projectMedia.querySelectorAll('video').forEach((v) => v.pause());
   projectOverlay.classList.remove('open');
   document.body.style.overflow = '';
   deactivateDialog(projectOverlay);
