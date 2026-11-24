@@ -196,7 +196,7 @@ const projectData = {
     // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
     // untouched.
     detailImages: [
-      { src: '/assets/projects/cat-coaching/03-team.jpg', w: 700, h: 700,
+      { src: '/assets/projects/cat-coaching/03-team.jpg?v=2b0b0c71', w: 1400, h: 1400,
         full: '/assets/projects/cat-coaching/03-team-full.jpg' }
     ]
   },
@@ -776,11 +776,8 @@ const projectData = {
     // same shape as easter-riverside: the design, then the design in use
     layout: 'mixed',
     intro: 'split',
-    // the artwork is a centred composition on a wide field of paper (the
-    // wordmark spans the middle half), so the masthead frame is 4:3 rather
-    // than Easter's 16:9: more picture per inch of column, nothing that
-    // matters cut (the lightbox still opens the whole 16:9)
-    heroRatio: '4 / 3',
+    // the artwork keeps its own 16:9: Jack, "I don't like us changing the ratio
+    // of our main project piece", even if it reads a little smaller
     hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
             full: '/assets/projects/sandcastles/01-hero-full.jpg' },
     // Two applications, both of them the finished thing in use. 02-photoshop.jpg
@@ -791,7 +788,7 @@ const projectData = {
     detailImages: [
       { src: '/assets/projects/sandcastles/05-reading-plan.jpg', w: 1100, h: 1100,
         full: '/assets/projects/sandcastles/05-reading-plan-full.jpg' },
-      { src: '/assets/projects/sandcastles/03-stage.jpg', w: 1200, h: 671,
+      { src: '/assets/projects/sandcastles/03-stage.jpg?v=8611f06f', w: 1800, h: 1006,
         full: '/assets/projects/sandcastles/03-stage-full.jpg' }
     ]
   },
@@ -818,41 +815,41 @@ const projectData = {
     // clustered at the end. The landscape/portrait pattern is load-bearing:
     // the row packer needs portraits at 2, 5, 9, 12 and 16 to fill every row.
     photos: [
-      { src: '/assets/projects/monmouth-retreat/01.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/01-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/01.jpg?v=937e07c7', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/01-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
       { src: '/assets/projects/monmouth-retreat/02.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/02-full.jpg',
         exif: '85mm · f/13 · 1/160 s · ISO 160' },
-      { src: '/assets/projects/monmouth-retreat/03.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/03-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/03.jpg?v=867a085f', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/03-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/04.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/04-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/04.jpg?v=e742e4ac', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/04-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
       { src: '/assets/projects/monmouth-retreat/05.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/05-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/06.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/06-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/06.jpg?v=78e36e5f', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/06-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' },
-      { src: '/assets/projects/monmouth-retreat/07.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/07-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/07.jpg?v=7f57359f', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/07-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 1000' },
-      { src: '/assets/projects/monmouth-retreat/08.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/08-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/08.jpg?v=e42b6597', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/08-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
       { src: '/assets/projects/monmouth-retreat/09.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/09-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 800' },
-      { src: '/assets/projects/monmouth-retreat/10.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/10-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/10.jpg?v=15dc5493', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/10-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/11.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/11-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/11.jpg?v=fe53d1c6', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/11-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 640' },
       { src: '/assets/projects/monmouth-retreat/12.jpg', w: 843, h: 1200, full: '/assets/projects/monmouth-retreat/12-full.jpg',
         exif: '50mm · f/2.2 · 1/400 s · ISO 2500' },
-      { src: '/assets/projects/monmouth-retreat/13.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/13-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/13.jpg?v=cd2b2807', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/13-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/14.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/14-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/14.jpg?v=dcaa4db2', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/14-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/15.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/15-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/15.jpg?v=f9093991', w: 1800, h: 1200, full: '/assets/projects/monmouth-retreat/15-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' },
       { src: '/assets/projects/monmouth-retreat/16.jpg', w: 800, h: 1200, full: '/assets/projects/monmouth-retreat/16-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 400' },
-      { src: '/assets/projects/monmouth-retreat/17.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/17-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/17.jpg?v=c0214843', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/17-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 640' },
-      { src: '/assets/projects/monmouth-retreat/18.jpg', w: 1200, h: 800, full: '/assets/projects/monmouth-retreat/18-full.jpg',
+      { src: '/assets/projects/monmouth-retreat/18.jpg?v=42db7720', w: 2000, h: 1333, full: '/assets/projects/monmouth-retreat/18-full.jpg',
         exif: '85mm · f/2 · 1/160 s · ISO 500' }
     ]
   },
@@ -1617,7 +1614,10 @@ function renderProjectMedia(data) {
   // a video project's masthead frame is its `lead` still; a portrait one takes
   // a narrow column and gives the text the rest (see the composition note)
   const leadEntry = data.layout === 'video' && (data.detailImages || []).find((e) => e && e.lead);
-  projectDetailEl.classList.toggle('is-lead-tall', !!(leadEntry && leadEntry.h > leadEntry.w));
+  const leadTall = !!(leadEntry && leadEntry.h > leadEntry.w);
+  projectDetailEl.classList.toggle('is-lead-tall', leadTall);
+  // a lead file under ~1400px wide would be scaled up at the 7-column frame
+  projectDetailEl.classList.toggle('is-lead-small', !!(leadEntry && !leadTall && leadEntry.w < 1400));
 
   if (data.layout === 'case') return;
 

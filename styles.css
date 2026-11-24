@@ -3060,6 +3060,12 @@ body.is-loading { overflow: hidden; }
    parent must never be able to shrink it */
 .project-detail:not(.is-case) .project-back { position: static; margin-bottom: 0; flex: none; white-space: nowrap; min-width: max-content; }
 .masonry-lead, .project-video-lead { border: 4px solid var(--black); overflow: hidden; }
+/* the category chip, as the tag row draws it on Pot Clip: the same size and
+   type as the grey keyword chips there, the black fill kept for the category */
+.project-detail:not(.is-case) .project-cat {
+  margin: 20px 0 0;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 1.2px; padding: 9px 15px;
+}
 .project-video-lead img { display: block; }
 .masonry-label {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
@@ -3078,11 +3084,16 @@ body.is-loading { overflow: hidden; }
     align-items: start;
   }
   .project-detail.is-lead-tall { --pd-text-end: 8; --pd-frame-start: 9; --pd-title-size: clamp(2.6rem, 4.8vw, 4.2rem); }
+  /* a lead whose file is under ~1400px wide is shown at 5 columns (496px), where
+     it is still 2x on a retina screen, rather than scaled up at 7 */
+  .project-detail.is-lead-small { --pd-text-end: 7; --pd-frame-start: 8; }
   .project-detail:not(.is-case) .project-bar { grid-column: 1 / -1; grid-row: 1 / -1; align-self: start; }
-  .project-detail:not(.is-case) .project-cat   { grid-row: 2; margin-top: var(--pd-back-room); justify-self: start; }
-  .project-detail:not(.is-case) .project-body h2 { grid-row: 3; font-size: var(--pd-title-size); line-height: 1; }
-  .project-detail:not(.is-case) .project-desc  { grid-row: 4; }
-  .project-detail:not(.is-case) .project-meta  { grid-row: 5; }
+  /* identity, then the facts, then the category chip UNDER them - the order
+     Pot Clip draws (facts table, then the tag row) */
+  .project-detail:not(.is-case) .project-body h2 { grid-row: 2; margin-top: var(--pd-back-room); font-size: var(--pd-title-size); line-height: 1; }
+  .project-detail:not(.is-case) .project-desc  { grid-row: 3; }
+  .project-detail:not(.is-case) .project-meta  { grid-row: 4; }
+  .project-detail:not(.is-case) .project-cat   { grid-row: 5; justify-self: start; }
   .project-detail:not(.is-case) .project-cat,
   .project-detail:not(.is-case) .project-body h2,
   .project-detail:not(.is-case) .project-desc,
@@ -3109,14 +3120,15 @@ body.is-loading { overflow: hidden; }
   .project-detail.is-intro-film .project-body-copy { grid-column: 1 / 8; grid-row: 8; margin-top: 56px; }
   .project-detail.is-intro-film .project-video-details { grid-column: 1 / -1; grid-row: 9; margin-top: 56px; }
 
+
   /* ---- columns: two stacks that progress on their own ---- */
   .project-detail.is-intro-columns { grid-template-rows: auto auto auto; }
   /* flex, not block, so the facts can come before the write-up: the markup
      has the write-up first, and the grid rows used to do the reordering */
   .project-detail.is-intro-columns .project-body { display: flex; flex-direction: column; grid-column: 1 / 7; grid-row: 2; }
-  .project-detail.is-intro-columns .project-cat { align-self: flex-start; }
+  .project-detail.is-intro-columns .project-cat { align-self: flex-start; order: 2; }
   .project-detail.is-intro-columns .project-meta { order: 1; }
-  .project-detail.is-intro-columns .project-body-copy { order: 2; }
+  .project-detail.is-intro-columns .project-body-copy { order: 3; }
   .project-detail.is-intro-columns .project-media.layout-mixed {
     display: flex; flex-direction: column; gap: 24px;
     grid-column: 7 / -1; grid-row: 2; margin-top: var(--pd-back-room);
@@ -3125,15 +3137,26 @@ body.is-loading { overflow: hidden; }
   .project-detail.is-intro-columns .project-foot { grid-row: 3; }
 }
 
+/* from 1101 up the remaining stills sit BESIDE the write-up, top-aligned with
+   it, in a strip sized by height so each keeps its own shape; below that the
+   column is too narrow for them and they run under it */
+@media (min-width: 1101px) {
+  .project-detail.is-intro-film .project-video-details {
+    grid-column: 9 / -1; grid-row: 8; margin-top: 56px;
+    flex-wrap: nowrap; justify-content: flex-start; --strip-h: clamp(200px, 18.8vw, 280px);
+  }
+  .project-detail.is-intro-film .project-video-details > div { height: var(--strip-h); }
+}
+
 /* ---- tablet and phone: one column, flex so each piece can be ordered ---- */
 @media (max-width: 900px) {
   .project-detail:not(.is-case) { display: flex; flex-direction: column; }
   .project-detail:not(.is-case) > * { order: 0; }
   .project-detail:not(.is-case) .project-bar { align-self: stretch; margin-bottom: 22px; }
-  .project-detail:not(.is-case) .project-cat   { order: 1; align-self: flex-start; }
-  .project-detail:not(.is-case) .project-body h2 { order: 2; }
-  .project-detail:not(.is-case) .project-desc  { order: 3; }
-  .project-detail:not(.is-case) .project-meta  { order: 4; margin-bottom: 40px; }
+  .project-detail:not(.is-case) .project-body h2 { order: 1; }
+  .project-detail:not(.is-case) .project-desc  { order: 2; }
+  .project-detail:not(.is-case) .project-meta  { order: 3; }
+  .project-detail:not(.is-case) .project-cat   { order: 4; align-self: flex-start; margin-bottom: 40px; }
   .project-detail:not(.is-case) .project-mixed-hero,
   .project-detail:not(.is-case) .masonry-lead,
   .project-detail:not(.is-case) .project-video-lead { order: 5; }
