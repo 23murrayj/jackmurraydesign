@@ -5637,7 +5637,7 @@ body.is-loading { overflow: hidden; }
   /* a column now: the credit line sits above the copyright row rather than
      competing with it for space in a single flex line */
   display: flex; flex-direction: column; gap: 18px;
-  padding: 22px 5vw; background: var(--ink); color: var(--paper);
+  padding: 20px 5vw 22px; background: var(--ink); color: var(--paper);
   font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
 }
 .footer-row {
@@ -5661,7 +5661,15 @@ body.is-loading { overflow: hidden; }
   line-height: 1.9;
   color: color-mix(in srgb, var(--paper) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
-  padding-bottom: 16px;
+  /* the text is centred BETWEEN the footer's top edge and this rule: the
+     footer's 20px top padding and this 20px are equal, so the line box (and
+     the glyphs in it) sits on the midpoint. It was 22 above and 16 below,
+     which put the type ~3px low. */
+  padding-bottom: 20px;
+  /* a little air between the five items; the trailing letter-space is
+     balanced on the left so the run is optically centred too */
+  word-spacing: 0.35em;
+  padding-left: 0.4px;
 }
 @media (max-width: 700px) {
   .footer-row { flex-wrap: wrap; row-gap: 10px; }
