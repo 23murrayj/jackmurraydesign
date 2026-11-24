@@ -165,7 +165,7 @@ picture { display: contents; }
   --lift-x: 3px; --lift-y: 3px;
 }
 .btn-block { --lift-x: 4px; --lift-y: 4px; }
-.cs-next { --lift-x: 3px; --lift-y: 3px; }
+.cs-next, .bd-figma { --lift-x: 3px; --lift-y: 3px; }
 /* the card is the one that also ROTATES, -0.4deg about its centre, which
    swings a corner of a 643x671 card about 2.3px out of true. The pad rotates
    with the card, so the resting box's far corners can fall outside it - hence
@@ -181,7 +181,7 @@ picture { display: contents; }
    LOST. Every one of these has a 2px border; the card has 3. */
 .theme-switch, .lang-toggle, .badge-available, .btn-block, .filter-btn,
 .project-back, .about-back, .about-readmore-btn, .cv-btn, .copy-email-btn,
-.form-submit, .lightbox-close { --lift-edge: 2px; }
+.form-submit, .lightbox-close, .bd-figma { --lift-edge: 2px; }
 /* three, like the card and the case study's own frames */
 .card, .cs-next { --lift-edge: 3px; }
 
@@ -191,7 +191,7 @@ picture { display: contents; }
    here would unpin it from the top of the overlay. */
 .badge-available, .btn-block, .filter-btn,
 .about-readmore-btn, .cv-btn, .copy-email-btn, .form-submit,
-.cs-next { position: relative; }
+.cs-next { position: relative; }   /* .bd-figma sets its own in its rule */
 
 @media (hover: hover) {
   .theme-switch:hover::before,
@@ -207,6 +207,7 @@ picture { display: contents; }
   .copy-email-btn:hover::before,
   .form-submit:hover::before,
   .cs-next:hover::before,
+  .bd-figma:hover::before,
   .lightbox-close:hover::before {
     content: '';
     position: absolute;
@@ -6831,6 +6832,230 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 }
 
 /* ==========================================================================
+   THE BRADLEY REDESIGN CASE STUDY (renderBradleyStudy)
+   Reuses the Pot Clip case study's masthead, facts table, brief, summary
+   cards, section heads, disclaimer and next-project card (.cs-*). Everything
+   here is the part that page does not have. No sidebar: the visuals want the
+   full measure. Every colour is a token, so both themes come for free; the
+   dark slabs use --ink with --paper type and a --black frame, which is the
+   brief box's own recipe (the frame is what shows in dark, where --ink and
+   the ground are the same colour).
+   ========================================================================== */
+.bd-k {
+  display: block; font-family: var(--ff-body); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+}
+.bd-lede { font-size: clamp(1.05rem, 1.4vw, 1.2rem); line-height: 1.6; max-width: 62ch; margin: 0 0 8px; }
+.bd-prose { font-size: 1rem; line-height: 1.7; max-width: 66ch; margin: 0 0 22px; color: var(--body-copy); }
+.bd-prose strong { color: var(--black); }
+.bd-sub { font-family: var(--ff-body); font-size: 1.15rem; font-weight: 700; line-height: 1.3; margin: 44px 0 12px; }
+.bd-cap { font-size: 0.85rem; line-height: 1.5; color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
+.bd-note { font-size: 0.9rem; color: var(--muted); margin: 14px 0 0; }
+/* a placeholder Jack still has to write: kept loud on purpose so none is missed */
+.bd-todo { background: var(--highlight); color: var(--ink); padding: 0 4px; outline: 1px dashed var(--ink); outline-offset: -1px; }
+.bd { overflow-wrap: break-word; }
+
+/* ---- the one image component: a labelled box at the file's own ratio, and
+   the picture on top of it once the file exists ---- */
+.bd-img {
+  position: relative; margin: 0; aspect-ratio: var(--ar); line-height: 0; overflow: hidden;
+  border: 3px solid var(--black);
+  background: color-mix(in srgb, var(--black) 5%, var(--white));
+}
+.bd-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; -webkit-user-drag: none; }
+.bd-img.is-loaded img { opacity: 1; }
+.bd-img.is-loaded .bd-ph { display: none; }
+.bd-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 14px; text-align: center; line-height: 1.4; }
+.bd-ph-l b { display: block; font-size: 0.8rem; font-weight: 700; color: var(--black); overflow-wrap: anywhere; }
+.bd-ph-l i { display: block; font-style: normal; font-size: 0.78rem; color: var(--body-copy); margin-top: 4px; }
+/* a full-length page is thousands of px tall: its label rides along near the top */
+.bd-img.is-tall .bd-ph { align-items: flex-start; }
+.bd-img.is-tall .bd-ph-l { position: sticky; top: 84px; padding-top: 24px; }
+/* fills a window (the hero crop, the slider) and shows the TOP of the picture */
+.bd-img.is-fill { position: absolute; inset: 0; aspect-ratio: auto; border: 0; }
+.bd-img.is-fill.is-loaded img { position: static; height: auto; }
+.bd-img.at-l .bd-ph { right: 50%; }
+.bd-img.at-r .bd-ph { left: 50%; }
+.bd-hero { position: relative; aspect-ratio: 5 / 6; border: 3px solid var(--black); overflow: hidden; }
+
+/* ---- the before/after slider ---- */
+.bd-compare { margin: 0 0 72px; }
+.bd-compare-win {
+  position: relative; height: 600px; border: 3px solid var(--black); overflow: hidden;
+  cursor: ew-resize; touch-action: pan-y; user-select: none; --split: 50;
+}
+.bd-layer { position: absolute; inset: 0; }
+.bd-layer-top { clip-path: inset(0 calc((100 - var(--split)) * 1%) 0 0); }
+.bd-line { position: absolute; top: 0; bottom: 0; left: calc(var(--split) * 1%); width: 3px; margin-left: -1.5px; background: var(--accent); pointer-events: none; }
+.bd-tag {
+  position: absolute; bottom: 14px; padding: 6px 10px; pointer-events: none;
+  background: var(--ink); color: var(--paper); border: 2px solid var(--black);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 1.6px;
+}
+.bd-tag-l { left: 14px; }
+.bd-tag-r { right: 14px; }
+.bd-range { display: flex; align-items: center; gap: 18px; margin-top: 12px; min-height: 44px; }
+.bd-range .bd-k { margin: 0; flex: none; }
+.bd-range input { flex: 1; accent-color: var(--accent); min-height: 44px; cursor: pointer; }
+.bd-range input:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+/* ---- the slim bar: in flow just below the hero (so out of sight until the
+   hero has scrolled past), then it sticks. Sticky inside a plain block, never
+   a grid item, which Safari and Firefox pin to the item's own area. ---- */
+.bd-bar {
+  position: sticky; top: 0; z-index: 6; height: 48px; box-sizing: border-box;
+  background: var(--ink); color: var(--paper); border: 3px solid var(--black);
+  margin: 0 0 56px;
+}
+.bd-bar-in { display: flex; align-items: center; gap: 18px; height: 100%; padding: 0 12px 0 14px; }
+.bd-bar-now { flex: 1; min-width: 0; margin: 0; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-bar-now b { font-weight: 700; margin-left: 6px; }
+.bd-bar-back, .bd-bar-menu {
+  position: relative; flex: none; font-family: var(--ff-body); font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--paper); background: transparent; cursor: pointer;
+  border: 2px solid var(--paper); padding: 5px 10px; min-height: 30px;
+}
+.bd-bar-back:focus-visible, .bd-bar-menu:focus-visible, .bd-menu a:focus-visible, .bd-index a:focus-visible, .bd-figma:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.bd-bar-back:focus-visible, .bd-bar-menu:focus-visible { outline-color: var(--accent); }
+@media (hover: hover) { .bd-bar-back:hover, .bd-bar-menu:hover { background: var(--paper); color: var(--ink); } }
+@media (hover: none) { .bd-bar-back::after, .bd-bar-menu::after { content: ''; position: absolute; inset: -9px -4px; } }
+.bd-stuck .project-back { visibility: hidden; }
+.bd-prog { position: absolute; left: 0; bottom: -3px; height: 3px; width: var(--p, 0%); background: var(--accent); }
+.bd-menu {
+  position: absolute; top: 100%; right: 0; width: 340px; max-height: 70vh; overflow: auto; z-index: 7;
+  list-style: none; margin: 3px -3px 0 0; background: var(--white); color: var(--black); border: 3px solid var(--black);
+}
+.bd-menu[hidden] { display: none; }
+.bd-menu a { display: flex; gap: 12px; align-items: center; min-height: 44px; padding: 8px 16px; text-decoration: none; color: var(--black); font-weight: 700; font-size: 0.92rem; border-bottom: 1px solid var(--line); }
+.bd-menu li:last-child a { border-bottom: 0; }
+.bd-menu a span { color: var(--muted); font-weight: 400; min-width: 1.2em; }
+.bd-menu a[aria-current="true"] { border-left: 4px solid var(--accent); padding-left: 12px; }
+@media (hover: hover) { .bd-menu a:hover { background: color-mix(in srgb, var(--accent) 12%, var(--white)); } }
+
+/* ---- research ---- */
+.bd-intro-row { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 56px; align-items: start; }
+.bd-index ol { list-style: none; counter-reset: bdi; }
+.bd-index li { counter-increment: bdi; border-bottom: 1px solid var(--line); }
+.bd-index li:first-child { border-top: 3px solid var(--black); }
+.bd-index a { display: flex; align-items: center; min-height: 44px; padding: 6px 0 6px 14px; text-decoration: none; color: var(--black); font-size: 0.85rem; font-weight: 700; border-left: 3px solid transparent; transition: border-color .2s, color .2s; }
+.bd-index a::before { content: counter(bdi) " "; color: var(--muted); font-weight: 400; margin-right: 6px; }
+@media (hover: hover) { .bd-index a:hover { border-left-color: var(--accent); color: var(--accent-ink); } }
+.bd-two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 56px; margin-top: 8px; }
+.bd-two .bd-sub:first-child { margin-top: 44px; }
+.bd-stats { list-style: none; border-top: 3px solid var(--black); }
+.bd-stat { display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.bd-stat-n { font-family: var(--ff-display); font-size: 1.5rem; line-height: 1; color: var(--accent-ink); }
+.bd-stat-t { font-size: 0.95rem; line-height: 1.45; }
+.bd-insight { background: var(--ink); color: var(--paper); border: 3px solid var(--black); padding: 36px 40px; margin-top: 56px; }
+.bd-insight p { margin: 0; max-width: 46ch; font-size: clamp(1.1rem, 1.8vw, 1.5rem); line-height: 1.45; text-wrap: pretty; }
+
+/* ---- tables: they scroll sideways inside their own box, never the page ---- */
+.bd-scroll { overflow-x: auto; margin: 26px 0 30px; border-top: 3px solid var(--black); }
+.bd-scroll:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.bd-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.95rem; line-height: 1.5; text-align: left; }
+.bd-table th, .bd-table td { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; font-weight: 500; }
+.bd-table thead th { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); vertical-align: bottom; }
+.bd-table tbody th { font-weight: 700; }
+.bd-table-journey { min-width: 920px; }
+.bd-table-journey thead th { background: var(--ink); color: var(--paper); padding: 12px 14px; }
+.bd-table-journey th, .bd-table-journey td { padding-left: 14px; padding-right: 14px; }
+.bd-table-journey tbody th { font-size: 0.72rem; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); width: 120px; }
+
+/* ---- the problem ---- */
+.bd-problem { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 56px; align-items: start; margin-top: 32px; }
+.bd-pinned { position: relative; }
+.bd-pin, .bd-pin-n {
+  display: grid; place-items: center; width: 26px; height: 26px; flex: none;
+  background: var(--accent); color: var(--accent-on); border: 2px solid var(--black);
+  font-size: 0.8rem; font-weight: 700; line-height: 1;
+}
+.bd-pin { position: absolute; transition: transform .2s, box-shadow .2s; }
+.bd-pin.is-on { transform: scale(1.3); box-shadow: 3px 3px 0 var(--black); z-index: 2; }
+.bd-pinlist { list-style: none; display: grid; gap: 8px; }
+.bd-pinlist li { display: grid; grid-template-columns: 26px 1fr; gap: 16px; padding: 14px 14px 14px 12px; border-left: 3px solid transparent; transition: background .2s, border-color .2s; }
+.bd-pinlist li:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.bd-pinlist li:hover, .bd-pinlist li:focus-visible { background: color-mix(in srgb, var(--accent) 10%, var(--white)); border-left-color: var(--accent); }
+.bd-pinlist p { margin: 0; font-size: 0.98rem; line-height: 1.6; color: var(--body-copy); }
+.bd-pinlist strong { color: var(--black); }
+.bd-hmw { margin: 56px 0 0; border-left: 6px solid var(--accent); padding: 6px 0 6px 24px; max-width: 46ch; font-size: clamp(1.15rem, 1.7vw, 1.45rem); font-weight: 700; line-height: 1.4; }
+
+/* ---- the journey diagrams ---- */
+.bd-diagrams { grid-template-columns: 1fr 1fr; margin-top: 40px; }
+.bd-order { list-style: none; display: grid; gap: 10px; }
+.bd-order li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--black); background: var(--white); font-size: 0.92rem; line-height: 1.4; }
+.bd-stage { display: grid; place-items: center; flex: none; width: 24px; height: 24px; background: var(--accent); color: var(--accent-on); font-size: 0.78rem; font-weight: 700; }
+
+/* ---- what I built ---- */
+.bd-tile h4 { font-family: var(--ff-body); font-size: 1.05rem; font-weight: 700; margin: 18px 0 6px; }
+.bd-tile .bd-prose { margin: 0; font-size: 0.95rem; line-height: 1.6; }
+.bd-tile.is-wide { margin-top: 40px; }
+.bd-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 44px 32px; margin-top: 44px; align-items: start; }
+
+/* ---- design decisions ---- */
+.bd-decision { margin-top: 64px; }
+.bd-decision-h { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; border-bottom: 3px solid var(--black); padding-bottom: 12px; }
+.bd-decision-h h4 { font-family: var(--ff-display); font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.2; margin: 0; }
+.bd-decision-n { color: var(--accent-ink); margin-right: 8px; }
+.bd-owner { margin: 0; flex: none; font-size: 0.85rem; color: var(--muted); text-align: right; }
+.bd-fdt { list-style: none; margin: 20px 0 28px; max-width: 84ch; }
+.bd-fdt li { position: relative; padding-left: 20px; margin-bottom: 12px; line-height: 1.6; color: var(--body-copy); }
+.bd-fdt li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 7.5px; background: var(--accent); }
+.bd-fdt strong { color: var(--black); }
+.bd-ba { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+
+/* ---- the version lineup: every image 100% of a 170px column, so the heights
+   are the true relative lengths ---- */
+.bd-lineup { list-style: none; display: flex; gap: 28px; align-items: flex-start; margin: 32px 0 36px; overflow-x: auto; padding-bottom: 6px; }
+.bd-version { flex: none; width: 170px; }
+.bd-version-n { margin: 0; font-weight: 700; }
+.bd-version-s { margin: 2px 0 12px; min-height: 2.9em; font-size: 0.82rem; line-height: 1.45; color: var(--muted); }
+.bd-version.is-mine .bd-img { border-color: var(--accent); }
+.bd-lineup .bd-ph-l b { font-size: 0.68rem; }
+.bd-lineup .bd-ph-l i { display: none; }
+
+/* ---- final design ---- */
+.bd-final-top { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+.bd-figma {
+  position: relative; display: inline-flex; gap: 8px; align-items: center; min-height: 44px;
+  padding: 10px 18px; border: 2px solid var(--black); background: var(--white); color: var(--black);
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; text-decoration: none;
+  transition: transform .25s, box-shadow .25s;
+}
+@media (hover: hover) { .bd-figma:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 6px 6px 0 var(--accent); } }
+.bd-figma:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
+.bd-frame { height: 900px; overflow: auto; border: 3px solid var(--black); background: var(--white); }
+.bd-frame:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
+.bd-frame .bd-img { border: 0; }
+
+/* ---- limitations ---- */
+.bd-kvs { margin: 28px 0 32px; border-top: 3px solid var(--black); }
+.bd-kv { display: grid; grid-template-columns: 190px 1fr; gap: 0 36px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.bd-kv dt { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+.bd-kv dd { margin: 0; line-height: 1.6; max-width: 72ch; }
+
+@media (max-width: 900px) {
+  .bd-intro-row, .bd-two, .bd-problem, .bd-diagrams { grid-template-columns: 1fr; gap: 36px; }
+  .bd-index { order: 2; }
+}
+@media (max-width: 760px) {
+  .bd-compare-win { height: 480px; }
+  .bd-tiles, .bd-ba { grid-template-columns: 1fr; gap: 32px; }
+  .bd-insight { padding: 26px 22px; }
+  .bd-menu { left: -3px; right: -3px; width: auto; margin-right: 0; }
+  .bd-bar-back { display: none; }
+  .bd-bar-in { gap: 10px; }
+  .bd-decision-h { flex-direction: column; gap: 6px; }
+  .bd-owner { text-align: left; }
+  .bd-lineup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; overflow: visible; }
+  .bd-version { width: auto; }
+  .bd-kv { grid-template-columns: 1fr; gap: 4px; }
+  .bd-frame { height: 640px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bd-pin, .bd-figma, .bd-index a { transition: none; }
+}
+
+/* ==========================================================================
    DISPLAY WEIGHT: Archivo Black ships ONE face, at 400
    Every h2/h3 here inherits the browser's bold (700), which the engine
    answered by smearing the 400 glyphs. font-synthesis: none stops it doing
@@ -6842,7 +7067,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 html { font-synthesis: none; }
 .nav-logo, .hero-name, .section-head h2, .gallery-fallback-title,
 .card-info h3, .video-caption, .project-body h2, .cs-title-slot h2,
-.cs-brief-t, .cs-h, .cs-defs dt, .cs-step-cap, .cs-next-t,
+.cs-brief-t, .cs-h, .bd-stat-n, .bd-decision-h h4, .cs-defs dt, .cs-step-cap, .cs-next-t,
 .about-page-intro h2, .about-page-subhead, .timeline-role, .stat-num,
 .contact-statement, .social-link, .chaos-stop-btn, .chaos-play-btn-large,
 .pong-end-msg, #pongRematch { font-weight: 400; }

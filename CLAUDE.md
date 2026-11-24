@@ -4833,13 +4833,11 @@ fonts about 45KB.
   taller frame replaced it under a new filename; nothing on disk answers to
   the old name any more.)
 - Placeholder/fake projects must never ship live.
-  **One exception, on Jack's explicit word (2026-11-24): `bradley-redesign`**
-  is a deliberate placeholder card - a title, a flat stone image box
-  (`assets/projects/bradley-redesign/thumb.jpg`) and "Case study coming soon.",
-  no write-up. It is real work he intends to write up, not a fake project, and
-  llms.txt says it has no write-up yet so no reader is told otherwise. When the
-  case study arrives, replace the image, desc and body in all four languages
-  and drop that llms.txt sentence. It is the eighth card; the grid stays even.
+  **`bradley-redesign` was the one exception (2026-11-24) and now has its case
+  study** (see *The Bradley Redesign case study* below). Its page still carries
+  visible [bracketed] placeholders and placeholder image boxes on Jack's word,
+  until he fills them in; it is real work, not a fake project. The card
+  thumbnail is still the flat stone panel.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.
 
@@ -4870,3 +4868,12 @@ fonts about 45KB.
 **Sandcastles' text now stops ~22% of the way down the stage photo (2026-11-24)**, not at its foot: from 1200px up `.has-stack .project-body-copy` carries `margin-bottom: calc(0.171 * min(90vw, 1236px))` (78% of the stage photo's height, which is 0.2193 of the shell width). Measured: 23% at 1440; at 1280 it is 34%, because the three paragraphs are then at their minimum 28px gaps and cannot be shorter. Below 1200 the text is already the taller side, so there is no margin.
 
 **The resume was replaced on 2026-11-24** (Jack's updated one-page PDF, read in full first: city, email, site and LinkedIn only, no street address or phone). Both links in `index.html` carry a `?v=` content hash, which `tools/asset-rev.js` now also maintains in `index.html` (the hook runs it there too), so a future swap of the same file name reaches returning visitors instead of waiting out the week of stale-while-revalidate.
+
+
+## The Bradley Redesign case study (2026-11-24)
+
+Built from Jack's handoff brief (`renderBradleyStudy`, SECTION 06 of script.js; styles `.bd-*` just before the DISPLAY WEIGHT block in styles.css). `caseStudy: { bradley: true, next: 'pot-clip' }` routes the shared case-study renderer to it, so `.is-case` hides the photo wall as for Pot Clip, and the masthead, facts table, brief, summary cards, section heads, disclaimer and next-project card are Pot Clip's own (`.cs-*`). **No sidebar**: the Research index is static beside its intro, and a slim sticky bar (`.bd-bar`, in flow just below the hero so it is out of sight until the hero has scrolled past, then stuck) carries "3 / 9 THE JOURNEY", a progress line and a Sections menu. The bar is a child of a plain block, never a grid item. Once stuck it covers the sticky back button, so `bd-stuck` hides that and the bar carries its own All projects button (hidden under 760, where the page's button is out of the way anyway). The active section comes from geometry on scroll plus an IntersectionObserver (the pane never delivers the page's own observers, so there are two). Escape closes the menu first, before the overlay.
+- **English only, for now**: the copy is the brief verbatim and still has placeholders, so it is NOT in i18n.js (this breaks the four-languages rule on purpose; the panel is `lang="en"`). The card desc and the markup-fallback / JSON-LD body ARE in all four languages. When the copy is final, move it into i18n.js.
+- **Every image is a placeholder until its file exists**: `bdImg()` draws a labelled box at the file's real ratio with the `<img>` on top, and the box goes away on load, so dropping a file into `assets/projects/bradley-redesign/` is the whole job. File names and sizes are the brief's table (original-full.jpg, master-1-full.jpg, master-2-full.jpg, master-3-full.jpg, header-breadcrumbs.png, journey-section.png, carousel.png, career-stats.png, style-foundations.png, d1-original-careers.png, d2-original-sidebar.png, d2-master3-hero.png, d3-original-header.png). Paths are built from `BD_IMG` because audit.js treats a literal asset path as a file that must exist. The full-length pages are big: resize them before dropping them in, and note the hero, the slider and the scroll frame all use master-3-full.jpg.
+- **Placeholders** are written `[like this]` in the copy and rendered by `bdE()` as `.bd-todo` (highlighted, so none is missed); `document.querySelectorAll('.bd-todo')` lists what is left. Master 3's length (8,158px as of Nov 24) is typed in two places (the lineup and its table) and must follow the real file.
+- Interactions: the slider is a real range input plus drag on the image (original on top, clipped with `clip-path: inset(0 X% 0 0)`); the pins are positioned in % exactly as briefed and a list item (hover or focus) lights its pin; the scroll frame is a focusable region; the tables scroll sideways in their own box. The Open in Figma link is built from the brief's file key and frame 297:284 and needs the file shared to open for others.

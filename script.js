@@ -928,20 +928,21 @@ const projectData = {
       <text x="40" y="410" font-family="Archivo Black" font-size="30" fill="#fff">JOURNEY TO THE OASIS</text>
     </svg>`
   },
-  /* PLACEHOLDER, on Jack's word (2026-11-24): a title and a flat image box,
-     no write-up yet. The image is a plain stone panel, not a photograph. */
+  /* THE CASE STUDY IS BUILT (renderBradleyStudy, SECTION 06) with placeholder
+     images until Jack drops the real files in. The card thumbnail is still the
+     plain stone panel from when this was a placeholder card. */
   'bradley-redesign': {
     bg: '#CBC4B4',
     thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
     hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
     category: 'UX/UI',
     title: 'BRADLEY REDESIGN',
-    desc: "Case study coming soon.",
+    desc: "Researched, rebuilt and still iterating on the page students use to choose the program.",
     type: 'Case Study',
     year: '2026',
     role: 'UX Designer',
-    layout: 'mixed',
-    intro: 'split',
+    layout: 'case',
+    caseStudy: { bradley: true, next: 'pot-clip' },
     detailImages: []
   },
 };
@@ -1345,7 +1346,9 @@ function renderCaseStudy(data) {
   if (projectStage.parentElement !== projectDetailEl) {
     projectDetailEl.insertBefore(projectStage, projectCase);
   }
+  projectDetailEl.classList.remove('bd-stuck');
   if (!cs) { projectCase.innerHTML = ''; return; }
+  if (cs.bradley) { renderBradleyStudy(data); return; }
 
   /* The orientation goes on the figure because the CSS needs it and cannot
      ask: a lone portrait is capped so a 1000x1778 source does not draw
@@ -1548,6 +1551,425 @@ function renderCaseStudy(data) {
     + '</div>';
 }
 
+/* ------------------------------------------------------------------------
+   THE BRADLEY REDESIGN CASE STUDY
+   Its own page inside the shared overlay: `caseStudy: { bradley: true }` on
+   the project routes renderCaseStudy here, and .is-case hides the photo wall
+   and the write-up column exactly as it does for Pot Clip. It reuses Pot
+   Clip's masthead, facts table, brief, summary cards, section heads,
+   disclaimer and next-project card, and adds what only this page needs: a
+   before/after slider, a pinned screenshot, a slim sticky section bar, tables
+   that scroll sideways, a version lineup and a scrolling frame. NO SIDEBAR,
+   because the visuals want the full measure; the index sits once beside the
+   Research intro.
+
+   ENGLISH ONLY, ON PURPOSE FOR NOW. The copy is Jack's brief verbatim and
+   still has placeholders in it, so it is not in i18n.js yet. The panel gets
+   lang="en" so a screen reader and the hyphenator are not lied to when the
+   site is in another language; the chrome (back button, next-project label,
+   category chip) is translated as everywhere else.
+
+   EVERY IMAGE IS A PLACEHOLDER UNTIL ITS FILE EXISTS. One component (bdImg)
+   draws a labelled box at the file's real ratio and puts the <img> on top of
+   it; the box goes away when the file loads, so dropping a file into the
+   folder is the whole job and the layout cannot shift. The paths are built
+   from BD_IMG rather than written out, because audit.js treats every literal
+   asset path as a file that must exist.
+
+   Copy rules from the brief: no em dashes, no middle dots, no all-caps
+   eyebrow above a heading. [Bracketed text] is a placeholder Jack still has
+   to write: it is kept visible (.bd-todo) and nothing is invented for it.
+   ------------------------------------------------------------------------ */
+const BD_IMG = '/assets/projects/bradley-redesign/';
+const BD_FIGMA = 'https://www.figma.com/design/zyoOLHbmvok2YIRNlfzFAB/Sprint-6?node-id=297-284';
+
+const BD_SECTIONS = [
+  ['research', 'Research'], ['problem', 'The problem'], ['journey', 'The journey'],
+  ['built', 'What I built'], ['decisions', 'Design decisions'], ['feedback', 'Feedback'],
+  ['versions', 'Four versions'], ['final', 'Final design'], ['limits', 'Limitations and next steps'],
+];
+
+/* text -> markup: escaped, **bold** kept, and [anything in square brackets]
+   marked as the placeholder it is */
+function bdE(s) {
+  return escapeAttr(s)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]*)\]/g, '<span class="bd-todo">[$1]</span>');
+}
+const bdP = (s, cls) => '<p' + (cls ? ' class="' + cls + '"' : '') + '>' + bdE(s) + '</p>';
+
+/* the one image component. `fill` makes it fill a window (the slider, the
+   hero crop) instead of taking its own ratio; `pos` puts a placeholder's label
+   left or right so two stacked layers do not write over each other. */
+const BD_AT = { l: ' at-l', r: ' at-r' };   // literals, not 'at-' + pos: audit.js reads a composed class as dead CSS
+function bdImg(file, w, h, alt, desc, o = {}) {
+  return '<figure class="bd-img' + (o.fill ? ' is-fill' : '') + (o.tall ? ' is-tall' : '')
+    + (BD_AT[o.pos] || '') + '" style="--ar: ' + w + ' / ' + h + '">'
+    + '<img src="' + BD_IMG + file + '" alt="' + escapeAttr(alt) + '" width="' + w + '" height="' + h + '"'
+    + ' loading="' + (o.eager ? 'eager' : 'lazy') + '" decoding="async" draggable="false">'
+    + '<span class="bd-ph" aria-hidden="true"><span class="bd-ph-l"><b>' + file + '</b>'
+    + '<i>' + escapeAttr(desc) + '</i></span></span></figure>';
+}
+
+function bdTable(heads, rows, cls, label) {
+  return '<div class="bd-scroll" tabindex="0" role="region" aria-label="' + escapeAttr(label) + '">'
+    + '<table class="bd-table ' + cls + '"><thead><tr>'
+    + heads.map((h) => '<th scope="col">' + (h ? bdE(h) : '<span class="sr-only">Row</span>') + '</th>').join('')
+    + '</tr></thead><tbody>'
+    + rows.map((r) => '<tr>' + r.map((c, i) => i === 0
+      ? '<th scope="row">' + bdE(c) + '</th>' : '<td>' + bdE(c) + '</td>').join('') + '</tr>').join('')
+    + '</tbody></table></div>';
+}
+
+const bdSec = (id, title, body) =>
+  '<section class="cs-section bd-section" id="bd-' + id + '" data-bd="' + id + '" tabindex="-1">'
+  + '<h3 class="cs-h">' + escapeAttr(title) + '</h3>' + body + '</section>';
+
+function bdDecision(n, title, owner, finding, decision, tradeoff, before, after) {
+  const row = (k, v) => '<li><strong>' + k + '</strong> ' + bdE(v) + '</li>';
+  const pane = (label, img, cap) => '<div class="bd-ba-pane"><p class="bd-k">' + label + '</p>'
+    + img + '<p class="bd-cap">' + bdE(cap) + '</p></div>';
+  return '<article class="bd-decision"><header class="bd-decision-h">'
+    + '<h4><span class="bd-decision-n">' + n + '</span> ' + escapeAttr(title) + '</h4>'
+    + '<p class="bd-owner">' + escapeAttr(owner) + '</p></header>'
+    + '<ul class="bd-fdt">' + row('Finding:', finding) + row('Decision:', decision)
+    + row('Trade-off:', tradeoff) + '</ul>'
+    + '<div class="bd-ba">' + pane('Before', before[0], before[1]) + pane('After', after[0], after[1]) + '</div>'
+    + '</article>';
+}
+
+function renderBradleyStudy(data) {
+  const cs = data.caseStudy;
+  const stat = (n, t) => '<li class="bd-stat"><span class="bd-stat-n">' + n + ' of 5</span><span class="bd-stat-t">' + t + '</span></li>';
+  const tile = (img, title, text, cls) => '<article class="bd-tile' + (cls ? ' ' + cls : '') + '">'
+    + img + '<h4>' + escapeAttr(title) + '</h4>' + bdP(text) + '</article>';
+
+  const index = '<nav class="bd-index" aria-labelledby="bdIndexLabel"><p class="bd-k" id="bdIndexLabel">On this page</p><ol>'
+    + BD_SECTIONS.map((s) => '<li><a href="#bd-' + s[0] + '" data-bd-go="' + s[0] + '">' + s[1] + '</a></li>').join('')
+    + '</ol></nav>';
+
+  const research = bdSec('research', 'Research',
+    '<div class="bd-intro-row">'
+    + bdP('Our audience was students choosing a college. We benchmarked other schools, surveyed first-year Bradley students who had just been through the search, and I mapped the journey from first hearing about a school to committing.', 'bd-lede')
+    + index + '</div>'
+    + '<h4 class="bd-sub">Competitive analysis</h4>'
+    + bdP('We each benchmarked university sites and voted a winner and runner-up in nine categories. Loyola won seven. Two of the winners were my picks: Boston University and Holy Cross.', 'bd-prose')
+    + bdTable(['Category', 'Winner', 'Runner-up', 'Why it won'], [
+      ['Program page', 'Boston University', 'UW Milwaukee', 'A clear hook, real photos and video, student stories'],
+      ['Department page', 'Loyola University Maryland', 'Boston University', 'Clear hero and title, simple, one obvious next step'],
+      ['Navigation', 'Loyola University Maryland', 'UW Milwaukee', 'Compact menu that expands, paired with search'],
+      ['Admissions', 'Holy Cross', 'Cleveland State', 'Few clicks, important information first'],
+      ['Best overall', 'Loyola University Maryland', 'UW Milwaukee', 'Consistent, easy to move around, clear callouts'],
+    ], 'bd-table-compete', 'Competitive analysis winners by category')
+    + bdP('**What we took from it.** The same things kept winning: a clear call to action near the top, real photos, and stories from students. All three made it into our page.', 'bd-prose')
+    + '<div class="bd-two">'
+    + '<div><h4 class="bd-sub">Student survey</h4>'
+      + bdP('First-year Bradley students, about the search they had just finished. I helped write the questions. Five responded, so these are signals, not proof.', 'bd-prose')
+      + '<ul class="bd-stats">'
+      + stat(4, 'looked first for whether the school offered their major')
+      + stat(5, 'used the site to compare costs and aid')
+      + stat(4, 'researched on a laptop or desktop')
+      + stat(3, 'visited more than 10 university websites')
+      + stat(3, 'said the website didn\'t factor into their decision at all')
+      + stat(0, 'used it to read about faculty') + '</ul></div>'
+    + '<div><h4 class="bd-sub">Journey map</h4>'
+      + bdP('I built our journey map: five stages from first hearing about a school to committing, with what students ask, feel and get stuck on at each one. It is section 3.', 'bd-prose')
+      + '<h4 class="bd-sub">Empathy map</h4>'
+      + bdP('Charlie\'s empathy map backed up the survey: students check ten or more sites, mostly on a laptop, and the website rarely decides it for them.', 'bd-prose')
+    + '</div></div>'
+    + '<div class="bd-insight">' + bdP('Students come to a program page with practical questions: do you have my major, what will I take, and where will it lead. Selling points come second.') + '</div>');
+
+  const pin = (n, top, left) => '<span class="bd-pin" data-pin="' + n + '" style="top:' + top + '%;left:' + left + '%" aria-hidden="true">' + n + '</span>';
+  const problem = bdSec('problem', 'The problem',
+    bdP('The original page reads like a catalog entry. It talks about UX in general, hides the program behind one button, and leaves Apply in a sidebar of seventeen links.', 'bd-lede')
+    + '<div class="bd-problem">'
+    + '<div><div class="bd-pinned">' + bdImg('original-full.jpg', 1440, 2486, 'The original Bradley University program page, shown full length with three numbered markers.', 'The original page, full length', { tall: true })
+      + pin(1, 32, 1) + pin(2, 43, 69) + pin(3, 56.5, 44) + '</div>'
+      + bdP('The original page, full length. It is about 2,500px; our redesign is more than three times that.', 'bd-cap') + '</div>'
+    + '<ol class="bd-pinlist">'
+    + '<li tabindex="0" data-pin="1"><span class="bd-pin-n">1</span><p><strong>Generic copy.</strong> Two paragraphs about UX in general before anything about Bradley. My journey map flagged pages that feel like every other college\'s.</p></li>'
+    + '<li tabindex="0" data-pin="2"><span class="bd-pin-n">2</span><p><strong>Link overload.</strong> Seventeen sidebar links, so Apply competes with Canvas and Library Services. Navigation was a top priority in the survey.</p></li>'
+    + '<li tabindex="0" data-pin="3"><span class="bd-pin-n">3</span><p><strong>Thin program details.</strong> Classes sit behind one button and careers are a list of job titles, the two things students said they look for most.</p></li>'
+    + '</ol></div>'
+    + '<p class="bd-hmw">How might we make the clearest experience for answering every question a student brings to the page?</p>');
+
+  const orig = ['Hero photo, title, three stats', 'Two paragraphs about UX in general', 'Experiential learning bullets',
+    'Program details: one button', 'Career opportunities: job titles', 'Minor', 'Sidebar: Apply, Visit, plus 17 links'];
+  const m3 = [[1, 'Hero: program name, Apply and Plan Your Visit'], [1, 'About the Program: what GX is'],
+    [2, 'Your Journey at Bradley: what sets it apart'], [2, 'Student quotes and photo carousels'],
+    [3, 'What Happens After Bradley: career stats'], [3, 'Where our graduates work'],
+    [4, 'Faculty grid, prerequisites, tuition and aid'], [5, 'Ready to start your future in GX?']];
+  const journey = bdSec('journey', 'The journey',
+    bdP('The journey map I built, condensed. Each stage became a job for a part of the page.', 'bd-lede')
+    + bdTable(['', '1 Awareness', '2 Exploration', '3 Comparison', '4 Consideration', '5 Decision'], [
+      ['What they ask', '"Is this going to have what I\'m looking for?"', '"Can I see myself here?"', '"What careers can I get from this?"', '"Can I afford this?"', '"Can I see myself here for four years?"'],
+      ['How they feel', 'Curious, a little nervous', 'Curious, excited', 'Analytical, stressed', 'Nervous, hopeful', 'Excited, relieved'],
+      ['Pain point', 'Unclear what the school is known for', 'Pages feel generic, like every other college', 'Career outcomes not clearly shown', 'Application steps are unclear', 'Committing feels like too many steps'],
+      ['How might we', 'Give quick summaries of what the school offers', 'Show what makes it different', 'Show career outcomes clearly', 'Give a clear step-by-step guide', 'Make committing feel simple'],
+    ], 'bd-table-journey', 'The five stage journey map')
+    + '<div class="bd-two bd-diagrams">'
+    + '<div><h4 class="bd-k">Original page order</h4><ul class="bd-order">'
+      + orig.map((t) => '<li>' + bdE(t) + '</li>').join('') + '</ul>'
+      + bdP('Ordered like a catalog entry. Nothing answers the comparison or cost questions.', 'bd-cap') + '</div>'
+    + '<div><h4 class="bd-k">Master 3 order, tagged by stage</h4><ul class="bd-order">'
+      + m3.map((r) => '<li><span class="bd-stage">' + r[0] + '</span>' + bdE(r[1]) + '</li>').join('') + '</ul>'
+      + bdP('[Check this mapping matches how the team thought about it.]', 'bd-cap') + '</div>'
+    + '</div>');
+
+  const built = bdSec('built', 'What I built',
+    bdP('We split the page five ways. Andrew was creative director and built About the Program and the faculty grid. Jessie wrote the copy. Caitlin built the hero, the final call to action, the logos and one carousel. Charlie built the footer, the quotes and the links. These are mine, plus the style foundations everyone designed with.', 'bd-lede')
+    + tile(bdImg('header-breadcrumbs.png', 1440, 240, 'Master 3 header with a three-link sub-nav and breadcrumbs above the page title.', 'The header and breadcrumbs'),
+      'Header, navigation and breadcrumbs', 'A three-link sub-nav instead of the old page\'s long lists, with breadcrumbs above the title. [Add the states you designed.]', 'is-wide')
+    + '<div class="bd-tiles">'
+    + tile(bdImg('style-foundations.png', 1000, 420, 'The color palette and heading type scale set for the page.', 'Colors and type scale, side by side'),
+      'Style foundations', 'I pulled the colors and icons from Bradley\'s brand identity and set the fonts and heading sizes. [One line on how it kept five people consistent.]')
+    + tile(bdImg('career-stats.png', 1240, 500, 'Three career numbers in one row: median salary, job growth and career outcomes.', 'The career stats'),
+      'What Happens After Bradley', 'Three numbers in one row. Earlier versions used a donut chart. [Why these three.]')
+    + tile(bdImg('journey-section.png', 1440, 450, 'Your Journey at Bradley, three reasons to choose the major.', 'The Your Journey at Bradley section'),
+      'Your Journey at Bradley', 'Three reasons to choose GX. In Master 1 it was called Benefits of Your Journey at Bradley.')
+    + tile(bdImg('carousel.png', 1240, 800, 'Students working together, with arrows and pagination dots.', 'The image carousel'),
+      'Image carousel', 'Students working, with arrows and pagination dots. [Why a carousel fit here.]')
+    + '</div>');
+
+  const decisions = bdSec('decisions', 'Design decisions',
+    bdP('Three decisions, each traced to the research.', 'bd-lede')
+    + bdDecision('01', 'Lead with outcomes, not adjectives', 'Mine',
+      '4 of 5 students looked first for their major, and the survey summary found they want practical future information before program features.',
+      'Career outcomes as three big numbers instead of a bulleted list of job titles.', '[What you gave up for it.]',
+      [bdImg('d1-original-careers.png', 940, 290, 'The original Career Opportunities list of job titles.', 'The original Career Opportunities list'), 'Original: a list of job titles.'],
+      [bdImg('career-stats.png', 1240, 500, 'Master 3 career stats: three numbers in one row.', 'The career stats'), 'Master 3: three numbers students can compare across schools.'])
+    + bdDecision('02', 'Make the next step impossible to miss', 'Team decision, Caitlin built the hero',
+      'My journey map ends with "Can I afford this?" and "What do I need to submit?", and the old page kept Apply in a sidebar.',
+      'Apply Today and Plan Your Visit in the hero, repeated in the final call to action.', '[What you gave up for it.]',
+      [bdImg('d2-original-sidebar.png', 370, 270, 'The original sidebar with four equal red buttons: Apply, Visit, Request Information, Give.', 'The original sidebar buttons'), 'Original: four equal red buttons in a sidebar.'],
+      [bdImg('d2-master3-hero.png', 1150, 790, 'The Master 3 hero with Apply Today and Plan Your Visit buttons.', 'The Master 3 hero'), 'Master 3: two clear actions on the first screen.'])
+    + bdDecision('03', 'Navigation people can scan', 'Mine',
+      'Navigation came up as a top priority in the survey, and the old page had seventeen sidebar links.',
+      'Three sub-nav links and breadcrumbs above the title. The long link list became one Important Links bar near the end.', '[What you gave up for it.]',
+      [bdImg('d3-original-header.png', 1440, 132, 'The original page header: six top-level menus and a department bar.', 'The original header'), 'Original: six top-level menus plus a department bar.'],
+      [bdImg('header-breadcrumbs.png', 1440, 240, 'The Master 3 header with a three-link sub-nav and breadcrumbs.', 'The header and breadcrumbs'), 'Master 3: three links and a clear trail.']));
+
+  const feedback = bdSec('feedback', 'Feedback',
+    bdP('We didn\'t run usability tests. Feedback came from critiques with our professor and from presenting to Jason Rambeck, Bradley\'s Director of Web Development, Design & Services, whose team would own the real page.', 'bd-lede')
+    + bdTable(['Who', 'What they said', 'What we changed'], [
+      ['[Professor], critique 1', '[The note, briefly]', '[The change]'],
+      ['[Professor], critique 2', '[The note]', '[The change]'],
+      ['Jason Rambeck, Director of Web Development', '[What he said, briefly]', '[The change]'],
+    ], 'bd-table-feedback', 'Feedback received and what changed'));
+
+  const lineup = (file, h, name, sub, mine) => '<li class="bd-version' + (mine ? ' is-mine' : '') + '"><p class="bd-version-n">' + name + '</p><p class="bd-version-s">' + sub + '</p>'
+    + bdImg(file, 1440, h, name + ' at its real length, ' + h.toLocaleString('en-US') + ' pixels tall.', name + ', ' + h.toLocaleString('en-US') + 'px', { tall: true }) + '</li>';
+  const versions = bdSec('versions', 'Four versions',
+    bdP('The original page, our two team versions, and mine, at their real lengths.', 'bd-lede')
+    + '<ul class="bd-lineup">'
+    + lineup('original-full.jpg', 2486, 'Original', 'The live page, 2,486px')
+    + lineup('master-1-full.jpg', 10281, 'Master 1', 'Team, first pass, 10,281px')
+    + lineup('master-2-full.jpg', 8516, 'Master 2', 'Team, graded, 8,516px')
+    + lineup('master-3-full.jpg', 8158, 'Master 3', 'Mine, in progress, 8,158px', true) + '</ul>'
+    + bdP('**Why it got longer.** Master 1 ran to 10,281px. We cut it to about 8,500px for Master 2, and Master 3 is about 8,200px. [Say what the extra length over the original is for.]', 'bd-prose')
+    + '<h4 class="bd-sub">What I changed in Master 3</h4>'
+    + bdTable(['Change', 'Whose part', 'Why'], [
+      ['Career stats: dropped the donut chart and intro paragraph, three numbers in one row', 'Mine', '[Why]'],
+      ['Breadcrumbs moved above the page title', 'Mine', '[Why]'],
+      ['Apply and Plan Your Visit moved onto the hero photo', 'Caitlin\'s', '[Why]'],
+      ['About the Program split into two short paragraphs', 'Andrew\'s and Jessie\'s', '[Why]'],
+    ], 'bd-table-changes', 'What changed in Master 3'));
+
+  const final = bdSec('final', 'Final design',
+    '<div class="bd-final-top">'
+    + '<a class="bd-figma" href="' + BD_FIGMA + '" target="_blank" rel="noopener">Open in Figma <span aria-hidden="true">→</span><span class="sr-only"> (opens in a new tab)</span></a></div>'
+    + '<div class="bd-frame" tabindex="0" role="region" aria-label="Master 3, the full page. Scroll inside this frame to read it.">'
+    + bdImg('master-3-full.jpg', 1440, 8158, 'Master 3, the full redesigned program page.', 'Master 3, the full page', { tall: true }) + '</div>'
+    + '<p class="bd-note">Scroll inside the frame to read the whole page.</p>');
+
+  const kv = (k, v) => '<div class="bd-kv"><dt>' + k + '</dt><dd>' + bdE(v) + '</dd></div>';
+  const limits = bdSec('limits', 'Limitations and next steps',
+    bdP('This never went live, and parts of it still argue with our own research.', 'bd-lede')
+    + '<dl class="bd-kvs">'
+    + kv('Small sample', 'The survey had five responses and we never ran usability tests. Next step: [Add the next step.]')
+    + kv('Desktop only', 'Four of five students researched on a computer, so we designed for desktop first, then ran out of time for mobile. Next step: [Add the next step.]')
+    + kv('Selling points first', 'Our research says practical information comes first, but Your Journey at Bradley still sits above the career stats. Next step: [Add the next step.]')
+    + kv('Faculty grid', 'None of the five students read about faculty, yet it is one of the biggest sections. Next step: [Add the next step.]')
+    + '</dl>' + bdP('**If I did it again.** [One or two sentences.]', 'bd-prose'));
+
+  const meta = [['Context', 'UX course, team of five'], ['Duration', '[X weeks], plus solo iteration'],
+    ['Role', 'Journey map, style foundations, header, career stats, carousel'], ['Tools', 'Figma, FigJam, Google Forms']];
+  const cards = [['Problem', 'The old page reads like a catalog entry. Classes hide behind one button and Apply sits in a sidebar of seventeen links.'],
+    ['Solution', 'A page ordered by the questions students ask: what the program is, what it is like, where it leads, how to apply.'],
+    ['Outcome', 'A graded team redesign, and my own Master 3 that pushes it closer to what our research found.']];
+
+  projectCase.innerHTML = '<div class="bd" lang="en">'
+    + '<header class="cs-mast">'
+    + '<div class="cs-mast-text">'
+      + '<div class="cs-title-slot"></div>'
+      + '<span class="cs-eyebrow">A program page redesign for Bradley\'s Graphic and UX Design major, 2026</span>'
+      + '<p class="cs-lede">Researched, rebuilt and still iterating on the page students use to choose the program.</p>'
+      + '<dl class="cs-meta">' + meta.map((p) => '<div><dt class="cs-meta-k">' + p[0] + '</dt><dd class="cs-meta-v">' + bdE(p[1]) + '</dd></div>').join('') + '</dl>'
+      + '<ul class="cs-tags"><li class="cs-tags-cat"></li></ul>'
+      + '<div class="cs-brief"><h3 class="cs-brief-t">The brief</h3>'
+        + '<p class="cs-brief-b">Bradley\'s UX major is becoming Graphic and UX Design. Redesign its program page so students choosing a college get a new name, a new story and a clear next step.</p></div>'
+    + '</div>'
+    + '<div class="cs-mast-media"><div class="bd-hero">'
+      + bdImg('master-3-full.jpg', 1440, 8158, 'The top of Master 3, the redesigned Graphic and UX Design program page.', 'The top of Master 3', { fill: true, eager: true })
+    + '</div></div>'
+    + '</header>'
+    + '<ul class="cs-cards">' + cards.map((p) => '<li class="cs-card"><span class="cs-card-t">' + p[0] + '</span><p class="cs-card-b">' + bdE(p[1]) + '</p></li>').join('') + '</ul>'
+    /* the slider: original on top, clipped from the right; Master 3 under it */
+    + '<div class="bd-compare" data-bd-compare>'
+      + '<div class="bd-compare-win" style="--split: 50">'
+      + '<div class="bd-layer">' + bdImg('master-3-full.jpg', 1440, 8158, 'Master 3, the redesigned page, top of the page.', 'Master 3', { fill: true, pos: 'r', eager: true }) + '</div>'
+      + '<div class="bd-layer bd-layer-top">' + bdImg('original-full.jpg', 1440, 2486, 'The original page, top of the page.', 'The original page', { fill: true, pos: 'l', eager: true }) + '</div>'
+      + '<span class="bd-line" aria-hidden="true"></span>'
+      + '<span class="bd-tag bd-tag-l" aria-hidden="true">ORIGINAL</span><span class="bd-tag bd-tag-r" aria-hidden="true">MASTER 3</span>'
+      + '</div>'
+      + '<label class="bd-range"><span class="bd-k">Drag to compare</span>'
+      + '<input type="range" min="0" max="100" value="50" step="1" aria-valuetext="50% original, 50% Master 3"></label>'
+    + '</div>'
+    /* the slim bar: in flow just below the hero, so it is out of sight until
+       the hero has scrolled past, then it sticks. */
+    + '<div class="bd-bar" data-bd-bar>'
+      + '<div class="bd-bar-in">'
+      + '<button type="button" class="bd-bar-back" data-bd-back>← All projects</button>'
+      + '<p class="bd-bar-now"><span data-bd-n>1</span> / 9 <b data-bd-title>Research</b></p>'
+      + '<button type="button" class="bd-bar-menu" aria-expanded="false" aria-controls="bdMenu" data-bd-menu-btn>Sections <span aria-hidden="true">▾</span></button>'
+      + '</div>'
+      + '<ul class="bd-menu" id="bdMenu" hidden>' + BD_SECTIONS.map((s, i) =>
+          '<li><a href="#bd-' + s[0] + '" data-bd-go="' + s[0] + '"><span>' + (i + 1) + '</span> ' + s[1] + '</a></li>').join('') + '</ul>'
+      + '<span class="bd-prog" aria-hidden="true"></span>'
+    + '</div>'
+    + '<div class="bd-flow">' + research + problem + journey + built + decisions + feedback + versions + final + limits + '</div>'
+    + '<div class="cs-foot">'
+      + '<p class="cs-disclaimer">A student team project at Bradley University, not commissioned by Bradley and not live on its website. Team: Andrew, Jessie, Caitlin, Charlie and Jack Murray.</p>'
+      + nextProjectLink(data.id)
+    + '</div></div>';
+
+  // images that were already cached never fire load after the markup lands
+  projectCase.querySelectorAll('.bd-img img').forEach(bdMarkLoaded);
+  bdObserve();
+  bdUpdate();
+}
+
+function bdMarkLoaded(img) {
+  if (img.complete && img.naturalWidth) img.closest('.bd-img')?.classList.add('is-loaded');
+}
+// load does not bubble, so it is caught on the way down; bound once
+projectCase.addEventListener('load', (e) => { if (e.target.tagName === 'IMG') bdMarkLoaded(e.target); }, true);
+
+/* ---- the slim bar: which section, how far, and the menu -------------------
+   Geometry decides the active section on scroll, and an IntersectionObserver
+   asks for the same answer whenever a section crosses the band under the bar,
+   so neither is a single point of failure (the browser pane never delivers
+   the page's own observers, which is why there are two). */
+let bdIO = null;
+function bdObserve() {
+  if (bdIO) bdIO.disconnect();
+  bdIO = null;
+  if (!('IntersectionObserver' in window)) return;
+  bdIO = new IntersectionObserver(bdUpdate, { root: projectOverlay, rootMargin: '-48px 0px -60% 0px' });
+  projectCase.querySelectorAll('.bd-section').forEach((s) => bdIO.observe(s));
+}
+
+function bdUpdate() {
+  const bar = projectCase.querySelector('[data-bd-bar]');
+  if (!bar) return;
+  const secs = [...projectCase.querySelectorAll('.bd-section')];
+  const top = projectOverlay.getBoundingClientRect().top;
+  const line = top + 48 + 140;
+  let at = 0;
+  secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line) at = i; });
+  // once the bar has stuck it covers the back button's top, and its own back button takes over
+  projectDetailEl.classList.toggle('bd-stuck', bar.getBoundingClientRect().top - top <= 1);
+  const [id, title] = BD_SECTIONS[at];
+  bar.querySelector('[data-bd-n]').textContent = at + 1;
+  bar.querySelector('[data-bd-title]').textContent = title;
+  bar.dataset.at = id;
+  bar.querySelectorAll('.bd-menu a').forEach((a) => {
+    if (a.dataset.bdGo === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+  });
+  // progress: from the top of the first section to the foot of the last
+  const first = secs[0].getBoundingClientRect().top - top;
+  const last = secs[secs.length - 1].getBoundingClientRect().bottom - top;
+  const span = Math.max(1, last - first - projectOverlay.clientHeight * 0.6);
+  const p = Math.min(1, Math.max(0, (48 - first) / span));
+  bar.style.setProperty('--p', (p * 100).toFixed(2) + '%');
+}
+projectOverlay.addEventListener('scroll', bdUpdate, { passive: true });
+
+function bdCloseMenu() {
+  const btn = projectCase.querySelector('[data-bd-menu-btn][aria-expanded="true"]');
+  if (!btn) return false;
+  btn.setAttribute('aria-expanded', 'false');
+  projectCase.querySelector('#bdMenu').hidden = true;
+  return btn;
+}
+function bdGo(id) {
+  const el = projectCase.querySelector('#bd-' + id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+  el.focus({ preventScroll: true });
+}
+
+projectCase.addEventListener('click', (e) => {
+  const go = e.target.closest('[data-bd-go]');
+  if (go) { e.preventDefault(); bdCloseMenu(); bdGo(go.dataset.bdGo); return; }
+  if (e.target.closest('[data-bd-back]')) { closeToProjects(); return; }
+  const btn = e.target.closest('[data-bd-menu-btn]');
+  if (btn) {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    if (open) bdCloseMenu();
+    else {
+      btn.setAttribute('aria-expanded', 'true');
+      projectCase.querySelector('#bdMenu').hidden = false;
+    }
+    return;
+  }
+  bdCloseMenu();
+});
+// a click anywhere outside the bar closes the menu too (the overlay is the
+// scrolling ancestor, so this is a document listener, not a bar one)
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('[data-bd-bar]')) bdCloseMenu();
+});
+
+/* ---- the before/after slider ------------------------------------------- */
+function bdSetSplit(box, v) {
+  v = Math.min(100, Math.max(0, v));
+  box.querySelector('.bd-compare-win').style.setProperty('--split', v);
+  const r = box.querySelector('input[type="range"]');
+  r.value = Math.round(v);
+  r.setAttribute('aria-valuetext', Math.round(v) + '% original, ' + (100 - Math.round(v)) + '% Master 3');
+}
+projectCase.addEventListener('input', (e) => {
+  const box = e.target.closest('[data-bd-compare]');
+  if (box && e.target.type === 'range') bdSetSplit(box, +e.target.value);
+});
+let bdDrag = null;
+projectCase.addEventListener('pointerdown', (e) => {
+  const win = e.target.closest('.bd-compare-win');
+  if (!win || e.button) return;
+  bdDrag = win;
+  win.setPointerCapture(e.pointerId);
+  const r = win.getBoundingClientRect();
+  bdSetSplit(win.closest('[data-bd-compare]'), (e.clientX - r.left) / r.width * 100);
+});
+projectCase.addEventListener('pointermove', (e) => {
+  if (!bdDrag) return;
+  const r = bdDrag.getBoundingClientRect();
+  bdSetSplit(bdDrag.closest('[data-bd-compare]'), (e.clientX - r.left) / r.width * 100);
+});
+['pointerup', 'pointercancel'].forEach((t) => projectCase.addEventListener(t, () => { bdDrag = null; }));
+
+/* ---- the pins: a list item lights its pin ------------------------------- */
+function bdPin(e, on) {
+  const li = e.target.closest('.bd-pinlist li');
+  if (!li) return;
+  projectCase.querySelector('.bd-pin[data-pin="' + li.dataset.pin + '"]')?.classList.toggle('is-on', on);
+}
+projectCase.addEventListener('mouseover', (e) => bdPin(e, true));
+projectCase.addEventListener('mouseout', (e) => bdPin(e, false));
+projectCase.addEventListener('focusin', (e) => bdPin(e, true));
+projectCase.addEventListener('focusout', (e) => bdPin(e, false));
+
 /* THE NEXT PROJECT, BESIDE THE DISCLAIMER. Jack: "add a button... right
    next to that on the right side of it that would say like next project,
    and then under that it would say the next project... that way it leads
@@ -1567,6 +1989,9 @@ function renderCaseStudy(data) {
    projectData in capitals, identically in every language. Only the label
    above it has a key. */
 function nextProjectId(id) {
+  // a case study may name where it leads (Bradley goes to Pot Clip, not round to the first card)
+  const named = projectData[id] && projectData[id].caseStudy && projectData[id].caseStudy.next;
+  if (named && projectData[named]) return named;
   const ids = Object.keys(projectData);
   const i = ids.indexOf(id);
   return i < 0 ? null : ids[(i + 1) % ids.length];
@@ -2280,6 +2705,9 @@ document.addEventListener('click', (e) => {
 // exact scroll position the user was at before it opened
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
+  // an open sections menu closes first, and hands focus back to its button
+  const bdBtn = bdCloseMenu();
+  if (bdBtn) { bdBtn.focus(); return; }
   // innermost first, or Escape would close the project overlay out from
   // under an open lightbox
   if (lightbox && lightbox.classList.contains('open')) closeLightbox();

@@ -58,8 +58,11 @@ with no write-up yet:
   otherwise.
 - **Journey to the Oasis** — 3D animated short from a course at Otis College,
   built across Maya, Blender and ZBrush.
-- **Bradley Redesign** — a placeholder card with a title and an image box;
-  the case study has not been written yet.
+- **Bradley Redesign** — a team redesign of Bradley University's Graphic and UX
+  Design program page, with research (a competitor review, a survey of five
+  first-year students, a journey map), three design decisions and a final
+  version still being iterated. A student project, not commissioned by Bradley.
+  Some images and notes on the page are still placeholders.
 
 Themes worth naming: research before interface, identity systems that have to
 survive real surfaces, and interface work for hardware and for VR — not only
