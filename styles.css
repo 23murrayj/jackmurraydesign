@@ -3134,6 +3134,8 @@ body.is-loading { overflow: hidden; }
   .project-detail.has-stack .project-mixed-stack > div.is-stage { width: 70%; }   /* same width as the bookmark above it */
   .project-detail.has-stack .project-body-copy { grid-column: 1 / 6; margin: 56px 0 0; align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; }
   .project-detail.has-stack .project-body-copy p { margin: 0; }
+  /* The write-up stops about 22% of the way down the stage photo (Jack), not at its foot: the bottom margin is 78% of that photo's height, which is 0.2193 of the shell width (the shell is 90vw until it caps at 1236). Only where the column is wide enough for the text to be the shorter side; below that it is already taller than the stack. */
+  @media (min-width: 1200px) { .project-detail.has-stack .project-body-copy { margin-bottom: calc(0.171 * min(90vw, 1236px)); } }
   .project-detail.has-aside .project-mixed-aside { grid-column: 8 / -1; grid-row: 7; margin-top: 56px; }
   .project-detail.has-aside .project-body-copy { grid-column: 1 / 8; }
 
