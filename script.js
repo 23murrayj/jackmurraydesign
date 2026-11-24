@@ -132,13 +132,34 @@ window.addEventListener('load', () => {
 
 // scroll progress bar
 const scrollProgress = document.getElementById('scrollProgress');
+/* It follows whatever is actually scrolling. The project and about panels
+   are position: fixed boxes with their own overflow-y: auto and the page
+   behind them is scroll-locked, so window.scrollY stays put while the panel
+   moves: on a case study the bar sat at the home page's offset and only
+   twitched at the very ends, where scroll chaining handed the gesture back
+   to the window (Jack: "it's just in a glitched state"). Scroll events do
+   not bubble, so the panels are caught in the capture phase, and a class
+   change on either one re-reads the bar so it resets to 0 on open and
+   returns to the page's own offset on close. */
 function updateScrollProgress() {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const panel = document.querySelector('.project-overlay.open, .about-overlay.open');
+  const scrollTop = panel ? panel.scrollTop : window.scrollY;
+  const docHeight = panel
+    ? panel.scrollHeight - panel.clientHeight
+    : document.documentElement.scrollHeight - window.innerHeight;
   const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  scrollProgress.style.width = pct + '%';
+  scrollProgress.style.width = Math.min(100, Math.max(0, pct)) + '%';
 }
 window.addEventListener('scroll', updateScrollProgress);
+document.addEventListener('scroll', (e) => {
+  if (e.target !== document && e.target.classList &&
+      (e.target.classList.contains('project-overlay') || e.target.classList.contains('about-overlay'))) {
+    updateScrollProgress();
+  }
+}, true);
+const progressWatch = new MutationObserver(updateScrollProgress);
+document.querySelectorAll('.project-overlay, .about-overlay').forEach((el) =>
+  progressWatch.observe(el, { attributes: true, attributeFilter: ['class'] }));
 updateScrollProgress();
 
 // project detail data — each project picks a "layout" so the case
