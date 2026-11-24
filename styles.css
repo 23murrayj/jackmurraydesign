@@ -3051,12 +3051,14 @@ body.is-loading { overflow: hidden; }
 .project-detail:not(.is-case) .project-media.layout-masonry { display: contents; }
 .project-detail:not(.is-case) .project-media { margin-bottom: 0; }
 .project-detail.is-case .project-bar { display: contents; }
-.project-detail:not(.is-case) { padding-top: 54px; }   /* 68 less the bar's own 14 */
+.project-detail:not(.is-case) { padding-top: 50px; }   /* 68 less the bar's own 18 */
 .project-detail:not(.is-case) .project-bar {
   position: sticky; top: 0; z-index: 5;
-  background: var(--white); padding: 14px 0;
+  background: var(--white); padding: 18px 0 22px;
 }
-.project-detail:not(.is-case) .project-back { position: static; margin-bottom: 0; }
+/* the button keeps its own size whatever the bar is placed in: a grid or flex
+   parent must never be able to shrink it */
+.project-detail:not(.is-case) .project-back { position: static; margin-bottom: 0; flex: none; white-space: nowrap; min-width: max-content; }
 .masonry-lead, .project-video-lead { border: 4px solid var(--black); overflow: hidden; }
 .project-video-lead img { display: block; }
 .masonry-label {
@@ -3066,7 +3068,7 @@ body.is-loading { overflow: hidden; }
 
 @media (min-width: 901px) {
   .project-detail:not(.is-case) {
-    --pd-back-room: 96px;
+    --pd-back-room: 108px;
     --pd-text-end: 6;
     --pd-frame-start: 6;
     --pd-title-size: clamp(2.5rem, 4.2vw, 3.6rem);
