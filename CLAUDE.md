@@ -4833,5 +4833,12 @@ fonts about 45KB.
   taller frame replaced it under a new filename; nothing on disk answers to
   the old name any more.)
 - Placeholder/fake projects must never ship live.
+  **One exception, on Jack's explicit word (2026-11-24): `bradley-redesign`**
+  is a deliberate placeholder card - a title, a flat stone image box
+  (`assets/projects/bradley-redesign/thumb.jpg`) and "Case study coming soon.",
+  no write-up. It is real work he intends to write up, not a fake project, and
+  llms.txt says it has no write-up yet so no reader is told otherwise. When the
+  case study arrives, replace the image, desc and body in all four languages
+  and drop that llms.txt sentence. It is the eighth card; the grid stays even.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.

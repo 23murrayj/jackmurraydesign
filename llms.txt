@@ -24,7 +24,8 @@ Contact: the form or the address in the contact section of the site.
 
 ## What the work actually is
 
-Seven case studies, all real, none speculative or invented:
+Seven case studies, all real, none speculative or invented, plus one card
+with no write-up yet:
 
 - **Caterpillar UX Challenge** — UX research and design for heavy
   equipment operators, a three-person team partnered with Caterpillar through
@@ -57,6 +58,8 @@ Seven case studies, all real, none speculative or invented:
   otherwise.
 - **Journey to the Oasis** — 3D animated short from a course at Otis College,
   built across Maya, Blender and ZBrush.
+- **Bradley Redesign** — a placeholder card with a title and an image box;
+  the case study has not been written yet.
 
 Themes worth naming: research before interface, identity systems that have to
 survive real surfaces, and interface work for hardware and for VR — not only
@@ -97,6 +100,7 @@ Every case study has its own URL, and so does the about page:
 - https://jackmurraydesign.com/work/sandcastles
 - https://jackmurraydesign.com/work/monmouth-retreat
 - https://jackmurraydesign.com/work/oasis-journey
+- https://jackmurraydesign.com/work/bradley-redesign
 
 They are single-page overlays behind the scenes - the server rewrites those
 paths to the same document and the page opens the right panel from the URL -

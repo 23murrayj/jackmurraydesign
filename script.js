@@ -930,6 +930,22 @@ const projectData = {
       <text x="40" y="410" font-family="Archivo Black" font-size="30" fill="#fff">JOURNEY TO THE OASIS</text>
     </svg>`
   },
+  /* PLACEHOLDER, on Jack's word (2026-11-24): a title and a flat image box,
+     no write-up yet. The image is a plain stone panel, not a photograph. */
+  'bradley-redesign': {
+    bg: '#CBC4B4',
+    thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
+    hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
+    category: 'UX/UI',
+    title: 'BRADLEY REDESIGN',
+    desc: "Case study coming soon.",
+    type: 'Case Study',
+    year: '2026',
+    role: 'UX Designer',
+    layout: 'mixed',
+    intro: 'split',
+    detailImages: []
+  },
 };
 
 /* ==========================================================================
