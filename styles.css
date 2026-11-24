@@ -4497,11 +4497,20 @@ body.is-loading { overflow: hidden; }
   transform: translateY(0); visibility: visible; pointer-events: auto;
   transition: transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0s;
 }
-.about-page { max-width: 1100px; margin: 0 auto; padding: 50px 5vw 110px; }   /* 68 less the bar's own 18 */
+.about-shell { padding-top: 50px; }   /* 68 less the bar's own 18 */
+.about-page { max-width: 1100px; margin: 0 auto; padding: 0 5vw 110px; }
 /* THE TOP BAR, as on the project pages: a solid band that sticks with the
    button, so scrolling text passes under a clean edge instead of running
    behind a floating button. */
-.about-bar { position: sticky; top: 0; z-index: 5; background: var(--white); padding: 18px 0 22px; margin-bottom: 24px; }
+/* The bar is a sibling of .about-page, not a child, on purpose: below 760 the
+   page is a grid, and Safari and Firefox pin a sticky GRID ITEM inside its own
+   grid area, so the bar let go after its first row. As a child of the shell (a
+   plain block as tall as the whole page) it sticks the length of the scroll in
+   every engine. Its side padding re-creates the page's own 1100px measure. */
+.about-bar {
+  position: sticky; top: 0; z-index: 5; background: var(--white);
+  padding: 18px calc((100% - min(100%, 1100px)) / 2 + 5vw) 22px; margin-bottom: 24px;
+}
 /* THE SAME BUTTON AS THE PROJECT PAGES' ALL PROJECTS (Jack: "make it the same
    style"): a filled rectangle that casts nothing at rest and does not invert,
    and on hover lifts 3px into a 6px coral block. The bar around it is what
@@ -4596,7 +4605,6 @@ body.is-loading { overflow: hidden; }
   .about-page-top, .about-photos { display: contents; }
   /* everything that is not part of the pair runs the full width */
   .about-page > * { order: 5; grid-column: 1 / -1; }
-  .about-bar { order: 0; }
   .about-page-intro { order: 1; grid-column: 1 / -1; margin-bottom: 20px; }
   .about-photo-frame { order: 2; grid-column: 1; position: static; }
   .about-photos .square { order: 3; grid-column: 2; }
