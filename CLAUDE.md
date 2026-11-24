@@ -455,6 +455,10 @@ language, so they are out of the list; only `.stat.is-now .stat-num` (ミラノ)
 keeps the 900. **Before adding a selector to that block, ask what it actually
 contains in Japanese** — if the answer is digits or Latin, it does not belong.
 
+**Archivo Black is pinned to 400 everywhere (2026-11-24).** `html { font-synthesis: none }` plus a closing block in styles.css setting `font-weight: 400` on every display element, because h2/h3 inherit the browser's 700 and the engine smeared the single face. Measured: no visible Archivo Black element computes anything but 400. The Japanese 900 block still wins by specificity where the content is Japanese. **A new display selector joins that closing list.**
+**Long-form project prose uses `--body-copy`** (#4F4E49 light, #BDBBC4 dark: 7.9 and 10.2:1), on `.project-body-copy p` only; `--muted` stays for labels, dates and captions, and the Pot Clip page keeps its own treatment.
+**Card text:** description 0.9rem / 1.5 (14.4px), category tag 0.78rem at 1.2px tracking (12.5px). **Sidebar-layout titles** (`has-sidebar`, `is-video-aside`) are `clamp(2.5rem, 4vw, 3rem)` at line-height 1: 48px and three lines for CATERPILLAR UX CHALLENGE at 1440 with 2px to spare in the 362px column, 44 at 1100, 40 at 390, no overflow at any of them.
+
 **CJK sizing is a real constraint.** Full-width glyphs are ~1em each, so a size
 that leaves English 40px of slack in a 356px column leaves Japanese 7px.
 `.hero-role` has its own `html[lang="ja"]` size for exactly this. **Check all

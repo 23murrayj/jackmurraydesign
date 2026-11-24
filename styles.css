@@ -383,6 +383,7 @@ picture { display: contents; }
          heavy black structural borders that still mark primary structure
      Contrast-checked against the surfaces they're meant to sit on:
      --muted ≥ 4.8:1 on --white/--black (passes WCAG AA for normal text). */
+  --body-copy: #4F4E49;   /* long-form project prose: 7.9:1 on the ground; --muted (4.72) stays for labels and captions */
   --muted: #6A6861;   /* 4.72:1 on the ground - clears AA for body text */
   --line: #CBC4B4;    /* stone - dividers, not structure */
   /* fixed grey for de-emphasized text specifically on the fixed --ink
@@ -495,6 +496,7 @@ picture { display: contents; }
      would inherit light's #1A1A18 and every one of those surfaces would
      turn into a slightly-lighter rectangle. */
   --ink: #111117;
+  --body-copy: #BDBBC4;   /* dark counterpart, 10.2:1 on the near-black ground */
   --muted: #9C9AA3;   /* 6.78:1 on the near-black ground */
   --line: #33333D;
   /* light tint on the dark ground, and a touch stronger: a 7% wash that
@@ -2626,7 +2628,7 @@ body.is-loading { overflow: hidden; }
   flex: 1 1 auto;
 }
 .card-info h3 { font-family: var(--ff-display); font-size: 1.3rem; letter-spacing: -0.02em; }
-.card-info p { font-size: 0.82rem; font-weight: 400; color: var(--muted); }
+.card-info p { font-size: 0.9rem; line-height: 1.5; font-weight: 400; color: var(--muted); } /* 14.4px; was 13.1 */
 /* .card-info is a flex column, so two bare tags would stack vertically —
    this row keeps them side by side and wrapping only if they must */
 .card-tags { margin-top: 8px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
@@ -2640,7 +2642,7 @@ body.is-loading { overflow: hidden; }
    without claiming to do anything. */
 .tag {
   margin-top: 8px; align-self: flex-start;
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.4px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 1.2px; /* 12.5px; was 10.9 at 1.4 */
   background: transparent; color: var(--muted);
   padding: 0;
 }
@@ -3013,7 +3015,8 @@ body.is-loading { overflow: hidden; }
    apply where the title has moved up top — there it is not in .project-body
    at all, so the selector stops matching on its own. */
 .project-detail.has-sidebar .project-body h2 {
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  font-size: clamp(2.5rem, 4vw, 3rem);
+  line-height: 1;
 }
 .project-detail.has-sidebar .project-body {
   position: sticky;
@@ -3056,7 +3059,8 @@ body.is-loading { overflow: hidden; }
    reduction .has-sidebar already makes for its sidebar. If this layout ever
    opts into titleTop, these rows renumber and this rule goes. */
 .project-detail.is-video-aside .project-body h2 {
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  font-size: clamp(2.5rem, 4vw, 3rem);
+  line-height: 1;
 }
 @media (max-width: 900px) {
   /* back to normal flow; the wrapper needs its box back so its margin returns */
@@ -6322,7 +6326,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 .project-body-copy p {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--muted);
+  color: var(--body-copy);
 }
 /* Stops the one-word last line. text-wrap: pretty tells the browser to look
    ahead over the last few lines and rebalance them so a paragraph never ends
@@ -6605,3 +6609,20 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   DISPLAY WEIGHT: Archivo Black ships ONE face, at 400
+   Every h2/h3 here inherits the browser's bold (700), which the engine
+   answered by smearing the 400 glyphs. font-synthesis: none stops it doing
+   that anywhere; the list pins the display elements to the weight the file
+   really has. The html[lang="ja"] block above is more specific and still
+   asks for 900 on the elements whose content is Japanese, where the
+   fallback is Noto Sans JP and a real 900 exists.
+   ========================================================================== */
+html { font-synthesis: none; }
+.nav-logo, .hero-name, .section-head h2, .gallery-fallback-title,
+.card-info h3, .video-caption, .project-body h2, .cs-title-slot h2,
+.cs-brief-t, .cs-h, .cs-defs dt, .cs-step-cap, .cs-next-t,
+.about-page-intro h2, .about-page-subhead, .timeline-role, .stat-num,
+.contact-statement, .social-link, .chaos-stop-btn, .chaos-play-btn-large,
+.pong-end-msg, #pongRematch { font-weight: 400; }
