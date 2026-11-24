@@ -1829,7 +1829,7 @@ function renderBradleyStudy(data) {
        the hero has scrolled past, then it sticks. */
     + '<div class="bd-bar" data-bd-bar>'
       + '<div class="bd-bar-in">'
-      + '<button type="button" class="bd-bar-back" data-bd-back>← All projects</button>'
+      + '<button type="button" class="bd-bar-back" data-bd-back><span aria-hidden="true">←</span><span class="bd-bar-back-t"> All projects</span></button>'
       + '<p class="bd-bar-now"><span data-bd-n>1</span> / 9 <b data-bd-title>Research</b></p>'
       + '<button type="button" class="bd-bar-menu" aria-expanded="false" aria-controls="bdMenu" data-bd-menu-btn>Sections <span aria-hidden="true">▾</span></button>'
       + '</div>'

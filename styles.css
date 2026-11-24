@@ -6854,6 +6854,14 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 /* a placeholder Jack still has to write: kept loud on purpose so none is missed */
 .bd-todo { background: var(--highlight); color: var(--ink); padding: 0 4px; outline: 1px dashed var(--ink); outline-offset: -1px; }
 .bd { overflow-wrap: break-word; }
+/* a subtitle, not a credit line: the shared .cs-eyebrow is 11.5px, which is right for Pot Clip's one-liner and small for this longer descriptive one */
+.bd .cs-eyebrow { font-size: 0.95rem; line-height: 1.4; font-weight: 500; margin-bottom: 22px; }
+/* macOS hides overlay scrollbars until you scroll, which would leave a table that scrolls sideways looking cropped: these keep a thin visible track */
+.bd-scroll, .bd-lineup, .bd-frame { scrollbar-width: thin; scrollbar-color: var(--black) var(--line); }
+.bd-scroll::-webkit-scrollbar, .bd-lineup::-webkit-scrollbar { height: 10px; }
+.bd-frame::-webkit-scrollbar { width: 12px; }
+.bd-scroll::-webkit-scrollbar-track, .bd-lineup::-webkit-scrollbar-track, .bd-frame::-webkit-scrollbar-track { background: var(--line); }
+.bd-scroll::-webkit-scrollbar-thumb, .bd-lineup::-webkit-scrollbar-thumb, .bd-frame::-webkit-scrollbar-thumb { background: var(--black); }
 
 /* ---- the one image component: a labelled box at the file's own ratio, and
    the picture on top of it once the file exists ---- */
@@ -7034,6 +7042,8 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 .bd-kv dd { margin: 0; line-height: 1.6; max-width: 72ch; }
 
 @media (max-width: 900px) {
+  .bd-version { width: auto; flex: 1 1 0; min-width: 0; }
+  .bd-lineup { gap: 16px; }
   .bd-intro-row, .bd-two, .bd-problem, .bd-diagrams { grid-template-columns: 1fr; gap: 36px; }
   .bd-index { order: 2; }
 }
@@ -7042,7 +7052,9 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   .bd-tiles, .bd-ba { grid-template-columns: 1fr; gap: 32px; }
   .bd-insight { padding: 26px 22px; }
   .bd-menu { left: -3px; right: -3px; width: auto; margin-right: 0; }
-  .bd-bar-back { display: none; }
+  /* the arrow alone on a phone, still named for a screen reader */
+  .bd-bar-back-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .bd-bar-back { padding: 5px 12px; }
   .bd-bar-in { gap: 10px; }
   .bd-decision-h { flex-direction: column; gap: 6px; }
   .bd-owner { text-align: left; }
