@@ -3289,6 +3289,19 @@ The shape is one-way and worth keeping that way:
 - everything a visitor can click goes through `navigate()`, `popstate` goes
   through `syncToRoute()`, and both end in the same place. Nothing calls a UI
   function and the history API in the same breath — that is how these drift.
+- **ALL PROJECTS (2026-11-24) IS A DESTINATION, NOT A BACK BUTTON.** The
+  control was "BACK TO WORK" and called `history.back()`, so Project A ->
+  Next project B -> Back to work returned to A. `closeToProjects()` now
+  closes the panel and PUSHES `/#work`; the button, Escape and nothing else
+  call it, and it never calls `history.back()`. Browser Back and Forward are
+  untouched `popstate` and still walk the visit (grid, A, B, grid) in order.
+  The grid context - active filter, scrollY, the opening card - is saved by
+  the card click into `gridContext` and `sessionStorage`, so a refreshed
+  `/work/<id>` still returns to the right filter and card. A direct visit has
+  none and lands on the SELECTED PROJECTS heading (`tabindex="-1"`). Opening a
+  project from the about page clears it. Only the about overlay still closes
+  with `leaveOverlay()`. Verified: A->B->All, Back/Forward, Escape, refresh,
+  direct URL, filter restore, 390px in all four languages (widest 242px).
 - closing uses `history.back()`, so opening and closing does not leave a
   trail of entries. That is only safe because the boot block
   `replaceState`s a synthetic `/` underneath a direct deep link, so there is

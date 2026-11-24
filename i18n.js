@@ -200,7 +200,7 @@
       'proj.oasis-journey.alt.1': "A 3D desert city of white marble rings, columns and wide bowl-topped towers, with a pale green ship hovering above and dunes rising behind.",
       'proj.oasis-journey.alt.2': "The Journey to the Oasis poster art: a 3D desert scene with marble arches and towers, low ships in the foreground and a small alien figure standing on one of them.",
 
-      'project.back': '← BACK TO WORK',
+      'project.back': '← ALL PROJECTS',
       'project.next': 'NEXT PROJECT',
       'project.selected': 'Selected photographs',
       'project.type': 'TYPE',
@@ -468,7 +468,7 @@
       'proj.oasis-journey.alt.1': "Una ciudad desértica en 3D de anillos, columnas y torres de mármol blanco rematadas en forma de cuenco, con una nave verde pálido suspendida encima y dunas al fondo.",
       'proj.oasis-journey.alt.2': "La ilustración del póster de Journey to the Oasis: una escena desértica en 3D con arcos y torres de mármol, naves bajas en primer plano y una pequeña figura alienígena de pie sobre una de ellas.",
 
-      'project.back': '← VOLVER A PROYECTOS',
+      'project.back': '← TODOS LOS PROYECTOS',
       'project.next': 'SIGUIENTE PROYECTO',
       'project.selected': 'Fotografías seleccionadas',
       'project.type': 'TIPO',
@@ -734,7 +734,7 @@
       'proj.oasis-journey.alt.1': "白い大理石のリングや円柱、椀のような屋根をもつ塔が並ぶ3Dの砂漠都市。上空には淡い緑の宇宙船が浮かび、背後には砂丘が続く。",
       'proj.oasis-journey.alt.2': "「Journey to the Oasis」のポスターアート。3Dの砂漠に大理石のアーチと塔が立ち、手前には低い宇宙船、その上に小さなエイリアンが立っている。",
 
-      'project.back': '← 作品一覧へ戻る',
+      'project.back': '← すべての作品',
       'project.next': '次のプロジェクト',
       'project.selected': '選んだ写真',
       'project.type': '種別',
@@ -1000,7 +1000,7 @@
       'proj.oasis-journey.alt.1': "Una città desertica in 3D fatta di anelli, colonne e torri di marmo bianco con sommità a coppa, una nave verde pallido sospesa in alto e dune sullo sfondo.",
       'proj.oasis-journey.alt.2': "L'illustrazione del poster di Journey to the Oasis: una scena desertica in 3D con archi e torri di marmo, navi basse in primo piano e una piccola figura aliena in piedi su una di esse.",
 
-      'project.back': '← TORNA AI PROGETTI',
+      'project.back': '← TUTTI I PROGETTI',
       'project.next': 'PROSSIMO PROGETTO',
       'project.selected': 'Fotografie selezionate',
       'project.type': 'TIPO',

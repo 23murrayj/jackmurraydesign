@@ -2023,7 +2023,58 @@ function leaveOverlay() {
   else navigate({ kind: 'home' });
 }
 
-window.addEventListener('popstate', () => syncToRoute(routeFromPath(location.pathname)));
+/* ALL PROJECTS IS A DESTINATION, NOT A BACK BUTTON. It used to call
+   history.back(), so Project A -> Next project B -> Back to work stepped
+   back to A: the control said "work" and did "previous". It now closes the
+   panel and goes to /#work by PUSHING that entry, so Browser Back from the
+   grid returns to the project you left and the history reads like the visit
+   did. Nothing here calls history.back().
+   What it restores is the grid as it was when the first project was opened
+   from it - the active filter, the scroll position and the card to focus -
+   captured by the card click below and mirrored into sessionStorage, which
+   is what lets a refreshed /work/<id> still return to the right place.
+   A direct visit has no context, so it lands on the section's heading. */
+let gridContext = null;
+try { gridContext = JSON.parse(sessionStorage.getItem('gridContext') || 'null'); } catch (_) {}
+function saveGridContext(ctx) {
+  gridContext = ctx;
+  try { sessionStorage.setItem('gridContext', JSON.stringify(ctx)); } catch (_) {}
+}
+function restoreGrid(withScroll) {
+  const ctx = gridContext;
+  if (ctx && ctx.filter) {
+    const btn = [...filterBtns].find((b) => b.dataset.filter === ctx.filter);
+    if (btn && !btn.classList.contains('active')) btn.click();
+  }
+  const card = ctx && ctx.cardId
+    ? document.querySelector('.card[data-project="' + ctx.cardId + '"]') : null;
+  if (card && !card.classList.contains('hidden-card')) {
+    if (withScroll) window.scrollTo(0, ctx.scrollY || 0);
+    card.focus({ preventScroll: true });
+    return;
+  }
+  const head = document.querySelector('#work .section-head h2');
+  if (!head) return;
+  if (withScroll) document.getElementById('work').scrollIntoView({ behavior: 'auto', block: 'start' });
+  head.setAttribute('tabindex', '-1');
+  head.focus({ preventScroll: true });
+}
+function closeToProjects() {
+  if (location.pathname + location.hash !== '/#work') {
+    history.pushState({ kind: 'home', id: null }, '', '/#work');
+  }
+  syncToRoute({ kind: 'home' });
+  restoreGrid(true);
+}
+
+window.addEventListener('popstate', () => {
+  const wasProject = projectOverlay.classList.contains('open');
+  const r = routeFromPath(location.pathname);
+  syncToRoute(r);
+  // Back out of a project to the grid: put the filter and the focus back,
+  // but leave the scroll alone - the page behind never moved
+  if (wasProject && r.kind === 'home') restoreGrid(false);
+});
 
 /* Cards are real links now, so a plain click is the only one to intercept.
    Cmd/ctrl/shift/middle-click and "open in new tab" have to keep working -
@@ -2037,6 +2088,12 @@ document.addEventListener('click', (e) => {
   const card = e.target.closest?.('.card[href]');
   if (!card || !isPlainClick(e)) return;
   e.preventDefault();
+  const active = document.querySelector('.filter-btn.active');
+  saveGridContext({
+    filter: active ? active.dataset.filter : 'ALL',
+    scrollY: window.scrollY,
+    cardId: card.dataset.project
+  });
   navigate({ kind: 'project', id: card.dataset.project });
 });
 /* HOME LINKS - the JM logo and BACK TO TOP. Both were href="#top", which
@@ -2067,7 +2124,7 @@ document.addEventListener('click', (e) => {
   window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
 });
 
-projectBack.addEventListener('click', leaveOverlay);
+projectBack.addEventListener('click', closeToProjects);
 
 // full about page overlay — opened from the nav link, the about section
 // title, or the explicit "read more" button
@@ -2147,6 +2204,8 @@ document.addEventListener('click', (e) => {
   const id = link.dataset.openProject;
   if (!projectData[id]) return;
   e.preventDefault();
+  // from the about page there is no grid state to go back to
+  if (aboutOverlay.classList.contains('open')) saveGridContext(null);
   navigate({ kind: 'project', id });
 });
 
@@ -2158,7 +2217,7 @@ document.addEventListener('keydown', (e) => {
   // under an open lightbox
   if (lightbox && lightbox.classList.contains('open')) closeLightbox();
   // through the router, so Escape and the Back button land in the same place
-  else if (projectOverlay.classList.contains('open')) leaveOverlay();
+  else if (projectOverlay.classList.contains('open')) closeToProjects();
   else if (aboutOverlay.classList.contains('open')) leaveOverlay();
 });
 
