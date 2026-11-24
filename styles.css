@@ -2839,7 +2839,6 @@ body.is-loading { overflow: hidden; }
 
 /* stills under the player — sized by height so each keeps its own ratio and
    nothing is cropped; a portrait poster stays a portrait poster */
-.project-video-details > div:last-child { order: -1; }   /* the standup banner leads, the laptop photo follows on the right */
 .project-video-details {
   display: flex;
   flex-wrap: wrap;
@@ -4337,9 +4336,18 @@ body.is-loading { overflow: hidden; }
 @media (hover: hover) {
   .cs-fig:hover img[data-full] { transform: scale(1.01); }
 }
+/* ... AND THE SAME FOR EVERY OTHER PROJECT'S PHOTOGRAPHS (2026-11-24), on
+   Jack's word that they should behave like Pot Clip's: the 1% lift, the
+   small cursor dot and the zoom tip (script.js) are one set of rules now,
+   not a case-study exception. Every frame that holds one clips (overflow:
+   hidden), so the growth costs no layout. */
+#projectMedia img[data-full] { transition: transform .2s ease-out; }
+@media (hover: hover) {
+  #projectMedia img[data-full]:hover { transform: scale(1.01); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .cs-fig img[data-full] { transition: none; }
-  .cs-fig:hover img[data-full] { transform: none; }
+  .cs-fig img[data-full], #projectMedia img[data-full] { transition: none; }
+  .cs-fig:hover img[data-full], #projectMedia img[data-full]:hover { transform: none; }
 }
 /* The masthead photograph fills its column whatever its shape - it is the
    opening frame, so the cap above would be the wrong rule here. */

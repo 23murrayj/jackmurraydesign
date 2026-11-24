@@ -735,7 +735,8 @@ const projectData = {
     layout: 'video',
     intro: 'film',
     detailImages: [
-      { src: '/assets/projects/fuse-partners-in-crime/02-museum-play-hq.jpg?v=acb32c65', w: 1179, h: 1183 },   // the 1179px original at native size (was a 757px downscale)
+      { src: '/assets/projects/fuse-partners-in-crime/02-museum-play-hq.jpg?v=acb32c65', w: 1179, h: 1183,
+        full: '/assets/projects/fuse-partners-in-crime/02-museum-play-hq.jpg' },   // the 1179px original at native size (was a 757px downscale)
       // the masthead frame (`lead`): one VR player and one PC player at the
       // same table, in a room full of onlookers - the asymmetric co-op and the
       // public exhibition in a single photograph
@@ -1729,7 +1730,7 @@ function renderProjectMedia(data) {
       : '';
     const rest = all.map((entry, i) => ({ entry, i })).filter((x) => x.i !== leadIdx);
     const details = rest.length
-      ? `<div class="project-video-details">${rest.map((x) =>
+      ? `<div class="project-video-details">${rest.slice().reverse().map((x) =>   // reversed: the standup banner leads, the laptop photo follows on the right - DOM order is the lightbox order
           `<div>${mediaTag(x.entry, data.id, x.i + 1, data.title)}</div>`).join('')}</div>`
       : '';
     // A real file plays for real. The branch below it is the original
@@ -2331,7 +2332,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
   // mouseenter/mouseleave don't bubble, so delegation uses mouseover/mouseout
   // and ignores moves that stay inside the same target (entering a child fires
   // mouseout on the parent, which would otherwise flicker the dot).
-  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-switch, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, #projectMedia img[data-full], .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
+  const CURSOR_TARGETS = '.card, .btn-block, a, .skills span, .filter-btn, .project-back, .theme-switch, .form-submit, #aboutTitle, .about-back, .about-readmore-btn, .about-portrait, .play-btn, .video-play, .sticker, .placed-sticker, .cv-btn, .copy-email-btn, .egg-menu button, #chaosPlayBtn, #pongClose, #chaosStopBtn, .lang-toggle, .lang-option, .lightbox-close';
   const cursorEdge = (e, add) => {
     const hit = e.target.closest && e.target.closest(CURSOR_TARGETS);
     if (!hit) return;
@@ -2353,7 +2354,7 @@ if (window.matchMedia('(pointer: fine)').matches) {
      rule's and it is shared with .big. */
   const zoomDotHit = (e) => {
     const img = e.target.closest && e.target.closest('img[data-full]');
-    return !!(img && img.closest('.project-detail.is-case'));
+    return !!(img && img.closest('.project-detail'));
   };
   document.addEventListener('mouseover', (e) => { if (zoomDotHit(e)) cursorDot.classList.add('zoom'); });
   document.addEventListener('mouseout', (e) => {
@@ -4641,7 +4642,9 @@ function showLightboxImage(img) {
        descriptions". The description is in alt, where it is read to the
        people who need it rather than printed under a picture you can see. */
     lightboxCounter.textContent = pad(lbIndex + 1) + ' / ' + pad(lbGroup.length);
-    lightboxCaption.textContent = '';
+    // the camera settings are facts you cannot get by looking, so they stay
+    // (only where a photograph carries them)
+    lightboxCaption.textContent = img.dataset.exif || '';
     // no wrap: the ends disable rather than loop
     lightboxPrev.disabled = lbIndex <= 0;
     lightboxNext.disabled = lbIndex >= lbGroup.length - 1;
@@ -4678,7 +4681,10 @@ function openLightbox(img) {
   if (!lightbox || !img) return;
   clearTimeout(lbClearTimer);      // a reopen inside the fade keeps its image
   hideZoomTip();
-  const groupEl = img.closest('[data-lb-group]');
+  /* a Pot Clip section carrying data-lb-group is its own run; on every other
+     project all of the page's photographs (#projectMedia, in reading order)
+     are one run, with the arrows and the counter */
+  const groupEl = img.closest('[data-lb-group]') || (img.closest('#projectMedia') ? projectMedia : null);
   lbGroup = groupEl ? [...groupEl.querySelectorAll('img[data-full]')] : [];
   lbIndex = groupEl ? lbGroup.indexOf(img) : -1;
   lightbox.classList.toggle('is-group', lbGroup.length > 1);
@@ -4768,13 +4774,12 @@ function markZoomableImages() {
      LEAVING the element, so moving around inside one photograph never
      clears it. The six other projects keep it: this is scoped to the
      case study, and .zoom-tip below is what replaces it. */
-  const cased = projectDetailEl && projectDetailEl.classList.contains('is-case');
   document.querySelectorAll('.project-detail img[data-full]').forEach((img) => {
     img.tabIndex = 0;
     img.setAttribute('role', 'button');
     img.style.cursor = 'zoom-in';
-    if (cased) img.removeAttribute('title');
-    else img.title = T.t('a11y.zoomHint');
+    // no native title anywhere: the .zoom-tip below is the one hint, on every project
+    img.removeAttribute('title');
   });
 }
 /* ==========================================================================
@@ -4811,7 +4816,7 @@ function hideZoomTip() {
    nothing else today, and the other six keep their native title. */
 function zoomTipTarget(e) {
   const img = e.target.closest && e.target.closest('img[data-full]');
-  return img && img.closest('.project-detail.is-case') ? img : null;
+  return img && img.closest('.project-detail') ? img : null;
 }
 
 if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
