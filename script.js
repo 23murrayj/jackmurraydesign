@@ -1822,8 +1822,8 @@ function fillProjectDetail(id) {
   // remain the fallback so a missing key degrades to English rather than
   // blanking the field. The TITLE is never translated — these are the
   // names of actual works, not descriptions of them.
-  /* THE BLACK CHIP IS THE PRIMARY CATEGORY (uppercase, one of the filter
-     names, first in the row); the light chips after it are the specific
+  /* THE BLACK CHIPS ARE EVERY FILTER CATEGORY THE PROJECT IS IN (category plus
+     alsoIn, uppercase, filter names, first in the row); the light chips after it are the specific
      skills in data.skills, Title Case. Two purposes, two kinds of chip: the
      category is what the gallery files the project under, the skills are
      what the work took. data-i18n nodes, so a language change refreshes
@@ -1832,6 +1832,15 @@ function fillProjectDetail(id) {
   projectCat.dataset.i18n = 'cat.' + data.category;
   projectCat.textContent = T.t('cat.' + data.category) || data.category;
   projectCat.hidden = false;
+  // a project in two filters wears both as black chips; #projectCat is the first, the rest are made here
+  document.querySelectorAll('.project-cat-extra').forEach((n) => n.remove());
+  const extraCats = (data.alsoIn || []).map((c) => {
+    const n = document.createElement('span');
+    n.className = 'project-cat project-cat-extra';
+    n.dataset.i18n = 'cat.' + c;
+    n.textContent = T.t('cat.' + c) || c;
+    return n;
+  });
   projectTags.querySelectorAll('.cs-tag').forEach((n) => n.remove());
   projectTitle.textContent = data.title;
 
@@ -1864,11 +1873,12 @@ function fillProjectDetail(id) {
        renderCaseStudy before the next wipe. The fallback is that same
        home, so a tagless case study keeps a chip somewhere valid. */
     const catSlot = projectCase.querySelector('.cs-tags-cat');
-    if (catSlot) catSlot.append(projectCat);
+    if (catSlot) catSlot.append(projectCat, ...extraCats);
     else projectTags.prepend(projectCat);
     titleSlot.append(projectTitle);
   } else {
     projectTags.prepend(projectCat);
+    projectCat.after(...extraCats);
     projectDesc.before(projectTitle);
     // the light skill chips sit beside the black category chip, wrapping naturally
     const chip = (k) => {
