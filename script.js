@@ -176,7 +176,7 @@ const projectData = {
     bg: '#f2a71b',
     thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
     category: 'UX/UI',
-    skills: ['skill.interaction-design', 'skill.user-research', 'skill.user-flows', 'skill.prototyping', 'skill.usability-testing'],
+    skills: ['skill.interaction-design', 'skill.user-research', 'skill.wireframing', 'skill.prototyping', 'skill.usability-testing'],
     title: 'CATERPILLAR UX CHALLENGE',
     desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
     type: 'Bradley University x Caterpillar',
@@ -683,7 +683,7 @@ const projectData = {
     // 2x the 717px it renders at — it read soft on a retina screen.
     thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
-    skills: ['skill.brand-identity', 'skill.typography', 'skill.print-design'],
+    skills: ['skill.brand-identity', 'skill.typography'],
     title: 'EASTER AT RIVERSIDE',
     desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
     type: 'Event Identity',
@@ -723,7 +723,7 @@ const projectData = {
     // renders at 717px, so these are the real pixels and nothing is invented
     thumb: { src: '/assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1, small: '/assets/projects/fuse-partners-in-crime/cover-banner-800.jpg' },
     category: 'UX/UI',
-    skills: ['skill.interaction-design', 'skill.ui-design', 'skill.motion-design', 'skill.visual-effects'],
+    skills: ['skill.interaction-design', 'skill.ui-design', 'skill.motion-design'],
     alsoIn: ['MOTION'],
     title: 'PARTNERS IN CRIME',
     desc: "Asymmetric VR and PC co-op heist, shown at the Peoria Riverfront Museum.",
@@ -754,7 +754,7 @@ const projectData = {
     // 16:9 version would cut the ends off the word the project is named after.
     thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
     category: 'GRAPHICS',
-    skills: ['skill.brand-identity', 'skill.typography', 'skill.print-design'],
+    skills: ['skill.brand-identity', 'skill.typography'],
     title: 'SANDCASTLES',
     desc: "Sermon series identity applied across stage screens, social, and print.",
     type: 'Sermon Series Identity',
