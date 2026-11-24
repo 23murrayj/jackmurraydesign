@@ -735,7 +735,7 @@ const projectData = {
     layout: 'video',
     intro: 'film',
     detailImages: [
-      { src: '/assets/projects/fuse-partners-in-crime/02-museum-play.jpg', w: 757, h: 760 },
+      { src: '/assets/projects/fuse-partners-in-crime/02-museum-play-hq.jpg?v=acb32c65', w: 1179, h: 1183 },   // the 1179px original at native size (was a 757px downscale)
       // the masthead frame (`lead`): one VR player and one PC player at the
       // same table, in a room full of onlookers - the asymmetric co-op and the
       // public exhibition in a single photograph
@@ -744,8 +744,8 @@ const projectData = {
       // the exhibition standup: title lockup, the full 17-person crew by
       // department, and the in-game scanner art. Unreadable at strip width by
       // definition, so it carries a zoom source.
-      { src: '/assets/projects/fuse-partners-in-crime/04-standup-banner.jpg', w: 210, h: 700,
-        full: '/assets/projects/fuse-partners-in-crime/04-standup-banner-full.jpg' }
+      { src: '/assets/projects/fuse-partners-in-crime/04-standup-banner-hq.jpg?v=d89d3efe', w: 900, h: 3000,   // rendered from the print PDF (was 210px wide, 1.4x at the strip)
+        full: '/assets/projects/fuse-partners-in-crime/04-standup-banner-hq-full.jpg' }
     ]
   },
 
