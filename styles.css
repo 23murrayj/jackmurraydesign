@@ -3141,9 +3141,15 @@ body.is-loading { overflow: hidden; }
    it, in a strip sized by height so each keeps its own shape; below that the
    column is too narrow for them and they run under it */
 @media (min-width: 1101px) {
+  /* text takes columns 1-6 (602px at the full shell, was 708) and the strip
+     the other six, flush right with 64px kept clear of the text. The strip's
+     width is height x 1.296 (the two stills' ratios, 757:760 and 210:700) plus
+     the 12px gap, so --strip-h = (6 columns - 64 - 12) / 1.296: 405 at the
+     shell's 1236, 27.5vw below it (303 at 1101 against 310 available) */
+  .project-detail.is-intro-film .project-body-copy { grid-column: 1 / 7; }
   .project-detail.is-intro-film .project-video-details {
-    grid-column: 9 / -1; grid-row: 8; margin-top: 56px;
-    flex-wrap: nowrap; justify-content: flex-start; --strip-h: clamp(200px, 18.8vw, 280px);
+    grid-column: 7 / -1; grid-row: 8; margin-top: 56px;
+    flex-wrap: nowrap; justify-content: flex-end; --strip-h: clamp(200px, 27.5vw, 405px);
   }
   .project-detail.is-intro-film .project-video-details > div { height: var(--strip-h); }
 }
