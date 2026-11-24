@@ -492,7 +492,7 @@
     <button class="filter-btn" aria-pressed="false" data-filter="PRODUCT" data-i18n="filter.PRODUCT">PRODUCT</button>
     <button class="filter-btn" aria-pressed="false" data-filter="GRAPHICS" data-i18n="filter.GRAPHICS">GRAPHICS</button>
     <button class="filter-btn" aria-pressed="false" data-filter="PHOTOGRAPHY" data-i18n="filter.PHOTOGRAPHY">PHOTOGRAPHY</button>
-    <button class="filter-btn" aria-pressed="false" data-filter="MOTION" data-i18n="filter.MOTION">MOTION</button>
+    <button class="filter-btn" aria-pressed="false" data-filter="MOTION" data-i18n="filter.MOTION">MOTION / 3D</button>
   </div>
   <!-- Filtering is a visual change with nothing to hear: the grid goes from
        six cards to one and a screen-reader user gets silence. This says how
@@ -662,7 +662,7 @@
          in styles.css places both by area, so this is what a screen reader,
          a crawler and the Tab key see as well as what the eye sees. -->
     <div class="project-body">
-      <span class="project-cat" id="projectCat"></span>
+      <div class="project-tags" id="projectTags"><span class="project-cat" id="projectCat"></span></div>
       <h2 id="projectTitle"></h2>
       <p class="project-desc" id="projectDesc"></p>
       <!-- long-form write-up. Hidden entirely when a project has no
@@ -946,8 +946,11 @@
         <h4 class="skill-group-label" data-i18n="skills.design">DESIGN</h4>
         <div class="about-skill-tags">
           <span class="lead">UX Design</span><span>UI Design</span><span>Interaction Design</span>
-          <span>Web Design</span><span>Brand Identity</span><span>Typography</span>
-          <div class="tag-pair"><span>Motion Design</span><span>Photography</span></div>
+          <span>Web Design</span><span>Product Design</span><span>Graphic Design</span>
+          <span>Brand Identity</span><span>Typography</span><span>Print Design</span>
+          <span>Motion Design</span><span>3D Modeling</span><span>3D Animation</span>
+          <span>Visual Effects</span>
+          <div class="tag-pair"><span>Photography</span><span>Color Grading</span></div>
         </div>
       </div>
       <div class="skill-group">

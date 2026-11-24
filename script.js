@@ -176,6 +176,7 @@ const projectData = {
     bg: '#f2a71b',
     thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
     category: 'UX/UI',
+    skills: ['skill.ux-design', 'skill.interaction-design', 'skill.user-research', 'skill.user-flows', 'skill.prototyping', 'skill.usability-testing'],
     title: 'CATERPILLAR UX CHALLENGE',
     desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
     type: 'Bradley University x Caterpillar',
@@ -245,6 +246,8 @@ const projectData = {
       small: '/assets/projects/pot-clip/thumb-800.jpg?v=03bb7618',
       altKey: 'proj.pot-clip.alt.thumb' },
     category: 'PRODUCT',
+    alsoIn: ['MOTION'],
+    skills: ['skill.product-design', 'skill.user-research', 'skill.prototyping', 'skill.3d-modeling', 'skill.photography', 'skill.graphic-design'],
     title: 'POT CLIP',
     desc: "Designed, hand-sculpted, digitally modeled, and tested.",
     type: 'Product Design',
@@ -320,27 +323,9 @@ const projectData = {
         ['proj.pot-clip.cs.meta.role', 'proj.pot-clip.cs.meta.roleV'],
         ['proj.pot-clip.cs.meta.tools', 'proj.pot-clip.cs.meta.toolsV'],
       ],
-      /* THE KEYWORDS SIT UNDER THE META TABLE, BESIDE THE CATEGORY CHIP.
-         Jack: "every other page has the tag that you click on it... it
-         might also be cool to have those tags as well next to it to show
-         what keywords were used in the making of this... pretty minimal,
-         not looking clickable."
-           They are SKILLS rather than filters, which is the whole reason
-         they are a second kind of box: the black chip is the one category
-         this project is filed under and a visitor can click it on the
-         gallery, while these five name what the work took. Wiring them to
-         the filters would promise five more views of a six-project
-         gallery, four of which do not exist.
-           Full keys, like every other string in this layout, and named
-         rather than numbered - a tag is not a position, and 3D modeling
-         moving ahead of prototyping should not rename anything. */
-      tags: [
-        'proj.pot-clip.cs.tag.research',
-        'proj.pot-clip.cs.tag.proto',
-        'proj.pot-clip.cs.tag.model',
-        'proj.pot-clip.cs.tag.photo',
-        'proj.pot-clip.cs.tag.graphics',
-      ],
+      /* The keyword row is data.skills now, shared with the other seven
+         pages: the first skill is the black chip, the rest are the grey
+         ones (renderCaseStudy). */
       cards: [
         ['proj.pot-clip.cs.card1.t', 'proj.pot-clip.cs.card1.b'],
         ['proj.pot-clip.cs.card2.t', 'proj.pot-clip.cs.card2.b'],
@@ -698,6 +683,7 @@ const projectData = {
     // 2x the 717px it renders at — it read soft on a retina screen.
     thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
+    skills: ['skill.brand-identity', 'skill.graphic-design', 'skill.typography', 'skill.print-design'],
     title: 'EASTER AT RIVERSIDE',
     desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
     type: 'Event Identity',
@@ -737,6 +723,7 @@ const projectData = {
     // renders at 717px, so these are the real pixels and nothing is invented
     thumb: { src: '/assets/projects/fuse-partners-in-crime/cover-banner.jpg', w: 1167, h: 875, altIndex: 1, small: '/assets/projects/fuse-partners-in-crime/cover-banner-800.jpg' },
     category: 'UX/UI',
+    skills: ['skill.interaction-design', 'skill.ui-design', 'skill.motion-design', 'skill.visual-effects'],
     alsoIn: ['MOTION'],
     title: 'PARTNERS IN CRIME',
     desc: "Asymmetric VR and PC co-op heist, shown at the Peoria Riverfront Museum.",
@@ -767,6 +754,7 @@ const projectData = {
     // 16:9 version would cut the ends off the word the project is named after.
     thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
     category: 'GRAPHICS',
+    skills: ['skill.brand-identity', 'skill.graphic-design', 'skill.typography', 'skill.print-design'],
     title: 'SANDCASTLES',
     desc: "Sermon series identity applied across stage screens, social, and print.",
     type: 'Sermon Series Identity',
@@ -801,6 +789,7 @@ const projectData = {
     // inherits alt.1, which describes a different photograph entirely.
     thumb: { src: '/assets/projects/monmouth-retreat/thumb.jpg', w: 1400, h: 1050, altIndex: 9, small: '/assets/projects/monmouth-retreat/thumb-800.jpg' },
     category: 'PHOTOGRAPHY',
+    skills: ['skill.photography', 'skill.color-grading'],
     title: 'MONMOUTH RETREAT',
     desc: "Candid photography from a worship team's retreat in Monmouth.",
     type: 'Photography Collection',
@@ -911,6 +900,7 @@ const projectData = {
     // rather than the poster's — this crop excludes the ships alt.2 describes.
     thumb: { src: '/assets/projects/oasis-journey/thumb.jpg', w: 1400, h: 1049, altIndex: 1, small: '/assets/projects/oasis-journey/thumb-800.jpg' },
     category: 'MOTION',
+    skills: ['skill.3d-animation', 'skill.3d-modeling', 'skill.motion-design'],
     title: 'JOURNEY TO THE OASIS',
     desc: "3D animated short created as an early motion and storytelling project.",
     type: 'School Project',
@@ -937,6 +927,7 @@ const projectData = {
     thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
     hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
     category: 'UX/UI',
+    skills: ['skill.ux-design'],
     title: 'BRADLEY REDESIGN',
     desc: "Case study coming soon.",
     type: 'Case Study',
@@ -1228,6 +1219,7 @@ function announceFilterCount(n) {
 const projectOverlay = document.getElementById('projectOverlay');
 const projectMedia = document.getElementById('projectMedia');
 const projectCat = document.getElementById('projectCat');
+const projectTags = document.getElementById('projectTags');
 const projectTitle = document.getElementById('projectTitle');
 const projectDesc = document.getElementById('projectDesc');
 const projectType = document.getElementById('projectType');
@@ -1341,7 +1333,8 @@ function renderCaseStudy(data) {
      where the chip and the heading belong and the slot before projectCase
      is where the stage belongs, so if anything below here throws, the
      panel is still a working panel. */
-  projectDesc.before(projectCat, projectTitle);
+  projectTags.prepend(projectCat);
+  projectDesc.before(projectTitle);
   if (projectStage.parentElement !== projectDetailEl) {
     projectDetailEl.insertBefore(projectStage, projectCase);
   }
@@ -1516,10 +1509,11 @@ function renderCaseStudy(data) {
          is the unnecessary description the brief names. The first item is
          a slot: the chip is a permanent node fillProjectDetail moves in,
          the way the <h2> is. */
-      + (cs.tags ? '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
-        + cs.tags.slice(0, -2).map((k) => csText('li', 'cs-tag', k)).join('')
+      + (data.skills ? '<ul class="cs-tags"><li class="cs-tags-cat"></li>'
+        + data.skills.slice(1, -2).map((k) => csText('li', 'cs-tag', k)).join('')
         // the last two travel together, so neither is left alone on a line (Jack: on a Mac the final chip was a widow)
-        + '<li class="cs-tag-pair">' + cs.tags.slice(-2).map((k) => csText('span', 'cs-tag', k)).join('') + '</li></ul>' : '')
+        + (data.skills.length > 2 ? '<li class="cs-tag-pair">' + data.skills.slice(-2).map((k) => csText('span', 'cs-tag', k)).join('') + '</li>'
+          : data.skills.slice(1).map((k) => csText('li', 'cs-tag', k)).join('')) + '</ul>' : '')
       /* THE BRIEF SITS UNDER THE META TABLE, IN THE MASTHEAD'S OWN COLUMN.
          Jack: "move The brief box up to the empty space to the left of the
          hero photo and above the problem, solution and outcome." There was
@@ -1829,7 +1823,15 @@ function fillProjectDetail(id) {
   // remain the fallback so a missing key degrades to English rather than
   // blanking the field. The TITLE is never translated — these are the
   // names of actual works, not descriptions of them.
-  projectCat.textContent = T.t('cat.' + data.category) || data.category;
+  /* THE BLACK CHIP IS THE FIRST SKILL, NOT THE CATEGORY. The category is what
+     the gallery files a project under and is a filter; the chips on a page
+     say what the work took. Each is a data-i18n node so a language change
+     refreshes it without a re-render. */
+  const skills = data.skills || [];
+  projectCat.dataset.i18n = skills[0] || '';
+  projectCat.textContent = skills[0] ? (T.t(skills[0]) || '') : '';
+  projectCat.hidden = !skills[0];
+  projectTags.querySelectorAll('.cs-tag').forEach((n) => n.remove());
   projectTitle.textContent = data.title;
 
   /* WHERE THE TITLE SITS. Its home is the top of .project-body - the
@@ -1862,10 +1864,19 @@ function fillProjectDetail(id) {
        home, so a tagless case study keeps a chip somewhere valid. */
     const catSlot = projectCase.querySelector('.cs-tags-cat');
     if (catSlot) catSlot.append(projectCat);
-    else projectDesc.before(projectCat);
+    else projectTags.prepend(projectCat);
     titleSlot.append(projectTitle);
   } else {
-    projectDesc.before(projectCat, projectTitle);
+    projectTags.prepend(projectCat);
+    projectDesc.before(projectTitle);
+    // the rest of the skills sit beside the black chip, wrapping naturally
+    projectTags.append(...skills.slice(1).map((k) => {
+      const li = document.createElement('span');
+      li.className = 'cs-tag';
+      li.dataset.i18n = k;
+      li.textContent = T.t(k) || '';
+      return li;
+    }));
   }
   /* THE NEXT PROJECT closes every page that is not the case study, which
      already has its own beside the disclaimer. Same control, same builder. */

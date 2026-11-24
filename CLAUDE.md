@@ -4842,3 +4842,8 @@ fonts about 45KB.
   and drop that llms.txt sentence. It is the eighth card; the grid stays even.
 - `23jmurr@gmail.com` identifies the user; never send it to an unrelated
   service. Ask before sending a test contact-form submission.
+
+## Skill chips and the filters (2026-11-24)
+
+**Every project page's chip row is `data.skills` in `projectData`** (full `skill.*` keys, translated in four languages): the first is the BLACK chip, the rest the grey `.cs-tag` ones, in `#projectTags` on the six short pages and in `.cs-tags` on Pot Clip. They are skills, not the gallery category and not software; tools belong in project metadata. Title Case, no `text-transform`, 0.5px tracking (the About chips'). Bradley Redesign carries only UX Design until its case study substantiates more. The About SKILLS > Design group gained Product Design, Graphic Design, Print Design, 3D Modeling, 3D Animation, Visual Effects, Color Grading (English only, like the rest of that list).
+**Filters:** the MOTION filter reads "MOTION / 3D" (key still `MOTION`); Pot Clip is PRODUCT + `alsoIn: ['MOTION']`, Partners in Crime UX/UI + MOTION. No RESEARCH filter, deliberately. The skeleton's sixth chip is 9.883 x 0.8rem; at 390 the row is still two rows and the first card still peeks (+28.4).
