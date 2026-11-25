@@ -172,34 +172,22 @@ updateScrollProgress();
 // TYPE/ROLE are kept honest (school/personal/church/concept work) —
 // no fake client names or invented agency-style services.
 const projectData = {
-  'cat-coaching': {
-    bg: '#f2a71b',
-    thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
+  /* THE CASE STUDY IS BUILT (renderBradleyStudy, SECTION 06) with placeholder
+     images until Jack drops the real files in. The card thumbnail is still the
+     plain stone panel from when this was a placeholder card. */
+  'bradley-redesign': {
+    bg: '#CBC4B4',
+    thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
+    hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
     category: 'UX/UI',
-    skills: ['skill.interaction-design', 'skill.user-research', 'skill.wireframing', 'skill.prototyping', 'skill.usability-testing'],
-    title: 'CATERPILLAR UX CHALLENGE',
-    desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
-    type: 'Bradley University x Caterpillar',
-    year: '2025',
-    role: 'UX Research & Design',
-    layout: 'mixed',
-    // photos are supporting evidence here, not the point. `intro` picks the
-    // opening composition (see the PROJECT SHELL note in styles.css): split =
-    // identity beside the featured frame
-    intro: 'columns',
-    hero: { src: '/assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
-            full: '/assets/projects/cat-coaching/hero-full.jpg' },
-    // One supporting photo, not two. The whiteboard shot came out and the
-    // team shot takes the full width under the hero - see the :only-child
-    // rule in styles.css. Alt strings are resolved BY POSITION and the hero
-    // is index 0, so detail images start at alt.2, not alt.1: dropping the
-    // whiteboard here meant deleting the old alt.2 and moving the team
-    // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
-    // untouched.
-    detailImages: [
-      { src: '/assets/projects/cat-coaching/03-team.jpg?v=2b0b0c71', w: 1400, h: 1400,
-        full: '/assets/projects/cat-coaching/03-team-full.jpg' }
-    ]
+    title: 'BRADLEY REDESIGN',
+    desc: "Researched, rebuilt and still iterating on the page students use to choose the program.",
+    type: 'Case Study',
+    year: '2026',
+    role: 'UX Designer',
+    layout: 'case',
+    caseStudy: { bradley: true, next: 'pot-clip' },
+    detailImages: []
   },
 
   'pot-clip': {
@@ -676,37 +664,37 @@ const projectData = {
       altIndex: 13,
     },
   },
-  'easter-riverside': {
-    bg: '#8fc0e0',
-    // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
-    // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
-    // 2x the 717px it renders at — it read soft on a retina screen.
-    thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
-    category: 'GRAPHICS',
-    skills: ['skill.brand-identity', 'skill.typography'],
-    title: 'EASTER AT RIVERSIDE',
-    desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
-    type: 'Event Identity',
-    // the artwork itself reads 4.20.25 — this was 2024 before
+
+  'cat-coaching': {
+    bg: '#f2a71b',
+    thumb: { src: '/assets/projects/cat-coaching/thumb.jpg', w: 1400, h: 1050, altIndex: 1, small: '/assets/projects/cat-coaching/thumb-800.jpg' },
+    category: 'UX/UI',
+    skills: ['skill.interaction-design', 'skill.user-research', 'skill.wireframing', 'skill.prototyping', 'skill.usability-testing'],
+    title: 'CATERPILLAR UX CHALLENGE',
+    desc: "Adaptive coaching interface for heavy equipment operators, designed with Caterpillar.",
+    type: 'Bradley University x Caterpillar',
     year: '2025',
-    role: 'Graphic Designer',
-    // hero + supporting shots: the design, then the design in the wild
+    role: 'UX Research & Design',
     layout: 'mixed',
-    intro: 'split',
-    // `full` is the click-to-zoom source; `src` stays the smaller in-page one
-    hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
-            full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
+    // photos are supporting evidence here, not the point. `intro` picks the
+    // opening composition (see the PROJECT SHELL note in styles.css): split =
+    // identity beside the featured frame
+    intro: 'columns',
+    hero: { src: '/assets/projects/cat-coaching/hero.jpg', w: 1900, h: 1069,
+            full: '/assets/projects/cat-coaching/hero-full.jpg' },
+    // One supporting photo, not two. The whiteboard shot came out and the
+    // team shot takes the full width under the hero - see the :only-child
+    // rule in styles.css. Alt strings are resolved BY POSITION and the hero
+    // is index 0, so detail images start at alt.2, not alt.1: dropping the
+    // whiteboard here meant deleting the old alt.2 and moving the team
+    // string from alt.3 to alt.2 in all four languages. The hero's alt.1 is
+    // untouched.
     detailImages: [
-      { src: '/assets/projects/easter-riverside/03-banner.jpg?v=6d7df561', w: 1600, h: 1200,
-        full: '/assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
-      { src: '/assets/projects/easter-riverside/02-photo-wall.jpg?v=05d91e46', w: 1000, h: 1500,
-        full: '/assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
-      /* aside: the cards on the small table sit to the RIGHT of the write-up
-         (re-cropped 1:1 from the original so the stack fills the frame) */
-      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg?v=5eaa458d', w: 1500, h: 1500, aside: true,
-        full: '/assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
+      { src: '/assets/projects/cat-coaching/03-team.jpg?v=2b0b0c71', w: 1400, h: 1400,
+        full: '/assets/projects/cat-coaching/03-team-full.jpg' }
     ]
   },
+
   'fuse-partners-in-crime': {
     bg: '#1aa64b',
     video: {
@@ -750,43 +738,38 @@ const projectData = {
     ]
   },
 
-  'sandcastles': {
-    // bg is sampled from the artwork's own paper texture (#4ea7ae), not picked
-    bg: '#4ea7ae',
-    // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
-    // wordmark runs nearly edge to edge, so letting the card frame crop the
-    // 16:9 version would cut the ends off the word the project is named after.
-    thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
+  'easter-riverside': {
+    bg: '#8fc0e0',
+    // native 4:3 cut from the 1920x1080 master. The old thumb was 1000x562,
+    // so the 4:3 card frame cover-cropped a 16:9 image AND had well under
+    // 2x the 717px it renders at — it read soft on a retina screen.
+    thumb: { src: '/assets/projects/easter-riverside/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/easter-riverside/thumb-800.jpg' },
     category: 'GRAPHICS',
     skills: ['skill.brand-identity', 'skill.typography'],
-    title: 'SANDCASTLES',
-    desc: "Sermon series identity applied across stage screens, social, and print.",
-    type: 'Sermon Series Identity',
-    // the church's livestream of the opening service is dated 06.29.25
+    title: 'EASTER AT RIVERSIDE',
+    desc: "One identity across two services, from invitation cards to a banner on the side of the building.",
+    type: 'Event Identity',
+    // the artwork itself reads 4.20.25 — this was 2024 before
     year: '2025',
     role: 'Graphic Designer',
-    // same shape as easter-riverside: the design, then the design in use
+    // hero + supporting shots: the design, then the design in the wild
     layout: 'mixed',
     intro: 'split',
-    // the artwork keeps its own 16:9: Jack, "I don't like us changing the ratio
-    // of our main project piece", even if it reads a little smaller
-    hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
-            full: '/assets/projects/sandcastles/01-hero-full.jpg' },
-    // Two applications, both of them the finished thing in use. 02-photoshop.jpg
-    // and 04-instagram.jpg are still on disk but unused: the Photoshop shot was
-    // a photo of a screen rather than a screenshot, and it showed one near-final
-    // state while the copy claims iteration, so it was promising something it
-    // didn't deliver.
+    // `full` is the click-to-zoom source; `src` stays the smaller in-page one
+    hero: { src: '/assets/projects/easter-riverside/01-hero.jpg', w: 1600, h: 900,
+            full: '/assets/projects/easter-riverside/01-hero-full.jpg' },
     detailImages: [
-      // `stack`: both sit in a column on the RIGHT under the hero, the bookmark
-      // whole and uncropped, the stage photo smaller at its own ratio, with the
-      // write-up running down the left beside them
-      { src: '/assets/projects/sandcastles/05-reading-plan-whole.jpg?v=4acbefad', w: 1146, h: 1192, stack: 'is-bookmark',
-        full: '/assets/projects/sandcastles/05-reading-plan-full.jpg' },
-      { src: '/assets/projects/sandcastles/03-stage.jpg?v=8611f06f', w: 1800, h: 1006, stack: 'is-stage',
-        full: '/assets/projects/sandcastles/03-stage-full.jpg' }
+      { src: '/assets/projects/easter-riverside/03-banner.jpg?v=6d7df561', w: 1600, h: 1200,
+        full: '/assets/projects/easter-riverside/03-banner-full.jpg' , exif: '26mm · f/1.5 · 1/6400 s · ISO 50' },
+      { src: '/assets/projects/easter-riverside/02-photo-wall.jpg?v=05d91e46', w: 1000, h: 1500,
+        full: '/assets/projects/easter-riverside/02-photo-wall-full.jpg' , exif: '50mm · f/2.8 · 1/2500 s · ISO 2500' },
+      /* aside: the cards on the small table sit to the RIGHT of the write-up
+         (re-cropped 1:1 from the original so the stack fills the frame) */
+      { src: '/assets/projects/easter-riverside/04-invite-cards.jpg?v=5eaa458d', w: 1500, h: 1500, aside: true,
+        full: '/assets/projects/easter-riverside/04-invite-cards-full.jpg' , exif: '26mm · f/1.5 · 1/60 s · ISO 400' }
     ]
   },
+
   'monmouth-retreat': {
     bg: '#111',
     // Card image is photo 9, the guitarist in the doorway — cropped to 4:3
@@ -849,6 +832,7 @@ const projectData = {
         exif: '85mm · f/2 · 1/160 s · ISO 500' }
     ]
   },
+
   /* ----------------------------------------------------------------------
      ADDING A PROJECT
      Copy this shape in above, keyed by a url-safe id. Order in this object is
@@ -928,22 +912,43 @@ const projectData = {
       <text x="40" y="410" font-family="Archivo Black" font-size="30" fill="#fff">JOURNEY TO THE OASIS</text>
     </svg>`
   },
-  /* THE CASE STUDY IS BUILT (renderBradleyStudy, SECTION 06) with placeholder
-     images until Jack drops the real files in. The card thumbnail is still the
-     plain stone panel from when this was a placeholder card. */
-  'bradley-redesign': {
-    bg: '#CBC4B4',
-    thumb: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050, small: '/assets/projects/bradley-redesign/thumb-800.jpg?v=5775a60d' },
-    hero: { src: '/assets/projects/bradley-redesign/thumb.jpg?v=98ddcd58', w: 1400, h: 1050 },
-    category: 'UX/UI',
-    title: 'BRADLEY REDESIGN',
-    desc: "Researched, rebuilt and still iterating on the page students use to choose the program.",
-    type: 'Case Study',
-    year: '2026',
-    role: 'UX Designer',
-    layout: 'case',
-    caseStudy: { bradley: true, next: 'pot-clip' },
-    detailImages: []
+
+  'sandcastles': {
+    // bg is sampled from the artwork's own paper texture (#4ea7ae), not picked
+    bg: '#4ea7ae',
+    // 4:3 crop of the 16:9 artwork rather than a cover-crop of it — the script
+    // wordmark runs nearly edge to edge, so letting the card frame crop the
+    // 16:9 version would cut the ends off the word the project is named after.
+    thumb: { src: '/assets/projects/sandcastles/thumb.jpg', w: 1400, h: 1050, small: '/assets/projects/sandcastles/thumb-800.jpg' },
+    category: 'GRAPHICS',
+    skills: ['skill.brand-identity', 'skill.typography'],
+    title: 'SANDCASTLES',
+    desc: "Sermon series identity applied across stage screens, social, and print.",
+    type: 'Sermon Series Identity',
+    // the church's livestream of the opening service is dated 06.29.25
+    year: '2025',
+    role: 'Graphic Designer',
+    // same shape as easter-riverside: the design, then the design in use
+    layout: 'mixed',
+    intro: 'split',
+    // the artwork keeps its own 16:9: Jack, "I don't like us changing the ratio
+    // of our main project piece", even if it reads a little smaller
+    hero: { src: '/assets/projects/sandcastles/01-hero.jpg', w: 1900, h: 1069,
+            full: '/assets/projects/sandcastles/01-hero-full.jpg' },
+    // Two applications, both of them the finished thing in use. 02-photoshop.jpg
+    // and 04-instagram.jpg are still on disk but unused: the Photoshop shot was
+    // a photo of a screen rather than a screenshot, and it showed one near-final
+    // state while the copy claims iteration, so it was promising something it
+    // didn't deliver.
+    detailImages: [
+      // `stack`: both sit in a column on the RIGHT under the hero, the bookmark
+      // whole and uncropped, the stage photo smaller at its own ratio, with the
+      // write-up running down the left beside them
+      { src: '/assets/projects/sandcastles/05-reading-plan-whole.jpg?v=4acbefad', w: 1146, h: 1192, stack: 'is-bookmark',
+        full: '/assets/projects/sandcastles/05-reading-plan-full.jpg' },
+      { src: '/assets/projects/sandcastles/03-stage.jpg?v=8611f06f', w: 1800, h: 1006, stack: 'is-stage',
+        full: '/assets/projects/sandcastles/03-stage-full.jpg' }
+    ]
   },
 };
 
@@ -1847,7 +1852,6 @@ function renderBradleyStudy(data) {
       + '</div>'
       + '<ul class="bd-menu" id="bdMenu" hidden>' + BD_SECTIONS.map((s, i) =>
           '<li><a href="#bd-' + s[0] + '" data-bd-go="' + s[0] + '"><span>' + (i + 1) + '</span> ' + s[1] + '</a></li>').join('') + '</ul>'
-      + '<span class="bd-prog" aria-hidden="true"></span>'
     + '</div>'
     + '<div class="bd-flow">' + research + problem + journey + built + decisions + feedback + versions + final + limits + '</div>'
     + '<div class="cs-foot">'
@@ -1898,12 +1902,13 @@ function bdUpdate() {
   bar.querySelectorAll('.bd-menu a').forEach((a) => {
     if (a.dataset.bdGo === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
   });
-  // progress: from the top of the first section to the foot of the last
-  const first = secs[0].getBoundingClientRect().top - top;
-  const last = secs[secs.length - 1].getBoundingClientRect().bottom - top;
-  const span = Math.max(1, last - first - projectOverlay.clientHeight * 0.6);
-  const p = Math.min(1, Math.max(0, (48 - first) / span));
-  bar.style.setProperty('--p', (p * 100).toFixed(2) + '%');
+  /* NO PROGRESS LINE OF ITS OWN. It had one under the bar, and the site's
+     top line then hid while the bar was stuck: one red line that jumped from
+     the top edge to the bar's foot at the moment of sticking, and changed
+     length as it went, because the two measured different spans (sections
+     against the whole page). The site's line stays at the top, where it is
+     on every other project page; the bar's '3 / 9 The journey' already says
+     where you are in the sections. */
 }
 projectOverlay.addEventListener('scroll', bdUpdate, { passive: true });
 

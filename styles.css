@@ -6938,10 +6938,7 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 /* the bar's own back button only exists once the bar has stuck and the page's
    one is hidden: in flow under the hero the two were on screen together */
 .project-detail:not(.bd-stuck) .bd-bar-back { display: none; }
-/* the site's thin page-progress line at the very top repeats the bar's own
-   red line once the bar is stuck, so it steps aside */
-body:has(.bd-stuck) .scroll-progress { opacity: 0; }
-.bd-prog { position: absolute; left: 0; bottom: -3px; height: 3px; width: var(--p, 0%); background: var(--accent); }
+
 .bd-menu {
   position: absolute; top: 100%; right: 0; width: 340px; max-height: 70vh; overflow: auto; z-index: 7;
   list-style: none; margin: 3px -3px 0 0; background: var(--white); color: var(--black); border: 3px solid var(--black);
