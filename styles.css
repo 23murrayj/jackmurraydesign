@@ -6882,9 +6882,16 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 /* fills a window (the hero crop, the slider) and shows the TOP of the picture */
 .bd-img.is-fill { position: absolute; inset: 0; aspect-ratio: auto; border: 0; }
 .bd-img.is-fill.is-loaded img { position: static; height: auto; }
+/* a pair's shared frame: the picture is contained inside it with a margin,
+   so two screenshots of different shapes read as two equal frames */
+.bd-img.is-framed img { inset: 16px; width: calc(100% - 32px); height: calc(100% - 32px); object-fit: contain; object-position: center; }
 .bd-img.at-l .bd-ph { right: 50%; }
 .bd-img.at-r .bd-ph { left: 50%; }
 .bd-hero { position: relative; aspect-ratio: 5 / 6; border: 3px solid var(--black); overflow: hidden; }
+
+/* a heading with a control on its own line (Final design's Open in Figma) */
+.bd-h-row { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-bottom: 26px; }
+.bd-h-row .cs-h { margin: 0; }
 
 /* ---- the before/after slider ---- */
 .bd-compare { margin: 0 0 72px; }
@@ -6928,6 +6935,12 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 @media (hover: hover) { .bd-bar-back:hover, .bd-bar-menu:hover { background: var(--paper); color: var(--ink); } }
 @media (hover: none) { .bd-bar-back::after, .bd-bar-menu::after { content: ''; position: absolute; inset: -9px -4px; } }
 .bd-stuck .project-back { visibility: hidden; }
+/* the bar's own back button only exists once the bar has stuck and the page's
+   one is hidden: in flow under the hero the two were on screen together */
+.project-detail:not(.bd-stuck) .bd-bar-back { display: none; }
+/* the site's thin page-progress line at the very top repeats the bar's own
+   red line once the bar is stuck, so it steps aside */
+body:has(.bd-stuck) .scroll-progress { opacity: 0; }
 .bd-prog { position: absolute; left: 0; bottom: -3px; height: 3px; width: var(--p, 0%); background: var(--accent); }
 .bd-menu {
   position: absolute; top: 100%; right: 0; width: 340px; max-height: 70vh; overflow: auto; z-index: 7;
@@ -7004,7 +7017,10 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 .bd-decision-h { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; border-bottom: 3px solid var(--black); padding-bottom: 12px; }
 .bd-decision-h h4 { font-family: var(--ff-display); font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.2; margin: 0; }
 .bd-decision-n { color: var(--accent-ink); margin-right: 8px; }
-.bd-owner { margin: 0; flex: none; font-size: 0.85rem; color: var(--muted); text-align: right; }
+/* who owned it, as a label: "Mine" is filled so a reader scanning for what
+   Jack did himself finds it without reading the line */
+.bd-owner { margin: 0; flex: none; padding: 4px 10px; border: 2px solid var(--black); font-size: 0.78rem; font-weight: 700; line-height: 1.3; color: var(--black); }
+.bd-owner.is-mine { background: var(--accent); color: var(--accent-on); }
 .bd-fdt { list-style: none; margin: 20px 0 28px; max-width: 84ch; }
 .bd-fdt li { position: relative; padding-left: 20px; margin-bottom: 12px; line-height: 1.6; color: var(--body-copy); }
 .bd-fdt li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 7.5px; background: var(--accent); }
@@ -7018,11 +7034,19 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 .bd-version-n { margin: 0; font-weight: 700; }
 .bd-version-s { margin: 2px 0 12px; min-height: 2.9em; font-size: 0.82rem; line-height: 1.45; color: var(--muted); }
 .bd-version.is-mine .bd-img { border-color: var(--accent); }
+/* the lineup's right half was empty: the reading goes beside it, sticky, so
+   the why stays next to the four lengths while you scroll past them */
+.bd-versions-row { margin: 32px 0 36px; }
+.bd-versions-row .bd-lineup { margin: 0; }
+.bd-versions-aside { margin-top: 24px; }
+@media (min-width: 1101px) {
+  .bd-versions-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 64px; align-items: start; }
+  .bd-versions-aside { position: sticky; top: 96px; margin-top: 52px; }
+}
 .bd-lineup .bd-ph-l b { font-size: 0.68rem; }
 .bd-lineup .bd-ph-l i { display: none; }
 
 /* ---- final design ---- */
-.bd-final-top { display: flex; justify-content: flex-end; margin-bottom: 16px; }
 .bd-figma {
   position: relative; display: inline-flex; gap: 8px; align-items: center; min-height: 44px;
   padding: 10px 18px; border: 2px solid var(--black); background: var(--white); color: var(--black);
@@ -7031,7 +7055,8 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
 }
 @media (hover: hover) { .bd-figma:hover { transform: translate(calc(-1 * var(--lift-x)), calc(-1 * var(--lift-y))); box-shadow: 6px 6px 0 var(--accent); } }
 .bd-figma:active { transform: translate(0, 0); box-shadow: 0 0 0 var(--accent); }
-.bd-frame { height: 900px; overflow: auto; border: 3px solid var(--black); background: var(--white); }
+/* never taller than the screen under the bar, or scrolling inside it and scrolling the page fight */
+.bd-frame { height: min(900px, calc(100vh - 150px)); overflow: auto; border: 3px solid var(--black); background: var(--white); }
 .bd-frame:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
 .bd-frame .bd-img { border: 0; }
 
@@ -7058,10 +7083,15 @@ html[lang="ja"] .hero-name { letter-spacing: -0.04em; }
   .bd-bar-in { gap: 10px; }
   .bd-decision-h { flex-direction: column; gap: 6px; }
   .bd-owner { text-align: left; }
-  .bd-lineup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; overflow: visible; }
-  .bd-version { width: auto; }
+  /* four across, not two by two: the lengths only mean something side by side,
+     and two rows of two put master 1 and 2 a screen and a half apart. Subgrid
+     keeps every picture starting on one line however the labels wrap. */
+  .bd-lineup { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto auto; gap: 0 10px; overflow: visible; }
+  .bd-version { width: auto; display: grid; grid-template-rows: subgrid; grid-row: span 3; }
+  .bd-version-n { font-size: 0.85rem; }
+  .bd-version-s { min-height: 0; font-size: 0.72rem; }
   .bd-kv { grid-template-columns: 1fr; gap: 4px; }
-  .bd-frame { height: 640px; }
+  .bd-frame { height: min(640px, calc(100vh - 130px)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .bd-pin, .bd-figma, .bd-index a { transition: none; }

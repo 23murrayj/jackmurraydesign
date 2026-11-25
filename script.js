@@ -1600,11 +1600,14 @@ const bdP = (s, cls) => '<p' + (cls ? ' class="' + cls + '"' : '') + '>' + bdE(s
 
 /* the one image component. `fill` makes it fill a window (the slider, the
    hero crop) instead of taking its own ratio; `pos` puts a placeholder's label
-   left or right so two stacked layers do not write over each other. */
+   left or right so two stacked layers do not write over each other. `frame`
+   is a SHARED ratio for a pair: the box takes it and the picture sits inside,
+   contained, so a before/after or a row of tiles is two equal frames rather
+   than two pictures of different heights (the wireframe's own layout). */
 const BD_AT = { l: ' at-l', r: ' at-r' };   // literals, not 'at-' + pos: audit.js reads a composed class as dead CSS
 function bdImg(file, w, h, alt, desc, o = {}) {
   return '<figure class="bd-img' + (o.fill ? ' is-fill' : '') + (o.tall ? ' is-tall' : '')
-    + (BD_AT[o.pos] || '') + '" style="--ar: ' + w + ' / ' + h + '">'
+    + (o.frame ? ' is-framed' : '') + (BD_AT[o.pos] || '') + '" style="--ar: ' + (o.frame ? o.frame.toFixed(3) : w + ' / ' + h) + '">'
     + '<img src="' + BD_IMG + file + '" alt="' + escapeAttr(alt) + '" width="' + w + '" height="' + h + '"'
     + ' loading="' + (o.eager ? 'eager' : 'lazy') + '" decoding="async" draggable="false">'
     + '<span class="bd-ph" aria-hidden="true"><span class="bd-ph-l"><b>' + file + '</b>'
@@ -1621,20 +1624,26 @@ function bdTable(heads, rows, cls, label) {
     + '</tbody></table></div>';
 }
 
-const bdSec = (id, title, body) =>
+/* `tools` sits on the heading's own line, right-aligned (Open in Figma) */
+const bdSec = (id, title, body, tools) =>
   '<section class="cs-section bd-section" id="bd-' + id + '" data-bd="' + id + '" tabindex="-1">'
-  + '<h3 class="cs-h">' + escapeAttr(title) + '</h3>' + body + '</section>';
+  + (tools ? '<div class="bd-h-row"><h3 class="cs-h">' + escapeAttr(title) + '</h3>' + tools + '</div>'
+    : '<h3 class="cs-h">' + escapeAttr(title) + '</h3>') + body + '</section>';
 
+/* before/after are [file, w, h, alt, label, caption]; both panes share the
+   narrower of the two ratios (capped at 4:1, so a header strip still gets a
+   frame you can see), so the pair always reads as two equal frames */
 function bdDecision(n, title, owner, finding, decision, tradeoff, before, after) {
   const row = (k, v) => '<li><strong>' + k + '</strong> ' + bdE(v) + '</li>';
-  const pane = (label, img, cap) => '<div class="bd-ba-pane"><p class="bd-k">' + label + '</p>'
-    + img + '<p class="bd-cap">' + bdE(cap) + '</p></div>';
+  const frame = Math.min(4, before[1] / before[2], after[1] / after[2]);
+  const pane = (label, p) => '<div class="bd-ba-pane"><p class="bd-k">' + label + '</p>'
+    + bdImg(p[0], p[1], p[2], p[3], p[4], { frame }) + '<p class="bd-cap">' + bdE(p[5]) + '</p></div>';
   return '<article class="bd-decision"><header class="bd-decision-h">'
     + '<h4><span class="bd-decision-n">' + n + '</span> ' + escapeAttr(title) + '</h4>'
-    + '<p class="bd-owner">' + escapeAttr(owner) + '</p></header>'
+    + '<p class="bd-owner' + (owner === 'Mine' ? ' is-mine' : '') + '">' + escapeAttr(owner) + '</p></header>'
     + '<ul class="bd-fdt">' + row('Finding:', finding) + row('Decision:', decision)
     + row('Trade-off:', tradeoff) + '</ul>'
-    + '<div class="bd-ba">' + pane('Before', before[0], before[1]) + pane('After', after[0], after[1]) + '</div>'
+    + '<div class="bd-ba">' + pane('Before', before) + pane('After', after) + '</div>'
     + '</article>';
 }
 
@@ -1716,18 +1725,20 @@ function renderBradleyStudy(data) {
       + bdP('[Check this mapping matches how the team thought about it.]', 'bd-cap') + '</div>'
     + '</div>');
 
+  // each row of tiles is two equal frames: the narrower ratio of the pair
+  const rowA = Math.min(1000 / 420, 1240 / 500), rowB = Math.min(1440 / 450, 1240 / 800);
   const built = bdSec('built', 'What I built',
     bdP('We split the page five ways. Andrew was creative director and built About the Program and the faculty grid. Jessie wrote the copy. Caitlin built the hero, the final call to action, the logos and one carousel. Charlie built the footer, the quotes and the links. These are mine, plus the style foundations everyone designed with.', 'bd-lede')
     + tile(bdImg('header-breadcrumbs.png', 1440, 240, 'Master 3 header with a three-link sub-nav and breadcrumbs above the page title.', 'The header and breadcrumbs'),
       'Header, navigation and breadcrumbs', 'A three-link sub-nav instead of the old page\'s long lists, with breadcrumbs above the title. [Add the states you designed.]', 'is-wide')
     + '<div class="bd-tiles">'
-    + tile(bdImg('style-foundations.png', 1000, 420, 'The color palette and heading type scale set for the page.', 'Colors and type scale, side by side'),
+    + tile(bdImg('style-foundations.png', 1000, 420, 'The color palette and heading type scale set for the page.', 'Colors and type scale, side by side', { frame: rowA }),
       'Style foundations', 'I pulled the colors and icons from Bradley\'s brand identity and set the fonts and heading sizes. [One line on how it kept five people consistent.]')
-    + tile(bdImg('career-stats.png', 1240, 500, 'Three career numbers in one row: median salary, job growth and career outcomes.', 'The career stats'),
+    + tile(bdImg('career-stats.png', 1240, 500, 'Three career numbers in one row: median salary, job growth and career outcomes.', 'The career stats', { frame: rowA }),
       'What Happens After Bradley', 'Three numbers in one row. Earlier versions used a donut chart. [Why these three.]')
-    + tile(bdImg('journey-section.png', 1440, 450, 'Your Journey at Bradley, three reasons to choose the major.', 'The Your Journey at Bradley section'),
+    + tile(bdImg('journey-section.png', 1440, 450, 'Your Journey at Bradley, three reasons to choose the major.', 'The Your Journey at Bradley section', { frame: rowB }),
       'Your Journey at Bradley', 'Three reasons to choose GX. In Master 1 it was called Benefits of Your Journey at Bradley.')
-    + tile(bdImg('carousel.png', 1240, 800, 'Students working together, with arrows and pagination dots.', 'The image carousel'),
+    + tile(bdImg('carousel.png', 1240, 800, 'Students working together, with arrows and pagination dots.', 'The image carousel', { frame: rowB }),
       'Image carousel', 'Students working, with arrows and pagination dots. [Why a carousel fit here.]')
     + '</div>');
 
@@ -1736,18 +1747,18 @@ function renderBradleyStudy(data) {
     + bdDecision('01', 'Lead with outcomes, not adjectives', 'Mine',
       '4 of 5 students looked first for their major, and the survey summary found they want practical future information before program features.',
       'Career outcomes as three big numbers instead of a bulleted list of job titles.', '[What you gave up for it.]',
-      [bdImg('d1-original-careers.png', 940, 290, 'The original Career Opportunities list of job titles.', 'The original Career Opportunities list'), 'Original: a list of job titles.'],
-      [bdImg('career-stats.png', 1240, 500, 'Master 3 career stats: three numbers in one row.', 'The career stats'), 'Master 3: three numbers students can compare across schools.'])
+      ['d1-original-careers.png', 940, 290, 'The original Career Opportunities list of job titles.', 'The original Career Opportunities list', 'Original: a list of job titles.'],
+      ['career-stats.png', 1240, 500, 'Master 3 career stats: three numbers in one row.', 'The career stats', 'Master 3: three numbers students can compare across schools.'])
     + bdDecision('02', 'Make the next step impossible to miss', 'Team decision, Caitlin built the hero',
       'My journey map ends with "Can I afford this?" and "What do I need to submit?", and the old page kept Apply in a sidebar.',
       'Apply Today and Plan Your Visit in the hero, repeated in the final call to action.', '[What you gave up for it.]',
-      [bdImg('d2-original-sidebar.png', 370, 270, 'The original sidebar with four equal red buttons: Apply, Visit, Request Information, Give.', 'The original sidebar buttons'), 'Original: four equal red buttons in a sidebar.'],
-      [bdImg('d2-master3-hero.png', 1150, 790, 'The Master 3 hero with Apply Today and Plan Your Visit buttons.', 'The Master 3 hero'), 'Master 3: two clear actions on the first screen.'])
+      ['d2-original-sidebar.png', 370, 270, 'The original sidebar with four equal red buttons: Apply, Visit, Request Information, Give.', 'The original sidebar buttons', 'Original: four equal red buttons in a sidebar.'],
+      ['d2-master3-hero.png', 1150, 790, 'The Master 3 hero with Apply Today and Plan Your Visit buttons.', 'The Master 3 hero', 'Master 3: two clear actions on the first screen.'])
     + bdDecision('03', 'Navigation people can scan', 'Mine',
       'Navigation came up as a top priority in the survey, and the old page had seventeen sidebar links.',
       'Three sub-nav links and breadcrumbs above the title. The long link list became one Important Links bar near the end.', '[What you gave up for it.]',
-      [bdImg('d3-original-header.png', 1440, 132, 'The original page header: six top-level menus and a department bar.', 'The original header'), 'Original: six top-level menus plus a department bar.'],
-      [bdImg('header-breadcrumbs.png', 1440, 240, 'The Master 3 header with a three-link sub-nav and breadcrumbs.', 'The header and breadcrumbs'), 'Master 3: three links and a clear trail.']));
+      ['d3-original-header.png', 1440, 132, 'The original page header: six top-level menus and a department bar.', 'The original header', 'Original: six top-level menus plus a department bar.'],
+      ['header-breadcrumbs.png', 1440, 240, 'The Master 3 header with a three-link sub-nav and breadcrumbs.', 'The header and breadcrumbs', 'Master 3: three links and a clear trail.']));
 
   const feedback = bdSec('feedback', 'Feedback',
     bdP('We didn\'t run usability tests. Feedback came from critiques with our professor and from presenting to Jason Rambeck, Bradley\'s Director of Web Development, Design & Services, whose team would own the real page.', 'bd-lede')
@@ -1761,12 +1772,14 @@ function renderBradleyStudy(data) {
     + bdImg(file, 1440, h, name + ' at its real length, ' + h.toLocaleString('en-US') + ' pixels tall.', name + ', ' + h.toLocaleString('en-US') + 'px', { tall: true }) + '</li>';
   const versions = bdSec('versions', 'Four versions',
     bdP('The original page, our two team versions, and mine, at their real lengths.', 'bd-lede')
-    + '<ul class="bd-lineup">'
+    + '<div class="bd-versions-row"><ul class="bd-lineup">'
     + lineup('original-full.jpg', 2486, 'Original', 'The live page, 2,486px')
     + lineup('master-1-full.jpg', 10281, 'Master 1', 'Team, first pass, 10,281px')
     + lineup('master-2-full.jpg', 8516, 'Master 2', 'Team, graded, 8,516px')
     + lineup('master-3-full.jpg', 8158, 'Master 3', 'Mine, in progress, 8,158px', true) + '</ul>'
+    + '<div class="bd-versions-aside">'
     + bdP('**Why it got longer.** Master 1 ran to 10,281px. We cut it to about 8,500px for Master 2, and Master 3 is about 8,200px. [Say what the extra length over the original is for.]', 'bd-prose')
+    + '<p class="bd-cap">Heights are to scale with each other.</p></div></div>'
     + '<h4 class="bd-sub">What I changed in Master 3</h4>'
     + bdTable(['Change', 'Whose part', 'Why'], [
       ['Career stats: dropped the donut chart and intro paragraph, three numbers in one row', 'Mine', '[Why]'],
@@ -1776,11 +1789,10 @@ function renderBradleyStudy(data) {
     ], 'bd-table-changes', 'What changed in Master 3'));
 
   const final = bdSec('final', 'Final design',
-    '<div class="bd-final-top">'
-    + '<a class="bd-figma" href="' + BD_FIGMA + '" target="_blank" rel="noopener">Open in Figma <span aria-hidden="true">→</span><span class="sr-only"> (opens in a new tab)</span></a></div>'
-    + '<div class="bd-frame" tabindex="0" role="region" aria-label="Master 3, the full page. Scroll inside this frame to read it.">'
+    '<div class="bd-frame" tabindex="0" role="region" aria-label="Master 3, the full page. Scroll inside this frame to read it.">'
     + bdImg('master-3-full.jpg', 1440, 8158, 'Master 3, the full redesigned program page.', 'Master 3, the full page', { tall: true }) + '</div>'
-    + '<p class="bd-note">Scroll inside the frame to read the whole page.</p>');
+    + '<p class="bd-note">Scroll inside the frame to read the whole page.</p>',
+    '<a class="bd-figma" href="' + BD_FIGMA + '" target="_blank" rel="noopener">Open in Figma <span aria-hidden="true">→</span><span class="sr-only"> (opens in a new tab)</span></a>');
 
   const kv = (k, v) => '<div class="bd-kv"><dt>' + k + '</dt><dd>' + bdE(v) + '</dd></div>';
   const limits = bdSec('limits', 'Limitations and next steps',
